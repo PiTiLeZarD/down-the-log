@@ -7,18 +7,17 @@
             "label": "Dev",
             "type": "shell",
             "command": "pnpm",
-            "args": ["start:${input:build}"],
-            "group": "build"
-        },
-        {
-            "label": "Build",
-            "type": "shell",
-            "command": "pnpm",
-            "args": ["build:${input:build}"],
+            "args": ["${input:action}:${input:build}"],
             "group": "build"
         }
     ],
     "inputs": [
+        {
+            "id": "action",
+            "type": "pickString",
+            "description": "Start vs Build",
+            "options": ["start", "build"]
+        },
         {
             "id": "build",
             "type": "pickString",
