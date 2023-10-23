@@ -1,0 +1,29 @@
+{
+    // See https://go.microsoft.com/fwlink/?LinkId=733558
+    // for the documentation about the tasks.json format
+    "version": "2.0.0",
+    "tasks": [
+        {
+            "label": "Dev",
+            "type": "shell",
+            "command": "pnpm",
+            "args": ["start:${input:build}"],
+            "group": "build"
+        },
+        {
+            "label": "Build",
+            "type": "shell",
+            "command": "pnpm",
+            "args": ["build:${input:build}"],
+            "group": "build"
+        }
+    ],
+    "inputs": [
+        {
+            "id": "build",
+            "type": "pickString",
+            "description": "Select one of the available build",
+            "options": ["all", "web", "android", "ios", "tauri"]
+        }
+    ]
+}

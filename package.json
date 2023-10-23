@@ -1,0 +1,39 @@
+{
+    "name": "down-the-log",
+    "version": "1.0.0",
+    "main": "src/AppEntry.tsx",
+    "scripts": {
+        "start:all": "expo start",
+        "start:android": "expo start --android",
+        "start:ios": "expo start --ios",
+        "start:web": "expo start --web",
+        "start:tauri": "tauri dev",
+        "build:all": "expo export",
+        "build:android": "expo export -p android",
+        "build:ios": "expo export -p iod",
+        "build:web": "expo export -p web",
+        "build:tauri": "tauri build"
+    },
+    "dependencies": {
+        "@expo/html-elements": "latest",
+        "@gluestack-style/react": "latest",
+        "@gluestack-ui/config": "latest",
+        "@gluestack-ui/themed": "latest",
+        "@legendapp/motion": "latest",
+        "expo": "~48.0.21",
+        "expo-status-bar": "~1.6.0",
+        "react": "18.2.0",
+        "react-dom": "18.2.0",
+        "react-native": "0.72.3",
+        "react-native-svg": "13.4.0",
+        "react-native-web": "~0.19.9"
+    },
+    "devDependencies": {
+        "@babel/core": "^7.23.2",
+        "@expo/webpack-config": "^18.1.3",
+        "@tauri-apps/cli": "^1.5.5",
+        "@types/react": "~18.0.38",
+        "typescript": "^5.2.2"
+    },
+    "private": true
+}
