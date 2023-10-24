@@ -4,5 +4,6 @@
         "strict": true,
         "esModuleInterop": true,
         "jsx": "react-jsx"
-    }
+    },
+    "exclude": ["node_modules", "src-tauri"]
 }

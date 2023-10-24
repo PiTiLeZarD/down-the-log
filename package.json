@@ -12,7 +12,9 @@
         "build:android": "expo export -p android",
         "build:ios": "expo export -p iod",
         "build:web": "expo export -p web",
-        "build:tauri": "tauri build"
+        "build:tauri": "tauri build",
+        "types": "tsc --noEmit",
+        "lint": "eslint src/"
     },
     "dependencies": {
         "@expo/html-elements": "latest",
@@ -20,6 +22,14 @@
         "@gluestack-ui/config": "latest",
         "@gluestack-ui/themed": "latest",
         "@legendapp/motion": "latest",
+        "@typescript-eslint/eslint-plugin": "^6.4.0",
+        "eslint": "^8.0.1",
+        "eslint-config-airbnb-typescript": "^17.1.0",
+        "eslint-config-prettier": "^9.0.0",
+        "eslint-plugin-import": "^2.25.2",
+        "eslint-plugin-n": "^15.0.0 || ^16.0.0",
+        "eslint-plugin-promise": "^6.0.0",
+        "eslint-plugin-react": "^7.33.2",
         "expo": "~48.0.21",
         "expo-status-bar": "~1.6.0",
         "react": "18.2.0",

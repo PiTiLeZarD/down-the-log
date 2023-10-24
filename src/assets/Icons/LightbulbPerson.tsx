@@ -1,7 +1,6 @@
-import React from "react";
-import { Path, Svg } from "react-native-svg";
+import { Path, Svg } from 'react-native-svg';
 
-const SvgComponent = () => {
+const SvgComponent = (): JSX.Element => {
     return (
         <Svg width="25" height="24" viewBox="0 0 25 24" fill="none">
             <Path

@@ -1,7 +1,6 @@
-import React from "react";
-import { Defs, LinearGradient, Path, Rect, Stop, Svg } from "react-native-svg";
+import { Defs, LinearGradient, Path, Rect, Stop, Svg } from 'react-native-svg';
 
-const YourSvgComponent = () => {
+const YourSvgComponent = (): JSX.Element => {
     return (
         <Svg width="188" height="31" viewBox="0 0 188 31" fill="none">
             <Rect y="1.40527" width="27.9999" height="27.1895" rx="2.79998" fill="url(#paint0_linear_10988_36724)" />
