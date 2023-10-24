@@ -1,0 +1,15 @@
+{
+    "editor.defaultFormatter": "esbenp.prettier-vscode",
+    "editor.formatOnSave": true,
+    "editor.linkedEditing": true,
+    "editor.codeActionsOnSave": {
+        "source.organizeImports": true
+    },
+    "prettier.useEditorConfig": false,
+    "prettier.tabWidth": 4,
+    "prettier.printWidth": 120,
+    "prettier.documentSelectors": ["*.js", "*.jsx", "*.ts", "*.tsx", "*.md"],
+    "prettier.enableDebugLogs": true,
+    "prettier.resolveGlobalModules": true,
+    "js/ts.implicitProjectConfig.target": "ES2019"
+}
