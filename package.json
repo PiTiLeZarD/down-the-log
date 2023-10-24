@@ -22,6 +22,8 @@
         "@gluestack-ui/config": "latest",
         "@gluestack-ui/themed": "latest",
         "@legendapp/motion": "latest",
+        "@react-navigation/native": "^6.1.9",
+        "@react-navigation/native-stack": "^6.9.16",
         "@typescript-eslint/eslint-plugin": "^6.4.0",
         "eslint": "^8.0.1",
         "eslint-config-airbnb-typescript": "^17.1.0",
@@ -35,6 +37,8 @@
         "react": "18.2.0",
         "react-dom": "18.2.0",
         "react-native": "0.72.3",
+        "react-native-safe-area-context": "4.5.0",
+        "react-native-screens": "~3.20.0",
         "react-native-svg": "13.4.0",
         "react-native-web": "~0.19.9"
     },

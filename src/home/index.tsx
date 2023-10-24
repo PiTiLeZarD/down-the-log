@@ -1,27 +1,31 @@
-import { Text } from '@gluestack-ui/themed';
+import { ButtonText } from '@gluestack-ui/themed';
 
-import { Box } from '@gluestack-ui/themed';
+import { Box, Button, Text } from '@gluestack-ui/themed';
+import { NativeStackScreenProps } from '@react-navigation/native-stack';
 import React from 'react';
-
+import { RootStackParamList } from '../RootStack';
 const classes: Record<string, object> = {
     container: {
         display: 'flex',
         width: '100%',
+        height: '100%',
     },
     table: {
         flexGrow: 1,
     },
 };
-
-export type HomeProps = {};
-
+export type HomeProps = {} & NativeStackScreenProps<RootStackParamList, 'Home'>;
 export type HomeComponent = React.FC<HomeProps>;
-
-export const Home: HomeComponent = (): JSX.Element => {
+export const Home: HomeComponent = ({ navigation }): JSX.Element => {
     return (
         <Box sx={classes.container}>
             <Box sx={classes.top}>
-                <Text>Here the top part</Text>L
+                <Text>
+                    Here the top part{' '}
+                    <Button onPress={() => navigation.navigate('About')}>
+                        <ButtonText>About</ButtonText>
+                    </Button>
+                </Text>
             </Box>
             <Box sx={classes.table}>
                 <table>
