@@ -1,4 +1,4 @@
-import { Button, ButtonText } from '@gluestack-ui/themed';
+import { Box, Button, ButtonText, Text } from '@gluestack-ui/themed';
 import { NativeStackScreenProps } from '@react-navigation/native-stack';
 import React from 'react';
 import { RootStackParamList } from '../RootStack';
@@ -9,11 +9,11 @@ export type AboutComponent = React.FC<AboutProps>;
 
 export const About: AboutComponent = ({ navigation }): JSX.Element => {
     return (
-        <div>
-            About
+        <Box>
+            <Text>About</Text>
             <Button onPress={() => navigation.goBack()}>
                 <ButtonText>Back</ButtonText>
             </Button>
-        </div>
+        </Box>
     );
 };
