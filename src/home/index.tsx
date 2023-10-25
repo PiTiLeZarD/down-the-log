@@ -5,7 +5,6 @@ import {
     Box,
     Button,
     ButtonText,
-    HStack,
     Input,
     InputField,
     InputIcon,
@@ -14,6 +13,7 @@ import {
     VStack,
 } from '@gluestack-ui/themed';
 import { NativeStackScreenProps } from '@react-navigation/native-stack';
+import { Qso } from '../Qso';
 import { RootStackParamList } from '../RootStack';
 import { useStore } from '../store';
 
@@ -52,24 +52,19 @@ export const Home: HomeComponent = ({ navigation }): JSX.Element => {
             </Box>
             <Box sx={classes.table}>
                 <VStack>
-                    <HStack>
-                        <Text>ID</Text>
-                        <Text>Band</Text>
-                        <Text>CallSign</Text>
-                    </HStack>
+                    <Qso id="ID" band="Band" callsign="Callsign" />
                     {qsos.map((qso, i) => (
-                        <HStack key={i}>
-                            <Text>{i}</Text>
-                            <Text>20m</Text>
-                            <Text>{qso.callsign}</Text>
-                        </HStack>
+                        <Qso key={i} id={String(i)} band="20m" {...qso} />
                     ))}
                 </VStack>
             </Box>
             <Box sx={classes.inputs}>
                 <Input size="lg">
                     <InputField
-                        onChange={(e: any) => setCallsign(e.nativeEvent.text)}
+                        onChange={(e) => setCallsign(e.nativeEvent.text)}
+                        onKeyPress={(e) => {
+                            if (e.keyCode === 13) handleAdd();
+                        }}
                         value={callsign}
                         placeholder="Callsign"
                     />
