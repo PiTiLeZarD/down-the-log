@@ -1,7 +1,19 @@
 import { HStack, Text } from '@gluestack-ui/themed';
 import React from 'react';
+import { merge } from './utils/merge';
+
+const classes: Record<string, object> = {
+    cell: {
+        flex: 1,
+        padding: '3px 5px',
+    },
+    header: {
+        fontWeight: 'bold',
+    },
+};
 
 export type QsoProps = {
+    header?: boolean;
     id: string;
     band: string;
     callsign: string;
@@ -9,12 +21,14 @@ export type QsoProps = {
 
 export type QsoComponent = React.FC<QsoProps>;
 
-export const Qso: QsoComponent = ({ id, band, callsign }): JSX.Element => {
+export const Qso: QsoComponent = ({ header = false, id, band, callsign }): JSX.Element => {
+    const cellStyles = merge(classes.cell, header ? classes.header : {});
+
     return (
         <HStack>
-            <Text flex={1}>{id}</Text>
-            <Text flex={1}>{band}</Text>
-            <Text flex={2}>{callsign}</Text>
+            <Text sx={cellStyles}>{id}</Text>
+            <Text sx={cellStyles}>{band}</Text>
+            <Text sx={cellStyles}>{callsign}</Text>
         </HStack>
     );
 };

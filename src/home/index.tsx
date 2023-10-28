@@ -52,7 +52,7 @@ export const Home: HomeComponent = ({ navigation }): JSX.Element => {
             </Box>
             <Box sx={classes.table}>
                 <VStack>
-                    <Qso id="ID" band="Band" callsign="Callsign" />
+                    <Qso header id="ID" band="Band" callsign="Callsign" />
                     {qsos.map((qso, i) => (
                         <Qso key={i} id={String(i)} band="20m" {...qso} />
                     ))}
