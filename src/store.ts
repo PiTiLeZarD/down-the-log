@@ -2,7 +2,7 @@ import asyncstorage from '@react-native-async-storage/async-storage';
 import { create } from 'zustand';
 import { combine, createJSONStorage, devtools, persist } from 'zustand/middleware';
 
-type QSO = {
+export type QSO = {
     id: string;
     callsign: string;
 };

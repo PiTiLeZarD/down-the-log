@@ -18,7 +18,7 @@ import { nanoid } from 'nanoid';
 import { NativeSyntheticEvent, TextInputChangeEventData } from 'react-native/types';
 import { Qso } from '../Qso';
 import { RootStackParamList } from '../RootStack';
-import { useStore } from '../store';
+import { QSO, useStore } from '../store';
 
 const classes: Record<string, object> = {
     container: {
@@ -41,8 +41,10 @@ export const Home: HomeComponent = ({ navigation }): JSX.Element => {
     const log = useStore((state) => state.log);
 
     const handleAdd = () => {
-        log({ callsign, id: nanoid() });
+        const qso: QSO = { callsign, id: nanoid() };
+        log(qso);
         setCallsign('');
+        navigation.navigate('QsoForm', { qsoId: qso.id });
     };
 
     return (
