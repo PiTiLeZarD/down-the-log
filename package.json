@@ -13,8 +13,7 @@
         "build:ios": "expo export -p iod",
         "build:web": "expo export -p web",
         "build:tauri": "tauri build",
-        "types": "tsc --noEmit",
-        "lint": "eslint src/"
+        "types": "tsc --noEmit"
     },
     "dependencies": {
         "@expo/html-elements": "latest",
@@ -26,15 +25,9 @@
         "@react-navigation/native": "^6.1.9",
         "@react-navigation/native-stack": "^6.9.16",
         "@typescript-eslint/eslint-plugin": "^6.4.0",
-        "eslint": "^8.0.1",
-        "eslint-config-airbnb-typescript": "^17.1.0",
-        "eslint-config-prettier": "^9.0.0",
-        "eslint-plugin-import": "^2.25.2",
-        "eslint-plugin-n": "^15.0.0 || ^16.0.0",
-        "eslint-plugin-promise": "^6.0.0",
-        "eslint-plugin-react": "^7.33.2",
         "expo": "~48.0.21",
         "expo-status-bar": "~1.6.0",
+        "nanoid": "^5.0.2",
         "react": "18.2.0",
         "react-dom": "18.2.0",
         "react-native": "0.72.3",
