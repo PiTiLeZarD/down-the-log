@@ -13,6 +13,9 @@ import {
     VStack,
 } from '@gluestack-ui/themed';
 import { NativeStackScreenProps } from '@react-navigation/native-stack';
+import { nanoid } from 'nanoid';
+
+import { NativeSyntheticEvent, TextInputChangeEventData } from 'react-native/types';
 import { Qso } from '../Qso';
 import { RootStackParamList } from '../RootStack';
 import { useStore } from '../store';
@@ -38,7 +41,7 @@ export const Home: HomeComponent = ({ navigation }): JSX.Element => {
     const log = useStore((state) => state.log);
 
     const handleAdd = () => {
-        log({ callsign });
+        log({ callsign, id: nanoid() });
         setCallsign('');
     };
 
@@ -52,16 +55,18 @@ export const Home: HomeComponent = ({ navigation }): JSX.Element => {
             </Box>
             <Box sx={classes.table}>
                 <VStack>
-                    <Qso header id="ID" band="Band" callsign="Callsign" />
+                    <Qso header position="ID" band="Band" callsign="Callsign" />
                     {qsos.map((qso, i) => (
-                        <Qso key={i} id={String(i)} band="20m" {...qso} />
+                        <Qso key={i} position={String(i)} band="20m" {...qso} />
                     ))}
                 </VStack>
             </Box>
             <Box sx={classes.inputs}>
                 <Input size="lg">
                     <InputField
-                        onChange={(e) => setCallsign(e.nativeEvent.text)}
+                        onChange={(e: NativeSyntheticEvent<TextInputChangeEventData>) =>
+                            setCallsign(e.nativeEvent.text)
+                        }
                         onKeyPress={(e) => {
                             if (e.keyCode === 13) handleAdd();
                         }}

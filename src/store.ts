@@ -3,6 +3,7 @@ import { create } from 'zustand';
 import { combine, createJSONStorage, devtools, persist } from 'zustand/middleware';
 
 type QSO = {
+    id: string;
     callsign: string;
 };
 

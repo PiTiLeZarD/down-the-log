@@ -14,19 +14,19 @@ const classes: Record<string, object> = {
 
 export type QsoProps = {
     header?: boolean;
-    id: string;
+    position: string;
     band: string;
     callsign: string;
 };
 
 export type QsoComponent = React.FC<QsoProps>;
 
-export const Qso: QsoComponent = ({ header = false, id, band, callsign }): JSX.Element => {
+export const Qso: QsoComponent = ({ header = false, position, band, callsign }): JSX.Element => {
     const cellStyles = merge(classes.cell, header ? classes.header : {});
 
     return (
         <HStack>
-            <Text sx={cellStyles}>{id}</Text>
+            <Text sx={cellStyles}>{position}</Text>
             <Text sx={cellStyles}>{band}</Text>
             <Text sx={cellStyles}>{callsign}</Text>
         </HStack>
