@@ -13,7 +13,9 @@ export const QsoForm: QsoFormComponent = ({ route }): JSX.Element => {
     const { qsoId } = route.params;
     const qso = useStore((state) => state.qsos).filter((q) => q.id == qsoId)[0];
 
-    const { register } = useForm<QSO>();
+    const { register } = useForm<QSO>({
+        defaultValues: qso,
+    });
 
     return (
         <VStack>
