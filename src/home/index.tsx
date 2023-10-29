@@ -59,7 +59,13 @@ export const Home: HomeComponent = ({ navigation }): JSX.Element => {
                 <VStack>
                     <Qso header position="ID" band="Band" callsign="Callsign" />
                     {qsos.map((qso, i) => (
-                        <Qso key={i} position={String(i)} band="20m" {...qso} />
+                        <Qso
+                            key={i}
+                            position={String(i)}
+                            band="20m"
+                            {...qso}
+                            onPress={() => navigation.navigate('QsoForm', { qsoId: qso.id })}
+                        />
                     ))}
                 </VStack>
             </Box>

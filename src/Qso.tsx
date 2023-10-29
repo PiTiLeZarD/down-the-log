@@ -1,4 +1,4 @@
-import { HStack, Text } from '@gluestack-ui/themed';
+import { HStack, Pressable, Text } from '@gluestack-ui/themed';
 import React from 'react';
 import { merge } from './utils/merge';
 
@@ -10,6 +10,9 @@ const classes: Record<string, object> = {
     header: {
         fontWeight: 'bold',
     },
+    rowHighlight: {
+        backgroundColor: '#ddd',
+    },
 };
 
 export type QsoProps = {
@@ -17,18 +20,21 @@ export type QsoProps = {
     position: string;
     band: string;
     callsign: string;
+    onPress?: () => void;
 };
 
 export type QsoComponent = React.FC<QsoProps>;
 
-export const Qso: QsoComponent = ({ header = false, position, band, callsign }): JSX.Element => {
+export const Qso: QsoComponent = ({ onPress, header = false, position, band, callsign }): JSX.Element => {
     const cellStyles = merge(classes.cell, header ? classes.header : {});
 
     return (
-        <HStack>
-            <Text sx={cellStyles}>{position}</Text>
-            <Text sx={cellStyles}>{band}</Text>
-            <Text sx={cellStyles}>{callsign}</Text>
-        </HStack>
+        <Pressable onPress={onPress}>
+            <HStack sx={+position % 2 ? classes.rowHighlight : {}}>
+                <Text sx={cellStyles}>{position}</Text>
+                <Text sx={cellStyles}>{band}</Text>
+                <Text sx={cellStyles}>{callsign}</Text>
+            </HStack>
+        </Pressable>
     );
 };
