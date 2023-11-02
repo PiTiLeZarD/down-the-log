@@ -45,9 +45,11 @@ export const QsoForm: QsoFormComponent = ({ route }): JSX.Element => {
     const { qsoId } = route.params;
     const qso = useStore((state) => state.qsos).filter((q) => q.id == qsoId)[0];
 
-    const { register } = useForm<QSO>({
+    const { register, watch, setValue } = useForm<QSO>({
         defaultValues: qso,
     });
+
+    const mode = watch('mode');
 
     return (
         <VStack space="md" sx={classes.container}>
@@ -76,7 +78,11 @@ export const QsoForm: QsoFormComponent = ({ route }): JSX.Element => {
                     <FormControlLabel>
                         <Text>Mode:</Text>
                     </FormControlLabel>
-                    <Select {...register('mode')}>
+                    <Select
+                        {...register('mode')}
+                        selectedValue={mode}
+                        onValueChange={(mode) => setValue('mode', mode as QSO['mode'])}
+                    >
                         <SelectTrigger variant="outline" size="md">
                             <SelectInput placeholder="Select option" />
                             <SelectIcon mr="$3">
