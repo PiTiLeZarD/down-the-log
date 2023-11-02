@@ -13,8 +13,8 @@ import {
     VStack,
 } from '@gluestack-ui/themed';
 import { NativeStackScreenProps } from '@react-navigation/native-stack';
-import { nanoid } from 'nanoid';
-
+import { DateTime } from 'luxon';
+import uuid from 'react-native-uuid';
 import { NativeSyntheticEvent, TextInputChangeEventData } from 'react-native/types';
 import { Qso } from '../Qso';
 import { RootStackParamList } from '../RootStack';
@@ -41,7 +41,7 @@ export const Home: HomeComponent = ({ navigation }): JSX.Element => {
     const log = useStore((state) => state.log);
 
     const handleAdd = () => {
-        const qso: QSO = { callsign, id: nanoid() };
+        const qso: QSO = { callsign, id: uuid.v4() as string, date: DateTime.now() };
         log(qso);
         setCallsign('');
         navigation.navigate('QsoForm', { qsoId: qso.id });
