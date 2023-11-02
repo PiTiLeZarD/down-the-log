@@ -5,7 +5,8 @@ import { merge } from './utils/merge';
 const classes: Record<string, object> = {
     cell: {
         flex: 1,
-        padding: '3px 5px',
+        paddingHorizontal: 5,
+        paddingVertical: 3,
     },
     header: {
         fontWeight: 'bold',
@@ -30,7 +31,7 @@ export const Qso: QsoComponent = ({ onPress, header = false, position, band, cal
 
     return (
         <Pressable onPress={onPress}>
-            <HStack sx={+position % 2 ? classes.rowHighlight : {}}>
+            <HStack sx={+position % 2 || header ? classes.rowHighlight : {}}>
                 <Text sx={cellStyles}>{position}</Text>
                 <Text sx={cellStyles}>{band}</Text>
                 <Text sx={cellStyles}>{callsign}</Text>
