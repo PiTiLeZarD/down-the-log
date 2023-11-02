@@ -6,7 +6,7 @@
         {
             "label": "Dev",
             "type": "shell",
-            "command": "pnpm",
+            "command": "yarn",
             "args": ["${input:action}:${input:build}"],
             "group": "build"
         }
