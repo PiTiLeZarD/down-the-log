@@ -1,4 +1,26 @@
-import { Box, HStack, Input, InputField, Text, Textarea, TextareaInput, VStack } from '@gluestack-ui/themed';
+import {
+    ChevronDownIcon,
+    FormControl,
+    FormControlLabel,
+    HStack,
+    Icon,
+    Input,
+    InputField,
+    Select,
+    SelectBackdrop,
+    SelectContent,
+    SelectDragIndicator,
+    SelectDragIndicatorWrapper,
+    SelectIcon,
+    SelectInput,
+    SelectItem,
+    SelectPortal,
+    SelectTrigger,
+    Text,
+    Textarea,
+    TextareaInput,
+    VStack,
+} from '@gluestack-ui/themed';
 import { NativeStackScreenProps } from '@react-navigation/native-stack';
 import React from 'react';
 import { useForm } from 'react-hook-form';
@@ -6,9 +28,10 @@ import { RootStackParamList } from '../RootStack';
 import { QSO, useStore } from '../store';
 
 const classes = {
-    title: {
-        fontWeight: 'bold',
+    container: {
+        padding: 10,
     },
+    hstack: {},
     hstackElt: {
         flex: 1,
     },
@@ -27,68 +50,101 @@ export const QsoForm: QsoFormComponent = ({ route }): JSX.Element => {
     });
 
     return (
-        <VStack space="md">
+        <VStack space="md" sx={classes.container}>
             <HStack space="md" sx={classes.hstack}>
-                <Box sx={classes.hstackElt}>
-                    <Text sx={classes.title}>Callsign:</Text>
+                <FormControl sx={classes.hstackElt}>
+                    <FormControlLabel>
+                        <Text>Callsign:</Text>
+                    </FormControlLabel>
                     <Input>
                         <InputField {...register('callsign')} />
                     </Input>
-                </Box>
+                </FormControl>
 
-                <Box sx={classes.hstackElt}>
-                    <Text sx={classes.title}>Name:</Text>
+                <FormControl sx={classes.hstackElt}>
+                    <FormControlLabel>
+                        <Text>Name:</Text>
+                    </FormControlLabel>
                     <Input>
                         <InputField {...register('name')} />
                     </Input>
-                </Box>
+                </FormControl>
             </HStack>
 
             <HStack space="md" sx={classes.hstack}>
-                <Box sx={classes.hstackElt}>
-                    <Text sx={classes.title}>Mode:</Text>
-                    <Input>
-                        <InputField {...register('mode')} />
-                    </Input>
-                </Box>
+                <FormControl sx={classes.hstackElt}>
+                    <FormControlLabel>
+                        <Text>Mode:</Text>
+                    </FormControlLabel>
+                    <Select {...register('mode')}>
+                        <SelectTrigger variant="outline" size="md">
+                            <SelectInput placeholder="Select option" />
+                            <SelectIcon mr="$3">
+                                <Icon as={ChevronDownIcon} />
+                            </SelectIcon>
+                        </SelectTrigger>
+                        <SelectPortal>
+                            <SelectBackdrop />
+                            <SelectContent>
+                                <SelectDragIndicatorWrapper>
+                                    <SelectDragIndicator />
+                                </SelectDragIndicatorWrapper>
+                                <SelectItem label="SSB" value="SSB" />
+                                <SelectItem label="AM" value="AM" />
+                                <SelectItem label="FM" value="FM" />
+                                <SelectItem label="CW" value="CW" />
+                            </SelectContent>
+                        </SelectPortal>
+                    </Select>
+                </FormControl>
 
-                <Box sx={{ flex: 3 }}>
-                    <Text sx={classes.title}>Frequency:</Text>
+                <FormControl sx={{ flex: 3 }}>
+                    <FormControlLabel>
+                        <Text>Frequency:</Text>
+                    </FormControlLabel>
                     <Input>
                         <InputField {...register('frequency')} />
                     </Input>
-                </Box>
+                </FormControl>
 
-                <Box sx={classes.hstackElt}>
-                    <Text sx={classes.title}>Power:</Text>
+                <FormControl sx={classes.hstackElt}>
+                    <FormControlLabel>
+                        <Text>Power:</Text>
+                    </FormControlLabel>
                     <Input>
                         <InputField {...register('power')} />
                     </Input>
-                </Box>
+                </FormControl>
             </HStack>
 
             <HStack space="md" sx={classes.hstack}>
-                <Box sx={{ flex: 4 }}>
-                    <Text sx={classes.title}>QTH:</Text>
+                <FormControl sx={{ flex: 4 }}>
+                    <FormControlLabel>
+                        <Text>QTH:</Text>
+                    </FormControlLabel>
                     <Input>
                         <InputField {...register('qth')} />
                     </Input>
-                </Box>
+                </FormControl>
 
-                <Box sx={classes.hstackElt}>
-                    <Text sx={classes.title}>Locator:</Text>
+                <FormControl sx={classes.hstackElt}>
+                    <FormControlLabel>
+                        <Text>Locator:</Text>
+                    </FormControlLabel>
                     <Input>
                         <InputField {...register('locator')} />
                     </Input>
-                </Box>
+                </FormControl>
             </HStack>
 
-            <Box>
-                <Text sx={classes.title}>Note:</Text>
+            <FormControl>
+                <FormControlLabel>
+                    <Text>Note:</Text>
+                </FormControlLabel>
                 <Textarea>
                     <TextareaInput {...register('note')} />
                 </Textarea>
-            </Box>
+            </FormControl>
         </VStack>
     );
 };
