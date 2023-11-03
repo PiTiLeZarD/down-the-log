@@ -62,7 +62,7 @@ export const FormField: FormFieldComponent = ({ role = 'text', name, label, opti
                                 <SelectDragIndicator />
                             </SelectDragIndicatorWrapper>
                             {Object.entries(options || {}).map(([key, value]) => (
-                                <SelectItem label={value} value={key} key={key} />
+                                <SelectItem label={value} value={key} key={`${name}_${key}`} />
                             ))}
                         </SelectContent>
                     </SelectPortal>
