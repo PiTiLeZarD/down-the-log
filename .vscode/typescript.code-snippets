@@ -32,7 +32,8 @@
         "scope": "typescriptreact",
         "prefix": "rcc",
         "body": [
-            "import React from \"react\";",
+            "import { Text } from '@gluestack-ui/themed';",
+            "import React from 'react';",
             "",
             "export type ${1:${TM_FILENAME/(.+)[.].+|.*/$1/}}Props = {};",
             "",
@@ -40,7 +41,7 @@
             "",
             "export const $1:$1Component = (): JSX.Element => {",
             "    return (",
-            "        <div>$1$0</div>",
+            "        <Text>$1$0</Text>",
             "    );",
             "};"
         ]
@@ -49,7 +50,8 @@
         "scope": "typescriptreact",
         "prefix": "rccwc",
         "body": [
-            "import React from \"react\";",
+            "import { Text } from '@gluestack-ui/themed';",
+            "import React from 'react';",
             "",
             "export type ${1:${TM_FILENAME/(.+)[.].+|.*/$1/}}Props = {};",
             "",
@@ -57,7 +59,7 @@
             "",
             "export const $1:$1Component = ({ children }): JSX.Element => {",
             "    return (",
-            "        <div>{children}</div>",
+            "        <Text>{children}</Text>",
             "    );",
             "};"
         ]

@@ -1,10 +1,11 @@
-import { Box, Button, ButtonText, HStack, VStack } from '@gluestack-ui/themed';
+import { Button, ButtonText } from '@gluestack-ui/themed';
 import { NativeStackScreenProps } from '@react-navigation/native-stack';
 import React from 'react';
 import { useForm } from 'react-hook-form';
 import { RootStackParamList } from '../RootStack';
 import { QSO, useStore } from '../store';
 import { FormField } from '../utils/form-field';
+import { Col, Row } from '../utils/grid';
 
 const classes = {
     container: {
@@ -32,39 +33,44 @@ export const QsoForm: QsoFormComponent = ({ route }): JSX.Element => {
     };
 
     return (
-        <VStack space="md" sx={classes.container}>
-            <HStack space="md">
-                <Box sx={classes.hstackElt}>
+        <>
+            <Row>
+                <Col xs={12} sm={6}>
                     <FormField name="callsign" label="Callsign:" control={control} />
-                </Box>
-
-                <Box sx={classes.hstackElt}>
+                </Col>
+                <Col xs={12} sm={6}>
                     <FormField name="name" label="Name:" control={control} />
-                </Box>
-            </HStack>
-
-            <HStack space="md">
-                <FormField
-                    role="select"
-                    name="mode"
-                    label="Mode:"
-                    options={{ SSB: 'SSB', AM: 'AM', FM: 'FM', CW: 'CW' }}
-                    control={control}
-                />
-                <FormField name="frequency" label="Frequency:" control={control} />
-                <FormField name="power" label="Power:" control={control} />
-            </HStack>
-
-            <HStack space="md">
-                <FormField name="qth" label="QTH:" control={control} />
-                <FormField name="locator" label="Locator:" control={control} />
-            </HStack>
-
+                </Col>
+            </Row>
+            <Row>
+                <Col xs={12} sm={3}>
+                    <FormField
+                        role="select"
+                        name="mode"
+                        label="Mode:"
+                        options={{ SSB: 'SSB', AM: 'AM', FM: 'FM', CW: 'CW' }}
+                        control={control}
+                    />
+                </Col>
+                <Col xs={12} sm={6}>
+                    <FormField name="frequency" label="Frequency:" control={control} />
+                </Col>
+                <Col xs={12} sm={3}>
+                    <FormField name="power" label="Power:" control={control} />
+                </Col>
+            </Row>
+            <Row>
+                <Col xs={12} sm={6}>
+                    <FormField name="qth" label="QTH:" control={control} />
+                </Col>
+                <Col xs={12} sm={6}>
+                    <FormField name="locator" label="Locator:" control={control} />
+                </Col>
+            </Row>
             <FormField role="textarea" name="note" label="Note:" control={control} />
-
             <Button onPress={handleSubmit(onSubmit)}>
                 <ButtonText>Submit</ButtonText>
             </Button>
-        </VStack>
+        </>
     );
 };
