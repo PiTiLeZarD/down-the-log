@@ -48,8 +48,6 @@ export const Home: HomeComponent = ({ navigation }): JSX.Element => {
         navigation.navigate('QsoForm', { qsoId: qso.id });
     };
 
-    console.log({ qsos });
-
     const separator = (qso: QSO, index: number): JSX.Element => {
         if (index === 0 || qso.date.diff(qsos[index - 1].date).days > 0) {
             return (
