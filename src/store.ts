@@ -47,6 +47,16 @@ export const useStore = create<
         persist(combine(InitialStore, StoreActions), {
             name: 'dtl-storage',
             storage: createJSONStorage(() => asyncstorage),
+            deserialize: (s: string) => {
+                const storage: { state: UseStorePropsType; version: number } = JSON.parse(s);
+
+                storage.state.qsos = storage.state.qsos.map((q: QSO) => {
+                    q.date = DateTime.fromISO(q.date as unknown as string);
+                    return q;
+                });
+
+                return storage;
+            },
         })
     )
 );

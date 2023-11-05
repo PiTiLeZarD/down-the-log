@@ -15,7 +15,7 @@ This is the rough todolist I want to work on, I'll try to chunk all this in 5mn 
 -   [ ] qso filters and grouping
     -   [x] typing a callsign should filter the list based on what's being typed
     -   [ ] today/this month/this year/all
-    -   [ ] list should display the date (QSOsecretary style)
+    -   [x] list should display the date (QSOsecretary style)
     -   [ ] group by session (session are all qsos in a chunk of time (same freq, close to each other))
 -   [ ] qso's map view (wide screen could have both displayed, phone could have a selector?)
     -   [ ] work on the layout using the responsive grid

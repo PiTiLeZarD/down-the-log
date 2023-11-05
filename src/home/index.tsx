@@ -9,10 +9,12 @@ import {
     InputField,
     InputIcon,
     InputSlot,
+    Text,
     VStack,
 } from '@gluestack-ui/themed';
 import { NativeStackScreenProps } from '@react-navigation/native-stack';
 import { DateTime } from 'luxon';
+import { FlatList } from 'react-native';
 import uuid from 'react-native-uuid';
 import { NativeSyntheticEvent, TextInputChangeEventData } from 'react-native/types';
 import { Qso } from '../Qso';
@@ -46,6 +48,26 @@ export const Home: HomeComponent = ({ navigation }): JSX.Element => {
         navigation.navigate('QsoForm', { qsoId: qso.id });
     };
 
+    console.log({ qsos });
+
+    const separator = (qso: QSO, index: number): JSX.Element => {
+        if (index === 0 || qso.date.diff(qsos[index - 1].date).days > 0) {
+            return (
+                <Box
+                    sx={{
+                        paddingHorizontal: 5,
+                        paddingVertical: 3,
+                        display: 'flex',
+                        alignItems: 'center',
+                    }}
+                >
+                    <Text sx={{ fontWeight: 'bold' }}>{qso.date.toFormat('dd/MM/yyyy')}</Text>
+                </Box>
+            );
+        }
+        return <></>;
+    };
+
     return (
         <Box sx={classes.container}>
             <Box sx={classes.top}>
@@ -56,15 +78,20 @@ export const Home: HomeComponent = ({ navigation }): JSX.Element => {
             <Box sx={classes.table}>
                 <VStack>
                     <Qso header position="ID" band="Band" callsign="Callsign" />
-                    {qsos.map((qso, i) => (
-                        <Qso
-                            key={i}
-                            position={String(i)}
-                            band="20m"
-                            {...qso}
-                            onPress={() => navigation.navigate('QsoForm', { qsoId: qso.id })}
-                        />
-                    ))}
+                    <FlatList
+                        data={qsos}
+                        renderItem={(datum) => (
+                            <>
+                                {separator(datum.item, datum.index)}
+                                <Qso
+                                    position={String(datum.index + 1)}
+                                    band="20m"
+                                    {...datum.item}
+                                    onPress={() => navigation.navigate('QsoForm', { qsoId: datum.item.id })}
+                                />
+                            </>
+                        )}
+                    />
                 </VStack>
             </Box>
             <Box sx={classes.inputs}>
