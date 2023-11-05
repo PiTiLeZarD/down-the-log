@@ -29,3 +29,9 @@ This is the rough todolist I want to work on, I'll try to chunk all this in 5mn 
     -   [ ] hamQTH
     -   [ ] lotw (this one sounds tough, let's see)
 -   [ ] cluster?
+-   [ ] Settings
+    -   [ ] choose favorite bands
+    -   [ ] choose favorite modes
+    -   [ ] light/dark theme
+    -   [ ] input callsign vs contest
+    -   [ ] choose grouping (date vs sesh vs contest vs...)
