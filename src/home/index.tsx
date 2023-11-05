@@ -9,7 +9,6 @@ import {
     InputField,
     InputIcon,
     InputSlot,
-    Text,
     VStack,
 } from '@gluestack-ui/themed';
 import { NativeStackScreenProps } from '@react-navigation/native-stack';
@@ -50,7 +49,6 @@ export const Home: HomeComponent = ({ navigation }): JSX.Element => {
     return (
         <Box sx={classes.container}>
             <Box sx={classes.top}>
-                <Text>Here the top part </Text>
                 <Button onPress={() => navigation.navigate('About')}>
                     <ButtonText>About</ButtonText>
                 </Button>
