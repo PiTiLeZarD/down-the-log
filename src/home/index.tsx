@@ -36,7 +36,7 @@ export type HomeComponent = React.FC<HomeProps>;
 
 export const Home: HomeComponent = ({ navigation }): JSX.Element => {
     const [callsign, setCallsign] = React.useState<string>('');
-    const qsos = useStore((state) => state.qsos);
+    const qsos = useStore((state) => state.qsos).filter((q) => q.callsign.includes(callsign));
     const log = useStore((state) => state.log);
 
     const handleAdd = () => {

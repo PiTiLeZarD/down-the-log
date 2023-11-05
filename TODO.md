@@ -13,7 +13,7 @@ This is the rough todolist I want to work on, I'll try to chunk all this in 5mn 
 -   [ ] automatic prefix recognition, show location/distance
 -   [ ] band map, ability to link callsign/frequency on the band, use this to start qso's (also ability to write name/qth and other details so it's prefilled)
 -   [ ] qso filters and grouping
-    -   [ ] typing a callsign should filter the list based on what's being typed
+    -   [x] typing a callsign should filter the list based on what's being typed
     -   [ ] today/this month/this year/all
     -   [ ] list should display the date (QSOsecretary style)
     -   [ ] group by session (session are all qsos in a chunk of time (same freq, close to each other))
