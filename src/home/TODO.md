@@ -2,6 +2,7 @@
 
 This is the rough todolist I want to work on, I'll try to chunk all this in 5mn increments
 
+-   [ ] Your location should be based on GPS or set manually and displayed in the top part (with UTC/local clocks)
 -   [ ] yarn release should use ghpages to create the demo, build the tauri app and release it, build ios/android apps
     -   [ ] demo website on github
     -   [ ] look into automatic/programatic github release
@@ -22,6 +23,7 @@ This is the rough todolist I want to work on, I'll try to chunk all this in 5mn 
     -   [ ] display qsos based on maidenhead
     -   [ ] cluster qsos
 -   [ ] work on import/export adif format
+-   [ ] hamclock modules (sunspot or sun data, propagaion, greyline, short/long path etc...)
 -   [ ] integrations
     -   [ ] qrz integration
     -   [ ] hamQTH
