@@ -10,10 +10,5 @@ export type LocationHeaderComponent = React.FC<LocationHeaderProps>;
 export const LocationHeader: LocationHeaderComponent = (): JSX.Element => {
     const location = useLocation();
 
-    return (
-        <Text>
-            My current grid square:{' '}
-            {location ? latlong2Maidenhead(location.coords.latitude, location.coords.longitude) : 'Waiting...'}
-        </Text>
-    );
+    return <Text>My current grid square: {location ? latlong2Maidenhead(location.coords) : 'Waiting...'}</Text>;
 };

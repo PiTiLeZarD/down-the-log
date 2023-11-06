@@ -1,52 +1,62 @@
-const EARTH_RADIUS = 6371;
+import { rad } from './math';
 
-export const latlong2Maidenhead = (lat: number, long: number): string => {
-    if (long >= 180 || long <= -180 || lat >= 90 || lat <= -90) {
+const EARTH_RADIUS = 6371;
+const upper: string = 'ABCDEFGHIJKLMNOPQRSTUVWX';
+const lower: string = upper.toLowerCase();
+
+export type LatLng = {
+    latitude: number;
+    longitude: number;
+};
+
+export const latlong2Maidenhead = (pos: LatLng): string => {
+    if (Math.abs(pos.longitude) >= 180 || Math.abs(pos.latitude) >= 90) {
         throw new Error('Value error');
     }
 
-    const longitude = long + 180;
-    const latitude = lat + 90;
+    const longitude = pos.longitude + 180;
+    const latitude = pos.latitude + 90;
 
-    let locator = String.fromCharCode('A'.charCodeAt(0) + Math.trunc(longitude / 20));
-    locator += String.fromCharCode('A'.charCodeAt(0) + Math.trunc(latitude / 10));
-    locator += String.fromCharCode('0'.charCodeAt(0) + Math.trunc((longitude % 20) / 2));
-    locator += String.fromCharCode('0'.charCodeAt(0) + Math.trunc(latitude % 10));
-    locator += String.fromCharCode(
-        'a'.charCodeAt(0) + Math.trunc((longitude - Math.trunc(longitude / 2) * 2) / (2 / 24))
+    return (
+        upper[Math.trunc(longitude / 20)] +
+        upper[Math.trunc(latitude / 10)] +
+        Math.trunc((longitude / 2) % 10) +
+        Math.trunc(latitude % 10) +
+        lower[Math.trunc((longitude % 2) * 12)] +
+        lower[Math.trunc((latitude % 1) * 24)]
     );
-    locator += String.fromCharCode('a'.charCodeAt(0) + Math.trunc((latitude - Math.trunc(latitude)) / (1 / 24)));
-    return locator;
 };
 
-export const maidenhead2Latlong = (maidenhead: string): number[] => {
-    let longitude = (maidenhead.charCodeAt(0) - 'A'.charCodeAt(0)) * 20 - 180;
-    let latitude = (maidenhead.charCodeAt(1) - 'A'.charCodeAt(0)) * 10 - 90;
-    longitude += (maidenhead.charCodeAt(2) - '0'.charCodeAt(0)) * 2;
-    latitude += maidenhead.charCodeAt(3) - '0'.charCodeAt(0);
+export const maidenhead2Latlong = (maidenhead: string): LatLng => {
+    const latlng: LatLng = {
+        latitude: maidenhead.length == 6 ? 0.5 / 24 : 0.5,
+        longitude: maidenhead.length == 6 ? 1 / 24 : 1,
+    };
 
-    if (maidenhead.length == 6) {
-        longitude += (maidenhead.charCodeAt(4) - 'a'.charCodeAt(0)) * (2 / 24);
-        latitude += (maidenhead.charCodeAt(5) - 'a'.charCodeAt(0)) * (1 / 24);
-    } else {
-        longitude += 1;
-        latitude += 0.5;
-    }
-    return [latitude, longitude];
+    maidenhead.split('').map((char: string, i: number) => {
+        let pos = String(upper.indexOf(char.toUpperCase()));
+        if (pos === '-1') pos = char;
+
+        const key = ['longitude', 'latitude'][i % 2] as keyof LatLng;
+        const coef = [
+            (x: number, d: number): number => x * (20 / d) - 180 / d,
+            (x: number, d: number): number => x * (2 / d),
+            (x: number, d: number): number => (x * (2 / d)) / 24,
+        ][Math.trunc(i / 2)];
+
+        latlng[key] += coef(parseFloat(pos), (i % 2) + 1);
+    });
+
+    return latlng;
 };
 
-const rad = (n: number): number => n * (Math.PI / 180);
-
-export const distance = (m1: string, m2: string): number => {
-    const [lat1, long1] = maidenhead2Latlong(m1);
-    const [lat2, long2] = maidenhead2Latlong(m2);
-
-    const d_lat = rad(lat2) - rad(lat1);
-    const d_long = rad(long2) - rad(long1);
+export const distance = (l1: LatLng, l2: LatLng): number => {
+    const d_lat = rad(l2.latitude) - rad(l1.latitude);
+    const d_long = rad(l2.longitude) - rad(l1.longitude);
 
     const a =
         Math.sin(d_lat / 2) * Math.sin(d_lat / 2) +
-        Math.cos(rad(lat1)) * Math.cos(rad(lat2)) * Math.sin(d_long / 2) * Math.sin(d_long / 2);
+        Math.cos(rad(l1.latitude)) * Math.cos(rad(l2.latitude)) * Math.sin(d_long / 2) * Math.sin(d_long / 2);
     const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
 
     return EARTH_RADIUS * c;
