@@ -1,4 +1,5 @@
 import {
+    Box,
     Button,
     ButtonIcon,
     HStack,
@@ -10,7 +11,6 @@ import {
     Text,
     ThreeDotsIcon,
     VStack,
-    View,
 } from '@gluestack-ui/themed';
 import { NativeStackScreenProps } from '@react-navigation/native-stack';
 import React from 'react';
@@ -38,18 +38,18 @@ export const LocationHeader: LocationHeaderComponent = ({ navigation }): JSX.Ele
     if (!location) return <Text>Looking for your location...</Text>;
 
     return (
-        <HStack sx={{ display: 'flex' }}>
-            <View sx={{ flexGrow: 1 }}>
-                <HStack sx={{ display: 'flex' }}>
-                    <View sx={{ flex: 1 }}>
+        <HStack>
+            <Box sx={{ flexGrow: 1 }}>
+                <HStack>
+                    <Box sx={{ flex: 1 }}>
                         <VStack>
                             <Text>My current grid square: {latlong2Maidenhead(location.coords)}</Text>
                             <Text>
                                 (CQ: {findZone(cqzones, location.coords)}, ITU: {findZone(ituzones, location.coords)})
                             </Text>
                         </VStack>
-                    </View>
-                    <View sx={{ flex: 1 }}>
+                    </Box>
+                    <Box sx={{ flex: 1 }}>
                         <Row>
                             <Col xs={12} sm={6}>
                                 <Text>Time local</Text>
@@ -58,9 +58,9 @@ export const LocationHeader: LocationHeaderComponent = ({ navigation }): JSX.Ele
                                 <Text>Time UTC</Text>
                             </Col>
                         </Row>
-                    </View>
+                    </Box>
                 </HStack>
-            </View>
+            </Box>
             <Menu
                 placement="bottom left"
                 trigger={(props) => (
