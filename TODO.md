@@ -4,6 +4,7 @@ This is the rough todolist I want to work on, I'll try to chunk all this in 5mn 
 
 -   [ ] FAB for plus icon instead of + in input
 -   [ ] Add time column in qso list
+-   [ ] Fix the date being lost somehow (also add https://docs.expo.dev/versions/latest/sdk/date-time-picker/ in the form)
 -   [ ] Add distance data in the qso list
 -   [ ] Your location should be based on GPS or set manually and displayed in the top part (with UTC/local clocks)
     -   [x] useLocation to display the lat/long
@@ -11,13 +12,13 @@ This is the rough todolist I want to work on, I'll try to chunk all this in 5mn 
     -   [x] cq/itu zones
     -   [x] add clocks
     -   [ ] Store previous position in zustand (maybe plan for fix maidenhead without location (see settings))
-    -   [ ] burger icon or 2 dots menu in the header (chuck about in there)
-        -   [ ] onPress not working (web only it seems)
+    -   [ ] WIP: burger icon or 2 dots menu in the header (chuck about in there)
+        -   [ ] onPress not working (web only it seems: https://github.com/gluestack/gluestack-ui/issues/491#issuecomment-1797030604)
 -   [ ] yarn release should use ghpages to create the demo, build the tauri app and release it, build ios/android apps
     -   [ ] demo website on github
     -   [ ] look into automatic/programatic github release
     -   [ ] script the apk/dmg releases
--   [ ] finish up the qso form, doesn't have to be final, just functional, check that edit works well too
+-   [x] finish up the qso form, doesn't have to be final, just functional, check that edit works well too
 -   [ ] contest mode (instead of Callsign > Form, have all relevant details on the bottom and log directly, ability to edit later)
 -   [ ] ability to delete a qso
 -   [ ] automatic prefix recognition, show location/distance
