@@ -18,7 +18,7 @@ export const useLocation = () => {
             const location = await Location.getCurrentPositionAsync({});
             setLocation(location);
         })();
-    });
+    }, []);
 
     return location;
 };
