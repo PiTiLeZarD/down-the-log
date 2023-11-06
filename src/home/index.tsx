@@ -20,6 +20,7 @@ import { NativeSyntheticEvent, TextInputChangeEventData } from 'react-native/typ
 import { Qso } from '../Qso';
 import { RootStackParamList } from '../RootStack';
 import { QSO, useStore } from '../store';
+import { LocationHeader } from './location-header';
 
 const classes: Record<string, object> = {
     container: {
@@ -69,6 +70,7 @@ export const Home: HomeComponent = ({ navigation }): JSX.Element => {
     return (
         <Box sx={classes.container}>
             <Box sx={classes.top}>
+                <LocationHeader />
                 <Button onPress={() => navigation.navigate('About')}>
                     <ButtonText>About</ButtonText>
                 </Button>
