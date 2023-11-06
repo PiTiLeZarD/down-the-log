@@ -13,6 +13,7 @@ import {
     VStack,
 } from '@gluestack-ui/themed';
 import { NativeStackScreenProps } from '@react-navigation/native-stack';
+import { DateTime } from 'luxon';
 import React from 'react';
 import { RootStackParamList } from '../RootStack';
 import cqzones from '../data/cqzones';
@@ -33,7 +34,17 @@ export type LocationHeaderProps = {} & Pick<NativeStackScreenProps<RootStackPara
 export type LocationHeaderComponent = React.FC<LocationHeaderProps>;
 
 export const LocationHeader: LocationHeaderComponent = ({ navigation }): JSX.Element => {
+    const [time, setTime] = React.useState<DateTime>(DateTime.local());
     const location = useLocation();
+
+    React.useEffect(() => {
+        const timer = setInterval(() => {
+            setTime(DateTime.local());
+        }, 1000 * 60);
+        return () => {
+            clearInterval(timer);
+        };
+    }, []);
 
     if (!location) return <Text>Looking for your location...</Text>;
 
@@ -52,10 +63,10 @@ export const LocationHeader: LocationHeaderComponent = ({ navigation }): JSX.Ele
                     <Box sx={{ flex: 1 }}>
                         <Grid container>
                             <Grid item xs={12} sm={6}>
-                                <Text>Time local</Text>
+                                <Text>Local: {time.toFormat('HH:mm')}</Text>
                             </Grid>
                             <Grid item xs={12} sm={6}>
-                                <Text>Time UTC</Text>
+                                <Text>UTC: {time.toUTC().toFormat('HH:mm')}</Text>
                             </Grid>
                         </Grid>
                     </Box>
@@ -68,16 +79,8 @@ export const LocationHeader: LocationHeaderComponent = ({ navigation }): JSX.Ele
                         <ButtonIcon as={ThreeDotsIcon} />
                     </Button>
                 )}
-                onSelectionChange={(e) => alert(e)}
             >
-                <MenuItem
-                    key="About"
-                    textValue="About"
-                    onPress={() => {
-                        alert('here');
-                        navigation.navigate('About');
-                    }}
-                >
+                <MenuItem key="About" textValue="About" onPress={() => navigation.navigate('About')}>
                     <Icon as={InfoIcon} size="sm" mr="$2" />
                     <MenuItemLabel size="sm">About</MenuItemLabel>
                 </MenuItem>
