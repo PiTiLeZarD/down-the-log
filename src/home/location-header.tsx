@@ -17,7 +17,7 @@ import React from 'react';
 import { RootStackParamList } from '../RootStack';
 import cqzones from '../data/cqzones';
 import ituzones from '../data/ituzones';
-import { Col, Row } from '../utils/grid';
+import { Grid } from '../utils/grid';
 import { LatLng, latlong2Maidenhead } from '../utils/locator';
 import { decode } from '../utils/polydec';
 import { Coord, includes } from '../utils/polygon';
@@ -50,14 +50,14 @@ export const LocationHeader: LocationHeaderComponent = ({ navigation }): JSX.Ele
                         </VStack>
                     </Box>
                     <Box sx={{ flex: 1 }}>
-                        <Row>
-                            <Col xs={12} sm={6}>
+                        <Grid container>
+                            <Grid item xs={12} sm={6}>
                                 <Text>Time local</Text>
-                            </Col>
-                            <Col xs={12} sm={6}>
+                            </Grid>
+                            <Grid item xs={12} sm={6}>
                                 <Text>Time UTC</Text>
-                            </Col>
-                        </Row>
+                            </Grid>
+                        </Grid>
                     </Box>
                 </HStack>
             </Box>

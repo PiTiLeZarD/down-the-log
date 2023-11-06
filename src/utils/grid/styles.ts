@@ -48,5 +48,5 @@ export const useStyles = () => {
         setGridStyles(generateStyles(windowDimensions.width));
     }, [windowDimensions]);
 
-    return [gridStyles, getScreenSize(windowDimensions.width)];
+    return { gridStyles, screenSize: getScreenSize(windowDimensions.width) };
 };

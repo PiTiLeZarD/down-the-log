@@ -5,7 +5,7 @@ import { useForm } from 'react-hook-form';
 import { RootStackParamList } from '../RootStack';
 import { QSO, useStore } from '../store';
 import { FormField } from '../utils/form-field';
-import { Col, Row } from '../utils/grid';
+import { Grid } from '../utils/grid';
 
 const classes = {
     container: {
@@ -34,16 +34,16 @@ export const QsoForm: QsoFormComponent = ({ route }): JSX.Element => {
 
     return (
         <>
-            <Row>
-                <Col xs={12} sm={6}>
+            <Grid container>
+                <Grid item xs={12} sm={6}>
                     <FormField name="callsign" label="Callsign:" control={control} />
-                </Col>
-                <Col xs={12} sm={6}>
+                </Grid>
+                <Grid item xs={12} sm={6}>
                     <FormField name="name" label="Name:" control={control} />
-                </Col>
-            </Row>
-            <Row>
-                <Col xs={12} sm={3}>
+                </Grid>
+            </Grid>
+            <Grid container>
+                <Grid item xs={12} sm={3}>
                     <FormField
                         role="select"
                         name="mode"
@@ -51,22 +51,22 @@ export const QsoForm: QsoFormComponent = ({ route }): JSX.Element => {
                         options={{ SSB: 'SSB', AM: 'AM', FM: 'FM', CW: 'CW' }}
                         control={control}
                     />
-                </Col>
-                <Col xs={12} sm={6}>
+                </Grid>
+                <Grid item xs={12} sm={6}>
                     <FormField name="frequency" label="Frequency:" control={control} />
-                </Col>
-                <Col xs={12} sm={3}>
+                </Grid>
+                <Grid item xs={12} sm={3}>
                     <FormField name="power" label="Power:" control={control} />
-                </Col>
-            </Row>
-            <Row>
-                <Col xs={12} sm={6}>
+                </Grid>
+            </Grid>
+            <Grid container>
+                <Grid item xs={12} sm={6}>
                     <FormField name="qth" label="QTH:" control={control} />
-                </Col>
-                <Col xs={12} sm={6}>
+                </Grid>
+                <Grid item xs={12} sm={6}>
                     <FormField name="locator" label="Locator:" control={control} />
-                </Col>
-            </Row>
+                </Grid>
+            </Grid>
             <FormField role="textarea" name="note" label="Note:" control={control} />
             <Button onPress={handleSubmit(onSubmit)}>
                 <ButtonText>Submit</ButtonText>
