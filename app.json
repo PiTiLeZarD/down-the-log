@@ -13,13 +13,19 @@
         },
         "assetBundlePatterns": ["**/*"],
         "ios": {
-            "supportsTablet": true
+            "supportsTablet": true,
+            "infoPlist": {
+                "NSLocationAlwaysAndWhenInUseUsageDescription": "This app will require your location in order to accurately set your QTH",
+                "NSLocationAlwaysUsageDescription": "This app will require your location in order to accurately set your QTH",
+                "NSLocationWhenInUseUsageDescription": "This app will require your location in order to accurately set your QTH"
+            }
         },
         "android": {
             "adaptiveIcon": {
                 "foregroundImage": "./assets/adaptive-icon.png",
                 "backgroundColor": "#ffffff"
-            }
+            },
+            "permissions": ["ACCESS_COARSE_LOCATION", "ACCESS_FINE_LOCATION", "FOREGROUND_SERVICE"]
         },
         "web": {
             "favicon": "./assets/favicon.png",
