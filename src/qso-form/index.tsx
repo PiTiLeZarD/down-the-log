@@ -11,16 +11,18 @@ export type QsoFormProps = {} & NativeStackScreenProps<RootStackParamList, 'QsoF
 
 export type QsoFormComponent = React.FC<QsoFormProps>;
 
-export const QsoForm: QsoFormComponent = ({ route }): JSX.Element => {
+export const QsoForm: QsoFormComponent = ({ navigation, route }): JSX.Element => {
     const { qsoId } = route.params;
     const qso = useStore((state) => state.qsos).filter((q) => q.id == qsoId)[0];
+    const log = useStore((state) => state.log);
 
     const { handleSubmit, control } = useForm<QSO>({
         defaultValues: qso,
     });
 
     const onSubmit = (qso: QSO) => {
-        alert(JSON.stringify(qso));
+        log(qso);
+        navigation.navigate('Home');
     };
 
     return (

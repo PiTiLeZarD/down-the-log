@@ -34,7 +34,7 @@ const InitialStore: DTLStoreProps = {
 };
 
 const StoreActions: DTLStoreActionsMutatorProps = (set) => ({
-    log: (qso) => set((state) => ({ qsos: [...state.qsos, qso] })),
+    log: (qso) => set((state) => ({ qsos: [...state.qsos.filter((q) => q.id != qso.id), qso] })),
 });
 
 export type UseStorePropsType = DTLStoreProps & DTLStoreActionsProps;
