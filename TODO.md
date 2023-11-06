@@ -4,6 +4,8 @@ This is the rough todolist I want to work on, I'll try to chunk all this in 5mn 
 
 -   [ ] burger icon or 2 dots menu in the header (chuck about in there)
 -   [ ] FAB for plus icon instead of + in input
+-   [ ] Add time column in qso list
+-   [ ] Add distance data in the qso list
 -   [ ] Your location should be based on GPS or set manually and displayed in the top part (with UTC/local clocks)
     -   [x] useLocation to display the lat/long
     -   [x] convert to maidenhead
