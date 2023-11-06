@@ -7,15 +7,6 @@ import { QSO, useStore } from '../store';
 import { FormField } from '../utils/form-field';
 import { Grid } from '../utils/grid';
 
-const classes = {
-    container: {
-        padding: 10,
-    },
-    hstackElt: {
-        flex: 1,
-    },
-};
-
 export type QsoFormProps = {} & NativeStackScreenProps<RootStackParamList, 'QsoForm'>;
 
 export type QsoFormComponent = React.FC<QsoFormProps>;
