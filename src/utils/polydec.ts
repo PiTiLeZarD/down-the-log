@@ -1,8 +1,7 @@
 import { roundTo } from './math';
+import { Coord } from './polygon';
 
 const DEFAULT_PRECISION: number = 5;
-
-export type Coord = number[];
 
 export const encodeValue = (cur: number, prev: number = 0, precision: number = DEFAULT_PRECISION): string => {
     const factor = Math.pow(10, precision);
