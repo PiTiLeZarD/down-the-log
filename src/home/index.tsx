@@ -1,17 +1,6 @@
 import React from 'react';
 
-import {
-    AddIcon,
-    Box,
-    Button,
-    ButtonText,
-    Input,
-    InputField,
-    InputIcon,
-    InputSlot,
-    Text,
-    VStack,
-} from '@gluestack-ui/themed';
+import { AddIcon, Box, Input, InputField, InputIcon, InputSlot, Text, VStack } from '@gluestack-ui/themed';
 import { NativeStackScreenProps } from '@react-navigation/native-stack';
 import { DateTime } from 'luxon';
 import { FlatList } from 'react-native';
@@ -70,10 +59,7 @@ export const Home: HomeComponent = ({ navigation }): JSX.Element => {
     return (
         <Box sx={classes.container}>
             <Box sx={classes.top}>
-                <LocationHeader />
-                <Button onPress={() => navigation.navigate('About')}>
-                    <ButtonText>About</ButtonText>
-                </Button>
+                <LocationHeader navigation={navigation} />
             </Box>
             <Box sx={classes.table}>
                 <VStack>
