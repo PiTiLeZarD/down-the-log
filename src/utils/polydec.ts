@@ -36,7 +36,7 @@ export const decodeValue = (val: string, index: number = 0, precision: number = 
     return [result / Math.pow(10, precision), index];
 };
 
-export const encode = (coordinates: Array<Coord>, precision: number = DEFAULT_PRECISION): string =>
+export const encode = (coordinates: Coord[], precision: number = DEFAULT_PRECISION): string =>
     coordinates.reduce(
         (acc, cur, i, arr) =>
             (acc += cur.reduce(
@@ -46,7 +46,7 @@ export const encode = (coordinates: Array<Coord>, precision: number = DEFAULT_PR
         ''
     );
 
-export const decode = (s: string, precision: number = DEFAULT_PRECISION): Array<Coord> => {
+export const decode = (s: string, precision: number = DEFAULT_PRECISION): Coord[] => {
     const coordinates: Coord[] = [];
     let [index, lat, lng, t] = [0, 0, 0, 0];
     while (index < s.length) {
