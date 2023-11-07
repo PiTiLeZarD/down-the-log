@@ -29,6 +29,16 @@ const findZone = (zones: string[][], pos: LatLng): string =>
         'N/A',
     ])[0] as string;
 
+const classes = {
+    header: {
+        backgroundColor: '#999',
+        padding: 4,
+    },
+    text: {
+        color: '#eee',
+    },
+};
+
 export type LocationHeaderProps = {} & Pick<NativeStackScreenProps<RootStackParamList, 'Home'>, 'navigation'>;
 
 export type LocationHeaderComponent = React.FC<LocationHeaderProps>;
@@ -49,28 +59,28 @@ export const LocationHeader: LocationHeaderComponent = ({ navigation }): JSX.Ele
     if (!location) return <Text>Looking for your location...</Text>;
 
     return (
-        <HStack>
+        <HStack sx={classes.header}>
             <Box sx={{ flexGrow: 1 }}>
-                <HStack>
-                    <Box sx={{ flex: 1 }}>
+                <Grid container>
+                    <Grid item xs={8}>
                         <VStack>
-                            <Text>My current grid square: {latlong2Maidenhead(location.coords)}</Text>
-                            <Text>
+                            <Text sx={classes.text}>My current grid square: {latlong2Maidenhead(location.coords)}</Text>
+                            <Text sx={classes.text}>
                                 (CQ: {findZone(cqzones, location.coords)}, ITU: {findZone(ituzones, location.coords)})
                             </Text>
                         </VStack>
-                    </Box>
-                    <Box sx={{ flex: 1 }}>
+                    </Grid>
+                    <Grid item xs={4}>
                         <Grid container>
                             <Grid item xs={12} sm={6}>
-                                <Text>Local: {time.toFormat('HH:mm')}</Text>
+                                <Text sx={classes.text}>Local: {time.toFormat('HH:mm')}</Text>
                             </Grid>
                             <Grid item xs={12} sm={6}>
-                                <Text>UTC: {time.toUTC().toFormat('HH:mm')}</Text>
+                                <Text sx={classes.text}>UTC: {time.toUTC().toFormat('HH:mm')}</Text>
                             </Grid>
                         </Grid>
-                    </Box>
-                </HStack>
+                    </Grid>
+                </Grid>
             </Box>
             <Menu
                 placement="bottom left"

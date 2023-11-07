@@ -1,15 +1,14 @@
 import React from 'react';
 
-import { AddIcon, Box, Input, InputField, InputIcon, InputSlot, Text, VStack } from '@gluestack-ui/themed';
+import { AddIcon, Box, Input, InputField, InputIcon, InputSlot, Text } from '@gluestack-ui/themed';
 import { NativeStackScreenProps } from '@react-navigation/native-stack';
 import { DateTime } from 'luxon';
-import { FlatList } from 'react-native';
 import uuid from 'react-native-uuid';
 import { NativeSyntheticEvent, TextInputChangeEventData } from 'react-native/types';
-import { Qso } from '../Qso';
 import { RootStackParamList } from '../RootStack';
 import { QSO, useStore } from '../store';
 import { LocationHeader } from './location-header';
+import { QsoList } from './qso-list';
 
 const classes: Record<string, object> = {
     container: {
@@ -62,23 +61,7 @@ export const Home: HomeComponent = ({ navigation }): JSX.Element => {
                 <LocationHeader navigation={navigation} />
             </Box>
             <Box sx={classes.table}>
-                <VStack>
-                    <Qso header position="ID" band="Band" callsign="Callsign" />
-                    <FlatList
-                        data={qsos}
-                        renderItem={(datum) => (
-                            <>
-                                {separator(datum.item, datum.index)}
-                                <Qso
-                                    position={String(datum.index + 1)}
-                                    band="20m"
-                                    {...datum.item}
-                                    onPress={() => navigation.navigate('QsoForm', { qsoId: datum.item.id })}
-                                />
-                            </>
-                        )}
-                    />
-                </VStack>
+                <QsoList qsos={qsos} onQsoPress={(qso) => navigation.navigate('QsoForm', { qsoId: qso.id })} />
             </Box>
             <Box sx={classes.inputs}>
                 <Input size="lg">
