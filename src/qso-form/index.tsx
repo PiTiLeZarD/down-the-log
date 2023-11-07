@@ -1,8 +1,9 @@
-import { Button, ButtonText } from '@gluestack-ui/themed';
+import { Button, ButtonText, Text } from '@gluestack-ui/themed';
 import { NativeStackScreenProps } from '@react-navigation/native-stack';
 import React from 'react';
 import { useForm } from 'react-hook-form';
 import { RootStackParamList } from '../RootStack';
+import { freq2band } from '../data/bands';
 import { QSO, useStore } from '../store';
 import { FormField } from '../utils/form-field';
 import { Grid } from '../utils/grid';
@@ -16,9 +17,11 @@ export const QsoForm: QsoFormComponent = ({ navigation, route }): JSX.Element =>
     const qso = useStore((state) => state.qsos).filter((q) => q.id == qsoId)[0];
     const log = useStore((state) => state.log);
 
-    const { handleSubmit, control } = useForm<QSO>({
+    const { handleSubmit, control, watch } = useForm<QSO>({
         defaultValues: qso,
     });
+
+    const freq = watch('frequency');
 
     const onSubmit = (qso: QSO) => {
         log(qso);
@@ -48,8 +51,14 @@ export const QsoForm: QsoFormComponent = ({ navigation, route }): JSX.Element =>
                         control={control}
                     />
                 </Grid>
-                <Grid item xs={12} sm={6}>
-                    <FormField name="frequency" label="Frequency:" control={control} />
+                <Grid item xs={8} sm={4}>
+                    <FormField name="frequency" label="Frequency:" control={control} placeholder="In Khz" />
+                </Grid>
+                <Grid item xs={4} sm={2}>
+                    <Text>
+                        Band: <br />
+                        {freq2band(freq) || 'N/A'}
+                    </Text>
                 </Grid>
                 <Grid item xs={12} sm={3}>
                     <FormField name="power" label="Power:" control={control} />
