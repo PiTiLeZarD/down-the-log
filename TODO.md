@@ -29,6 +29,7 @@ This is the rough todolist I want to work on, I'll try to chunk all this in 5mn 
     -   [x] list should display the date (QSOsecretary style)
     -   [ ] group by session (session are all qsos in a chunk of time (same freq, close to each other))
 -   [ ] qso's map view (wide screen could have both displayed, phone could have a selector?)
+    -   [ ] https://github.com/react-native-maps/react-native-maps
     -   [ ] work on the layout using the responsive grid
     -   [ ] find a way to use leaflet or other ways to have maps on react-native
     -   [ ] display qsos based on maidenhead
