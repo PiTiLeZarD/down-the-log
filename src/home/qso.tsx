@@ -11,7 +11,7 @@ const classes: Record<string, object> = {
         fontWeight: 'bold',
     },
     rowHighlight: {
-        backgroundColor: '#e9e9e9',
+        backgroundColor: '$backgroundLight200',
     },
 };
 

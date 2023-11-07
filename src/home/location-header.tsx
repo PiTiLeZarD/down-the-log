@@ -31,11 +31,11 @@ const findZone = (zones: string[][], pos: LatLng): string =>
 
 const classes = {
     header: {
-        backgroundColor: '#999',
+        backgroundColor: '$primary200',
         padding: 4,
     },
     text: {
-        color: '#eee',
+        color: '$textDark800',
     },
 };
 
