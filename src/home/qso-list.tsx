@@ -32,9 +32,9 @@ export const QsoList: QsoListComponent = ({ qsos, onQsoPress }): JSX.Element => 
 
     return (
         <VStack>
-            <Qso header position="ID" time="Time" callsign="Callsign" band="Band" mode="Mode" />
+            <Qso header position="ID" time="Time" callsign="Callsign" name="Name" band="Band" mode="Mode" />
             <FlatList
-                data={qsos}
+                data={qsos.sort((q1, q2) => (q1.date <= q2.date ? 1 : -1))}
                 renderItem={(datum) => (
                     <>
                         {separator(datum.item, datum.index)}
@@ -44,6 +44,7 @@ export const QsoList: QsoListComponent = ({ qsos, onQsoPress }): JSX.Element => 
                             time={datum.item.date.toFormat('HH:mm')}
                             {...datum.item}
                             mode={datum.item.mode || 'N/A'}
+                            name={datum.item.name || 'N/A'}
                             onPress={() => onQsoPress(datum.item)}
                         />
                     </>

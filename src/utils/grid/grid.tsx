@@ -35,6 +35,11 @@ export const Grid: GridComponent = ({ container, item, sx, xs, sm, md, lg, xl, c
             : screenSize === 'xl'
             ? xl || lg || md || sm || xs
             : 12) || 12;
+
+    console.log({ gridStyles, screenSize, colSpan, sx });
+
+    if (colSpan === -1) return <></>;
+
     const colStyles = (gridStyles as SxProps)[`col_${colSpan}`];
 
     return <Box sx={merge(colStyles, sx || {})}>{children}</Box>;
