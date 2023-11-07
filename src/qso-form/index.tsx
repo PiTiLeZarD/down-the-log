@@ -27,6 +27,9 @@ export const QsoForm: QsoFormComponent = ({ navigation, route }): JSX.Element =>
 
     return (
         <>
+            <Button onPress={() => navigation.navigate('Home')}>
+                <ButtonText>Back</ButtonText>
+            </Button>
             <Grid container>
                 <Grid item xs={12} sm={6}>
                     <FormField name="callsign" label="Callsign:" control={control} />

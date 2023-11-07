@@ -4,7 +4,7 @@ This is the rough todolist I want to work on, I'll try to chunk all this in 5mn 
 
 -   [ ] FAB for plus icon instead of + in input
 -   [ ] Add time column in qso list
--   [ ] Fix the date being lost somehow (also add https://docs.expo.dev/versions/latest/sdk/date-time-picker/ in the form)
+-   [x] Fix the date being lost somehow (also add https://docs.expo.dev/versions/latest/sdk/date-time-picker/ in the form)
 -   [ ] Add distance data in the qso list
 -   [ ] Your location should be based on GPS or set manually and displayed in the top part (with UTC/local clocks)
     -   [x] useLocation to display the lat/long

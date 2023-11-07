@@ -51,7 +51,7 @@ export const useStore = create<
                 const storage: { state: UseStorePropsType; version: number } = JSON.parse(s);
 
                 storage.state.qsos = storage.state.qsos.map((q: QSO) => {
-                    q.date = DateTime.fromISO(q.date as unknown as string);
+                    q.date = DateTime.fromISO(q.date as unknown as string, { setZone: true });
                     return q;
                 });
 
