@@ -21,11 +21,11 @@ import ituzones from '../data/ituzones';
 import { Grid } from '../utils/grid';
 import { LatLng, latlong2Maidenhead } from '../utils/locator';
 import { decode } from '../utils/polydec';
-import { Coord, includes } from '../utils/polygon';
+import { Polygon, includes } from '../utils/polygon';
 import { useLocation } from '../utils/use-location';
 
 const findZone = (zones: string[][], pos: LatLng): string =>
-    (zones.map(([i, d]) => [i, decode(d)]).find(([id, coords]) => includes(coords as Coord[], pos)) || [
+    (zones.map(([i, d]) => [i, decode(d)]).find(([id, polygon]) => includes(polygon as Polygon, pos)) || [
         'N/A',
     ])[0] as string;
 

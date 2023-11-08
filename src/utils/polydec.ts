@@ -1,5 +1,5 @@
 import { roundTo } from './math';
-import { Coord } from './polygon';
+import { Coord, Polygon } from './polygon';
 
 const DEFAULT_PRECISION: number = 5;
 
@@ -36,8 +36,8 @@ export const decodeValue = (val: string, index: number = 0, precision: number = 
     return [result / Math.pow(10, precision), index];
 };
 
-export const encode = (coordinates: Coord[], precision: number = DEFAULT_PRECISION): string =>
-    coordinates.reduce(
+export const encode = (polygon: Polygon, precision: number = DEFAULT_PRECISION): string =>
+    polygon.reduce(
         (acc, cur, i, arr) =>
             (acc += cur.reduce(
                 (jacc, jcur, j) => (jacc += encodeValue(jcur, i > 0 ? arr[i - 1][j] : 0, precision)),
@@ -46,15 +46,15 @@ export const encode = (coordinates: Coord[], precision: number = DEFAULT_PRECISI
         ''
     );
 
-export const decode = (s: string, precision: number = DEFAULT_PRECISION): Coord[] => {
-    const coordinates: Coord[] = [];
+export const decode = (s: string, precision: number = DEFAULT_PRECISION): Polygon => {
+    const polygon: Polygon = [];
     let [index, lat, lng, t] = [0, 0, 0, 0];
     while (index < s.length) {
         [t, index] = decodeValue(s, index, precision);
         lat += t;
         [t, index] = decodeValue(s, index, precision);
         lng += t;
-        coordinates.push([lat, lng]);
+        polygon.push([lat, lng]);
     }
-    return coordinates;
+    return polygon;
 };

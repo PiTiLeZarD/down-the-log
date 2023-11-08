@@ -1,6 +1,7 @@
 import { LatLng } from './locator';
 
 export type Coord = number[];
+export type Polygon = Coord[];
 
 export const coord2latlng = (c: Coord): LatLng => ({ longitude: c[1], latitude: c[0] });
 const offset = (p1: number, p2: number, m: number): number =>
@@ -17,12 +18,12 @@ export const intersectProjection = (pos: LatLng, from: LatLng, to: LatLng): bool
         ((to.latitude - from.latitude) * (pos.longitude - from.longitude)) / (to.longitude - from.longitude) +
             from.latitude;
 
-export const includes = (coords: Coord[], pos: LatLng): boolean => {
-    if (coords.length === 0) return false;
+export const includes = (polygon: Polygon, pos: LatLng): boolean => {
+    if (polygon.length === 0) return false;
 
-    const posFixed = fixDateline(pos, coord2latlng(coords[0]));
+    const posFixed = fixDateline(pos, coord2latlng(polygon[0]));
 
-    return coords.reduce(
+    return polygon.reduce(
         (acc, curr, i, arr) =>
             intersectProjection(posFixed, coord2latlng(curr), coord2latlng(arr[i > 0 ? i - 1 : arr.length - 1]))
                 ? !acc

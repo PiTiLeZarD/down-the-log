@@ -1,6 +1,6 @@
 import { readFileSync, writeFileSync } from 'node:fs';
 import { encode } from '../src/utils/polydec';
-import { Coord } from '../src/utils/polygon';
+import { Polygon } from '../src/utils/polygon';
 /**
  * Download countries geojson from here:
  * https://datahub.io/core/geo-countries#data
@@ -28,7 +28,7 @@ type GeoJSONFeature = {
     type: 'Feature';
     geometry: {
         type: 'Polygon' | 'MultiPolygon';
-        coordinates: Array<Coord[]> | Array<Array<Coord[]>>;
+        coordinates: Polygon[] | Array<Polygon[]>;
     };
     properties: GeoJSONProperties;
 };
@@ -42,8 +42,8 @@ const countries = Object.fromEntries(
     data.features.map((d) => [
         d.properties.ADMIN,
         (d.geometry.type === 'MultiPolygon'
-            ? (d.geometry.coordinates as Array<Array<Coord[]>>).map((acoords) => acoords.map((c) => encode(c)))
-            : [(d.geometry.coordinates as Array<Coord[]>).map((c) => encode(c))]
+            ? (d.geometry.coordinates as Array<Polygon[]>).map((ps) => ps.map((p) => encode(p)))
+            : [(d.geometry.coordinates as Polygon[]).map((p) => encode(p))]
         ).flat(),
     ])
 );
