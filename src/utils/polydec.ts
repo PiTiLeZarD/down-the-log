@@ -1,7 +1,15 @@
+import { LatLng } from './locator';
 import { roundTo } from './math';
-import { Coord, Polygon } from './polygon';
+import { Coord, Polygon, includes } from './polygon';
 
 const DEFAULT_PRECISION: number = 5;
+
+export type Zones = Record<string, string>;
+
+export const findZone = (zones: Zones, pos: LatLng): keyof typeof zones =>
+    (Object.entries(zones)
+        .map(([i, d]) => [i, decode(d)])
+        .find(([id, polygon]) => includes(polygon as Polygon, pos)) || ['N/A'])[0] as keyof typeof zones;
 
 export const encodeValue = (cur: number, prev: number = 0, precision: number = DEFAULT_PRECISION): string => {
     const factor = Math.pow(10, precision);

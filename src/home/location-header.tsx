@@ -16,18 +16,12 @@ import { NativeStackScreenProps } from '@react-navigation/native-stack';
 import { DateTime } from 'luxon';
 import React from 'react';
 import { RootStackParamList } from '../RootStack';
-import cqzones from '../data/cqzones';
-import ituzones from '../data/ituzones';
+import cqzones from '../data/cqzones.json';
+import ituzones from '../data/ituzones.json';
 import { Grid } from '../utils/grid';
-import { LatLng, latlong2Maidenhead } from '../utils/locator';
-import { decode } from '../utils/polydec';
-import { Polygon, includes } from '../utils/polygon';
+import { latlong2Maidenhead } from '../utils/locator';
+import { findZone } from '../utils/polydec';
 import { useLocation } from '../utils/use-location';
-
-const findZone = (zones: string[][], pos: LatLng): string =>
-    (zones.map(([i, d]) => [i, decode(d)]).find(([id, polygon]) => includes(polygon as Polygon, pos)) || [
-        'N/A',
-    ])[0] as string;
 
 const classes = {
     header: {
