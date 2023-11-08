@@ -28,7 +28,7 @@ type GeoJSONFeatureCollection = {
 
 const dxccData = Object.fromEntries(
     (dxcc as GeoJSONFeatureCollection).features.map((d) => [
-        d.properties.dxcc_entity_code,
+        String(d.properties.dxcc_entity_code).padStart(3, '0'),
         (d.geometry.type === 'MultiPolygon'
             ? (d.geometry.coordinates as Array<Polygon[]>).map((ps) => ps.map((p) => encode(p)))
             : [(d.geometry.coordinates as Polygon[]).map((p) => encode(p))]
