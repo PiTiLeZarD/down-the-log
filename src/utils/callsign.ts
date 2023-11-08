@@ -16,10 +16,15 @@ const csdata = (prefix: string, index: string): CsDataType => {
 };
 
 export const parseCallsign = (callsign: string) => {
-    const [, , locPrefix, locIndex, prefix, index, delineation, suffix] = Array.from(
-        callsign.matchAll(callsignRegexp)
-    )[0];
+    if (!callsign) return undefined;
 
+    const match = Array.from(callsign.matchAll(callsignRegexp));
+    if (match.length === 0) {
+        const data = csdata(callsign, '');
+        return data ? { data } : undefined;
+    }
+
+    const [, , locPrefix, locIndex, prefix, index, delineation, suffix] = match[0];
     return {
         locPrefix,
         locIndex,
