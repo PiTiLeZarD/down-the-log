@@ -33,9 +33,10 @@ const data: GeoJSONFeatureCollection = JSON.parse(readFileSync(filepath, 'utf8')
 const countries = Object.fromEntries(
     data.features.map((d) => [
         d.properties.ISO_A3,
-        d.geometry.type === 'MultiPolygon'
+        (d.geometry.type === 'MultiPolygon'
             ? (d.geometry.coordinates as Array<Array<Coord[]>>).map((acoords) => acoords.map((c) => encode(c)))
-            : (d.geometry.coordinates as Array<Coord[]>).map((c) => encode(c)),
+            : [(d.geometry.coordinates as Array<Coord[]>).map((c) => encode(c))]
+        ).flat(),
     ])
 );
 
