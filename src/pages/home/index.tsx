@@ -1,12 +1,12 @@
 import React from 'react';
 
-import { AddIcon, Box, Input, InputField, InputIcon, InputSlot, Text } from '@gluestack-ui/themed';
+import { Box, Text } from '@gluestack-ui/themed';
 import { NativeStackScreenProps } from '@react-navigation/native-stack';
 import { DateTime } from 'luxon';
 import uuid from 'react-native-uuid';
-import { NativeSyntheticEvent, TextInputChangeEventData } from 'react-native/types';
 import { RootStackParamList } from '../../RootStack';
 import { QSO, useStore } from '../../store';
+import { CallsignInput } from './callsign-input';
 import { LocationHeader } from './location-header';
 import { QsoList } from './qso-list';
 
@@ -64,21 +64,7 @@ export const Home: HomeComponent = ({ navigation }): JSX.Element => {
                 <QsoList qsos={qsos} onQsoPress={(qso) => navigation.navigate('QsoForm', { qsoId: qso.id })} />
             </Box>
             <Box sx={classes.inputs}>
-                <Input size="lg">
-                    <InputField
-                        onChange={(e: NativeSyntheticEvent<TextInputChangeEventData>) =>
-                            setCallsign(e.nativeEvent.text)
-                        }
-                        onKeyPress={(e) => {
-                            if (e.keyCode === 13) handleAdd();
-                        }}
-                        value={callsign}
-                        placeholder="Callsign"
-                    />
-                    <InputSlot pr="$4" onPress={handleAdd}>
-                        <InputIcon as={AddIcon} />
-                    </InputSlot>
-                </Input>
+                <CallsignInput handleAdd={handleAdd} setCallsign={setCallsign} callsign={callsign} />
             </Box>
         </Box>
     );

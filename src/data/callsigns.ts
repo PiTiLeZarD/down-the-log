@@ -102,7 +102,7 @@ export const callsigns: CallsignData[] = [
     {
         iso3: 'AUS',
         dxcc: '150',
-        regexp: /^(AX|(V[H-NZ]))[1-8].*/g,
+        regexp: /^(AX|(V[H-NZ])).*/g,
         gs: 'PF26gj',
         ctn: 'OC',
         states: {

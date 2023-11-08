@@ -1,4 +1,5 @@
 import { CallsignData, callsigns } from '../data/callsigns';
+import { countries } from '../data/countries';
 
 const callsignRegexp = /^(([0-9]{0,1}[^0-9]+)([0-9]{1,2})\/)?([0-9]{0,1}[^0-9]+)([0-9]{1,2})([^\/]+)\/{0,1}(.*)$/g;
 
@@ -36,3 +37,5 @@ export const parseCallsign = (callsign: string) => {
         ...(locPrefix ? { locData: csdata(locPrefix, locIndex) } : {}),
     };
 };
+
+export const findCountry = (csdata: CsDataType) => countries.find((c) => c.iso3 === csdata?.iso3);
