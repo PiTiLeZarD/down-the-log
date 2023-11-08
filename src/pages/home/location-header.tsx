@@ -18,6 +18,7 @@ import React from 'react';
 import { RootStackParamList } from '../../RootStack';
 import cqzones from '../../data/cqzones.json';
 import ituzones from '../../data/ituzones.json';
+import { useStore } from '../../store';
 import { Grid } from '../../utils/grid';
 import { latlong2Maidenhead } from '../../utils/locator';
 import { findZone } from '../../utils/polydec';
@@ -39,6 +40,7 @@ export type LocationHeaderComponent = React.FC<LocationHeaderProps>;
 
 export const LocationHeader: LocationHeaderComponent = ({ navigation }): JSX.Element => {
     const [time, setTime] = React.useState<DateTime>(DateTime.local());
+    const setCurrentLocation = useStore((state) => state.setCurrentLocation);
     const location = useLocation();
 
     React.useEffect(() => {
@@ -49,6 +51,10 @@ export const LocationHeader: LocationHeaderComponent = ({ navigation }): JSX.Ele
             clearInterval(timer);
         };
     }, []);
+
+    React.useEffect(() => {
+        if (location) setCurrentLocation(latlong2Maidenhead(location.coords));
+    }, [location]);
 
     if (!location) return <Text>Looking for your location...</Text>;
 

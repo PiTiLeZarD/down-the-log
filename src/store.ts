@@ -18,25 +18,29 @@ export type QSO = {
 
 type DTLStoreProps = {
     qsos: QSO[];
+    currentLocation: string;
 };
 
 type DTLStoreActionsProps = {
     log: (qso: QSO) => void;
     deleteLog: (qso: QSO) => void;
+    setCurrentLocation: (location: string) => void;
 };
 
 type DTLStoreActionsMutatorProps = (
-    set: (stateMutator: (state: DTLStoreProps) => DTLStoreProps) => void,
+    set: (stateMutator: (state: DTLStoreProps) => Partial<DTLStoreProps>) => void,
     get: () => DTLStoreProps
 ) => DTLStoreActionsProps;
 
 const InitialStore: DTLStoreProps = {
     qsos: [],
+    currentLocation: '',
 };
 
 const StoreActions: DTLStoreActionsMutatorProps = (set) => ({
     log: (qso) => set((state) => ({ qsos: [...state.qsos.filter((q) => q.id != qso.id), qso] })),
     deleteLog: (qso) => set((state) => ({ qsos: [...state.qsos.filter((q) => q.id != qso.id)] })),
+    setCurrentLocation: (location) => set((state) => ({ currentLocation: location })),
 });
 
 export type UseStorePropsType = DTLStoreProps & DTLStoreActionsProps;
