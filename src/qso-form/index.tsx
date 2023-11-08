@@ -1,4 +1,4 @@
-import { Button, ButtonText, Text } from '@gluestack-ui/themed';
+import { Button, ButtonText, HStack, Text } from '@gluestack-ui/themed';
 import { NativeStackScreenProps } from '@react-navigation/native-stack';
 import React from 'react';
 import { useForm } from 'react-hook-form';
@@ -16,6 +16,7 @@ export const QsoForm: QsoFormComponent = ({ navigation, route }): JSX.Element =>
     const { qsoId } = route.params;
     const qso = useStore((state) => state.qsos).filter((q) => q.id == qsoId)[0];
     const log = useStore((state) => state.log);
+    const deleteLog = useStore((state) => state.deleteLog);
 
     const { handleSubmit, control, watch } = useForm<QSO>({
         defaultValues: qso,
@@ -25,6 +26,11 @@ export const QsoForm: QsoFormComponent = ({ navigation, route }): JSX.Element =>
 
     const onSubmit = (qso: QSO) => {
         log(qso);
+        navigation.navigate('Home');
+    };
+
+    const onDelete = () => {
+        deleteLog(qso);
         navigation.navigate('Home');
     };
 
@@ -73,9 +79,14 @@ export const QsoForm: QsoFormComponent = ({ navigation, route }): JSX.Element =>
                 </Grid>
             </Grid>
             <FormField role="textarea" name="note" label="Note:" control={control} />
-            <Button onPress={handleSubmit(onSubmit)}>
-                <ButtonText>Submit</ButtonText>
-            </Button>
+            <HStack>
+                <Button onPress={handleSubmit(onSubmit)}>
+                    <ButtonText>Submit</ButtonText>
+                </Button>
+                <Button onPress={() => onDelete()}>
+                    <ButtonText>Delete</ButtonText>
+                </Button>
+            </HStack>
         </>
     );
 };
