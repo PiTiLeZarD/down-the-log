@@ -2,3 +2,7 @@ node_modules
 .expo
 dist
 .DS_Store
+
+# ignore world data for now
+src/data/world.json
+scripts/countries.geojson
