@@ -3,7 +3,7 @@
 This is the rough todolist I want to work on, I'll try to chunk all this in 5mn increments
 
 -   [ ] FAB for plus icon instead of + in input
--   [ ] Add time column in qso list
+-   [x] Add time column in qso list
 -   [ ] Fix the SxProps vs Record<string, object> business
 -   [ ] <Grid container> should provide a context in which columns={nb} would be shared to <Grid item>
 -   [x] Fix the date being lost somehow (also add https://docs.expo.dev/versions/latest/sdk/date-time-picker/ in the form)
@@ -22,7 +22,7 @@ This is the rough todolist I want to work on, I'll try to chunk all this in 5mn 
     -   [ ] script the apk/dmg releases
 -   [x] finish up the qso form, doesn't have to be final, just functional, check that edit works well too
 -   [ ] contest mode (instead of Callsign > Form, have all relevant details on the bottom and log directly, ability to edit later)
--   [ ] ability to delete a qso
+-   [x] ability to delete a qso
 -   [ ] automatic prefix recognition, show location/distance
 -   [ ] band map, ability to link callsign/frequency on the band, use this to start qso's (also ability to write name/qth and other details so it's prefilled)
 -   [ ] qso filters and grouping
