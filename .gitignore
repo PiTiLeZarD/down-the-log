@@ -5,4 +5,5 @@ dist
 
 # ignore world data for now
 src/data/world.json
-scripts/countries.geojson
+scripts/*.geojson
+scripts/*.json
