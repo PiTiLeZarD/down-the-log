@@ -4,6 +4,8 @@ export type Coord = number[];
 export type Polygon = Coord[];
 
 export const coord2latlng = (c: Coord): LatLng => ({ longitude: c[1], latitude: c[0] });
+export const latlng2coord = (p: LatLng): Coord => [p.latitude, p.longitude];
+
 const offset = (p1: number, p2: number, m: number): number =>
     m - Math.abs(p2 - p1) < m / 2 ? m * ((p2 - p1) / Math.abs(p2 - p1)) : 0;
 
