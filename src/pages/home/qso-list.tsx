@@ -1,8 +1,8 @@
 import { Box, Text, VStack } from '@gluestack-ui/themed';
 import React from 'react';
 import { FlatList } from 'react-native';
-import { freq2band } from '../data/bands';
-import { QSO } from '../store';
+import { freq2band } from '../../data/bands';
+import { QSO } from '../../store';
 import { Qso } from './qso';
 
 export type QsoListProps = {

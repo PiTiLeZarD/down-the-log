@@ -15,13 +15,13 @@ import {
 import { NativeStackScreenProps } from '@react-navigation/native-stack';
 import { DateTime } from 'luxon';
 import React from 'react';
-import { RootStackParamList } from '../RootStack';
-import cqzones from '../data/cqzones.json';
-import ituzones from '../data/ituzones.json';
-import { Grid } from '../utils/grid';
-import { latlong2Maidenhead } from '../utils/locator';
-import { findZone } from '../utils/polydec';
-import { useLocation } from '../utils/use-location';
+import { RootStackParamList } from '../../RootStack';
+import cqzones from '../../data/cqzones.json';
+import ituzones from '../../data/ituzones.json';
+import { Grid } from '../../utils/grid';
+import { latlong2Maidenhead } from '../../utils/locator';
+import { findZone } from '../../utils/polydec';
+import { useLocation } from '../../utils/use-location';
 
 const classes = {
     header: {

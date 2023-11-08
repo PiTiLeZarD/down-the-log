@@ -1,7 +1,7 @@
 import { Button, ButtonText, Text, VStack } from '@gluestack-ui/themed';
 import { NativeStackScreenProps } from '@react-navigation/native-stack';
 import React from 'react';
-import { RootStackParamList } from '../RootStack';
+import { RootStackParamList } from '../../RootStack';
 
 export type AboutProps = {} & NativeStackScreenProps<RootStackParamList, 'About'>;
 

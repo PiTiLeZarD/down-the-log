@@ -5,8 +5,8 @@ import { NativeStackScreenProps } from '@react-navigation/native-stack';
 import { DateTime } from 'luxon';
 import uuid from 'react-native-uuid';
 import { NativeSyntheticEvent, TextInputChangeEventData } from 'react-native/types';
-import { RootStackParamList } from '../RootStack';
-import { QSO, useStore } from '../store';
+import { RootStackParamList } from '../../RootStack';
+import { QSO, useStore } from '../../store';
 import { LocationHeader } from './location-header';
 import { QsoList } from './qso-list';
 

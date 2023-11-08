@@ -6,9 +6,9 @@ import { config } from '@gluestack-ui/config';
 import { GluestackUIProvider } from '@gluestack-ui/themed';
 
 import { RootStack } from './RootStack';
-import { About } from './about';
-import { Home } from './home';
-import { QsoForm } from './qso-form';
+import { About } from './pages/about';
+import { Home } from './pages/home';
+import { QsoForm } from './pages/qso-form';
 
 LogBox.ignoreLogs([
     `Constants.platform.ios.model has been deprecated in favor of expo-device's Device.modelName property. This API will be removed in SDK 45.`,

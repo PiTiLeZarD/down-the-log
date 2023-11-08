@@ -1,6 +1,6 @@
 import { Pressable, Text } from '@gluestack-ui/themed';
 import React from 'react';
-import { Grid } from '../utils/grid';
+import { Grid } from '../../utils/grid';
 
 const classes: Record<string, object> = {
     cell: {

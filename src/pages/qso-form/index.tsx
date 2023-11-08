@@ -2,11 +2,11 @@ import { Button, ButtonText, HStack, Text } from '@gluestack-ui/themed';
 import { NativeStackScreenProps } from '@react-navigation/native-stack';
 import React from 'react';
 import { useForm } from 'react-hook-form';
-import { RootStackParamList } from '../RootStack';
-import { freq2band } from '../data/bands';
-import { QSO, useStore } from '../store';
-import { FormField } from '../utils/form-field';
-import { Grid } from '../utils/grid';
+import { RootStackParamList } from '../../RootStack';
+import { freq2band } from '../../data/bands';
+import { QSO, useStore } from '../../store';
+import { FormField } from '../../utils/form-field';
+import { Grid } from '../../utils/grid';
 
 export type QsoFormProps = {} & NativeStackScreenProps<RootStackParamList, 'QsoForm'>;
 
