@@ -1,4 +1,4 @@
-import { rad } from './math';
+import { rad, roundTo } from './math';
 
 const EARTH_RADIUS = 6371;
 const upper: string = 'ABCDEFGHIJKLMNOPQRSTUVWX';
@@ -59,5 +59,8 @@ export const distance = (l1: LatLng, l2: LatLng): number => {
         Math.cos(rad(l1.latitude)) * Math.cos(rad(l2.latitude)) * Math.sin(d_long / 2) * Math.sin(d_long / 2);
     const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
 
-    return EARTH_RADIUS * c;
+    return roundTo(EARTH_RADIUS * c, 2);
 };
+
+export const maidenDistance = (m1: string, m2: string): number =>
+    distance(maidenhead2Latlong(m1), maidenhead2Latlong(m2));
