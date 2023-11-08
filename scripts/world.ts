@@ -7,6 +7,13 @@ import { Coord } from '../src/utils/polygon';
  * This script will turn this into a { country_iso3: encodeedPolygons[] }
  *
  * run it with ts-node world.ts path/to/countries.geojson
+ *
+ * Get an updated file:
+ * install gdal (brew install gdal)
+ * Download and unzip http://www.naturalearthdata.com/http//www.naturalearthdata.com/download/10m/cultural/ne_10m_admin_0_countries.zip
+ * cd that folder
+ * ogr2ogr -select admin,iso_a3  -f geojson ./ne_10m_admin_0_countries.geojson ./ne_10m_admin_0_countries.shp
+ * cat ./ne_10m_admin_0_countries.geojson | sed 's/"admin": /"name": /g' | sed 's/"iso_a3": /"ISO3166-1-Alpha-3": /g'  > ./countries.geojson
  */
 
 // @ts-ignore
