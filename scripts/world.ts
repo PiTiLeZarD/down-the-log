@@ -6,7 +6,8 @@ import { Coord } from '../src/utils/polygon';
  * https://datahub.io/core/geo-countries#data
  * This script will turn this into a { country_iso3: encodeedPolygons[] }
  *
- * run it with ts-node world.ts path/to/countries.geojson
+ * run it with
+ * $ ts-node world.ts path/to/countries.geojson
  *
  * Get an updated file:
  * install gdal (brew install gdal)
@@ -39,7 +40,7 @@ const data: GeoJSONFeatureCollection = JSON.parse(readFileSync(filepath, 'utf8')
 
 const countries = Object.fromEntries(
     data.features.map((d) => [
-        d.properties.ISO_A3,
+        d.properties.ADMIN,
         (d.geometry.type === 'MultiPolygon'
             ? (d.geometry.coordinates as Array<Array<Coord[]>>).map((acoords) => acoords.map((c) => encode(c)))
             : [(d.geometry.coordinates as Array<Coord[]>).map((c) => encode(c))]
