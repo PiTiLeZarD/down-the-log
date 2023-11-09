@@ -1,7 +1,10 @@
-import { Box, Text, VStack } from '@gluestack-ui/themed';
+import { Box, HStack, Image, Text, VStack } from '@gluestack-ui/themed';
 import React from 'react';
 import { FlatList } from 'react-native';
 import { freq2band } from '../../data/bands';
+import { useStore } from '../../store';
+import { findCountry, getCallsignData } from '../../utils/callsign';
+import { maidenDistance } from '../../utils/locator';
 import { QSO } from '../../utils/qso';
 import { Qso } from './qso';
 
@@ -13,6 +16,7 @@ export type QsoListProps = {
 export type QsoListComponent = React.FC<QsoListProps>;
 
 export const QsoList: QsoListComponent = ({ qsos, onQsoPress }): JSX.Element => {
+    const currentLocation = useStore((state) => state.currentLocation);
     const separator = (qso: QSO, index: number): JSX.Element => {
         if (index === 0 || qso.date.diff(qsos[index - 1].date).days > 0) {
             return (
@@ -31,22 +35,34 @@ export const QsoList: QsoListComponent = ({ qsos, onQsoPress }): JSX.Element => 
         return <></>;
     };
 
+    const callsignCell = (callsign: string) => {
+        const callsignData = getCallsignData(callsign);
+        return (
+            <HStack space="sm">
+                <Image size="2xs" source={{ uri: findCountry(callsignData)?.flag }} />
+                <Text>{callsign}</Text>
+                <Text>({maidenDistance(currentLocation, callsignData?.gs || currentLocation)}km)</Text>
+            </HStack>
+        );
+    };
+
     return (
         <VStack>
-            <Qso header position="ID" time="Time" callsign="Callsign" name="Name" band="Band" mode="Mode" />
+            <Qso header position="ID" time="Time" callsign="Callsign" name="Name" band="Band" />
             <FlatList
                 data={qsos}
-                renderItem={(datum) => (
+                renderItem={({ item, index }) => (
                     <>
-                        {separator(datum.item, datum.index)}
+                        {separator(item, index)}
                         <Qso
-                            position={String(datum.index + 1)}
-                            band={datum.item.frequency ? freq2band(+datum.item.frequency) || 'N/A' : 'N/A'}
-                            time={datum.item.date.toFormat('HH:mm')}
-                            {...datum.item}
-                            mode={datum.item.mode || 'N/A'}
-                            name={datum.item.name || 'N/A'}
-                            onPress={() => onQsoPress(datum.item)}
+                            position={String(index + 1)}
+                            time={item.date.toFormat('HH:mm')}
+                            callsign={callsignCell(item.callsign)}
+                            name={item.name || 'N/A'}
+                            band={`${item.frequency ? freq2band(+item.frequency) || 'N/A' : 'N/A'} (${
+                                item.mode || 'N/A'
+                            })`}
+                            onPress={() => onQsoPress(item)}
                         />
                     </>
                 )}

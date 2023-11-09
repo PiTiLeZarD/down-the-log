@@ -18,46 +18,36 @@ const classes: Record<string, object> = {
 export type QsoProps = {
     header?: boolean;
     position: string;
-    time: string;
-    band: string;
-    mode: string;
-    callsign: string;
-    name: string;
+    time: React.ReactNode;
+    band: React.ReactNode;
+    callsign: React.ReactNode;
+    name: React.ReactNode;
     onPress?: () => void;
 };
 
 export type QsoComponent = React.FC<QsoProps>;
 
-export const Qso: QsoComponent = ({
-    onPress,
-    header = false,
-    position,
-    time,
-    band,
-    mode,
-    callsign,
-    name,
-}): JSX.Element => {
+export const Qso: QsoComponent = ({ onPress, header = false, position, time, band, callsign, name }): JSX.Element => {
+    const cellContent = (content: React.ReactNode, sx: any) =>
+        typeof content === 'string' ? <Text sx={sx}>{content}</Text> : content;
+    const sx = header ? classes.header : {};
     return (
         <Pressable onPress={onPress}>
             <Grid container sx={(+position % 2 || header ? classes.rowHighlight : {}) as any}>
                 <Grid item sx={classes.cell as any} xs={1}>
-                    <Text sx={header ? classes.header : {}}>{position}</Text>
+                    {cellContent(position, sx)}
                 </Grid>
                 <Grid item sx={classes.cell as any} xs={2}>
-                    <Text sx={header ? classes.header : {}}>{time}</Text>
+                    {cellContent(time, sx)}
                 </Grid>
-                <Grid item sx={classes.cell as any} xs={5} md={3}>
-                    <Text sx={header ? classes.header : {}}>{callsign}</Text>
+                <Grid item sx={classes.cell as any} xs={7} md={5}>
+                    {cellContent(callsign, sx)}
                 </Grid>
                 <Grid item sx={classes.cell as any} xs={-1} md={2}>
-                    <Text sx={header ? classes.header : {}}>{name}</Text>
+                    {cellContent(name, sx)}
                 </Grid>
                 <Grid item sx={classes.cell as any} xs={2}>
-                    <Text sx={header ? classes.header : {}}>{band}</Text>
-                </Grid>
-                <Grid item sx={classes.cell as any} xs={2}>
-                    <Text sx={header ? classes.header : {}}>{mode}</Text>
+                    {cellContent(band, sx)}
                 </Grid>
             </Grid>
         </Pressable>
