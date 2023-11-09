@@ -4,7 +4,7 @@ import { NativeSyntheticEvent, TextInputChangeEventData } from 'react-native';
 import cqzones from '../../data/cqzones.json';
 import ituzones from '../../data/ituzones.json';
 import { useStore } from '../../store';
-import { findCountry, parseCallsign } from '../../utils/callsign';
+import { findCountry, getCallsignData } from '../../utils/callsign';
 import { Grid } from '../../utils/grid';
 import { maidenDistance, maidenhead2Latlong } from '../../utils/locator';
 import { findZone } from '../../utils/polydec';
@@ -18,34 +18,34 @@ export type CallsignInputProps = {
 export type CallsignInputComponent = React.FC<CallsignInputProps>;
 
 export const CallsignInput: CallsignInputComponent = ({ callsign, handleAdd, setCallsign }): JSX.Element => {
-    const data = callsign ? parseCallsign(callsign) : false;
+    const callsignData = callsign ? getCallsignData(callsign) : undefined;
     const currentLocation = useStore((state) => state.currentLocation);
 
-    const country = data && data.data && data.data.iso3 ? findCountry(data.data || {}) : null;
+    const country = findCountry(callsignData);
 
     return (
         <>
-            {data && (
+            {callsignData && (
                 <Grid container>
                     <Grid item xs={4}>
                         <Text>
-                            {country?.name} {data.data?.state ? `(${data.data?.state})` : ''}
+                            {country?.name} {callsignData.state ? `(${callsignData.state})` : ''}
                         </Text>
                     </Grid>
                     <Grid item xs={4}>
-                        <Text>distance: {maidenDistance(currentLocation, data.data?.gs || currentLocation)}</Text>
+                        <Text>distance: {maidenDistance(currentLocation, callsignData.gs)}</Text>
                     </Grid>
                     <Grid item xs={2}>
                         <Text>
-                            ITU: {data.data?.gs ? findZone(ituzones, maidenhead2Latlong(data.data?.gs)) : '??'}, CQ:{' '}
-                            {data.data?.gs ? findZone(cqzones, maidenhead2Latlong(data.data?.gs)) : '??'}
+                            ITU: {callsignData.gs ? findZone(ituzones, maidenhead2Latlong(callsignData.gs)) : '??'}, CQ:{' '}
+                            {callsignData.gs ? findZone(cqzones, maidenhead2Latlong(callsignData.gs)) : '??'}
                         </Text>
                     </Grid>
                     <Grid item xs={1}>
-                        <Text>DXCC: {data.data?.dxcc}</Text>
+                        <Text>DXCC: {callsignData.dxcc}</Text>
                     </Grid>
                     <Grid item xs={1}>
-                        <Text>({data.data?.ctn})</Text>
+                        <Text>({callsignData.ctn})</Text>
                     </Grid>
                 </Grid>
             )}

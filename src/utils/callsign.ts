@@ -4,12 +4,13 @@ import { countries } from '../data/countries';
 const callsignRegexp = /^(([0-9]{0,1}[^0-9]+)([0-9]{1,2})\/)?([0-9]{0,1}[^0-9]+)([0-9]{1,2})([^\/]+)\/{0,1}(.*)$/g;
 
 type CsDataType = (CallsignData & { state?: string }) | undefined;
-const csdata = (prefix: string, index: string): CsDataType => {
-    const check = `${prefix}${index}`;
-    const data: CsDataType = callsigns.find((cd) => cd.regexp.test(check));
+export const getCallsignData = (callsign: string): CsDataType => {
+    if (!callsign) return undefined;
+
+    const data: CsDataType = callsigns.find((cd) => cd.regexp.test(callsign));
     if (data?.states) {
         data.state = Object.entries(data.states).reduce<string | undefined>(
-            (acc, [state, regexp]) => acc || (regexp.test(check) ? state : undefined),
+            (acc, [state, regexp]) => acc || (regexp.test(callsign) ? state : undefined),
             undefined
         );
     }
@@ -20,10 +21,7 @@ export const parseCallsign = (callsign: string) => {
     if (!callsign) return undefined;
 
     const match = Array.from(callsign.matchAll(callsignRegexp));
-    if (match.length === 0) {
-        const data = csdata(callsign, '');
-        return data ? { data } : undefined;
-    }
+    if (match.length === 0) return undefined;
 
     const [, , locPrefix, locIndex, prefix, index, delineation, suffix] = match[0];
     return {
@@ -33,8 +31,6 @@ export const parseCallsign = (callsign: string) => {
         index,
         delineation,
         suffix,
-        data: csdata(prefix, index),
-        ...(locPrefix ? { locData: csdata(locPrefix, locIndex) } : {}),
     };
 };
 
