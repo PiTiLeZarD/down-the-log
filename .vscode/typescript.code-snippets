@@ -72,6 +72,7 @@
             "",
             "type ${1:ContextName}ContextProps = {};",
             "export const ${1:ContextName}Context = React.createContext<${1:ContextName}ContextProps>({});",
+            "${1:ContextName}Context.displayName = '${1:ContextName}Context';,"
             "",
             "type ${1:ContextName}ContextProviderProps = {};",
             "type ${1:ContextName}ContextProviderComponent = React.FC<React.PropsWithChildren<${1:ContextName}ContextProviderProps>>;",
