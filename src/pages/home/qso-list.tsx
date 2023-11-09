@@ -35,13 +35,13 @@ export const QsoList: QsoListComponent = ({ qsos, onQsoPress }): JSX.Element => 
         return <></>;
     };
 
-    const callsignCell = (callsign: string) => {
-        const callsignData = getCallsignData(callsign);
+    const callsignCell = (qso: QSO) => {
+        const callsignData = getCallsignData(qso.callsign);
         return (
             <HStack space="sm">
                 <Image size="2xs" source={{ uri: findCountry(callsignData)?.flag }} />
-                <Text>{callsign}</Text>
-                <Text>({maidenDistance(currentLocation, callsignData?.gs || currentLocation)}km)</Text>
+                <Text>{qso.callsign}</Text>
+                <Text>({maidenDistance(currentLocation, qso.locator || callsignData?.gs || currentLocation)}km)</Text>
             </HStack>
         );
     };
@@ -57,7 +57,7 @@ export const QsoList: QsoListComponent = ({ qsos, onQsoPress }): JSX.Element => 
                         <Qso
                             position={String(index + 1)}
                             time={item.date.toFormat('HH:mm')}
-                            callsign={callsignCell(item.callsign)}
+                            callsign={callsignCell(item)}
                             name={item.name || 'N/A'}
                             band={`${item.frequency ? freq2band(+item.frequency) || 'N/A' : 'N/A'} (${
                                 item.mode || 'N/A'
