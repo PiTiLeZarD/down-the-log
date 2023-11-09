@@ -5,11 +5,14 @@ import { Coord, Polygon, includes } from './polygon';
 const DEFAULT_PRECISION: number = 5;
 
 export type Zones = Record<string, string>;
+export type MultiZones = Record<string, string[]>;
 
-export const findZone = (zones: Zones, pos: LatLng): keyof typeof zones =>
+export const findZone = (zones: Zones | MultiZones, pos: LatLng): keyof typeof zones =>
     (Object.entries(zones)
-        .map(([i, d]) => [i, decode(d)])
-        .find(([id, polygon]) => includes(polygon as Polygon, pos)) || ['N/A'])[0] as keyof typeof zones;
+        .map(([i, d]) => [i, Array.isArray(d) ? d.map((di) => decode(di)) : [decode(d)]])
+        .find(([id, zones]) =>
+            (zones as Polygon[]).reduce<boolean>((acc, z) => acc || includes(z as Polygon, pos), false)
+        ) || ['??'])[0] as keyof typeof zones;
 
 export const encodeValue = (cur: number, prev: number = 0, precision: number = DEFAULT_PRECISION): string => {
     const factor = Math.pow(10, precision);
