@@ -2,28 +2,30 @@
 
 This is the rough todolist I want to work on, I'll try to chunk all this in 5mn increments
 
--   [x] Add time column in qso list
+## WIP
+
+This is what I'll be working on next.
+
+-   [ ] fix the burger menu (https://github.com/gluestack/gluestack-ui/issues/491#issuecomment-1797030604)
+-   [ ] adif import export
+-   [ ] fix images on mobile app, fix all notice/warnings as well.
+
+## Backlog
+
+Got too many ideas, here is where I chuck them
+
+-   [ ] S/N input to help fill that up real quick
+-   [ ] improve performance of callsign input, for now it's doing a lot of un-necessary work
+-   [ ] Improve the QSO form page so it's nice usable and has all details fillable
 -   [ ] Fix the SxProps vs Record<string, object> business
 -   [ ] DXCC for australia doesn't include me, let's find out why (need some map tooling)
--   [x] Fix the date being lost somehow
 -   [ ] add https://docs.expo.dev/versions/latest/sdk/date-time-picker/ in the form to edit date/time
--   [x] Add distance data in the qso list
--   [ ] Your location should be based on GPS or set manually and displayed in the top part (with UTC/local clocks)
-    -   [x] useLocation to display the lat/long
-    -   [x] convert to maidenhead
-    -   [x] cq/itu zones
-    -   [x] add clocks
-    -   [x] Store previous position in zustand
-    -   [ ] WIP: burger icon or 2 dots menu in the header (chuck about in there)
-        -   [ ] onPress not working (web only it seems: https://github.com/gluestack/gluestack-ui/issues/491#issuecomment-1797030604)
 -   [ ] yarn release should use ghpages to create the demo, build the tauri app and release it, build ios/android apps
     -   [x] demo website on github
     -   [ ] look into automatic/programatic github release
     -   [ ] script the apk/dmg releases
--   [x] finish up the qso form, doesn't have to be final, just functional, check that edit works well too
+        -   [ ] Create playstore dev account and release there
 -   [ ] contest mode (instead of Callsign > Form, have all relevant details on the bottom and log directly, ability to edit later)
--   [x] ability to delete a qso
--   [x] automatic prefix recognition, show location/distance
 -   [ ] band map, ability to link callsign/frequency on the band, use this to start qso's (also ability to write name/qth and other details so it's prefilled)
 -   [ ] qso filters and grouping
     -   [x] typing a callsign should filter the list based on what's being typed
@@ -36,7 +38,6 @@ This is the rough todolist I want to work on, I'll try to chunk all this in 5mn 
     -   [ ] find a way to use leaflet or other ways to have maps on react-native
     -   [ ] display qsos based on maidenhead
     -   [ ] cluster qsos
--   [ ] work on import/export adif format
 -   [ ] hamclock modules (sunspot or sun data, propagaion, greyline, short/long path etc...)
 -   [ ] integrations
     -   [ ] qrz integration
@@ -50,3 +51,19 @@ This is the rough todolist I want to work on, I'll try to chunk all this in 5mn 
     -   [ ] input callsign vs contest
     -   [ ] choose grouping (date vs sesh vs contest vs...)
     -   [ ] fix location vs use gps
+
+## Done
+
+-   [x] Add time column in qso list
+-   [x] Fix the date being lost somehow
+-   [x] Add distance data in the qso list
+-   [x] Your location should be based on GPS or set manually and displayed in the top part (with UTC/local clocks)
+    -   [x] useLocation to display the lat/long
+    -   [x] convert to maidenhead
+    -   [x] cq/itu zones
+    -   [x] add clocks
+    -   [x] Store previous position in zustand
+    -   [x] WIP: burger icon or 2 dots menu in the header (chuck about in there)
+-   [x] finish up the qso form, doesn't have to be final, just functional, check that edit works well too
+-   [x] ability to delete a qso
+-   [x] automatic prefix recognition, show location/distance
