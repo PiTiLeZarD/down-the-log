@@ -4,6 +4,7 @@ This is the rough todolist I want to work on, I'll try to chunk all this in 5mn 
 
 -   [x] Add time column in qso list
 -   [ ] Fix the SxProps vs Record<string, object> business
+-   [ ] DXCC for australia doesn't include me, let's find out why (need some map tooling)
 -   [ ] <Grid container> should provide a context in which columns={nb} would be shared to <Grid item>
 -   [x] Fix the date being lost somehow (also add https://docs.expo.dev/versions/latest/sdk/date-time-picker/ in the form)
 -   [ ] Add distance data in the qso list

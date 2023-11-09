@@ -17,6 +17,7 @@ import { DateTime } from 'luxon';
 import React from 'react';
 import { RootStackParamList } from '../../RootStack';
 import cqzones from '../../data/cqzones.json';
+import dxcc from '../../data/dxcc.json';
 import ituzones from '../../data/ituzones.json';
 import { useStore } from '../../store';
 import { Grid } from '../../utils/grid';
@@ -66,7 +67,8 @@ export const LocationHeader: LocationHeaderComponent = ({ navigation }): JSX.Ele
                         <VStack>
                             <Text sx={classes.text}>My current grid square: {latlong2Maidenhead(location.coords)}</Text>
                             <Text sx={classes.text}>
-                                (CQ: {findZone(cqzones, location.coords)}, ITU: {findZone(ituzones, location.coords)})
+                                (CQ: {findZone(cqzones, location.coords)}, ITU: {findZone(ituzones, location.coords)},
+                                DXCC: {findZone(dxcc, location.coords)})
                             </Text>
                         </VStack>
                     </Grid>
