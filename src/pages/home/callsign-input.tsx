@@ -37,8 +37,8 @@ export const CallsignInput: CallsignInputComponent = ({ callsign, handleAdd, set
                     </Grid>
                     <Grid item xs={2}>
                         <Text>
-                            ITU: {callsignData.gs ? findZone(ituzones, maidenhead2Latlong(callsignData.gs)) : '??'}, CQ:{' '}
-                            {callsignData.gs ? findZone(cqzones, maidenhead2Latlong(callsignData.gs)) : '??'}
+                            CQ: {callsignData.gs ? findZone(cqzones, maidenhead2Latlong(callsignData.gs)) : '??'}, ITU:{' '}
+                            {callsignData.gs ? findZone(ituzones, maidenhead2Latlong(callsignData.gs)) : '??'}
                         </Text>
                     </Grid>
                     <Grid item xs={1}>
