@@ -13,7 +13,7 @@ This is the rough todolist I want to work on, I'll try to chunk all this in 5mn 
     -   [x] convert to maidenhead
     -   [x] cq/itu zones
     -   [x] add clocks
-    -   [ ] Store previous position in zustand (maybe plan for fix maidenhead without location (see settings))
+    -   [x] Store previous position in zustand
     -   [ ] WIP: burger icon or 2 dots menu in the header (chuck about in there)
         -   [ ] onPress not working (web only it seems: https://github.com/gluestack/gluestack-ui/issues/491#issuecomment-1797030604)
 -   [ ] yarn release should use ghpages to create the demo, build the tauri app and release it, build ios/android apps
@@ -49,3 +49,4 @@ This is the rough todolist I want to work on, I'll try to chunk all this in 5mn 
     -   [ ] light/dark theme
     -   [ ] input callsign vs contest
     -   [ ] choose grouping (date vs sesh vs contest vs...)
+    -   [ ] fix location vs use gps

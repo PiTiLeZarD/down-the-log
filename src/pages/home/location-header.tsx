@@ -21,9 +21,8 @@ import dxcc from '../../data/dxcc.json';
 import ituzones from '../../data/ituzones.json';
 import { useStore } from '../../store';
 import { Grid } from '../../utils/grid';
-import { latlong2Maidenhead } from '../../utils/locator';
+import { maidenhead2Latlong } from '../../utils/locator';
 import { findZone } from '../../utils/polydec';
-import { useLocation } from '../../utils/use-location';
 
 const classes = {
     header: {
@@ -41,8 +40,7 @@ export type LocationHeaderComponent = React.FC<LocationHeaderProps>;
 
 export const LocationHeader: LocationHeaderComponent = ({ navigation }): JSX.Element => {
     const [time, setTime] = React.useState<DateTime>(DateTime.local());
-    const setCurrentLocation = useStore((state) => state.setCurrentLocation);
-    const location = useLocation();
+    const currentLocation = useStore((state) => state.currentLocation);
 
     React.useEffect(() => {
         const timer = setInterval(() => {
@@ -53,11 +51,7 @@ export const LocationHeader: LocationHeaderComponent = ({ navigation }): JSX.Ele
         };
     }, []);
 
-    React.useEffect(() => {
-        if (location) setCurrentLocation(latlong2Maidenhead(location.coords));
-    }, [location]);
-
-    if (!location) return <Text>Looking for your location...</Text>;
+    if (!currentLocation) return <Text>Looking for your location...</Text>;
 
     return (
         <HStack sx={classes.header}>
@@ -65,10 +59,11 @@ export const LocationHeader: LocationHeaderComponent = ({ navigation }): JSX.Ele
                 <Grid container>
                     <Grid item xs={8}>
                         <VStack>
-                            <Text sx={classes.text}>My current grid square: {latlong2Maidenhead(location.coords)}</Text>
+                            <Text sx={classes.text}>My current grid square: {currentLocation}</Text>
                             <Text sx={classes.text}>
-                                (CQ: {findZone(cqzones, location.coords)}, ITU: {findZone(ituzones, location.coords)},
-                                DXCC: {findZone(dxcc, location.coords)})
+                                (CQ: {findZone(cqzones, maidenhead2Latlong(currentLocation))}, ITU:{' '}
+                                {findZone(ituzones, maidenhead2Latlong(currentLocation))}, DXCC:{' '}
+                                {findZone(dxcc, maidenhead2Latlong(currentLocation))})
                             </Text>
                         </VStack>
                     </Grid>
