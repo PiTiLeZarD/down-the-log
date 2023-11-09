@@ -39,7 +39,7 @@ export const QsoList: QsoListComponent = ({ qsos, onQsoPress }): JSX.Element => 
         const callsignData = getCallsignData(qso.callsign);
         return (
             <HStack space="sm">
-                <Image size="2xs" source={{ uri: findCountry(callsignData)?.flag }} />
+                <Image size="2xs" source={{ uri: findCountry(callsignData)?.flag }} alt={callsignData?.iso3} />
                 <Text>{qso.callsign}</Text>
                 <Text>({maidenDistance(currentLocation, qso.locator || callsignData?.gs || currentLocation)}km)</Text>
             </HStack>
