@@ -32,26 +32,26 @@ export const CallsignInput: CallsignInputComponent = ({ callsign, handleAdd, set
                             {country?.name} {callsignData.state ? `(${callsignData.state})` : ''}
                         </Text>
                     </Grid>
-                    <Grid item xs={4}>
-                        <Text>distance: {maidenDistance(currentLocation, callsignData.gs)}</Text>
+                    <Grid item xs={3}>
+                        <Text>{maidenDistance(currentLocation, callsignData.gs)}km</Text>
                     </Grid>
-                    <Grid item xs={2}>
+                    <Grid item xs={5} md={3}>
                         <Text>
                             CQ: {callsignData.gs ? findZone(cqzones, maidenhead2Latlong(callsignData.gs)) : '??'}, ITU:{' '}
-                            {callsignData.gs ? findZone(ituzones, maidenhead2Latlong(callsignData.gs)) : '??'}
+                            {callsignData.gs ? findZone(ituzones, maidenhead2Latlong(callsignData.gs)) : '??'}, DXCC:{' '}
+                            {callsignData.dxcc}
                         </Text>
                     </Grid>
-                    <Grid item xs={1}>
-                        <Text>DXCC: {callsignData.dxcc}</Text>
-                    </Grid>
-                    <Grid item xs={1}>
+                    <Grid item xs={-1} md={1}>
                         <Text>({callsignData.ctn})</Text>
                     </Grid>
                 </Grid>
             )}
             <Input size="lg">
                 <InputField
-                    onChange={(e: NativeSyntheticEvent<TextInputChangeEventData>) => setCallsign(e.nativeEvent.text)}
+                    onChange={(e: NativeSyntheticEvent<TextInputChangeEventData>) =>
+                        setCallsign(e.nativeEvent.text.toUpperCase())
+                    }
                     onKeyPress={(e) => {
                         if (e.keyCode === 13) handleAdd();
                     }}
