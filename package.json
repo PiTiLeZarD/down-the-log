@@ -2,6 +2,7 @@
     "name": "down-the-log",
     "version": "1.0.0",
     "main": "src/AppEntry.tsx",
+    "homepage": "https://pitilezard.github.io/down-the-log",
     "scripts": {
         "start:all": "expo start",
         "start:android": "expo start --android",
@@ -13,7 +14,10 @@
         "build:ios": "expo export -p iod",
         "build:web": "expo export -p web",
         "build:tauri": "tauri build",
-        "types": "tsc --noEmit"
+        "types": "tsc --noEmit",
+        "clean": "rm -Rf dist",
+        "prepages": "yarn clean && yarn build:web && sed -i -e 's/bundles/down-the-log\\/bundles/g' ./dist/index.html",
+        "pages": "gh-pages -b ghpages -d dist"
     },
     "dependencies": {
         "@expo/html-elements": "latest",
@@ -30,6 +34,7 @@
         "expo-device": "^5.6.0",
         "expo-location": "^16.3.0",
         "expo-status-bar": "~1.6.0",
+        "gh-pages": "^6.0.0",
         "luxon": "^3.4.3",
         "react": "18.2.0",
         "react-dom": "18.2.0",
