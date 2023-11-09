@@ -6,8 +6,13 @@ This is the rough todolist I want to work on, I'll try to chunk all this in 5mn 
 
 This is what I'll be working on next.
 
--   [x] fix the burger menu (https://github.com/gluestack/gluestack-ui/issues/491#issuecomment-1797030604)
 -   [ ] adif import export
+    -   [x] download qsos as adif
+    -   [ ] ability to ask "download from last export"
+    -   [ ] upload adif file, merge with current qsos, find duplicates etc...
+-   [ ] Improve the QSO form page so it's nice usable and has all details fillable
+    -   [ ] add tx/rx input for received sent
+    -   [ ] add all the rest of the fields (check adif spec and rumlog)
 -   [ ] fix images on mobile app, fix all notice/warnings as well.
 
 ## Backlog
@@ -15,8 +20,11 @@ This is what I'll be working on next.
 Got too many ideas, here is where I chuck them
 
 -   [ ] S/N input to help fill that up real quick
+-   [ ] WWFF
+    -   [ ] db with all parks, location and polilines
+    -   [ ] qsoform to be able to set it (both ours and theirs)
+    -   [ ] adif to export/import it properly
 -   [ ] improve performance of callsign input, for now it's doing a lot of un-necessary work
--   [ ] Improve the QSO form page so it's nice usable and has all details fillable
 -   [ ] Fix the SxProps vs Record<string, object> business
 -   [ ] DXCC for australia doesn't include me, let's find out why (need some map tooling)
 -   [ ] add https://docs.expo.dev/versions/latest/sdk/date-time-picker/ in the form to edit date/time
@@ -45,6 +53,7 @@ Got too many ideas, here is where I chuck them
     -   [ ] lotw (this one sounds tough, let's see)
 -   [ ] cluster?
 -   [ ] Settings
+    -   [ ] should be able to select our own callsign, maybe prompt at the start of the app
     -   [ ] choose favorite bands
     -   [ ] choose favorite modes
     -   [ ] light/dark theme
@@ -54,6 +63,7 @@ Got too many ideas, here is where I chuck them
 
 ## Done
 
+-   [x] fix the burger menu (https://github.com/gluestack/gluestack-ui/issues/491#issuecomment-1797030604)
 -   [x] Add time column in qso list
 -   [x] Fix the date being lost somehow
 -   [x] Add distance data in the qso list

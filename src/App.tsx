@@ -6,6 +6,7 @@ import { LogBox } from 'react-native';
 import { SafeAreaProvider, SafeAreaView } from 'react-native-safe-area-context';
 import { RootStack } from './RootStack';
 import { About } from './pages/about';
+import { Adif } from './pages/adif';
 import { Home } from './pages/home';
 import { QsoForm } from './pages/qso-form';
 import { useStore } from './store';
@@ -33,6 +34,7 @@ const App = (): JSX.Element => {
                             <RootStack.Screen name="Home" component={Home} />
                             <RootStack.Screen name="QsoForm" component={QsoForm} />
                             <RootStack.Screen name="About" component={About} />
+                            <RootStack.Screen name="Adif" component={Adif} />
                         </RootStack.Navigator>
                     </SafeAreaView>
                 </GluestackUIProvider>

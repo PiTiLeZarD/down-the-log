@@ -5,5 +5,6 @@ export type RootStackParamList = {
     Home: undefined;
     About: undefined;
     QsoForm: { qsoId: QSO['id'] };
+    Adif: undefined;
 };
 export const RootStack = createNativeStackNavigator<RootStackParamList>();

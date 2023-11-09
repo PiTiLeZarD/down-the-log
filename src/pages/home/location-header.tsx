@@ -6,6 +6,7 @@ import {
     Menu,
     MenuItem,
     MenuItemLabel,
+    ShareIcon,
     Text,
     ThreeDotsIcon,
     VStack,
@@ -64,6 +65,10 @@ export const LocationHeader: LocationHeaderComponent = ({ navigation }): JSX.Ele
                     <MenuItem key="About" textValue="About" onPressOut={() => navigation.navigate('About')}>
                         <Icon as={InfoIcon} size="sm" mr="$2" />
                         <MenuItemLabel size="sm">About</MenuItemLabel>
+                    </MenuItem>
+                    <MenuItem key="ImpExp" textValue="Import/Export" onPressOut={() => navigation.navigate('Adif')}>
+                        <Icon as={ShareIcon} size="sm" mr="$2" />
+                        <MenuItemLabel size="sm">Import/Export</MenuItemLabel>
                     </MenuItem>
                 </Menu>
             </Grid>
