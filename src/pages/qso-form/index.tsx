@@ -1,4 +1,4 @@
-import { Button, ButtonText, HStack, Text } from '@gluestack-ui/themed';
+import { Button, ButtonText, HStack, ScrollView, Text } from '@gluestack-ui/themed';
 import { NativeStackScreenProps } from '@react-navigation/native-stack';
 import React from 'react';
 import { useForm } from 'react-hook-form';
@@ -36,7 +36,7 @@ export const QsoForm: QsoFormComponent = ({ navigation, route }): JSX.Element =>
     };
 
     return (
-        <>
+        <ScrollView>
             <Button onPress={() => navigation.navigate('Home')}>
                 <ButtonText>Back</ButtonText>
             </Button>
@@ -86,6 +86,6 @@ export const QsoForm: QsoFormComponent = ({ navigation, route }): JSX.Element =>
                     <ButtonText>Delete</ButtonText>
                 </Button>
             </HStack>
-        </>
+        </ScrollView>
     );
 };

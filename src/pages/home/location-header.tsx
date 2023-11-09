@@ -1,8 +1,6 @@
 import {
-    Box,
     Button,
     ButtonIcon,
-    HStack,
     Icon,
     InfoIcon,
     Menu,
@@ -54,44 +52,42 @@ export const LocationHeader: LocationHeaderComponent = ({ navigation }): JSX.Ele
     if (!currentLocation) return <Text>Looking for your location...</Text>;
 
     return (
-        <HStack sx={classes.header}>
-            <Box sx={{ flexGrow: 1 }}>
+        <Grid container sx={classes.header as any}>
+            <Grid item xs={7}>
+                <VStack>
+                    <Text sx={classes.text}>Locator: {currentLocation}</Text>
+                    <Text sx={classes.text}>
+                        (CQ: {findZone(cqzones, maidenhead2Latlong(currentLocation))}, ITU:{' '}
+                        {findZone(ituzones, maidenhead2Latlong(currentLocation))}, DXCC:{' '}
+                        {findZone(dxcc, maidenhead2Latlong(currentLocation))})
+                    </Text>
+                </VStack>
+            </Grid>
+            <Grid item xs={4}>
                 <Grid container>
-                    <Grid item xs={8}>
-                        <VStack>
-                            <Text sx={classes.text}>My current grid square: {currentLocation}</Text>
-                            <Text sx={classes.text}>
-                                (CQ: {findZone(cqzones, maidenhead2Latlong(currentLocation))}, ITU:{' '}
-                                {findZone(ituzones, maidenhead2Latlong(currentLocation))}, DXCC:{' '}
-                                {findZone(dxcc, maidenhead2Latlong(currentLocation))})
-                            </Text>
-                        </VStack>
+                    <Grid item xs={12} sm={6}>
+                        <Text sx={classes.text}>{time.toFormat('HH:mm')}</Text>
                     </Grid>
-                    <Grid item xs={4}>
-                        <Grid container>
-                            <Grid item xs={12} sm={6}>
-                                <Text sx={classes.text}>Local: {time.toFormat('HH:mm')}</Text>
-                            </Grid>
-                            <Grid item xs={12} sm={6}>
-                                <Text sx={classes.text}>UTC: {time.toUTC().toFormat('HH:mm')}</Text>
-                            </Grid>
-                        </Grid>
+                    <Grid item xs={12} sm={6}>
+                        <Text sx={classes.text}>{time.toUTC().toFormat('HH:mm')} UTC</Text>
                     </Grid>
                 </Grid>
-            </Box>
-            <Menu
-                placement="bottom left"
-                trigger={(props) => (
-                    <Button {...props}>
-                        <ButtonIcon as={ThreeDotsIcon} />
-                    </Button>
-                )}
-            >
-                <MenuItem key="About" textValue="About" onPress={() => navigation.navigate('About')}>
-                    <Icon as={InfoIcon} size="sm" mr="$2" />
-                    <MenuItemLabel size="sm">About</MenuItemLabel>
-                </MenuItem>
-            </Menu>
-        </HStack>
+            </Grid>
+            <Grid item xs={1}>
+                <Menu
+                    placement="bottom left"
+                    trigger={(props) => (
+                        <Button {...props}>
+                            <ButtonIcon as={ThreeDotsIcon} />
+                        </Button>
+                    )}
+                >
+                    <MenuItem key="About" textValue="About" onPressOut={() => navigation.navigate('About')}>
+                        <Icon as={InfoIcon} size="sm" mr="$2" />
+                        <MenuItemLabel size="sm">About</MenuItemLabel>
+                    </MenuItem>
+                </Menu>
+            </Grid>
+        </Grid>
     );
 };
