@@ -6,7 +6,7 @@ This is the rough todolist I want to work on, I'll try to chunk all this in 5mn 
 
 This is what I'll be working on next.
 
--   [ ] fix the burger menu (https://github.com/gluestack/gluestack-ui/issues/491#issuecomment-1797030604)
+-   [x] fix the burger menu (https://github.com/gluestack/gluestack-ui/issues/491#issuecomment-1797030604)
 -   [ ] adif import export
 -   [ ] fix images on mobile app, fix all notice/warnings as well.
 
