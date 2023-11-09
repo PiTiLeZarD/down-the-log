@@ -4,9 +4,10 @@ import React from 'react';
 import { useForm } from 'react-hook-form';
 import { RootStackParamList } from '../../RootStack';
 import { freq2band } from '../../data/bands';
-import { QSO, useStore } from '../../store';
+import { useStore } from '../../store';
 import { FormField } from '../../utils/form-field';
 import { Grid } from '../../utils/grid';
+import { QSO, useQsos } from '../../utils/qso';
 
 export type QsoFormProps = {} & NativeStackScreenProps<RootStackParamList, 'QsoForm'>;
 
@@ -14,7 +15,7 @@ export type QsoFormComponent = React.FC<QsoFormProps>;
 
 export const QsoForm: QsoFormComponent = ({ navigation, route }): JSX.Element => {
     const { qsoId } = route.params;
-    const qso = useStore((state) => state.qsos).filter((q) => q.id == qsoId)[0];
+    const qso = useQsos().filter((q) => q.id == qsoId)[0];
     const log = useStore((state) => state.log);
     const deleteLog = useStore((state) => state.deleteLog);
 

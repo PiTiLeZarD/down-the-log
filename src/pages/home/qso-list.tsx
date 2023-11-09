@@ -2,7 +2,7 @@ import { Box, Text, VStack } from '@gluestack-ui/themed';
 import React from 'react';
 import { FlatList } from 'react-native';
 import { freq2band } from '../../data/bands';
-import { QSO } from '../../store';
+import { QSO } from '../../utils/qso';
 import { Qso } from './qso';
 
 export type QsoListProps = {
@@ -35,7 +35,7 @@ export const QsoList: QsoListComponent = ({ qsos, onQsoPress }): JSX.Element => 
         <VStack>
             <Qso header position="ID" time="Time" callsign="Callsign" name="Name" band="Band" mode="Mode" />
             <FlatList
-                data={qsos.sort((q1, q2) => (q1.date <= q2.date ? 1 : -1))}
+                data={qsos}
                 renderItem={(datum) => (
                     <>
                         {separator(datum.item, datum.index)}

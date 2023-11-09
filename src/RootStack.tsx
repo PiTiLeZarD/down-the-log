@@ -1,5 +1,5 @@
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
-import { QSO } from './store';
+import { QSO } from './utils/qso';
 
 export type RootStackParamList = {
     Home: undefined;

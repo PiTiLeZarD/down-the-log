@@ -2,19 +2,7 @@ import asyncstorage from '@react-native-async-storage/async-storage';
 import { DateTime } from 'luxon';
 import { create } from 'zustand';
 import { combine, createJSONStorage, devtools, persist } from 'zustand/middleware';
-
-export type QSO = {
-    id: string;
-    date: DateTime;
-    callsign: string;
-    name?: string;
-    frequency?: number;
-    mode?: 'SSB' | 'FM' | 'AM' | 'CW';
-    power?: number;
-    qth?: string;
-    locator?: string;
-    note?: string;
-};
+import { QSO } from './utils/qso';
 
 type DTLStoreProps = {
     qsos: QSO[];

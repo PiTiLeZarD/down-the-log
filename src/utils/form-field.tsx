@@ -21,7 +21,7 @@ import {
 } from '@gluestack-ui/themed';
 import React from 'react';
 import { Control, useController } from 'react-hook-form';
-import { QSO } from '../store';
+import { QSO } from './qso';
 
 export type FormFieldProps = {
     name: keyof QSO;
