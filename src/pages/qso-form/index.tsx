@@ -62,10 +62,8 @@ export const QsoForm: QsoFormComponent = ({ navigation, route }): JSX.Element =>
                     <FormField name="frequency" label="Frequency:" control={control} placeholder="In Khz" />
                 </Grid>
                 <Grid item xs={4} sm={2}>
-                    <Text>
-                        Band: <br />
-                        {freq2band(freq) || 'N/A'}
-                    </Text>
+                    <Text>Band:</Text>
+                    <Text>{freq2band(freq) || 'N/A'}</Text>
                 </Grid>
                 <Grid item xs={12} sm={3}>
                     <FormField name="power" label="Power:" control={control} />
