@@ -1,6 +1,6 @@
 import React from 'react';
 
-import { Box, Text } from '@gluestack-ui/themed';
+import { Box } from '@gluestack-ui/themed';
 import { NativeStackScreenProps } from '@react-navigation/native-stack';
 import { DateTime } from 'luxon';
 import uuid from 'react-native-uuid';
@@ -35,24 +35,6 @@ export const Home: HomeComponent = ({ navigation }): JSX.Element => {
         log(qso);
         setCallsign('');
         navigation.navigate('QsoForm', { qsoId: qso.id });
-    };
-
-    const separator = (qso: QSO, index: number): JSX.Element => {
-        if (index === 0 || qso.date.diff(qsos[index - 1].date).days > 0) {
-            return (
-                <Box
-                    sx={{
-                        paddingHorizontal: 5,
-                        paddingVertical: 3,
-                        display: 'flex',
-                        alignItems: 'center',
-                    }}
-                >
-                    <Text sx={{ fontWeight: 'bold' }}>{qso.date.toFormat('dd/MM/yyyy')}</Text>
-                </Box>
-            );
-        }
-        return <></>;
     };
 
     return (
