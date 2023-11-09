@@ -11,7 +11,6 @@ import {
     VStack,
 } from '@gluestack-ui/themed';
 import { NativeStackScreenProps } from '@react-navigation/native-stack';
-import { DateTime } from 'luxon';
 import React from 'react';
 import { RootStackParamList } from '../../RootStack';
 import cqzones from '../../data/cqzones.json';
@@ -37,23 +36,13 @@ export type LocationHeaderProps = {} & Pick<NativeStackScreenProps<RootStackPara
 export type LocationHeaderComponent = React.FC<LocationHeaderProps>;
 
 export const LocationHeader: LocationHeaderComponent = ({ navigation }): JSX.Element => {
-    const [time, setTime] = React.useState<DateTime>(DateTime.local());
     const currentLocation = useStore((state) => state.currentLocation);
-
-    React.useEffect(() => {
-        const timer = setInterval(() => {
-            setTime(DateTime.local());
-        }, 1000 * 60);
-        return () => {
-            clearInterval(timer);
-        };
-    }, []);
 
     if (!currentLocation) return <Text>Looking for your location...</Text>;
 
     return (
         <Grid container sx={classes.header as any}>
-            <Grid item xs={7}>
+            <Grid item xs={10} sm={11}>
                 <VStack>
                     <Text sx={classes.text}>Locator: {currentLocation}</Text>
                     <Text sx={classes.text}>
@@ -63,17 +52,7 @@ export const LocationHeader: LocationHeaderComponent = ({ navigation }): JSX.Ele
                     </Text>
                 </VStack>
             </Grid>
-            <Grid item xs={4}>
-                <Grid container>
-                    <Grid item xs={12} sm={6}>
-                        <Text sx={classes.text}>{time.toFormat('HH:mm')}</Text>
-                    </Grid>
-                    <Grid item xs={12} sm={6}>
-                        <Text sx={classes.text}>{time.toUTC().toFormat('HH:mm')} UTC</Text>
-                    </Grid>
-                </Grid>
-            </Grid>
-            <Grid item xs={1}>
+            <Grid item xs={2} sm={1}>
                 <Menu
                     placement="bottom left"
                     trigger={(props) => (

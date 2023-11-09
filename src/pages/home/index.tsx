@@ -4,6 +4,7 @@ import { Box } from '@gluestack-ui/themed';
 import { NativeStackScreenProps } from '@react-navigation/native-stack';
 import { RootStackParamList } from '../../RootStack';
 import { useStore } from '../../store';
+import { Clocks } from '../../utils/clocks';
 import { newQso, useQsos } from '../../utils/qso';
 import { CallsignInput } from './callsign-input';
 import { LocationHeader } from './location-header';
@@ -41,6 +42,7 @@ export const Home: HomeComponent = ({ navigation }): JSX.Element => {
         <Box sx={classes.container}>
             <Box sx={classes.top}>
                 <LocationHeader navigation={navigation} />
+                <Clocks />
             </Box>
             <Box sx={classes.table}>
                 <QsoList
