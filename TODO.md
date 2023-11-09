@@ -5,7 +5,8 @@ This is the rough todolist I want to work on, I'll try to chunk all this in 5mn 
 -   [x] Add time column in qso list
 -   [ ] Fix the SxProps vs Record<string, object> business
 -   [ ] DXCC for australia doesn't include me, let's find out why (need some map tooling)
--   [x] Fix the date being lost somehow (also add https://docs.expo.dev/versions/latest/sdk/date-time-picker/ in the form)
+-   [x] Fix the date being lost somehow
+-   [ ] add https://docs.expo.dev/versions/latest/sdk/date-time-picker/ in the form to edit date/time
 -   [x] Add distance data in the qso list
 -   [ ] Your location should be based on GPS or set manually and displayed in the top part (with UTC/local clocks)
     -   [x] useLocation to display the lat/long
