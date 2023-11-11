@@ -38,6 +38,7 @@
         "luxon": "^3.4.3",
         "react": "18.2.0",
         "react-dom": "18.2.0",
+        "react-dropzone": "^14.2.3",
         "react-hook-form": "^7.47.0",
         "react-native": "0.72.3",
         "react-native-aria": "^0.2.3",

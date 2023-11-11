@@ -1,3 +1,5 @@
+import { DateTime } from 'luxon';
+import uuid from 'react-native-uuid';
 import { freq2band } from '../data/bands';
 import cqzones from '../data/cqzones.json';
 import ituzones from '../data/ituzones.json';
@@ -10,6 +12,14 @@ const field = (label: string, value?: string): string =>
     typeof value !== 'undefined' && value !== null
         ? '<' + label.toUpperCase() + ':' + ('' + value).length + '>' + value
         : '';
+
+const parseField = (field: string): string[] => {
+    const match = Array.from(field.matchAll(/[<](.+)[:]([0-9]+)[>](.*)/g));
+    if (match.length == 0) return [];
+    const [, fieldName, fieldLength, value] = match[0];
+    if (+fieldLength !== value.length) console.info(`Invalid length for <${fieldName}:${fieldLength}>${value}`);
+    return [fieldName.toLowerCase(), value];
+};
 
 export const qso2adif = (qso: QSO): string => {
     const callsignData = getCallsignData(qso.callsign);
@@ -38,8 +48,38 @@ export const qso2adif = (qso: QSO): string => {
     );
 };
 
+export const qsos2Adif = (qsos: QSO[]): string => qsos.map(qso2adif).join('\n');
+
+export const adifLine2Qso = (adif: string): QSO | null => {
+    if (!adif.endsWith('<EOR>')) return null;
+
+    const data = Object.fromEntries(adif.replace('<EOR>', '').split(' ').map(parseField));
+
+    const date = DateTime.fromFormat(`${data.qso_date} ${data.time_on}`, 'yyyyMMdd HHmmss');
+
+    return {
+        id: uuid.v4(),
+        date,
+        frequency: +data.frequency,
+        mode: data.mode,
+        power: +data.power,
+        callsign: data.call,
+        name: data.name,
+        state: data.state,
+        locator: data.gridsquare,
+        qth: data.qth,
+        myQth: data.qth,
+    } as QSO;
+};
+
+export const adifFile2Qso = (adif: string): QSO[] =>
+    adif
+        .split('\n')
+        .map(adifLine2Qso)
+        .filter((q) => !!q) as QSO[];
+
 export const downloadQsos = (title: string, qsos: QSO[]) =>
     Object.assign(document.createElement('a'), {
-        href: `data:application/JSON, ${encodeURIComponent(qsos.map(qso2adif).join('\n'))}`,
+        href: `data:text/plain, ${encodeURIComponent(qsos2Adif(qsos))}`,
         download: title,
     }).click();
