@@ -1,6 +1,6 @@
 {
     "name": "down-the-log",
-    "version": "1.0.0",
+    "version": "0.0.1",
     "main": "src/AppEntry.tsx",
     "homepage": "https://pitilezard.github.io/down-the-log",
     "scripts": {
