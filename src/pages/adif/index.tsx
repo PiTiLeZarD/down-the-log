@@ -1,10 +1,12 @@
 import { Button, ButtonText, Text, VStack } from "@gluestack-ui/themed";
 import { NativeStackScreenProps } from "@react-navigation/native-stack";
 import React from "react";
+import uuid from "react-native-uuid";
 import { RootStackParamList } from "../../RootStack";
+import { useStore } from "../../store";
 import { adifFile2Qso, downloadQsos } from "../../utils/adif";
 import { Dropzone, FileWithPreview } from "../../utils/dropzone";
-import { QSO, useQsos } from "../../utils/qso";
+import { QSO, findMatchingQso, useQsos } from "../../utils/qso";
 
 export type AdifProps = {} & NativeStackScreenProps<RootStackParamList, "Adif">;
 
@@ -12,6 +14,7 @@ export type AdifComponent = React.FC<AdifProps>;
 
 export const Adif: AdifComponent = ({ navigation }): JSX.Element => {
     const qsos = useQsos();
+    const log = useStore((state) => state.log);
 
     const handleImport = (files: FileWithPreview[]) => {
         files.map((file) => {
@@ -21,7 +24,10 @@ export const Adif: AdifComponent = ({ navigation }): JSX.Element => {
                     const qsos: QSO[] = adifFile2Qso(
                         typeof fr.result == "string" ? fr.result : new TextDecoder("utf-8").decode(fr.result)
                     );
-                    console.log({ qsos });
+                    qsos.forEach((q) => {
+                        const matchingQso = findMatchingQso(qsos, q) || { id: uuid.v4() as string };
+                        log({ ...matchingQso, ...q });
+                    });
                 }
             };
 

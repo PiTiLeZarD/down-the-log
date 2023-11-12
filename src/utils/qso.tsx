@@ -37,3 +37,8 @@ export const newQso = (callsign: string, currentLocation: string, qsos: QSO[]): 
         ...(previousQsosWithCallsign.length ? { name: previousQsosWithCallsign[0].name } : {}),
     };
 };
+
+export const findMatchingQso = (qsos: QSO[], data: QSO): QSO | null =>
+    qsos.filter(
+        (q) => q.callsign === data.callsign && Math.abs(q.date.diff(data.date).toObject().minutes || 100) < 10
+    )[0] || null;
