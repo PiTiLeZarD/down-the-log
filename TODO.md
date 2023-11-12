@@ -9,7 +9,10 @@ This is what I'll be working on next.
 -   [ ] adif import export
     -   [x] download qsos as adif
     -   [ ] ability to ask "download from last export"
-    -   [ ] upload adif file, merge with current qsos, find duplicates etc...
+    -   [x] upload adif file, merge with current qsos, find duplicates etc...
+    -   [ ] improve adif page interface
+    -   [ ] find a solution for mobile (download works, upload probably doesn't)
+    -   [ ] use gdrive as backup/restore
 -   [ ] Improve the QSO form page so it's nice usable and has all details fillable
     -   [ ] add tx/rx input for received sent
     -   [ ] add all the rest of the fields (check adif spec and rumlog)
