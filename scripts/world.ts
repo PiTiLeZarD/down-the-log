@@ -1,6 +1,6 @@
-import { readFileSync, writeFileSync } from 'node:fs';
-import { encode } from '../src/utils/polydec';
-import { Polygon } from '../src/utils/polygon';
+import { readFileSync, writeFileSync } from "node:fs";
+import { encode } from "../src/utils/polydec";
+import { Polygon } from "../src/utils/polygon";
 /**
  * Download countries geojson from here:
  * https://datahub.io/core/geo-countries#data
@@ -25,27 +25,27 @@ type GeoJSONProperties = {
     ISO_A3: string;
 };
 type GeoJSONFeature = {
-    type: 'Feature';
+    type: "Feature";
     geometry: {
-        type: 'Polygon' | 'MultiPolygon';
+        type: "Polygon" | "MultiPolygon";
         coordinates: Polygon[] | Array<Polygon[]>;
     };
     properties: GeoJSONProperties;
 };
 type GeoJSONFeatureCollection = {
-    type: 'FeatureCollection';
+    type: "FeatureCollection";
     features: GeoJSONFeature[];
 };
-const data: GeoJSONFeatureCollection = JSON.parse(readFileSync(filepath, 'utf8'));
+const data: GeoJSONFeatureCollection = JSON.parse(readFileSync(filepath, "utf8"));
 
 const countries = Object.fromEntries(
     data.features.map((d) => [
         d.properties.ADMIN,
-        (d.geometry.type === 'MultiPolygon'
+        (d.geometry.type === "MultiPolygon"
             ? (d.geometry.coordinates as Array<Polygon[]>).map((ps) => ps.map((p) => encode(p)))
             : [(d.geometry.coordinates as Polygon[]).map((p) => encode(p))]
         ).flat(),
     ])
 );
 
-writeFileSync('./src/data/world.json', JSON.stringify(countries), 'utf8');
+writeFileSync("./src/data/world.json", JSON.stringify(countries), "utf8");

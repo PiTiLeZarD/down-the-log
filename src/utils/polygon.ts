@@ -1,4 +1,4 @@
-import { LatLng } from './locator';
+import { LatLng } from "./locator";
 
 export type Coord = number[];
 export type Polygon = Coord[];

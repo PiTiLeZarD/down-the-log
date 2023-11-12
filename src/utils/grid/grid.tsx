@@ -1,7 +1,7 @@
-import { Box } from '@gluestack-ui/themed';
-import React from 'react';
-import { merge } from '../merge';
-import { SxProps, useStyles } from './styles';
+import { Box } from "@gluestack-ui/themed";
+import React from "react";
+import { merge } from "../merge";
+import { SxProps, useStyles } from "./styles";
 
 export type GridProps = {
     container?: boolean;
@@ -19,20 +19,20 @@ export type GridComponent = React.FC<React.PropsWithChildren<GridProps>>;
 export const Grid: GridComponent = ({ container, item, sx, xs, sm, md, lg, xl, children }): JSX.Element => {
     const { gridStyles, screenSize } = useStyles();
 
-    if ((container && item) || (!container && !item)) throw Error('Pick one, container or item');
+    if ((container && item) || (!container && !item)) throw Error("Pick one, container or item");
 
     if (container) return <Box sx={merge(gridStyles.row, sx || {})}>{children}</Box>;
 
     const colSpan: number =
-        (screenSize === 'xs'
+        (screenSize === "xs"
             ? xs
-            : screenSize === 'sm'
+            : screenSize === "sm"
             ? sm || xs
-            : screenSize === 'md'
+            : screenSize === "md"
             ? md || sm || xs
-            : screenSize === 'lg'
+            : screenSize === "lg"
             ? lg || md || sm || xs
-            : screenSize === 'xl'
+            : screenSize === "xl"
             ? xl || lg || md || sm || xs
             : 12) || 12;
 

@@ -1,7 +1,7 @@
-import { rad, roundTo } from './math';
+import { rad, roundTo } from "./math";
 
 const EARTH_RADIUS = 6371;
-const upper: string = 'ABCDEFGHIJKLMNOPQRSTUVWX';
+const upper: string = "ABCDEFGHIJKLMNOPQRSTUVWX";
 const lower: string = upper.toLowerCase();
 
 export type LatLng = {
@@ -11,7 +11,7 @@ export type LatLng = {
 
 export const latlong2Maidenhead = (pos: LatLng): string => {
     if (Math.abs(pos.longitude) >= 180 || Math.abs(pos.latitude) >= 90) {
-        throw new Error('Value error');
+        throw new Error("Value error");
     }
 
     const longitude = pos.longitude + 180;
@@ -33,11 +33,11 @@ export const maidenhead2Latlong = (maidenhead: string): LatLng => {
         longitude: maidenhead.length == 6 ? 1 / 24 : 1,
     };
 
-    maidenhead.split('').map((char: string, i: number) => {
+    maidenhead.split("").map((char: string, i: number) => {
         let pos = String(upper.indexOf(char.toUpperCase()));
-        if (pos === '-1') pos = char;
+        if (pos === "-1") pos = char;
 
-        const key = ['longitude', 'latitude'][i % 2] as keyof LatLng;
+        const key = ["longitude", "latitude"][i % 2] as keyof LatLng;
         const coef = [
             (x: number, d: number): number => x * (20 / d) - 180 / d,
             (x: number, d: number): number => x * (2 / d),

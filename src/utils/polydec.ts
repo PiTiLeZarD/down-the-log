@@ -1,6 +1,6 @@
-import { LatLng } from './locator';
-import { roundTo } from './math';
-import { Coord, Polygon, includes } from './polygon';
+import { LatLng } from "./locator";
+import { roundTo } from "./math";
+import { Coord, Polygon, includes } from "./polygon";
 
 const DEFAULT_PRECISION: number = 5;
 
@@ -12,7 +12,7 @@ export const findZone = (zones: Zones | MultiZones, pos: LatLng): keyof typeof z
         .map(([i, d]) => [i, Array.isArray(d) ? d.map((di) => decode(di)) : [decode(d)]])
         .find(([id, zones]) =>
             (zones as Polygon[]).reduce<boolean>((acc, z) => acc || includes(z as Polygon, pos), false)
-        ) || ['??'])[0] as keyof typeof zones;
+        ) || ["??"])[0] as keyof typeof zones;
 
 export const encodeValue = (cur: number, prev: number = 0, precision: number = DEFAULT_PRECISION): string => {
     const factor = Math.pow(10, precision);
@@ -22,7 +22,7 @@ export const encodeValue = (cur: number, prev: number = 0, precision: number = D
     coord <<= 1;
     coord = coord >= 0 ? coord : ~coord;
 
-    let enc = '';
+    let enc = "";
     while (coord >= 0x20) {
         enc += String.fromCharCode((0x20 | (coord & 0x1f)) + 63);
         coord >>= 5;
@@ -52,9 +52,9 @@ export const encode = (polygon: Polygon, precision: number = DEFAULT_PRECISION):
         (acc, cur, i, arr) =>
             (acc += cur.reduce(
                 (jacc, jcur, j) => (jacc += encodeValue(jcur, i > 0 ? arr[i - 1][j] : 0, precision)),
-                ''
+                ""
             )),
-        ''
+        ""
     );
 
 export const decode = (s: string, precision: number = DEFAULT_PRECISION): Polygon => {

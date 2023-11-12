@@ -1,15 +1,15 @@
-import React from 'react';
-import { useWindowDimensions } from 'react-native';
+import React from "react";
+import { useWindowDimensions } from "react-native";
 
 export type SxProps = Record<string, object>;
-export type ScreenSize = 'xs' | 'sm' | 'md' | 'lg' | 'xl';
+export type ScreenSize = "xs" | "sm" | "md" | "lg" | "xl";
 
 const getScreenSize = (width: number): ScreenSize => {
-    if (width >= 0 && width < 600) return 'xs';
-    if (width >= 600 && width < 900) return 'sm';
-    if (width >= 900 && width < 1200) return 'md';
-    if (width >= 1200 && width < 1536) return 'md';
-    return 'xl';
+    if (width >= 0 && width < 600) return "xs";
+    if (width >= 600 && width < 900) return "sm";
+    if (width >= 900 && width < 1200) return "md";
+    if (width >= 1200 && width < 1536) return "md";
+    return "xl";
 };
 
 const generateStyles = (width: number, nbCols: number = 12) => {
@@ -25,8 +25,8 @@ const generateStyles = (width: number, nbCols: number = 12) => {
 
     return {
         row: {
-            flexDirection: 'row',
-            flexWrap: 'wrap',
+            flexDirection: "row",
+            flexWrap: "wrap",
             marginRight: -spacing,
         },
         ...Object.fromEntries(

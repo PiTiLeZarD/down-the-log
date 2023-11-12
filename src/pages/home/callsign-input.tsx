@@ -1,13 +1,13 @@
-import { AddIcon, Input, InputField, InputIcon, InputSlot, Text } from '@gluestack-ui/themed';
-import React from 'react';
-import { NativeSyntheticEvent, TextInputChangeEventData } from 'react-native';
-import cqzones from '../../data/cqzones.json';
-import ituzones from '../../data/ituzones.json';
-import { useStore } from '../../store';
-import { findCountry, getCallsignData } from '../../utils/callsign';
-import { Grid } from '../../utils/grid';
-import { maidenDistance, maidenhead2Latlong } from '../../utils/locator';
-import { findZone } from '../../utils/polydec';
+import { AddIcon, Input, InputField, InputIcon, InputSlot, Text } from "@gluestack-ui/themed";
+import React from "react";
+import { NativeSyntheticEvent, TextInputChangeEventData } from "react-native";
+import cqzones from "../../data/cqzones.json";
+import ituzones from "../../data/ituzones.json";
+import { useStore } from "../../store";
+import { findCountry, getCallsignData } from "../../utils/callsign";
+import { Grid } from "../../utils/grid";
+import { maidenDistance, maidenhead2Latlong } from "../../utils/locator";
+import { findZone } from "../../utils/polydec";
 
 export type CallsignInputProps = {
     callsign: string;
@@ -29,7 +29,7 @@ export const CallsignInput: CallsignInputComponent = ({ callsign, handleAdd, set
                 <Grid container>
                     <Grid item xs={4}>
                         <Text>
-                            {country?.name} {callsignData.state ? `(${callsignData.state})` : ''}
+                            {country?.name} {callsignData.state ? `(${callsignData.state})` : ""}
                         </Text>
                     </Grid>
                     <Grid item xs={3}>
@@ -37,8 +37,8 @@ export const CallsignInput: CallsignInputComponent = ({ callsign, handleAdd, set
                     </Grid>
                     <Grid item xs={5} md={3}>
                         <Text>
-                            CQ: {callsignData.gs ? findZone(cqzones, maidenhead2Latlong(callsignData.gs)) : '??'}, ITU:{' '}
-                            {callsignData.gs ? findZone(ituzones, maidenhead2Latlong(callsignData.gs)) : '??'}, DXCC:{' '}
+                            CQ: {callsignData.gs ? findZone(cqzones, maidenhead2Latlong(callsignData.gs)) : "??"}, ITU:{" "}
+                            {callsignData.gs ? findZone(ituzones, maidenhead2Latlong(callsignData.gs)) : "??"}, DXCC:{" "}
                             {callsignData.dxcc}
                         </Text>
                     </Grid>

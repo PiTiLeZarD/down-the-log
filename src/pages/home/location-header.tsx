@@ -10,29 +10,29 @@ import {
     Text,
     ThreeDotsIcon,
     VStack,
-} from '@gluestack-ui/themed';
-import { NativeStackScreenProps } from '@react-navigation/native-stack';
-import React from 'react';
-import { RootStackParamList } from '../../RootStack';
-import cqzones from '../../data/cqzones.json';
-import dxcc from '../../data/dxcc.json';
-import ituzones from '../../data/ituzones.json';
-import { useStore } from '../../store';
-import { Grid } from '../../utils/grid';
-import { maidenhead2Latlong } from '../../utils/locator';
-import { findZone } from '../../utils/polydec';
+} from "@gluestack-ui/themed";
+import { NativeStackScreenProps } from "@react-navigation/native-stack";
+import React from "react";
+import { RootStackParamList } from "../../RootStack";
+import cqzones from "../../data/cqzones.json";
+import dxcc from "../../data/dxcc.json";
+import ituzones from "../../data/ituzones.json";
+import { useStore } from "../../store";
+import { Grid } from "../../utils/grid";
+import { maidenhead2Latlong } from "../../utils/locator";
+import { findZone } from "../../utils/polydec";
 
 const classes = {
     header: {
-        backgroundColor: '$primary200',
+        backgroundColor: "$primary200",
         padding: 4,
     },
     text: {
-        color: '$textDark800',
+        color: "$textDark800",
     },
 };
 
-export type LocationHeaderProps = {} & Pick<NativeStackScreenProps<RootStackParamList, 'Home'>, 'navigation'>;
+export type LocationHeaderProps = {} & Pick<NativeStackScreenProps<RootStackParamList, "Home">, "navigation">;
 
 export type LocationHeaderComponent = React.FC<LocationHeaderProps>;
 
@@ -47,8 +47,8 @@ export const LocationHeader: LocationHeaderComponent = ({ navigation }): JSX.Ele
                 <VStack>
                     <Text sx={classes.text}>Locator: {currentLocation}</Text>
                     <Text sx={classes.text}>
-                        (CQ: {findZone(cqzones, maidenhead2Latlong(currentLocation))}, ITU:{' '}
-                        {findZone(ituzones, maidenhead2Latlong(currentLocation))}, DXCC:{' '}
+                        (CQ: {findZone(cqzones, maidenhead2Latlong(currentLocation))}, ITU:{" "}
+                        {findZone(ituzones, maidenhead2Latlong(currentLocation))}, DXCC:{" "}
                         {findZone(dxcc, maidenhead2Latlong(currentLocation))})
                     </Text>
                 </VStack>
@@ -62,11 +62,11 @@ export const LocationHeader: LocationHeaderComponent = ({ navigation }): JSX.Ele
                         </Button>
                     )}
                 >
-                    <MenuItem key="About" textValue="About" onPressOut={() => navigation.navigate('About')}>
+                    <MenuItem key="About" textValue="About" onPressOut={() => navigation.navigate("About")}>
                         <Icon as={InfoIcon} size="sm" mr="$2" />
                         <MenuItemLabel size="sm">About</MenuItemLabel>
                     </MenuItem>
-                    <MenuItem key="ImpExp" textValue="Import/Export" onPressOut={() => navigation.navigate('Adif')}>
+                    <MenuItem key="ImpExp" textValue="Import/Export" onPressOut={() => navigation.navigate("Adif")}>
                         <Icon as={ShareIcon} size="sm" mr="$2" />
                         <MenuItemLabel size="sm">Import/Export</MenuItemLabel>
                     </MenuItem>

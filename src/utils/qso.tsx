@@ -1,7 +1,7 @@
-import { DateTime } from 'luxon';
-import uuid from 'react-native-uuid';
-import { useStore } from '../store';
-import { findCountry, getCallsignData } from './callsign';
+import { DateTime } from "luxon";
+import uuid from "react-native-uuid";
+import { useStore } from "../store";
+import { findCountry, getCallsignData } from "./callsign";
 
 export const useQsos = (): QSO[] => {
     const qsos = useStore((state) => state.qsos);
@@ -14,7 +14,7 @@ export type QSO = {
     callsign: string;
     name?: string;
     frequency?: number;
-    mode?: 'SSB' | 'FM' | 'AM' | 'CW';
+    mode?: "SSB" | "FM" | "AM" | "CW";
     power?: number;
     myQth: string;
     qth?: string;

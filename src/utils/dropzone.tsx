@@ -1,6 +1,6 @@
-import { Box } from '@gluestack-ui/themed';
-import React from 'react';
-import { useDropzone } from 'react-dropzone';
+import { Box } from "@gluestack-ui/themed";
+import React from "react";
+import { useDropzone } from "react-dropzone";
 
 export const toBase64 = (file: File) =>
     new Promise((resolve, reject) => {

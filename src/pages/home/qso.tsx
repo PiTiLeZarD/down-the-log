@@ -1,6 +1,6 @@
-import { Pressable, Text } from '@gluestack-ui/themed';
-import React from 'react';
-import { Grid } from '../../utils/grid';
+import { Pressable, Text } from "@gluestack-ui/themed";
+import React from "react";
+import { Grid } from "../../utils/grid";
 
 const classes: Record<string, object> = {
     cell: {
@@ -8,10 +8,10 @@ const classes: Record<string, object> = {
         paddingVertical: 3,
     },
     header: {
-        fontWeight: 'bold',
+        fontWeight: "bold",
     },
     rowHighlight: {
-        backgroundColor: '$backgroundLight200',
+        backgroundColor: "$backgroundLight200",
     },
 };
 
@@ -29,7 +29,7 @@ export type QsoComponent = React.FC<QsoProps>;
 
 export const Qso: QsoComponent = ({ onPress, header = false, position, time, band, callsign, name }): JSX.Element => {
     const cellContent = (content: React.ReactNode, sx: any) =>
-        typeof content === 'string' ? <Text sx={sx}>{content}</Text> : content;
+        typeof content === "string" ? <Text sx={sx}>{content}</Text> : content;
     const sx = header ? classes.header : {};
     return (
         <Pressable onPress={onPress}>

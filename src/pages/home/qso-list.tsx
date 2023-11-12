@@ -1,12 +1,12 @@
-import { Box, HStack, Image, Text, VStack } from '@gluestack-ui/themed';
-import React from 'react';
-import { FlatList } from 'react-native';
-import { freq2band } from '../../data/bands';
-import { useStore } from '../../store';
-import { findCountry, getCallsignData } from '../../utils/callsign';
-import { maidenDistance } from '../../utils/locator';
-import { QSO } from '../../utils/qso';
-import { Qso } from './qso';
+import { Box, HStack, Image, Text, VStack } from "@gluestack-ui/themed";
+import React from "react";
+import { FlatList } from "react-native";
+import { freq2band } from "../../data/bands";
+import { useStore } from "../../store";
+import { findCountry, getCallsignData } from "../../utils/callsign";
+import { maidenDistance } from "../../utils/locator";
+import { QSO } from "../../utils/qso";
+import { Qso } from "./qso";
 
 export type QsoListProps = {
     qsos: QSO[];
@@ -24,11 +24,11 @@ export const QsoList: QsoListComponent = ({ qsos, onQsoPress }): JSX.Element => 
                     sx={{
                         paddingHorizontal: 5,
                         paddingVertical: 3,
-                        display: 'flex',
-                        alignItems: 'center',
+                        display: "flex",
+                        alignItems: "center",
                     }}
                 >
-                    <Text sx={{ fontWeight: 'bold' }}>{qso.date.toFormat('dd/MM/yyyy')}</Text>
+                    <Text sx={{ fontWeight: "bold" }}>{qso.date.toFormat("dd/MM/yyyy")}</Text>
                 </Box>
             );
         }
@@ -56,11 +56,11 @@ export const QsoList: QsoListComponent = ({ qsos, onQsoPress }): JSX.Element => 
                         {separator(item, index)}
                         <Qso
                             position={String(index + 1)}
-                            time={item.date.toFormat('HH:mm')}
+                            time={item.date.toFormat("HH:mm")}
                             callsign={callsignCell(item)}
-                            name={item.name || 'N/A'}
-                            band={`${item.frequency ? freq2band(+item.frequency) || 'N/A' : 'N/A'} (${
-                                item.mode || 'N/A'
+                            name={item.name || "N/A"}
+                            band={`${item.frequency ? freq2band(+item.frequency) || "N/A" : "N/A"} (${
+                                item.mode || "N/A"
                             })`}
                             onPress={() => onQsoPress(item)}
                         />

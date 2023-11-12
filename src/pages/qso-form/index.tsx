@@ -1,15 +1,15 @@
-import { Button, ButtonText, HStack, ScrollView, Text } from '@gluestack-ui/themed';
-import { NativeStackScreenProps } from '@react-navigation/native-stack';
-import React from 'react';
-import { useForm } from 'react-hook-form';
-import { RootStackParamList } from '../../RootStack';
-import { freq2band } from '../../data/bands';
-import { useStore } from '../../store';
-import { FormField } from '../../utils/form-field';
-import { Grid } from '../../utils/grid';
-import { QSO, useQsos } from '../../utils/qso';
+import { Button, ButtonText, HStack, ScrollView, Text } from "@gluestack-ui/themed";
+import { NativeStackScreenProps } from "@react-navigation/native-stack";
+import React from "react";
+import { useForm } from "react-hook-form";
+import { RootStackParamList } from "../../RootStack";
+import { freq2band } from "../../data/bands";
+import { useStore } from "../../store";
+import { FormField } from "../../utils/form-field";
+import { Grid } from "../../utils/grid";
+import { QSO, useQsos } from "../../utils/qso";
 
-export type QsoFormProps = {} & NativeStackScreenProps<RootStackParamList, 'QsoForm'>;
+export type QsoFormProps = {} & NativeStackScreenProps<RootStackParamList, "QsoForm">;
 
 export type QsoFormComponent = React.FC<QsoFormProps>;
 
@@ -23,21 +23,21 @@ export const QsoForm: QsoFormComponent = ({ navigation, route }): JSX.Element =>
         defaultValues: qso,
     });
 
-    const freq = watch('frequency');
+    const freq = watch("frequency");
 
     const onSubmit = (qso: QSO) => {
         log(qso);
-        navigation.navigate('Home');
+        navigation.navigate("Home");
     };
 
     const onDelete = () => {
         deleteLog(qso);
-        navigation.navigate('Home');
+        navigation.navigate("Home");
     };
 
     return (
         <ScrollView>
-            <Button onPress={() => navigation.navigate('Home')}>
+            <Button onPress={() => navigation.navigate("Home")}>
                 <ButtonText>Back</ButtonText>
             </Button>
             <Grid container>
@@ -54,7 +54,7 @@ export const QsoForm: QsoFormComponent = ({ navigation, route }): JSX.Element =>
                         role="select"
                         name="mode"
                         label="Mode:"
-                        options={{ SSB: 'SSB', AM: 'AM', FM: 'FM', CW: 'CW' }}
+                        options={{ SSB: "SSB", AM: "AM", FM: "FM", CW: "CW" }}
                         control={control}
                     />
                 </Grid>
@@ -63,7 +63,7 @@ export const QsoForm: QsoFormComponent = ({ navigation, route }): JSX.Element =>
                 </Grid>
                 <Grid item xs={4} sm={2}>
                     <Text>Band:</Text>
-                    <Text>{freq2band(freq) || 'N/A'}</Text>
+                    <Text>{freq2band(freq) || "N/A"}</Text>
                 </Grid>
                 <Grid item xs={12} sm={3}>
                     <FormField name="power" label="Power:" control={control} />

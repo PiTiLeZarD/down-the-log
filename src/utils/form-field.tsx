@@ -18,16 +18,16 @@ import {
     Text,
     Textarea,
     TextareaInput,
-} from '@gluestack-ui/themed';
-import React from 'react';
-import { Control, useController } from 'react-hook-form';
-import { QSO } from './qso';
+} from "@gluestack-ui/themed";
+import React from "react";
+import { Control, useController } from "react-hook-form";
+import { QSO } from "./qso";
 
 export type FormFieldProps = {
     name: keyof QSO;
     label?: string;
     placeholder?: string;
-    role?: 'text' | 'select' | 'textarea';
+    role?: "text" | "select" | "textarea";
     options?: Record<string, string>;
     control: Control<QSO, string>;
 };
@@ -35,7 +35,7 @@ export type FormFieldProps = {
 export type FormFieldComponent = React.FC<FormFieldProps>;
 
 export const FormField: FormFieldComponent = ({
-    role = 'text',
+    role = "text",
     name,
     label,
     placeholder,
@@ -44,7 +44,7 @@ export const FormField: FormFieldComponent = ({
 }): JSX.Element => {
     const { field } = useController({ name, control });
 
-    const value = String(field.value || '');
+    const value = String(field.value || "");
     return (
         <FormControl>
             {label && (
@@ -52,15 +52,15 @@ export const FormField: FormFieldComponent = ({
                     <Text>{label}</Text>
                 </FormControlLabel>
             )}
-            {role === 'text' && (
+            {role === "text" && (
                 <Input>
                     <InputField value={value} onChangeText={field.onChange} placeholder={placeholder} />
                 </Input>
             )}
-            {role === 'select' && (
+            {role === "select" && (
                 <Select selectedValue={value} onValueChange={field.onChange}>
                     <SelectTrigger variant="outline" size="md">
-                        <SelectInput placeholder={placeholder || 'Select option'} />
+                        <SelectInput placeholder={placeholder || "Select option"} />
                         <SelectIcon mr="$3">
                             <Icon as={ChevronDownIcon} />
                         </SelectIcon>
@@ -78,7 +78,7 @@ export const FormField: FormFieldComponent = ({
                     </SelectPortal>
                 </Select>
             )}
-            {role === 'textarea' && (
+            {role === "textarea" && (
                 <Textarea>
                     <TextareaInput value={value} onChangeText={field.onChange} placeholder={placeholder} />
                 </Textarea>

@@ -1,8 +1,8 @@
-import asyncstorage from '@react-native-async-storage/async-storage';
-import { DateTime } from 'luxon';
-import { create } from 'zustand';
-import { combine, createJSONStorage, devtools, persist } from 'zustand/middleware';
-import { QSO } from './utils/qso';
+import asyncstorage from "@react-native-async-storage/async-storage";
+import { DateTime } from "luxon";
+import { create } from "zustand";
+import { combine, createJSONStorage, devtools, persist } from "zustand/middleware";
+import { QSO } from "./utils/qso";
 
 type DTLStoreProps = {
     qsos: QSO[];
@@ -22,7 +22,7 @@ type DTLStoreActionsMutatorProps = (
 
 const InitialStore: DTLStoreProps = {
     qsos: [],
-    currentLocation: '',
+    currentLocation: "",
 };
 
 const StoreActions: DTLStoreActionsMutatorProps = (set) => ({
@@ -35,11 +35,11 @@ export type UseStorePropsType = DTLStoreProps & DTLStoreActionsProps;
 
 export const useStore = create<
     UseStorePropsType,
-    [['zustand/devtools', never], ['zustand/persist', UseStorePropsType]]
+    [["zustand/devtools", never], ["zustand/persist", UseStorePropsType]]
 >(
     devtools(
         persist(combine(InitialStore, StoreActions), {
-            name: 'dtl-storage',
+            name: "dtl-storage",
             storage: createJSONStorage(() => asyncstorage),
             deserialize: (s: string) => {
                 const storage: { state: UseStorePropsType; version: number } = JSON.parse(s);

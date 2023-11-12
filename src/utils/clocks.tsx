@@ -1,7 +1,7 @@
-import { Text } from '@gluestack-ui/themed';
-import { DateTime } from 'luxon';
-import React from 'react';
-import { Grid } from './grid';
+import { Text } from "@gluestack-ui/themed";
+import { DateTime } from "luxon";
+import React from "react";
+import { Grid } from "./grid";
 
 export type ClocksProps = {};
 
@@ -20,12 +20,12 @@ export const Clocks: ClocksComponent = (): JSX.Element => {
     }, []);
 
     return (
-        <Grid container sx={{ backgroundColor: '$primary200' } as any}>
+        <Grid container sx={{ backgroundColor: "$primary200" } as any}>
             <Grid item xs={6}>
-                <Text sx={{ textAlign: 'center' }}>Local: {time.toFormat('HH:mm')}</Text>
+                <Text sx={{ textAlign: "center" }}>Local: {time.toFormat("HH:mm")}</Text>
             </Grid>
             <Grid item xs={6}>
-                <Text sx={{ textAlign: 'center' }}>UTC: {time.toUTC().toFormat('HH:mm')}</Text>
+                <Text sx={{ textAlign: "center" }}>UTC: {time.toUTC().toFormat("HH:mm")}</Text>
             </Grid>
         </Grid>
     );
