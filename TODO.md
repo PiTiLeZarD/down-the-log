@@ -22,6 +22,7 @@ This is what I'll be working on next.
 
 Got too many ideas, here is where I chuck them
 
+-   [ ] Adif aren't necessarily one line one record. Change the parser so it finds <EOR> before parsing it instead of parling lines
 -   [ ] S/N input to help fill that up real quick
 -   [ ] WWFF
     -   [ ] db with all parks, location and polilines
