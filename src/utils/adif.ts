@@ -1,5 +1,4 @@
 import { DateTime } from 'luxon';
-import uuid from 'react-native-uuid';
 import { freq2band } from '../data/bands';
 import cqzones from '../data/cqzones.json';
 import ituzones from '../data/ituzones.json';
@@ -13,12 +12,19 @@ const field = (label: string, value?: string): string =>
         ? '<' + label.toUpperCase() + ':' + ('' + value).length + '>' + value
         : '';
 
-const parseField = (field: string): string[] => {
-    const match = Array.from(field.matchAll(/[<](.+)[:]([0-9]+)[>](.*)/g));
-    if (match.length == 0) return [];
-    const [, fieldName, fieldLength, value] = match[0];
-    if (+fieldLength !== value.length) console.info(`Invalid length for <${fieldName}:${fieldLength}>${value}`);
-    return [fieldName.toLowerCase(), value];
+const parseField = (adif: string): string[] => {
+    let remaining = adif.trim();
+    const match = remaining.match(/[<]([^:]+)[:]([0-9]+)[>]/);
+    if (!match) {
+        console.error('Error while parsing line');
+        console.error(remaining);
+        return [];
+    }
+    const [, tagName, tagLength] = match;
+    remaining = remaining.slice(`<${tagName}:${tagLength}>`.length);
+    const value = remaining.slice(0, +tagLength);
+    remaining = remaining.slice(+tagLength);
+    return [remaining, tagName.toLowerCase(), value];
 };
 
 export const qso2adif = (qso: QSO): string => {
@@ -53,23 +59,35 @@ export const qsos2Adif = (qsos: QSO[]): string => qsos.map(qso2adif).join('\n');
 export const adifLine2Qso = (adif: string): QSO | null => {
     if (!adif.endsWith('<EOR>')) return null;
 
-    const data = Object.fromEntries(adif.replace('<EOR>', '').split(' ').map(parseField));
+    const qsoData: Record<string, string> = {};
+    let tagName: string, value: string;
+    let remaining = adif.trim();
 
-    const date = DateTime.fromFormat(`${data.qso_date} ${data.time_on}`, 'yyyyMMdd HHmmss');
+    while (remaining != '<EOR>' && remaining.length) {
+        const field = parseField(remaining);
+        if (field.length === 0) {
+            remaining = '';
+            continue;
+        }
+
+        [remaining, tagName, value] = field;
+        qsoData[tagName] = value;
+    }
+
+    const date = DateTime.fromFormat(`${qsoData.qso_date} ${qsoData.time_on}`, 'yyyyMMdd HHmmss');
 
     return {
-        id: uuid.v4(),
         date,
-        frequency: +data.frequency,
-        mode: data.mode,
-        power: +data.power,
-        callsign: data.call,
-        name: data.name,
-        state: data.state,
-        locator: data.gridsquare,
-        qth: data.qth,
-        myQth: data.qth,
-    } as QSO;
+        frequency: +qsoData.freq,
+        mode: qsoData.mode,
+        power: +qsoData.tx_pwr,
+        callsign: qsoData.call,
+        name: qsoData.name,
+        state: qsoData.state,
+        locator: qsoData.gridsquare,
+        qth: qsoData.qth,
+        myQth: qsoData.qth,
+    } as any as QSO;
 };
 
 export const adifFile2Qso = (adif: string): QSO[] =>
