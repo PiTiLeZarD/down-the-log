@@ -1,4 +1,4 @@
-import { Box, HStack, Image, Text, VStack } from "@gluestack-ui/themed";
+import { Box, HStack, Text } from "@gluestack-ui/themed";
 import React from "react";
 import { FlatList } from "react-native";
 import { freq2band } from "../../data/bands";
@@ -39,7 +39,7 @@ export const QsoList: QsoListComponent = ({ qsos, onQsoPress }): JSX.Element => 
         const callsignData = getCallsignData(qso.callsign);
         return (
             <HStack space="sm">
-                <Image size="2xs" source={{ uri: findCountry(callsignData)?.flag }} alt={callsignData?.iso3} />
+                <Text>{findCountry(callsignData)?.flag}</Text>
                 <Text>{qso.callsign}</Text>
                 <Text>({maidenDistance(currentLocation, qso.locator || callsignData?.gs || currentLocation)}km)</Text>
             </HStack>
@@ -47,26 +47,22 @@ export const QsoList: QsoListComponent = ({ qsos, onQsoPress }): JSX.Element => 
     };
 
     return (
-        <VStack>
-            <Qso header position="ID" time="Time" callsign="Callsign" name="Name" band="Band" />
-            <FlatList
-                data={qsos}
-                renderItem={({ item, index }) => (
-                    <>
-                        {separator(item, index)}
-                        <Qso
-                            position={String(index + 1)}
-                            time={item.date.toFormat("HH:mm")}
-                            callsign={callsignCell(item)}
-                            name={item.name || "N/A"}
-                            band={`${item.frequency ? freq2band(+item.frequency) || "N/A" : "N/A"} (${
-                                item.mode || "N/A"
-                            })`}
-                            onPress={() => onQsoPress(item)}
-                        />
-                    </>
-                )}
-            />
-        </VStack>
+        <FlatList
+            ListHeaderComponent={<Qso header position="ID" time="Time" callsign="Callsign" name="Name" band="Band" />}
+            data={qsos}
+            renderItem={({ item, index }) => (
+                <>
+                    {separator(item, index)}
+                    <Qso
+                        position={String(index + 1)}
+                        time={item.date.toFormat("HH:mm")}
+                        callsign={callsignCell(item)}
+                        name={item.name || "N/A"}
+                        band={`${item.frequency ? freq2band(+item.frequency) || "N/A" : "N/A"} (${item.mode || "N/A"})`}
+                        onPress={() => onQsoPress(item)}
+                    />
+                </>
+            )}
+        />
     );
 };

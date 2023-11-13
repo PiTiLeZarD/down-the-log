@@ -29,6 +29,7 @@ export const CallsignInput: CallsignInputComponent = ({ callsign, handleAdd, set
                 <Grid container>
                     <Grid item xs={4}>
                         <Text>
+                            {country?.flag}
                             {country?.name} {callsignData.state ? `(${callsignData.state})` : ""}
                         </Text>
                     </Grid>

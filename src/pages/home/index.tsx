@@ -18,6 +18,14 @@ const classes: Record<string, object> = {
     },
     table: {
         flexGrow: 1,
+        paddingBottom: 45,
+    },
+    inputs: {
+        position: "fixed",
+        left: 0,
+        bottom: 0,
+        width: "100%",
+        backgroundColor: "white",
     },
 };
 

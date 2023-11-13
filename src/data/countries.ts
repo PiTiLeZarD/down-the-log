@@ -1,10 +1,3 @@
-/**
- * Shamelessly took from there:
- * https://github.com/ronatskiy/country-flags-svg/blob/master/src/data/countries.ts
- *
- * for some reason the lib doesn't wanna comply with expo
- */
-
 function createUrl(svgUrl: string) {
     return `https://upload.wikimedia.org/wikipedia/commons${svgUrl}` as const;
 }
@@ -12,152 +5,162 @@ function createUrl(svgUrl: string) {
 export const countries = [
     {
         name: "Afghanistan",
-        flag: createUrl("/5/5c/Flag_of_the_Taliban.svg"),
+        flag: "🇦🇫",
         iso3: "AFG",
     },
     {
         name: "Aland Islands",
-        flag: createUrl("/5/52/Flag_of_%C3%85land.svg"),
+        flag: "🇦🇽",
         iso3: "ALA",
     },
     {
         name: "Albania",
-        flag: createUrl("/3/36/Flag_of_Albania.svg"),
+        flag: "🇦🇱",
         iso3: "ALB",
     },
     {
         name: "Algeria",
-        flag: createUrl("/7/77/Flag_of_Algeria.svg"),
+        flag: "🇩🇿",
         iso3: "DZA",
     },
     {
         name: "American Samoa",
-        flag: createUrl("/8/87/Flag_of_American_Samoa.svg"),
+        flag: "🇦🇸",
         iso3: "ASM",
     },
     {
         name: "Andorra",
-        flag: createUrl("/1/19/Flag_of_Andorra.svg"),
+        flag: "🇦🇩",
         iso3: "AND",
     },
     {
         name: "Angola",
-        flag: createUrl("/9/9d/Flag_of_Angola.svg"),
+        flag: "🇦🇴",
         iso3: "AGO",
     },
     {
         name: "Anguilla",
-        flag: createUrl("/b/b4/Flag_of_Anguilla.svg"),
+        flag: "🇦🇮",
         iso3: "AIA",
     },
     {
         name: "Antigua and Barbuda",
-        flag: createUrl("/8/89/Flag_of_Antigua_and_Barbuda.svg"),
+        flag: "🇦🇬",
         iso3: "ATG",
     },
     {
         name: "Argentina",
-        flag: createUrl("/1/1a/Flag_of_Argentina.svg"),
+        flag: "🇦🇷",
         iso3: "ARG",
     },
     {
         name: "Armenia",
-        flag: createUrl("/2/2f/Flag_of_Armenia.svg"),
+        flag: "🇦🇲",
         iso3: "ARM",
     },
     {
         name: "Aruba",
-        flag: createUrl("/f/f6/Flag_of_Aruba.svg"),
+        flag: "🇦🇼",
         iso3: "ABW",
     },
     {
         name: "Australia",
-        flag: createUrl("/8/88/Flag_of_Australia_(converted).svg"),
+        flag: "🇦🇺",
         iso3: "AUS",
     },
     {
         name: "Austria",
-        flag: createUrl("/4/41/Flag_of_Austria.svg"),
+        flag: "🇦🇹",
         iso3: "AUT",
     },
     {
         name: "Azerbaijan",
-        flag: createUrl("/d/dd/Flag_of_Azerbaijan.svg"),
+        flag: "🇦🇿",
         iso3: "AZE",
     },
     {
+        name: "Antartica",
+        flag: "🇦🇶",
+        iso3: "ATA",
+    },
+    {
         name: "Bahamas",
-        flag: createUrl("/9/93/Flag_of_the_Bahamas.svg"),
+        flag: "🇧🇸",
         iso3: "BHS",
     },
     {
         name: "Bahrain",
-        flag: createUrl("/2/2c/Flag_of_Bahrain.svg"),
+        flag: "🇧🇭",
         iso3: "BHR",
     },
     {
         name: "Bangladesh",
-        flag: createUrl("/f/f9/Flag_of_Bangladesh.svg"),
+        flag: "🇧🇩",
         iso3: "BGD",
     },
     {
         name: "Barbados",
-        flag: createUrl("/e/ef/Flag_of_Barbados.svg"),
+        flag: "🇧🇧",
         iso3: "BRB",
     },
     {
         name: "Belarus",
-        flag: createUrl("/8/85/Flag_of_Belarus.svg"),
+        flag: "🇧🇾",
         iso3: "BLR",
     },
     {
         name: "Belgium",
-        flag: createUrl("/6/65/Flag_of_Belgium.svg"),
+        flag: "🇧🇪",
         iso3: "BEL",
     },
     {
         name: "Belize",
-        flag: createUrl("/e/e7/Flag_of_Belize.svg"),
+        flag: "🇧🇿",
         iso3: "BLZ",
     },
     {
         name: "Benin",
-        flag: createUrl("/0/0a/Flag_of_Benin.svg"),
+        flag: "🇧🇯",
         iso3: "BEN",
     },
     {
+        name: "Bouvet Island",
+        flag: "🇧🇻",
+        iso3: "BVT",
+    },
+    {
         name: "Bermuda",
-        flag: createUrl("/b/bf/Flag_of_Bermuda.svg"),
+        flag: "🇧🇲",
         iso3: "BMU",
     },
     {
         name: "Bhutan",
-        flag: createUrl("/9/91/Flag_of_Bhutan.svg"),
+        flag: "🇧🇹",
         iso3: "BTN",
     },
     {
         name: "Bolivia",
-        flag: createUrl("/5/5b/Bolivia_Flag.svg"),
+        flag: "🇧🇴",
         iso3: "BOL",
     },
     {
         name: "Bonaire, Sint Eustatius and Saba",
-        flag: createUrl("/2/20/Flag_of_the_Netherlands.svg"),
+        flag: "🇧🇶",
         iso3: "BES",
     },
     {
         name: "Bosnia and Herzegovina",
-        flag: createUrl("/b/bf/Flag_of_Bosnia_and_Herzegovina.svg"),
+        flag: "🇧🇦",
         iso3: "BIH",
     },
     {
         name: "Botswana",
-        flag: createUrl("/f/fa/Flag_of_Botswana.svg"),
+        flag: "🇧🇼",
         iso3: "BWA",
     },
     {
         name: "Brazil",
-        flag: createUrl("/0/05/Flag_of_Brazil.svg"),
+        flag: "🇧🇷",
         iso3: "BRA",
     },
     {
@@ -167,22 +170,27 @@ export const countries = [
     },
     {
         name: "Brunei",
-        flag: createUrl("/9/9c/Flag_of_Brunei.svg"),
+        flag: "🇧🇳",
         iso3: "BRN",
     },
     {
         name: "Bulgaria",
-        flag: createUrl("/9/9a/Flag_of_Bulgaria.svg"),
+        flag: "🇧🇬",
         iso3: "BGR",
     },
     {
         name: "Burkina Faso",
-        flag: createUrl("/3/31/Flag_of_Burkina_Faso.svg"),
+        flag: "🇧🇫",
         iso3: "BFA",
     },
     {
+        name: "Heard Island and McDonald Islands",
+        flag: "🇭🇲",
+        iso3: "HMD",
+    },
+    {
         name: "Burundi",
-        flag: createUrl("/5/50/Flag_of_Burundi.svg"),
+        flag: "🇧🇮",
         iso3: "BDI",
     },
     {
@@ -192,17 +200,17 @@ export const countries = [
     },
     {
         name: "Cameroon",
-        flag: createUrl("/4/4f/Flag_of_Cameroon.svg"),
+        flag: "🇨🇲",
         iso3: "CMR",
     },
     {
         name: "Canada",
-        flag: createUrl("/d/d9/Flag_of_Canada_(Pantone).svg"),
+        flag: "🇨🇦",
         iso3: "CAN",
     },
     {
-        name: "Cape Verde",
-        flag: createUrl("/3/38/Flag_of_Cape_Verde.svg"),
+        name: "Cabo Verde",
+        flag: "🇨🇻",
         iso3: "CPV",
     },
     {
@@ -212,7 +220,7 @@ export const countries = [
     },
     {
         name: "Central African Republic",
-        flag: createUrl("/6/6f/Flag_of_the_Central_African_Republic.svg"),
+        flag: "🇨🇫",
         iso3: "CAF",
     },
     {
@@ -222,27 +230,27 @@ export const countries = [
     },
     {
         name: "Chile",
-        flag: createUrl("/7/78/Flag_of_Chile.svg"),
+        flag: "🇨🇱",
         iso3: "CHL",
     },
     {
         name: "China",
-        flag: createUrl("/f/fa/Flag_of_the_People%27s_Republic_of_China.svg"),
+        flag: "🇨🇳",
         iso3: "CHN",
     },
     {
         name: "Christmas Island",
-        flag: createUrl("/6/67/Flag_of_Christmas_Island.svg"),
+        flag: "🇨🇽",
         iso3: "CXR",
     },
     {
         name: "Cocos Islands",
-        flag: createUrl("/7/74/Flag_of_the_Cocos_(Keeling)_Islands.svg"),
+        flag: "🇨🇨",
         iso3: "CCK",
     },
     {
         name: "Colombia",
-        flag: createUrl("/2/21/Flag_of_Colombia.svg"),
+        flag: "🇨🇴",
         iso3: "COL",
     },
     {
@@ -252,82 +260,82 @@ export const countries = [
     },
     {
         name: "Congo",
-        flag: createUrl("/9/92/Flag_of_the_Republic_of_the_Congo.svg"),
+        flag: "🇨🇬",
         iso3: "COG",
     },
     {
         name: "Cook Islands",
-        flag: createUrl("/3/35/Flag_of_the_Cook_Islands.svg"),
+        flag: "🇨🇰",
         iso3: "COK",
     },
     {
         name: "Costa Rica",
-        flag: createUrl("/b/bc/Flag_of_Costa_Rica_(state).svg"),
+        flag: "🇨🇷",
         iso3: "CRI",
     },
     {
         name: "Côte d'Ivoire",
-        flag: createUrl("/f/fe/Flag_of_Côte_d%27Ivoire.svg"),
+        flag: "🇨🇮",
         iso3: "CIV",
     },
     {
         name: "Croatia",
-        flag: createUrl("/1/1b/Flag_of_Croatia.svg"),
+        flag: "🇭🇷",
         iso3: "HRV",
     },
     {
         name: "Cuba",
-        flag: createUrl("/b/bd/Flag_of_Cuba.svg"),
+        flag: "🇨🇺",
         iso3: "CUB",
     },
     {
         name: "Curaçao",
-        flag: createUrl("/b/b1/Flag_of_Curaçao.svg"),
+        flag: "🇨🇼",
         iso3: "CUW",
     },
     {
         name: "Cyprus",
-        flag: createUrl("/d/d4/Flag_of_Cyprus.svg"),
+        flag: "🇨🇾",
         iso3: "CYP",
     },
     {
         name: "Czech Republic",
-        flag: createUrl("/c/cb/Flag_of_the_Czech_Republic.svg"),
+        flag: "🇨🇿",
         iso3: "CZE",
     },
     {
         name: "Democratic Republic of the Congo",
-        flag: createUrl("/1/11/Flag_of_the_Democratic_Republic_of_the_Congo_(3-2).svg"),
+        flag: "🇨🇩",
         iso3: "COD",
     },
     {
         name: "Denmark",
-        flag: createUrl("/9/9c/Flag_of_Denmark.svg"),
+        flag: "🇩🇰",
         iso3: "DNK",
     },
     {
         name: "Djibouti",
-        flag: createUrl("/3/34/Flag_of_Djibouti.svg"),
+        flag: "🇩🇯",
         iso3: "DJI",
     },
     {
         name: "Dominica",
-        flag: createUrl("/c/c4/Flag_of_Dominica.svg"),
+        flag: "🇩🇲",
         iso3: "DMA",
     },
     {
         name: "Dominican Republic",
-        flag: createUrl("/9/9f/Flag_of_the_Dominican_Republic.svg"),
+        flag: "🇩🇴",
         iso3: "DOM",
     },
     {
         name: "Ecuador",
-        flag: createUrl("/e/e8/Flag_of_Ecuador.svg"),
+        flag: "🇪🇨",
         iso3: "ECU",
     },
     {
         name: "Egypt",
-        flag: createUrl("/f/fe/Flag_of_Egypt.svg"),
+        flag: "🇪🇬",
         iso3: "EGY",
     },
     {
@@ -337,52 +345,52 @@ export const countries = [
     },
     {
         name: "Equatorial Guinea",
-        flag: createUrl("/3/31/Flag_of_Equatorial_Guinea.svg"),
+        flag: "🇬🇶",
         iso3: "GNQ",
     },
     {
         name: "Eritrea",
-        flag: createUrl("/2/29/Flag_of_Eritrea.svg"),
+        flag: "🇪🇷",
         iso3: "ERI",
     },
     {
         name: "Estonia",
-        flag: createUrl("/8/8f/Flag_of_Estonia.svg"),
+        flag: "🇪🇪",
         iso3: "EST",
     },
     {
         name: "Ethiopia",
-        flag: createUrl("/7/71/Flag_of_Ethiopia.svg"),
+        flag: "🇪🇹",
         iso3: "ETH",
     },
     {
         name: "Falkland Islands",
-        flag: createUrl("/8/83/Flag_of_the_Falkland_Islands.svg"),
+        flag: "🇫🇰",
         iso3: "FLK",
     },
     {
         name: "Faroe Islands",
-        flag: createUrl("/3/3c/Flag_of_the_Faroe_Islands.svg"),
+        flag: "🇫🇴",
         iso3: "FRO",
     },
     {
         name: "Fiji",
-        flag: createUrl("/b/ba/Flag_of_Fiji.svg"),
+        flag: "🇫🇯",
         iso3: "FJI",
     },
     {
         name: "Finland",
-        flag: createUrl("/b/bc/Flag_of_Finland.svg"),
+        flag: "🇫🇮",
         iso3: "FIN",
     },
     {
         name: "France",
-        flag: createUrl("/c/c3/Flag_of_France.svg"),
+        flag: "🇫🇷",
         iso3: "FRA",
     },
     {
         name: "French Guiana",
-        flag: createUrl("/e/ed/Flag_of_France_%28Pantone%29.svg"),
+        flag: "🇬🇫",
         iso3: "GUF",
     },
     {
@@ -392,108 +400,107 @@ export const countries = [
     },
     {
         name: "Gabon",
-        flag: createUrl("/0/04/Flag_of_Gabon.svg"),
+        flag: "🇬🇦",
         iso3: "GAB",
     },
     {
         name: "Gambia",
-        flag: createUrl("/7/77/Flag_of_The_Gambia.svg"),
+        flag: "🇬🇲",
         iso3: "GMB",
     },
     {
         name: "Georgia",
-        flag: createUrl("/0/0f/Flag_of_Georgia.svg"),
+        flag: "🇬🇪",
         iso3: "GEO",
     },
     {
         name: "Germany",
-        flag: createUrl("/b/ba/Flag_of_Germany.svg"),
+        flag: "🇩🇪",
         iso3: "DEU",
     },
     {
         name: "Ghana",
-        flag: createUrl("/1/19/Flag_of_Ghana.svg"),
+        flag: "🇬🇭",
         iso3: "GHA",
     },
     {
         name: "Gibraltar",
-        flag: createUrl("/0/02/Flag_of_Gibraltar.svg"),
+        flag: "🇬🇮",
         iso3: "GIB",
     },
     {
         name: "Greece",
-        flag: createUrl("/5/5c/Flag_of_Greece.svg"),
+        flag: "🇬🇷",
         iso3: "GRC",
     },
     {
         name: "Greenland",
-        flag: createUrl("/0/09/Flag_of_Greenland.svg"),
+        flag: "🇬🇱",
         iso3: "GRL",
     },
     {
         name: "Grenada",
-        flag: createUrl("/b/bc/Flag_of_Grenada.svg"),
+        flag: "🇬🇩",
         iso3: "GRD",
     },
     {
         name: "Guadeloupe",
-        flag: createUrl("/9/9f/Flag_of_France_%287x10%29.svg"),
+        flag: "🇬🇵",
         iso3: "GLP",
     },
     {
         name: "Guam",
-        flag: createUrl("/0/07/Flag_of_Guam.svg"),
+        flag: "🇬🇺",
         iso3: "GUM",
     },
     {
         name: "Guatemala",
-        flag: createUrl("/e/ec/Flag_of_Guatemala.svg"),
+        flag: "🇬🇹",
         iso3: "GTM",
     },
     {
         name: "Guernsey",
-        flag: createUrl("/f/fa/Flag_of_Guernsey.svg"),
+        flag: "🇬🇬",
         iso3: "GGY",
     },
     {
         name: "Guinea-Bissau",
-        flag: createUrl("/0/01/Flag_of_Guinea-Bissau.svg"),
+        flag: "🇬🇼",
         iso3: "GNB",
     },
     {
         name: "Guinea",
-        flag: createUrl("/e/ed/Flag_of_Guinea.svg"),
+        flag: "🇬🇳",
         iso3: "GIN",
     },
     {
         name: "Guyana",
-        flag: createUrl("/9/99/Flag_of_Guyana.svg"),
+        flag: "🇬🇾",
         iso3: "GUY",
     },
     {
         name: "Haiti",
-        flag: createUrl("/5/56/Flag_of_Haiti.svg"),
+        flag: "🇭🇹",
         iso3: "HTI",
     },
     {
         name: "Holy See",
         flag: createUrl("/0/00/Flag_of_the_Vatican_City.svg"),
         iso3: "VAT",
-        altSpellings: ["Vatican"],
     },
     {
         name: "Honduras",
-        flag: createUrl("/8/82/Flag_of_Honduras.svg"),
+        flag: "🇭🇳",
         iso3: "HND",
     },
     {
         name: "Hong Kong",
-        flag: createUrl("/5/5b/Flag_of_Hong_Kong.svg"),
+        flag: "🇭🇰",
         iso3: "HKG",
     },
     {
         name: "Hungary",
-        flag: createUrl("/c/c1/Flag_of_Hungary.svg"),
+        flag: "🇭🇺",
         iso3: "HUN",
     },
     {
@@ -508,7 +515,7 @@ export const countries = [
     },
     {
         name: "Indonesia",
-        flag: createUrl("/9/9f/Flag_of_Indonesia.svg"),
+        flag: "🇮🇩",
         iso3: "IDN",
     },
     {
@@ -528,7 +535,7 @@ export const countries = [
     },
     {
         name: "Ireland",
-        flag: createUrl("/c/c0/Republic_of_Ireland_Flag.svg"),
+        flag: "🇮🇪",
         iso3: "IRL",
     },
     {
@@ -538,12 +545,12 @@ export const countries = [
     },
     {
         name: "Israel",
-        flag: createUrl("/d/d4/Flag_of_Israel.svg"),
+        flag: "🇮🇱",
         iso3: "ISR",
     },
     {
         name: "Italy",
-        flag: createUrl("/0/03/Flag_of_Italy.svg"),
+        flag: "🇮🇹",
         iso3: "ITA",
     },
     {
@@ -553,7 +560,7 @@ export const countries = [
     },
     {
         name: "Japan",
-        flag: createUrl("/b/bc/Flag_of_Japan%28bordered%29.svg"),
+        flag: "🇯🇵",
         iso3: "JPN",
     },
     {
@@ -578,7 +585,7 @@ export const countries = [
     },
     {
         name: "Kiribati",
-        flag: createUrl("/d/d3/Flag_of_Kiribati.svg"),
+        flag: "🇰🇮",
         iso3: "KIR",
     },
     {
@@ -658,7 +665,7 @@ export const countries = [
     },
     {
         name: "Malaysia",
-        flag: createUrl("/6/66/Flag_of_Malaysia.svg"),
+        flag: "🇲🇾",
         iso3: "MYS",
     },
     {
@@ -683,7 +690,7 @@ export const countries = [
     },
     {
         name: "Martinique",
-        flag: createUrl("/2/21/Flag_of_the_Territorial_Collectivity_of_Martinique.svg"),
+        flag: "🇲🇶",
         iso3: "MTQ",
     },
     {
@@ -708,7 +715,7 @@ export const countries = [
     },
     {
         name: "Micronesia",
-        flag: createUrl("/e/e4/Flag_of_the_Federated_States_of_Micronesia.svg"),
+        flag: "🇫🇲",
         iso3: "FSM",
     },
     {
@@ -778,12 +785,12 @@ export const countries = [
     },
     {
         name: "New Caledonia",
-        flag: createUrl("/6/66/Flag_of_FLNKS.svg"),
+        flag: "🇳🇨",
         iso3: "NCL",
     },
     {
         name: "New Zealand",
-        flag: createUrl("/3/3e/Flag_of_New_Zealand.svg"),
+        flag: "🇳🇿",
         iso3: "NZL",
     },
     {
@@ -873,7 +880,7 @@ export const countries = [
     },
     {
         name: "Philippines",
-        flag: createUrl("/9/99/Flag_of_the_Philippines.svg"),
+        flag: "🇵🇭",
         iso3: "PHL",
     },
     {
@@ -908,12 +915,12 @@ export const countries = [
     },
     {
         name: "Romania",
-        flag: createUrl("/7/73/Flag_of_Romania.svg"),
+        flag: "🇷🇴",
         iso3: "ROU",
     },
     {
         name: "Russia",
-        flag: createUrl("/f/f3/Flag_of_Russia.svg"),
+        flag: "🇷🇺",
         iso3: "RUS",
     },
     {
@@ -923,20 +930,18 @@ export const countries = [
     },
     {
         name: "Saint Barthélemy",
-        flag: createUrl("/0/03/Saint-Barthelémy_Icône.svg"),
+        flag: "🇧🇱",
         iso3: "BLM",
     },
     {
         name: "Saint Helena, Ascension and Tristan da Cunha",
         flag: createUrl("/0/00/Flag_of_Saint_Helena.svg"),
         iso3: "SHN",
-        altSpellings: ["Saint Helenian", "Tristanian"],
     },
     {
         name: "Saint Kitts and Nevis",
         flag: createUrl("/f/fe/Flag_of_Saint_Kitts_and_Nevis.svg"),
         iso3: "KNA",
-        altSpellings: ["Nevisian"],
     },
     {
         name: "Saint Lucia",
@@ -960,7 +965,7 @@ export const countries = [
     },
     {
         name: "Samoa",
-        flag: createUrl("/3/31/Flag_of_Samoa.svg"),
+        flag: "🇼🇸",
         iso3: "WSM",
     },
     {
@@ -1002,7 +1007,6 @@ export const countries = [
         name: "Singapore",
         flag: createUrl("/4/48/Flag_of_Singapore.svg"),
         iso3: "SGP",
-        altSpellings: ["SG", "Singapura", "Republik Singapura"],
     },
     {
         name: "Sint Maarten",
@@ -1021,7 +1025,7 @@ export const countries = [
     },
     {
         name: "Solomon Islands",
-        flag: createUrl("/7/74/Flag_of_the_Solomon_Islands.svg"),
+        flag: "🇸🇧",
         iso3: "SLB",
     },
     {
@@ -1036,14 +1040,13 @@ export const countries = [
     },
     {
         name: "South Georgia and the South Sandwich Islands",
-        flag: createUrl("/e/ed/Flag_of_South_Georgia_and_the_South_Sandwich_Islands.svg"),
+        flag: "🇬🇸",
         iso3: "SGS",
     },
     {
         name: "South Korea",
-        flag: createUrl("/0/09/Flag_of_South_Korea.svg"),
+        flag: "🇰🇷",
         iso3: "KOR",
-        altSpellings: ["Republic of Korea"],
     },
     {
         name: "South Sudan",
@@ -1052,7 +1055,7 @@ export const countries = [
     },
     {
         name: "Spain",
-        flag: createUrl("/9/9a/Flag_of_Spain.svg"),
+        flag: "🇪🇸",
         iso3: "ESP",
     },
     {
@@ -1087,7 +1090,7 @@ export const countries = [
     },
     {
         name: "Switzerland",
-        flag: createUrl("/f/f3/Flag_of_Switzerland.svg"),
+        flag: "🇨🇭",
         iso3: "CHE",
     },
     {
@@ -1132,7 +1135,7 @@ export const countries = [
     },
     {
         name: "Tonga",
-        flag: createUrl("/9/9a/Flag_of_Tonga.svg"),
+        flag: "🇹🇴",
         iso3: "TON",
     },
     {
@@ -1172,20 +1175,18 @@ export const countries = [
     },
     {
         name: "Ukraine",
-        flag: createUrl("/4/49/Flag_of_Ukraine.svg"),
+        flag: "🇺🇦",
         iso3: "UKR",
     },
     {
         name: "United Arab Emirates",
-        flag: createUrl("/c/cb/Flag_of_the_United_Arab_Emirates.svg"),
+        flag: "🇦🇪",
         iso3: "ARE",
-        altSpellings: ["AE", "UAE"],
     },
     {
         name: "United Kingdom",
-        flag: createUrl("/8/83/Flag_of_the_United_Kingdom_%283-5%29.svg"),
+        flag: "🇬🇧",
         iso3: "GBR",
-        altSpellings: ["UK"],
     },
     {
         name: "United States Minor Outlying Islands",
@@ -1194,9 +1195,8 @@ export const countries = [
     },
     {
         name: "United States",
-        flag: createUrl("/a/a4/Flag_of_the_United_States.svg"),
+        flag: "🇺🇸",
         iso3: "USA",
-        altSpellings: ["USA"],
     },
     {
         name: "Uruguay",
@@ -1210,7 +1210,7 @@ export const countries = [
     },
     {
         name: "Vanuatu",
-        flag: createUrl("/6/6e/Flag_of_Vanuatu_(official).svg"),
+        flag: "🇻🇺",
         iso3: "VUT",
     },
     {
@@ -1222,7 +1222,6 @@ export const countries = [
         name: "Vietnam",
         flag: createUrl("/2/21/Flag_of_Vietnam.svg"),
         iso3: "VNM",
-        altSpellings: ["Viet Nam", "Republic of Viet Nam", "South Vietnam"],
     },
     {
         name: "Virgin Islands of the United States",
@@ -1233,11 +1232,10 @@ export const countries = [
         name: "Wallis and Futuna",
         flag: createUrl("/d/d2/Flag_of_Wallis_and_Futuna.svg"),
         iso3: "WLF",
-        altSpellings: ["Futunan"],
     },
     {
         name: "Western Sahara",
-        flag: createUrl("/2/26/Flag_of_the_Sahrawi_Arab_Democratic_Republic.svg"),
+        flag: "🇪🇭",
         iso3: "ESH",
     },
     {
