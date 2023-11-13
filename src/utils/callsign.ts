@@ -34,4 +34,4 @@ export const parseCallsign = (callsign: string) => {
     };
 };
 
-export const findCountry = (csdata: CsDataType) => countries.find((c) => c.iso3 === csdata?.iso3);
+export const findCountry = (csdata: CsDataType) => (csdata?.iso3 ? countries[csdata?.iso3] : undefined);

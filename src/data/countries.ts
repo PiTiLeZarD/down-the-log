@@ -1,1257 +1,1006 @@
-export const countries = [
-    {
+export const countries: Record<string, { name: string; flag: string }> = {
+    AFG: {
         name: "Afghanistan",
         flag: "🇦🇫",
-        iso3: "AFG",
     },
-    {
+    ALA: {
         name: "Aland Islands",
         flag: "🇦🇽",
-        iso3: "ALA",
     },
-    {
+    ALB: {
         name: "Albania",
         flag: "🇦🇱",
-        iso3: "ALB",
     },
-    {
+    DZA: {
         name: "Algeria",
         flag: "🇩🇿",
-        iso3: "DZA",
     },
-    {
+    ASM: {
         name: "American Samoa",
         flag: "🇦🇸",
-        iso3: "ASM",
     },
-    {
+    AND: {
         name: "Andorra",
         flag: "🇦🇩",
-        iso3: "AND",
     },
-    {
+    AGO: {
         name: "Angola",
         flag: "🇦🇴",
-        iso3: "AGO",
     },
-    {
+    AIA: {
         name: "Anguilla",
         flag: "🇦🇮",
-        iso3: "AIA",
     },
-    {
+    ATG: {
         name: "Antigua and Barbuda",
         flag: "🇦🇬",
-        iso3: "ATG",
     },
-    {
+    ARG: {
         name: "Argentina",
         flag: "🇦🇷",
-        iso3: "ARG",
     },
-    {
+    ARM: {
         name: "Armenia",
         flag: "🇦🇲",
-        iso3: "ARM",
     },
-    {
+    ABW: {
         name: "Aruba",
         flag: "🇦🇼",
-        iso3: "ABW",
     },
-    {
+    AUS: {
         name: "Australia",
         flag: "🇦🇺",
-        iso3: "AUS",
     },
-    {
+    AUT: {
         name: "Austria",
         flag: "🇦🇹",
-        iso3: "AUT",
     },
-    {
+    AZE: {
         name: "Azerbaijan",
         flag: "🇦🇿",
-        iso3: "AZE",
     },
-    {
+    ATA: {
         name: "Antartica",
         flag: "🇦🇶",
-        iso3: "ATA",
     },
-    {
+    BHS: {
         name: "Bahamas",
         flag: "🇧🇸",
-        iso3: "BHS",
     },
-    {
+    BHR: {
         name: "Bahrain",
         flag: "🇧🇭",
-        iso3: "BHR",
     },
-    {
+    BGD: {
         name: "Bangladesh",
         flag: "🇧🇩",
-        iso3: "BGD",
     },
-    {
+    BRB: {
         name: "Barbados",
         flag: "🇧🇧",
-        iso3: "BRB",
     },
-    {
+    BLR: {
         name: "Belarus",
         flag: "🇧🇾",
-        iso3: "BLR",
     },
-    {
+    BEL: {
         name: "Belgium",
         flag: "🇧🇪",
-        iso3: "BEL",
     },
-    {
+    BLZ: {
         name: "Belize",
         flag: "🇧🇿",
-        iso3: "BLZ",
     },
-    {
+    BEN: {
         name: "Benin",
         flag: "🇧🇯",
-        iso3: "BEN",
     },
-    {
+    BVT: {
         name: "Bouvet Island",
         flag: "🇧🇻",
-        iso3: "BVT",
     },
-    {
+    BMU: {
         name: "Bermuda",
         flag: "🇧🇲",
-        iso3: "BMU",
     },
-    {
+    BTN: {
         name: "Bhutan",
         flag: "🇧🇹",
-        iso3: "BTN",
     },
-    {
+    BOL: {
         name: "Bolivia",
         flag: "🇧🇴",
-        iso3: "BOL",
     },
-    {
+    BES: {
         name: "Bonaire, Sint Eustatius and Saba",
         flag: "🇧🇶",
-        iso3: "BES",
     },
-    {
+    BIH: {
         name: "Bosnia and Herzegovina",
         flag: "🇧🇦",
-        iso3: "BIH",
     },
-    {
+    BWA: {
         name: "Botswana",
         flag: "🇧🇼",
-        iso3: "BWA",
     },
-    {
+    BRA: {
         name: "Brazil",
         flag: "🇧🇷",
-        iso3: "BRA",
     },
-    {
+    VGB: {
         name: "British Virgin Islands",
         flag: "🇻🇬",
-        iso3: "VGB",
     },
-    {
+    BRN: {
         name: "Brunei",
         flag: "🇧🇳",
-        iso3: "BRN",
     },
-    {
+    BGR: {
         name: "Bulgaria",
         flag: "🇧🇬",
-        iso3: "BGR",
     },
-    {
+    BFA: {
         name: "Burkina Faso",
         flag: "🇧🇫",
-        iso3: "BFA",
     },
-    {
+    HMD: {
         name: "Heard Island and McDonald Islands",
         flag: "🇭🇲",
-        iso3: "HMD",
     },
-    {
+    BDI: {
         name: "Burundi",
         flag: "🇧🇮",
-        iso3: "BDI",
     },
-    {
+    KHM: {
         name: "Cambodia",
         flag: "🇰🇭",
-        iso3: "KHM",
     },
-    {
+    CMR: {
         name: "Cameroon",
         flag: "🇨🇲",
-        iso3: "CMR",
     },
-    {
+    CAN: {
         name: "Canada",
         flag: "🇨🇦",
-        iso3: "CAN",
     },
-    {
+    CPV: {
         name: "Cabo Verde",
         flag: "🇨🇻",
-        iso3: "CPV",
     },
-    {
+    CYM: {
         name: "Cayman Islands",
         flag: "🇰🇾",
-        iso3: "CYM",
     },
-    {
+    CAF: {
         name: "Central African Republic",
         flag: "🇨🇫",
-        iso3: "CAF",
     },
-    {
+    TCD: {
         name: "Chad",
         flag: "🇹🇩",
-        iso3: "TCD",
     },
-    {
+    CHL: {
         name: "Chile",
         flag: "🇨🇱",
-        iso3: "CHL",
     },
-    {
+    CHN: {
         name: "China",
         flag: "🇨🇳",
-        iso3: "CHN",
     },
-    {
+    CXR: {
         name: "Christmas Island",
         flag: "🇨🇽",
-        iso3: "CXR",
     },
-    {
+    CCK: {
         name: "Cocos Islands",
         flag: "🇨🇨",
-        iso3: "CCK",
     },
-    {
+    COL: {
         name: "Colombia",
         flag: "🇨🇴",
-        iso3: "COL",
     },
-    {
+    COM: {
         name: "Comoros",
         flag: "🇰🇲",
-        iso3: "COM",
     },
-    {
+    COG: {
         name: "Congo",
         flag: "🇨🇬",
-        iso3: "COG",
     },
-    {
+    COK: {
         name: "Cook Islands",
         flag: "🇨🇰",
-        iso3: "COK",
     },
-    {
+    CRI: {
         name: "Costa Rica",
         flag: "🇨🇷",
-        iso3: "CRI",
     },
-    {
+    CIV: {
         name: "Côte d'Ivoire",
         flag: "🇨🇮",
-        iso3: "CIV",
     },
-    {
+    HRV: {
         name: "Croatia",
         flag: "🇭🇷",
-        iso3: "HRV",
     },
-    {
+    CUB: {
         name: "Cuba",
         flag: "🇨🇺",
-        iso3: "CUB",
     },
-    {
+    CUW: {
         name: "Curaçao",
         flag: "🇨🇼",
-        iso3: "CUW",
     },
-    {
+    CYP: {
         name: "Cyprus",
         flag: "🇨🇾",
-        iso3: "CYP",
     },
-    {
+    CZE: {
         name: "Czech Republic",
         flag: "🇨🇿",
-        iso3: "CZE",
     },
-    {
+    COD: {
         name: "Democratic Republic of the Congo",
         flag: "🇨🇩",
-        iso3: "COD",
     },
-    {
+    DNK: {
         name: "Denmark",
         flag: "🇩🇰",
-        iso3: "DNK",
     },
-    {
+    DJI: {
         name: "Djibouti",
         flag: "🇩🇯",
-        iso3: "DJI",
     },
-    {
+    DMA: {
         name: "Dominica",
         flag: "🇩🇲",
-        iso3: "DMA",
     },
-    {
+    DOM: {
         name: "Dominican Republic",
         flag: "🇩🇴",
-        iso3: "DOM",
     },
-    {
+    ECU: {
         name: "Ecuador",
         flag: "🇪🇨",
-        iso3: "ECU",
     },
-    {
+    EGY: {
         name: "Egypt",
         flag: "🇪🇬",
-        iso3: "EGY",
     },
-    {
+    SLV: {
         name: "El Salvador",
         flag: "🇸🇻",
-        iso3: "SLV",
     },
-    {
+    GNQ: {
         name: "Equatorial Guinea",
         flag: "🇬🇶",
-        iso3: "GNQ",
     },
-    {
+    ERI: {
         name: "Eritrea",
         flag: "🇪🇷",
-        iso3: "ERI",
     },
-    {
+    EST: {
         name: "Estonia",
         flag: "🇪🇪",
-        iso3: "EST",
     },
-    {
+    ETH: {
         name: "Ethiopia",
         flag: "🇪🇹",
-        iso3: "ETH",
     },
-    {
+    FLK: {
         name: "Falkland Islands",
         flag: "🇫🇰",
-        iso3: "FLK",
     },
-    {
+    FRO: {
         name: "Faroe Islands",
         flag: "🇫🇴",
-        iso3: "FRO",
     },
-    {
+    ATF: {
         name: "French Southern Territories",
         flag: "🇹🇫",
-        iso3: "ATF",
     },
-    {
+    FJI: {
         name: "Fiji",
         flag: "🇫🇯",
-        iso3: "FJI",
     },
-    {
+    FIN: {
         name: "Finland",
         flag: "🇫🇮",
-        iso3: "FIN",
     },
-    {
+    FRA: {
         name: "France",
         flag: "🇫🇷",
-        iso3: "FRA",
     },
-    {
+    GUF: {
         name: "French Guiana",
         flag: "🇬🇫",
-        iso3: "GUF",
     },
-    {
+    PYF: {
         name: "French Polynesia",
         flag: "🇵🇫",
-        iso3: "PYF",
     },
-    {
+    GAB: {
         name: "Gabon",
         flag: "🇬🇦",
-        iso3: "GAB",
     },
-    {
+    GMB: {
         name: "Gambia",
         flag: "🇬🇲",
-        iso3: "GMB",
     },
-    {
+    GEO: {
         name: "Georgia",
         flag: "🇬🇪",
-        iso3: "GEO",
     },
-    {
+    DEU: {
         name: "Germany",
         flag: "🇩🇪",
-        iso3: "DEU",
     },
-    {
+    GHA: {
         name: "Ghana",
         flag: "🇬🇭",
-        iso3: "GHA",
     },
-    {
+    GIB: {
         name: "Gibraltar",
         flag: "🇬🇮",
-        iso3: "GIB",
     },
-    {
+    GRC: {
         name: "Greece",
         flag: "🇬🇷",
-        iso3: "GRC",
     },
-    {
+    GRL: {
         name: "Greenland",
         flag: "🇬🇱",
-        iso3: "GRL",
     },
-    {
+    GRD: {
         name: "Grenada",
         flag: "🇬🇩",
-        iso3: "GRD",
     },
-    {
+    GLP: {
         name: "Guadeloupe",
         flag: "🇬🇵",
-        iso3: "GLP",
     },
-    {
+    GUM: {
         name: "Guam",
         flag: "🇬🇺",
-        iso3: "GUM",
     },
-    {
+    GTM: {
         name: "Guatemala",
         flag: "🇬🇹",
-        iso3: "GTM",
     },
-    {
+    GGY: {
         name: "Guernsey",
         flag: "🇬🇬",
-        iso3: "GGY",
     },
-    {
+    GNB: {
         name: "Guinea-Bissau",
         flag: "🇬🇼",
-        iso3: "GNB",
     },
-    {
+    GIN: {
         name: "Guinea",
         flag: "🇬🇳",
-        iso3: "GIN",
     },
-    {
+    GUY: {
         name: "Guyana",
         flag: "🇬🇾",
-        iso3: "GUY",
     },
-    {
+    HTI: {
         name: "Haiti",
         flag: "🇭🇹",
-        iso3: "HTI",
     },
-    {
+    VAT: {
         name: "Holy See",
         flag: "🇻🇦",
-        iso3: "VAT",
     },
-    {
+    HND: {
         name: "Honduras",
         flag: "🇭🇳",
-        iso3: "HND",
     },
-    {
+    HKG: {
         name: "Hong Kong",
         flag: "🇭🇰",
-        iso3: "HKG",
     },
-    {
+    HUN: {
         name: "Hungary",
         flag: "🇭🇺",
-        iso3: "HUN",
     },
-    {
+    ISL: {
         name: "Iceland",
         flag: "🇮🇸",
-        iso3: "ISL",
     },
-    {
+    IND: {
         name: "India",
         flag: "🇮🇳",
-        iso3: "IND",
     },
-    {
+    IDN: {
         name: "Indonesia",
         flag: "🇮🇩",
-        iso3: "IDN",
     },
-    {
+    IOT: {
         name: "British Indian Ocean Territory",
         flag: "🇮🇴",
-        iso3: "IOT",
     },
-    {
+    IRN: {
         name: "Iran",
         flag: "🇮🇷",
-        iso3: "IRN",
     },
-    {
+    IRQ: {
         name: "Iraq",
         flag: "🇮🇶",
-        iso3: "IRQ",
     },
-    {
+    IRL: {
         name: "Ireland",
         flag: "🇮🇪",
-        iso3: "IRL",
     },
-    {
+    IMN: {
         name: "Isle of Man",
         flag: "🇮🇲",
-        iso3: "IMN",
     },
-    {
+    ISR: {
         name: "Israel",
         flag: "🇮🇱",
-        iso3: "ISR",
     },
-    {
+    ITA: {
         name: "Italy",
         flag: "🇮🇹",
-        iso3: "ITA",
     },
-    {
+    JAM: {
         name: "Jamaica",
         flag: "🇯🇲",
-        iso3: "JAM",
     },
-    {
+    JPN: {
         name: "Japan",
         flag: "🇯🇵",
-        iso3: "JPN",
     },
-    {
+    JEY: {
         name: "Jersey",
         flag: "🇯🇪",
-        iso3: "JEY",
     },
-    {
+    JOR: {
         name: "Jordan",
         flag: "🇯🇴",
-        iso3: "JOR",
     },
-    {
+    KAZ: {
         name: "Kazakhstan",
         flag: "🇰🇿",
-        iso3: "KAZ",
     },
-    {
+    KEN: {
         name: "Kenya",
         flag: "🇰🇪",
-        iso3: "KEN",
     },
-    {
+    KIR: {
         name: "Kiribati",
         flag: "🇰🇮",
-        iso3: "KIR",
     },
-    {
+    XXK: {
         name: "Kosovo",
         flag: "🇽🇰",
-        iso3: "XXK",
     },
-    {
+    KWT: {
         name: "Kuwait",
         flag: "🇰🇼",
-        iso3: "KWT",
     },
-    {
+    KGZ: {
         name: "Kyrgyzstan",
         flag: "🇰🇬",
-        iso3: "KGZ",
     },
-    {
+    LAO: {
         name: "Laos",
         flag: "🇱🇦",
-        iso3: "LAO",
     },
-    {
+    LVA: {
         name: "Latvia",
         flag: "🇱🇻",
-        iso3: "LVA",
     },
-    {
+    LBN: {
         name: "Lebanon",
         flag: "🇱🇧",
-        iso3: "LBN",
     },
-    {
+    LSO: {
         name: "Lesotho",
         flag: "🇱🇸",
-        iso3: "LSO",
     },
-    {
+    LBR: {
         name: "Liberia",
         flag: "🇱🇷",
-        iso3: "LBR",
     },
-    {
+    LBY: {
         name: "Libya",
         flag: "🇱🇾",
-        iso3: "LBY",
     },
-    {
+    LIE: {
         name: "Liechtenstein",
         flag: "🇱🇮",
-        iso3: "LIE",
     },
-    {
+    LTU: {
         name: "Lithuania",
         flag: "🇱🇹",
-        iso3: "LTU",
     },
-    {
+    LUX: {
         name: "Luxembourg",
         flag: "🇱🇺",
-        iso3: "LUX",
     },
-    {
+    MAC: {
         name: "Macao",
         flag: "🇲🇴",
-        iso3: "MAC",
     },
-    {
+    MDG: {
         name: "Madagascar",
         flag: "🇲🇬",
-        iso3: "MDG",
     },
-    {
+    MWI: {
         name: "Malawi",
         flag: "🇲🇼",
-        iso3: "MWI",
     },
-    {
+    MYS: {
         name: "Malaysia",
         flag: "🇲🇾",
-        iso3: "MYS",
     },
-    {
+    MDV: {
         name: "Maldives",
         flag: "🇲🇻",
-        iso3: "MDV",
     },
-    {
+    MLI: {
         name: "Mali",
         flag: "🇲🇱",
-        iso3: "MLI",
     },
-    {
+    MLT: {
         name: "Malta",
         flag: "🇲🇹",
-        iso3: "MLT",
     },
-    {
+    MHL: {
         name: "Marshall Islands",
         flag: "🇲🇭",
-        iso3: "MHL",
     },
-    {
+    MTQ: {
         name: "Martinique",
         flag: "🇲🇶",
-        iso3: "MTQ",
     },
-    {
+    MRT: {
         name: "Mauritania",
         flag: "🇲🇷",
-        iso3: "MRT",
     },
-    {
+    MUS: {
         name: "Mauritius",
         flag: "🇲🇺",
-        iso3: "MUS",
     },
-    {
+    MYT: {
         name: "Mayotte",
         flag: "🇾🇹",
-        iso3: "MYT",
     },
-    {
+    MEX: {
         name: "Mexico",
         flag: "🇲🇽",
-        iso3: "MEX",
     },
-    {
+    FSM: {
         name: "Micronesia",
         flag: "🇫🇲",
-        iso3: "FSM",
     },
-    {
+    MDA: {
         name: "Moldova",
         flag: "🇲🇩",
-        iso3: "MDA",
     },
-    {
+    MCO: {
         name: "Monaco",
         flag: "🇲🇨",
-        iso3: "MCO",
     },
-    {
+    MNG: {
         name: "Mongolia",
         flag: "🇲🇳",
-        iso3: "MNG",
     },
-    {
+    MNE: {
         name: "Montenegro",
         flag: "🇲🇪",
-        iso3: "MNE",
     },
-    {
+    MSR: {
         name: "Montserrat",
         flag: "🇲🇸",
-        iso3: "MSR",
     },
-    {
+    MAR: {
         name: "Morocco",
         flag: "🇲🇦",
-        iso3: "MAR",
     },
-    {
+    MOZ: {
         name: "Mozambique",
         flag: "🇲🇿",
-        iso3: "MOZ",
     },
-    {
+    MMR: {
         name: "Myanmar",
         flag: "🇲🇲",
-        iso3: "MMR",
     },
-    {
+    NAM: {
         name: "Namibia",
         flag: "🇳🇦",
-        iso3: "NAM",
     },
-    {
+    NRU: {
         name: "Nauru",
         flag: "🇳🇷",
-        iso3: "NRU",
     },
-    {
+    NPL: {
         name: "Nepal",
         flag: "🇳🇵",
-        iso3: "NPL",
     },
-    {
+    ANT: {
         name: "Netherlands Antilles",
         flag: "🇧🇶",
-        iso3: "ANT",
     },
-    {
+    NLD: {
         name: "Netherlands",
         flag: "🇳🇱",
-        iso3: "NLD",
     },
-    {
+    NCL: {
         name: "New Caledonia",
         flag: "🇳🇨",
-        iso3: "NCL",
     },
-    {
+    NZL: {
         name: "New Zealand",
         flag: "🇳🇿",
-        iso3: "NZL",
     },
-    {
+    NIC: {
         name: "Nicaragua",
         flag: "🇳🇮",
-        iso3: "NIC",
     },
-    {
+    NER: {
         name: "Niger",
         flag: "🇳🇪",
-        iso3: "NER",
     },
-    {
+    NGA: {
         name: "Nigeria",
         flag: "🇳🇬",
-        iso3: "NGA",
     },
-    {
+    NIU: {
         name: "Niue",
         flag: "🇳🇺",
-        iso3: "NIU",
     },
-    {
+    NFK: {
         name: "Norfolk Island",
         flag: "🇳🇫",
-        iso3: "NFK",
     },
-    {
+    PRK: {
         name: "North Korea",
         flag: "🇰🇵",
-        iso3: "PRK",
     },
-    {
+    MKD: {
         name: "North Macedonia",
         flag: "🇲🇰",
-        iso3: "MKD",
     },
-    {
+    MNP: {
         name: "Northern Mariana Islands",
         flag: "🇲🇵",
-        iso3: "MNP",
     },
-    {
+    NOR: {
         name: "Norway",
         flag: "🇳🇴",
-        iso3: "NOR",
     },
-    {
+    OMN: {
         name: "Oman",
         flag: "🇴🇲",
-        iso3: "OMN",
     },
-    {
+    PAK: {
         name: "Pakistan",
         flag: "🇵🇰",
-        iso3: "PAK",
     },
-    {
+    PLW: {
         name: "Palau",
         flag: "🇵🇼",
-        iso3: "PLW",
     },
-    {
+    PSE: {
         name: "Palestine",
         flag: "🇵🇸",
-        iso3: "PSE",
     },
-    {
+    PAN: {
         name: "Panama",
         flag: "🇵🇦",
-        iso3: "PAN",
     },
-    {
+    PNG: {
         name: "Papua New Guinea",
         flag: "🇵🇬",
-        iso3: "PNG",
     },
-    {
+    PRY: {
         name: "Paraguay",
         flag: "🇵🇾",
-        iso3: "PRY",
     },
-    {
+    PER: {
         name: "Peru",
         flag: "🇵🇪",
-        iso3: "PER",
     },
-    {
+    PHL: {
         name: "Philippines",
         flag: "🇵🇭",
-        iso3: "PHL",
     },
-    {
+    PCN: {
         name: "Pitcairn",
         flag: "🇵🇳",
-        iso3: "PCN",
     },
-    {
+    POL: {
         name: "Poland",
         flag: "🇵🇱",
-        iso3: "POL",
     },
-    {
+    PRT: {
         name: "Portugal",
         flag: "🇵🇹",
-        iso3: "PRT",
     },
-    {
+    PRI: {
         name: "Puerto Rico",
         flag: "🇵🇷",
-        iso3: "PRI",
     },
-    {
+    QAT: {
         name: "Qatar",
         flag: "🇶🇦",
-        iso3: "QAT",
     },
-    {
+    REU: {
         name: "Réunion",
         flag: "🇷🇪",
-        iso3: "REU",
     },
-    {
+    ROU: {
         name: "Romania",
         flag: "🇷🇴",
-        iso3: "ROU",
     },
-    {
+    RUS: {
         name: "Russia",
         flag: "🇷🇺",
-        iso3: "RUS",
     },
-    {
+    RWA: {
         name: "Rwanda",
         flag: "🇷🇼",
-        iso3: "RWA",
     },
-    {
+    BLM: {
         name: "Saint Barthélemy",
         flag: "🇧🇱",
-        iso3: "BLM",
     },
-    {
+    SHN: {
         name: "Saint Helena, Ascension and Tristan da Cunha",
         flag: "🇸🇭",
-        iso3: "SHN",
     },
-    {
+    KNA: {
         name: "Saint Kitts and Nevis",
         flag: "🇰🇳",
-        iso3: "KNA",
     },
-    {
+    LCA: {
         name: "Saint Lucia",
         flag: "🇱🇨",
-        iso3: "LCA",
     },
-    {
+    MAF: {
         name: "Saint Martin",
         flag: "🇲🇫",
-        iso3: "MAF",
     },
-    {
+    SPM: {
         name: "Saint Pierre and Miquelon",
         flag: "🇵🇲",
-        iso3: "SPM",
     },
-    {
+    VCT: {
         name: "Saint Vincent and the Grenadines",
         flag: "🇻🇨",
-        iso3: "VCT",
     },
-    {
+    WSM: {
         name: "Samoa",
         flag: "🇼🇸",
-        iso3: "WSM",
     },
-    {
+    SMR: {
         name: "San Marino",
         flag: "🇸🇲",
-        iso3: "SMR",
     },
-    {
+    STP: {
         name: "Sao Tome and Principe",
         flag: "🇸🇹",
-        iso3: "STP",
     },
-    {
+    SAU: {
         name: "Saudi Arabia",
         flag: "🇸🇦",
-        iso3: "SAU",
     },
-    {
+    SEN: {
         name: "Senegal",
         flag: "🇸🇳",
-        iso3: "SEN",
     },
-    {
+    SRB: {
         name: "Serbia",
         flag: "🇷🇸",
-        iso3: "SRB",
     },
-    {
+    SYC: {
         name: "Seychelles",
         flag: "🇸🇨",
-        iso3: "SYC",
     },
-    {
+    SLE: {
         name: "Sierra Leone",
         flag: "🇸🇱",
-        iso3: "SLE",
     },
-    {
+    SGP: {
         name: "Singapore",
         flag: "🇸🇬",
-        iso3: "SGP",
     },
-    {
+    SXM: {
         name: "Sint Maarten",
         flag: "🇸🇽",
-        iso3: "SXM",
     },
-    {
+    SVK: {
         name: "Slovakia",
         flag: "🇸🇰",
-        iso3: "SVK",
     },
-    {
+    SVN: {
         name: "Slovenia",
         flag: "🇸🇮",
-        iso3: "SVN",
     },
-    {
+    SLB: {
         name: "Solomon Islands",
         flag: "🇸🇧",
-        iso3: "SLB",
     },
-    {
+    SOM: {
         name: "Somalia",
         flag: "🇸🇴",
-        iso3: "SOM",
     },
-    {
+    ZAF: {
         name: "South Africa",
         flag: "🇿🇦",
-        iso3: "ZAF",
     },
-    {
+    SGS: {
         name: "South Georgia and the South Sandwich Islands",
         flag: "🇬🇸",
-        iso3: "SGS",
     },
-    {
+    KOR: {
         name: "South Korea",
         flag: "🇰🇷",
-        iso3: "KOR",
     },
-    {
+    SSD: {
         name: "South Sudan",
         flag: "🇸🇸",
-        iso3: "SSD",
     },
-    {
+    ESP: {
         name: "Spain",
         flag: "🇪🇸",
-        iso3: "ESP",
     },
-    {
+    LKA: {
         name: "Sri Lanka",
         flag: "🇱🇰",
-        iso3: "LKA",
     },
-    {
+    SDN: {
         name: "Sudan",
         flag: "🇸🇩",
-        iso3: "SDN",
     },
-    {
+    SUR: {
         name: "Suriname",
         flag: "🇸🇷",
-        iso3: "SUR",
     },
-    {
+    SJM: {
         name: "Svalbard and Jan Mayen",
         flag: "🇸🇯",
-        iso3: "SJM",
     },
-    {
+    SWZ: {
         name: "Eswatini",
         flag: "🇸🇿",
-        iso3: "SWZ",
     },
-    {
+    SWE: {
         name: "Sweden",
         flag: "🇸🇪",
-        iso3: "SWE",
     },
-    {
+    CHE: {
         name: "Switzerland",
         flag: "🇨🇭",
-        iso3: "CHE",
     },
-    {
+    SYR: {
         name: "Syria",
         flag: "🇸🇾",
-        iso3: "SYR",
     },
-    {
+    TWN: {
         name: "Taiwan",
         flag: "🇹🇼",
-        iso3: "TWN",
     },
-    {
+    TJK: {
         name: "Tajikistan",
         flag: "🇹🇯",
-        iso3: "TJK",
     },
-    {
+    TZA: {
         name: "Tanzania",
         flag: "🇹🇿",
-        iso3: "TZA",
     },
-    {
+    THA: {
         name: "Thailand",
         flag: "🇹🇭",
-        iso3: "THA",
     },
-    {
+    TLS: {
         name: "Timor-Leste",
         flag: "🇹🇱",
-        iso3: "TLS",
     },
-    {
+    TGO: {
         name: "Togo",
         flag: "🇹🇬",
-        iso3: "TGO",
     },
-    {
+    TKL: {
         name: "Tokelau",
         flag: "🇹🇰",
-        iso3: "TKL",
     },
-    {
+    TON: {
         name: "Tonga",
         flag: "🇹🇴",
-        iso3: "TON",
     },
-    {
+    TTO: {
         name: "Trinidad and Tobago",
         flag: "🇹🇹",
-        iso3: "TTO",
     },
-    {
+    TUN: {
         name: "Tunisia",
         flag: "🇹🇳",
-        iso3: "TUN",
     },
-    {
+    TUR: {
         name: "Turkey",
         flag: "🇹🇷",
-        iso3: "TUR",
     },
-    {
+    TKM: {
         name: "Turkmenistan",
         flag: "🇹🇲",
-        iso3: "TKM",
     },
-    {
+    TCA: {
         name: "Turks and Caicos Islands",
         flag: "🇹🇨",
-        iso3: "TCA",
     },
-    {
+    TUV: {
         name: "Tuvalu",
         flag: "🇹🇻",
-        iso3: "TUV",
     },
-    {
+    UGA: {
         name: "Uganda",
         flag: "🇺🇬",
-        iso3: "UGA",
     },
-    {
+    UKR: {
         name: "Ukraine",
         flag: "🇺🇦",
-        iso3: "UKR",
     },
-    {
+    ARE: {
         name: "United Arab Emirates",
         flag: "🇦🇪",
-        iso3: "ARE",
     },
-    {
+    GBR: {
         name: "United Kingdom",
         flag: "🇬🇧",
-        iso3: "GBR",
     },
-    {
+    UMI: {
         name: "United States Minor Outlying Islands",
         flag: "🇺🇲",
-        iso3: "UMI",
     },
-    {
+    USA: {
         name: "United States",
         flag: "🇺🇸",
-        iso3: "USA",
     },
-    {
+    URY: {
         name: "Uruguay",
         flag: "🇺🇾",
-        iso3: "URY",
     },
-    {
+    UZB: {
         name: "Uzbekistan",
         flag: "🇺🇿",
-        iso3: "UZB",
     },
-    {
+    VUT: {
         name: "Vanuatu",
         flag: "🇻🇺",
-        iso3: "VUT",
     },
-    {
+    VEN: {
         name: "Venezuela",
         flag: "🇻🇪",
-        iso3: "VEN",
     },
-    {
+    VNM: {
         name: "Vietnam",
         flag: "🇻🇳",
-        iso3: "VNM",
     },
-    {
+    VIR: {
         name: "Virgin Islands of the United States",
         flag: "🇻🇮",
-        iso3: "VIR",
     },
-    {
+    WLF: {
         name: "Wallis and Futuna",
         flag: "🇼🇫",
-        iso3: "WLF",
     },
-    {
+    ESH: {
         name: "Western Sahara",
         flag: "🇪🇭",
-        iso3: "ESH",
     },
-    {
+    YEM: {
         name: "Yemen",
         flag: "🇾🇪",
-        iso3: "YEM",
     },
-    {
+    ZMB: {
         name: "Zambia",
         flag: "🇿🇲",
-        iso3: "ZMB",
     },
-    {
+    ZWE: {
         name: "Zimbabwe",
         flag: "🇿🇼",
-        iso3: "ZWE",
     },
-] as const;
+};
