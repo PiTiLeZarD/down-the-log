@@ -6,7 +6,7 @@ This is the rough todolist I want to work on, I'll try to chunk all this in 5mn 
 
 This is what I'll be working on next.
 
--   Fix the qso list pushing the input all the way down
+-   [ ] Perf issues, migrate to Tamagui
 -   [ ] adif import export
     -   [x] download qsos as adif
     -   [ ] ability to ask "download from last export"
@@ -83,3 +83,4 @@ Got too many ideas, here is where I chuck them
 -   [x] finish up the qso form, doesn't have to be final, just functional, check that edit works well too
 -   [x] ability to delete a qso
 -   [x] automatic prefix recognition, show location/distance
+-   [x] Fix the qso list pushing the input all the way down
