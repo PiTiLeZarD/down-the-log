@@ -14,11 +14,8 @@ import { Typography } from "../../utils/theme/components/typography";
 
 const stylesheet = createStyleSheet((theme) => ({
     header: {
-        backgroundColor: theme.colours.primary[200],
+        backgroundColor: theme.colours.primary[300],
         padding: 4,
-    },
-    text: {
-        color: theme.colours.primary[800],
     },
 }));
 
@@ -35,12 +32,15 @@ export const LocationHeader: LocationHeaderComponent = ({ navigation }): JSX.Ele
     return (
         <Stack direction="row" style={styles.header}>
             <Stack style={{ flexGrow: 1 }}>
-                <Text style={styles.text}>Locator: {currentLocation}</Text>
-                <Text style={styles.text}>
+                <Stack direction="row">
+                    <Typography>Locator: </Typography>
+                    <Typography>{currentLocation}</Typography>
+                </Stack>
+                <Typography>
                     (CQ: {findZone(cqzones, maidenhead2Latlong(currentLocation))}, ITU:{" "}
                     {findZone(ituzones, maidenhead2Latlong(currentLocation))}, DXCC:{" "}
                     {findZone(dxcc, maidenhead2Latlong(currentLocation))})
-                </Text>
+                </Typography>
             </Stack>
             <View>
                 <Text>Menu</Text>

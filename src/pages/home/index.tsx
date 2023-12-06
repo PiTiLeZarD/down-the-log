@@ -53,7 +53,7 @@ export const Home: HomeComponent = ({ navigation }): JSX.Element => {
         <View style={styles.container}>
             <View style={styles.top}>
                 <LocationHeader navigation={navigation} />
-                <Clocks />T
+                <Clocks />
             </View>
             <ScrollView style={styles.table}>
                 <QsoList

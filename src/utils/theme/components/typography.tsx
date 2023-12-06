@@ -62,6 +62,7 @@ const stylesheet = createStyleSheet((theme) => ({
     },
     subtitle: {
         ...theme.components.typography,
+        fontSize: 12,
         color: theme.colours.grey[700],
         fontStyle: "italic",
     },

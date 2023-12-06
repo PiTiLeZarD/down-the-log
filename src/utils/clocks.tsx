@@ -10,7 +10,11 @@ export type ClocksComponent = React.FC<ClocksProps>;
 
 const stylesheet = createStyleSheet((theme) => ({
     container: {
-        backgroundColor: theme.colours.primary[200],
+        backgroundColor: theme.colours.primary[300],
+        paddingTop: 4,
+        paddingBottom: 4,
+        borderBottomWidth: 2,
+        borderBottomColor: theme.colours.grey[900],
     },
 }));
 
@@ -30,10 +34,14 @@ export const Clocks: ClocksComponent = (): JSX.Element => {
     return (
         <Grid container style={styles.container}>
             <Grid item xs={6}>
-                <Typography style={{ textAlign: "center" }}>Local: {time.toFormat("HH:mm")}</Typography>
+                <Typography variant="em" style={{ textAlign: "center" }}>
+                    Local: {time.toFormat("HH:mm")}
+                </Typography>
             </Grid>
             <Grid item xs={6}>
-                <Typography style={{ textAlign: "center" }}>UTC: {time.toUTC().toFormat("HH:mm")}</Typography>
+                <Typography variant="em" style={{ textAlign: "center" }}>
+                    UTC: {time.toUTC().toFormat("HH:mm")}
+                </Typography>
             </Grid>
         </Grid>
     );

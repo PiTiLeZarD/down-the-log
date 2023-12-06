@@ -13,7 +13,7 @@ const stylesheet = createStyleSheet((theme) => ({
         fontWeight: "bold",
     },
     rowHighlight: {
-        backgroundColor: theme.colours.primary[200],
+        backgroundColor: theme.colours.grey[300],
     },
 }));
 

@@ -12,6 +12,8 @@ export const theme = {
     components: {
         typography: {
             fontFamily: "Quicksand",
+            fontWeight: "400",
+            fontSize: 15,
         },
     },
     margins: {
