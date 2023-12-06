@@ -7,7 +7,6 @@ import { useStore } from "../../store";
 import { Clocks } from "../../utils/clocks";
 import { newQso, useQsos } from "../../utils/qso";
 import { createStyleSheet, useStyles } from "../../utils/theme";
-import { Typography } from "../../utils/theme/components/typography";
 import { CallsignInput } from "./callsign-input";
 import { LocationHeader } from "./location-header";
 import { QsoList } from "./qso-list";
@@ -52,7 +51,6 @@ export const Home: HomeComponent = ({ navigation }): JSX.Element => {
 
     return (
         <View style={styles.container}>
-            <Typography variant="em">Test</Typography>
             <View style={styles.top}>
                 <LocationHeader navigation={navigation} />
                 <Clocks />T
