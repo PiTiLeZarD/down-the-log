@@ -1,4 +1,3 @@
-import { P } from "@expo/html-elements";
 import { NativeStackScreenProps } from "@react-navigation/native-stack";
 import React from "react";
 import { Text, View } from "react-native";
@@ -11,14 +10,15 @@ import { maidenhead2Latlong } from "../../utils/locator";
 import { findZone } from "../../utils/polydec";
 import { Stack } from "../../utils/stack";
 import { createStyleSheet, useStyles } from "../../utils/theme";
+import { Typography } from "../../utils/theme/components/typography";
 
 const stylesheet = createStyleSheet((theme) => ({
     header: {
-        backgroundColor: theme.colors.primary[200],
+        backgroundColor: theme.colours.primary[200],
         padding: 4,
     },
     text: {
-        color: theme.colors.primary[800],
+        color: theme.colours.primary[800],
     },
 }));
 
@@ -30,7 +30,7 @@ export const LocationHeader: LocationHeaderComponent = ({ navigation }): JSX.Ele
     const currentLocation = useStore((state) => state.currentLocation);
     const { styles } = useStyles(stylesheet);
 
-    if (!currentLocation) return <P>Looking for your location...</P>;
+    if (!currentLocation) return <Typography>Looking for your location...</Typography>;
 
     return (
         <Stack direction="row" style={styles.header}>

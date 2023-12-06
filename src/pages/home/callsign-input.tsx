@@ -1,4 +1,3 @@
-import { P } from "@expo/html-elements";
 import { Ionicons } from "@expo/vector-icons";
 import React from "react";
 import { TextInput, View } from "react-native";
@@ -10,6 +9,7 @@ import { Grid } from "../../utils/grid";
 import { maidenDistance, maidenhead2Latlong } from "../../utils/locator";
 import { findZone } from "../../utils/polydec";
 import { Stack } from "../../utils/stack";
+import { Typography } from "../../utils/theme/components/typography";
 
 export type CallsignInputProps = {
     callsign: string;
@@ -30,23 +30,23 @@ export const CallsignInput: CallsignInputComponent = ({ callsign, handleAdd, set
             {callsignData && (
                 <Grid container>
                     <Grid item xs={4}>
-                        <P>
+                        <Typography>
                             {country?.flag}
                             {country?.name} {callsignData.state ? `(${callsignData.state})` : ""}
-                        </P>
+                        </Typography>
                     </Grid>
                     <Grid item xs={3}>
-                        <P>{maidenDistance(currentLocation, callsignData.gs)}km</P>
+                        <Typography>{maidenDistance(currentLocation, callsignData.gs)}km</Typography>
                     </Grid>
                     <Grid item xs={5} md={3}>
-                        <P>
+                        <Typography>
                             CQ: {callsignData.gs ? findZone(cqzones, maidenhead2Latlong(callsignData.gs)) : "??"}, ITU:{" "}
                             {callsignData.gs ? findZone(ituzones, maidenhead2Latlong(callsignData.gs)) : "??"}, DXCC:{" "}
                             {callsignData.dxcc}
-                        </P>
+                        </Typography>
                     </Grid>
                     <Grid item xs={-1} md={1}>
-                        <P>({callsignData.ctn})</P>
+                        <Typography>({callsignData.ctn})</Typography>
                     </Grid>
                 </Grid>
             )}

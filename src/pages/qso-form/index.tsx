@@ -1,4 +1,3 @@
-import { P } from "@expo/html-elements";
 import { NativeStackScreenProps } from "@react-navigation/native-stack";
 import React from "react";
 import { useForm } from "react-hook-form";
@@ -9,6 +8,7 @@ import { useStore } from "../../store";
 import { FormField } from "../../utils/form-field";
 import { Grid } from "../../utils/grid";
 import { QSO, useQsos } from "../../utils/qso";
+import { Typography } from "../../utils/theme/components/typography";
 
 export type QsoFormProps = {} & NativeStackScreenProps<RootStackParamList, "QsoForm">;
 
@@ -61,8 +61,8 @@ export const QsoForm: QsoFormComponent = ({ navigation, route }): JSX.Element =>
                     <FormField name="frequency" label="Frequency:" control={control} placeholder="In Khz" />
                 </Grid>
                 <Grid item xs={4} sm={2}>
-                    <P>Band:</P>
-                    <P>{freq2band(freq) || "N/A"}</P>
+                    <Typography>Band:</Typography>
+                    <Typography>{freq2band(freq) || "N/A"}</Typography>
                 </Grid>
                 <Grid item xs={12} sm={3}>
                     <FormField name="power" label="Power:" control={control} />

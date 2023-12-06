@@ -20,6 +20,7 @@
         "pages": "gh-pages -b ghpages -d dist"
     },
     "dependencies": {
+        "@expo-google-fonts/source-sans-pro": "^0.2.3",
         "@expo/html-elements": "latest",
         "@expo/vector-icons": "^13.0.0",
         "@legendapp/motion": "latest",
@@ -30,7 +31,9 @@
         "@typescript-eslint/eslint-plugin": "^6.9.1",
         "expo": "~48.0.21",
         "expo-device": "^5.6.0",
+        "expo-font": "^11.6.0",
         "expo-location": "^16.3.0",
+        "expo-splash-screen": "^0.22.0",
         "expo-status-bar": "~1.6.0",
         "gh-pages": "^6.0.0",
         "luxon": "^3.4.3",

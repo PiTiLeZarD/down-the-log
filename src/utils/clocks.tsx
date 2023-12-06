@@ -1,8 +1,8 @@
 import { DateTime } from "luxon";
 import React from "react";
-import { Text } from "react-native";
 import { Grid } from "./grid";
 import { createStyleSheet, useStyles } from "./theme";
+import { Typography } from "./theme/components/typography";
 
 export type ClocksProps = {};
 
@@ -10,7 +10,7 @@ export type ClocksComponent = React.FC<ClocksProps>;
 
 const stylesheet = createStyleSheet((theme) => ({
     container: {
-        backgroundColor: theme.colors.primary[200],
+        backgroundColor: theme.colours.primary[200],
     },
 }));
 
@@ -30,10 +30,10 @@ export const Clocks: ClocksComponent = (): JSX.Element => {
     return (
         <Grid container style={styles.container}>
             <Grid item xs={6}>
-                <Text style={{ textAlign: "center" }}>Local: {time.toFormat("HH:mm")}</Text>
+                <Typography style={{ textAlign: "center" }}>Local: {time.toFormat("HH:mm")}</Typography>
             </Grid>
             <Grid item xs={6}>
-                <Text style={{ textAlign: "center" }}>UTC: {time.toUTC().toFormat("HH:mm")}</Text>
+                <Typography style={{ textAlign: "center" }}>UTC: {time.toUTC().toFormat("HH:mm")}</Typography>
             </Grid>
         </Grid>
     );

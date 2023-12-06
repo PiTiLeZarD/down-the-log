@@ -1,4 +1,3 @@
-import { P } from "@expo/html-elements";
 import React from "react";
 import { FlatList, View } from "react-native";
 import { freq2band } from "../../data/bands";
@@ -7,6 +6,7 @@ import { findCountry, getCallsignData } from "../../utils/callsign";
 import { maidenDistance } from "../../utils/locator";
 import { QSO } from "../../utils/qso";
 import { Stack } from "../../utils/stack";
+import { Typography } from "../../utils/theme/components/typography";
 import { Qso } from "./qso";
 
 export type QsoListProps = {
@@ -29,7 +29,7 @@ export const QsoList: QsoListComponent = ({ qsos, onQsoPress }): JSX.Element => 
                         alignItems: "center",
                     }}
                 >
-                    <P style={{ fontWeight: "bold" }}>{qso.date.toFormat("dd/MM/yyyy")}</P>
+                    <Typography style={{ fontWeight: "bold" }}>{qso.date.toFormat("dd/MM/yyyy")}</Typography>
                 </View>
             );
         }
@@ -40,9 +40,11 @@ export const QsoList: QsoListComponent = ({ qsos, onQsoPress }): JSX.Element => 
         const callsignData = getCallsignData(qso.callsign);
         return (
             <Stack direction="row">
-                <P>{findCountry(callsignData)?.flag}</P>
-                <P>{qso.callsign}</P>
-                <P>({maidenDistance(currentLocation, qso.locator || callsignData?.gs || currentLocation)}km)</P>
+                <Typography>{findCountry(callsignData)?.flag}</Typography>
+                <Typography>{qso.callsign}</Typography>
+                <Typography>
+                    ({maidenDistance(currentLocation, qso.locator || callsignData?.gs || currentLocation)}km)
+                </Typography>
             </Stack>
         );
     };

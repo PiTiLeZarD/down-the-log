@@ -1,4 +1,3 @@
-import { P } from "@expo/html-elements";
 import { NativeStackScreenProps } from "@react-navigation/native-stack";
 import React from "react";
 import { Button, View } from "react-native";
@@ -8,6 +7,7 @@ import { useStore } from "../../store";
 import { adifFile2Qso, downloadQsos } from "../../utils/adif";
 import { Dropzone, FileWithPreview } from "../../utils/dropzone";
 import { QSO, findMatchingQso, useQsos } from "../../utils/qso";
+import { Typography } from "../../utils/theme/components/typography";
 
 export type AdifProps = {} & NativeStackScreenProps<RootStackParamList, "Adif">;
 
@@ -38,11 +38,11 @@ export const Adif: AdifComponent = ({ navigation }): JSX.Element => {
 
     return (
         <View>
-            <P>Adif</P>
+            <Typography>Adif</Typography>
             <Button title="Download" onPress={() => downloadQsos("adif_export.adif", qsos)} />
 
             <Dropzone onAcceptedFiles={handleImport} sx={{ margin: 5, padding: 5 }}>
-                <P style={{ fontWeight: "bold", textAlign: "center" }}>Upload here</P>
+                <Typography style={{ fontWeight: "bold", textAlign: "center" }}>Upload here</Typography>
             </Dropzone>
 
             <Button title="Back" onPress={() => navigation.goBack()} />

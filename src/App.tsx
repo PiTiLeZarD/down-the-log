@@ -1,6 +1,7 @@
 import { NavigationContainer } from "@react-navigation/native";
-import React from "react";
-import { LogBox } from "react-native";
+import { useFonts } from "expo-font";
+import * as SplashScreen from "expo-splash-screen";
+import React, { useCallback } from "react";
 import { SafeAreaProvider, SafeAreaView } from "react-native-safe-area-context";
 import { UnistylesTheme } from "react-native-unistyles";
 import { RootStack } from "./RootStack";
@@ -13,11 +14,13 @@ import { latlong2Maidenhead } from "./utils/locator";
 import { theme } from "./utils/theme";
 import { useLocation } from "./utils/use-location";
 
-LogBox.ignoreLogs([
-    `Constants.platform.ios.model has been deprecated in favor of expo-device's Device.modelName property. This API will be removed in SDK 45.`,
-]);
+SplashScreen.preventAutoHideAsync();
 
 const App = (): JSX.Element => {
+    const [fontsLoaded, fontError] = useFonts({
+        Quicksand: require("./utils/theme/Quicksand-VariableFont_wght.ttf"),
+    });
+
     const setCurrentLocation = useStore((state) => state.setCurrentLocation);
     const location = useLocation();
 
@@ -25,11 +28,21 @@ const App = (): JSX.Element => {
         if (location) setCurrentLocation(latlong2Maidenhead(location.coords));
     }, [location]);
 
+    const onLayoutRootView = useCallback(async () => {
+        if (fontsLoaded || fontError) {
+            await SplashScreen.hideAsync();
+        }
+    }, [fontsLoaded, fontError]);
+
+    if (!fontsLoaded && !fontError) {
+        return <></>;
+    }
+
     return (
         <SafeAreaProvider>
             <NavigationContainer>
                 <UnistylesTheme theme={theme}>
-                    <SafeAreaView style={{ flex: 1 }}>
+                    <SafeAreaView style={{ flex: 1 }} onLayout={onLayoutRootView}>
                         <RootStack.Navigator initialRouteName="Home" screenOptions={{ headerShown: false }}>
                             <RootStack.Screen name="Home" component={Home} />
                             <RootStack.Screen name="QsoForm" component={QsoForm} />

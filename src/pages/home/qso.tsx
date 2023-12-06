@@ -1,8 +1,8 @@
-import { P } from "@expo/html-elements";
 import React from "react";
 import { Pressable, TextStyle } from "react-native";
 import { Grid } from "../../utils/grid";
 import { createStyleSheet, useStyles } from "../../utils/theme";
+import { Typography } from "../../utils/theme/components/typography";
 
 const stylesheet = createStyleSheet((theme) => ({
     cell: {
@@ -13,7 +13,7 @@ const stylesheet = createStyleSheet((theme) => ({
         fontWeight: "bold",
     },
     rowHighlight: {
-        backgroundColor: theme.colors.primary[200],
+        backgroundColor: theme.colours.primary[200],
     },
 }));
 
@@ -32,7 +32,7 @@ export type QsoComponent = React.FC<QsoProps>;
 export const Qso: QsoComponent = ({ onPress, header = false, position, time, band, callsign, name }): JSX.Element => {
     const { styles } = useStyles(stylesheet);
     const cellContent = (content: React.ReactNode, style: TextStyle) =>
-        typeof content === "string" ? <P style={style}>{content}</P> : content;
+        typeof content === "string" ? <Typography style={style}>{content}</Typography> : content;
     const cellStyle = header ? styles.header : {};
     return (
         <Pressable onPress={onPress}>
