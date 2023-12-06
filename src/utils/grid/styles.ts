@@ -1,29 +1,22 @@
 import React from "react";
 import { useWindowDimensions } from "react-native";
-import { createStyleSheet, getScreenSize } from "../theme";
+import { createStyleSheet, getScreenSize, spacing } from "../theme";
 
 const generateStyles = (width: number, nbCols: number = 12) => {
     const colWidth = 100 / nbCols;
 
-    const spacing = {
-        xs: 5,
-        sm: 6,
-        md: 7,
-        lg: 8,
-        xl: 9,
-        xxl: 10,
-    }[getScreenSize(width)];
+    const colSpacing = spacing[getScreenSize(width)];
 
     return createStyleSheet({
         row: {
             flexDirection: "row",
             flexWrap: "wrap",
-            marginRight: -spacing,
+            marginRight: -colSpacing,
         },
         ...Object.fromEntries(
             new Array(nbCols)
                 .fill(null)
-                .map((_, c) => [`col_${c + 1}`, { width: `${colWidth * (c + 1)}%`, paddingRight: spacing }])
+                .map((_, c) => [`col_${c + 1}`, { width: `${colWidth * (c + 1)}%`, paddingRight: colSpacing }])
         ),
     });
 };

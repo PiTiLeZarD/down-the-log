@@ -1,6 +1,6 @@
-import { P } from "@expo/html-elements";
 import { DateTime } from "luxon";
 import React from "react";
+import { Text } from "react-native";
 import { Grid } from "./grid";
 import { createStyleSheet, useStyles } from "./theme";
 
@@ -30,10 +30,10 @@ export const Clocks: ClocksComponent = (): JSX.Element => {
     return (
         <Grid container style={styles.container}>
             <Grid item xs={6}>
-                <P style={{ textAlign: "center" }}>Local: {time.toFormat("HH:mm")}</P>
+                <Text style={{ textAlign: "center" }}>Local: {time.toFormat("HH:mm")}</Text>
             </Grid>
             <Grid item xs={6}>
-                <P style={{ textAlign: "center" }}>UTC: {time.toUTC().toFormat("HH:mm")}</P>
+                <Text style={{ textAlign: "center" }}>UTC: {time.toUTC().toFormat("HH:mm")}</Text>
             </Grid>
         </Grid>
     );

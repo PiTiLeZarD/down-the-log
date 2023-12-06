@@ -1,7 +1,7 @@
 import { P } from "@expo/html-elements";
 import { NativeStackScreenProps } from "@react-navigation/native-stack";
 import React from "react";
-import { View } from "react-native";
+import { Text, View } from "react-native";
 import { RootStackParamList } from "../../RootStack";
 import cqzones from "../../data/cqzones.json";
 import dxcc from "../../data/dxcc.json";
@@ -36,12 +36,12 @@ export const LocationHeader: LocationHeaderComponent = ({ navigation }): JSX.Ele
         <Grid container style={styles.header}>
             <Grid item xs={10} sm={11}>
                 <View>
-                    <P style={styles.text}>Locator: {currentLocation}</P>
-                    <P style={styles.text}>
+                    <Text style={styles.text}>Locator: {currentLocation}</Text>
+                    <Text style={styles.text}>
                         (CQ: {findZone(cqzones, maidenhead2Latlong(currentLocation))}, ITU:{" "}
                         {findZone(ituzones, maidenhead2Latlong(currentLocation))}, DXCC:{" "}
                         {findZone(dxcc, maidenhead2Latlong(currentLocation))})
-                    </P>
+                    </Text>
                 </View>
             </Grid>
             <Grid item xs={2} sm={1}>

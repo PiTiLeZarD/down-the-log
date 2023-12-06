@@ -6,6 +6,7 @@ import { useStore } from "../../store";
 import { findCountry, getCallsignData } from "../../utils/callsign";
 import { maidenDistance } from "../../utils/locator";
 import { QSO } from "../../utils/qso";
+import { Stack } from "../../utils/stack";
 import { Qso } from "./qso";
 
 export type QsoListProps = {
@@ -38,11 +39,11 @@ export const QsoList: QsoListComponent = ({ qsos, onQsoPress }): JSX.Element => 
     const callsignCell = (qso: QSO) => {
         const callsignData = getCallsignData(qso.callsign);
         return (
-            <View>
+            <Stack direction="row">
                 <P>{findCountry(callsignData)?.flag}</P>
                 <P>{qso.callsign}</P>
                 <P>({maidenDistance(currentLocation, qso.locator || callsignData?.gs || currentLocation)}km)</P>
-            </View>
+            </Stack>
         );
     };
 

@@ -15,3 +15,12 @@ export const getScreenSize = (width: number): keyof typeof breakpoints => {
     if (width >= breakpoints.xl && width < breakpoints.xxl) return "xl";
     return "xxl";
 };
+
+export const spacing = {
+    xs: 5,
+    sm: 6,
+    md: 7,
+    lg: 8,
+    xl: 9,
+    xxl: 10,
+};
