@@ -1,6 +1,5 @@
 import React from "react";
 import { View, ViewStyle } from "react-native";
-import { merge } from "../merge";
 import { useStyles } from "../theme";
 import { useGeneratedStyles } from "./styles";
 
@@ -24,7 +23,7 @@ export const Grid: GridComponent = ({ container, item, style, xs, sm, md, lg, xl
 
     if ((container && item) || (!container && !item)) throw Error("Pick one, container or item");
 
-    if (container) return <View style={merge(styles.row, style || {})}>{children}</View>;
+    if (container) return <View style={[styles.row, style || {}]}>{children}</View>;
 
     const colSpan: number =
         (screenSize === "xs"
@@ -45,5 +44,5 @@ export const Grid: GridComponent = ({ container, item, style, xs, sm, md, lg, xl
 
     const colStyles = (styles as Record<string, any>)[`col_${colSpan}`];
 
-    return <View style={merge(colStyles, style || {})}>{children}</View>;
+    return <View style={[colStyles, style || {}]}>{children}</View>;
 };
