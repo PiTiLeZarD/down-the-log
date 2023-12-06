@@ -16,7 +16,7 @@ export const getScreenSize = (width: number): keyof typeof breakpoints => {
     return "xxl";
 };
 
-export const spacing = {
+export const spacing: Record<keyof typeof breakpoints, number> = {
     xs: 5,
     sm: 6,
     md: 7,
