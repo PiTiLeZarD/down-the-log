@@ -7,9 +7,9 @@ import cqzones from "../../data/cqzones.json";
 import dxcc from "../../data/dxcc.json";
 import ituzones from "../../data/ituzones.json";
 import { useStore } from "../../store";
-import { Grid } from "../../utils/grid";
 import { maidenhead2Latlong } from "../../utils/locator";
 import { findZone } from "../../utils/polydec";
+import { Stack } from "../../utils/stack";
 import { createStyleSheet, useStyles } from "../../utils/theme";
 
 const stylesheet = createStyleSheet((theme) => ({
@@ -33,19 +33,23 @@ export const LocationHeader: LocationHeaderComponent = ({ navigation }): JSX.Ele
     if (!currentLocation) return <P>Looking for your location...</P>;
 
     return (
-        <Grid container style={styles.header}>
-            <Grid item xs={10} sm={11}>
-                <View>
-                    <Text style={styles.text}>Locator: {currentLocation}</Text>
-                    <Text style={styles.text}>
-                        (CQ: {findZone(cqzones, maidenhead2Latlong(currentLocation))}, ITU:{" "}
-                        {findZone(ituzones, maidenhead2Latlong(currentLocation))}, DXCC:{" "}
-                        {findZone(dxcc, maidenhead2Latlong(currentLocation))})
-                    </Text>
-                </View>
-            </Grid>
-            <Grid item xs={2} sm={1}>
-                {/* <Menu
+        <Stack direction="row" style={styles.header}>
+            <Stack style={{ flexGrow: 1 }}>
+                <Text style={styles.text}>Locator: {currentLocation}</Text>
+                <Text style={styles.text}>
+                    (CQ: {findZone(cqzones, maidenhead2Latlong(currentLocation))}, ITU:{" "}
+                    {findZone(ituzones, maidenhead2Latlong(currentLocation))}, DXCC:{" "}
+                    {findZone(dxcc, maidenhead2Latlong(currentLocation))})
+                </Text>
+            </Stack>
+            <View>
+                <Text>Menu</Text>
+            </View>
+        </Stack>
+    );
+};
+
+/* <Menu
                     placement="bottom left"
                     trigger={(props) => (
                         <Button {...props}>
@@ -61,8 +65,4 @@ export const LocationHeader: LocationHeaderComponent = ({ navigation }): JSX.Ele
                         <Icon as={ShareIcon} size="sm" mr="$2" />
                         <MenuItemLabel size="sm">Import/Export</MenuItemLabel>
                     </MenuItem>
-                </Menu> */}
-            </Grid>
-        </Grid>
-    );
-};
+                </Menu> */

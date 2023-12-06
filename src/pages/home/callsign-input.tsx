@@ -9,6 +9,7 @@ import { findCountry, getCallsignData } from "../../utils/callsign";
 import { Grid } from "../../utils/grid";
 import { maidenDistance, maidenhead2Latlong } from "../../utils/locator";
 import { findZone } from "../../utils/polydec";
+import { Stack } from "../../utils/stack";
 
 export type CallsignInputProps = {
     callsign: string;
@@ -25,7 +26,7 @@ export const CallsignInput: CallsignInputComponent = ({ callsign, handleAdd, set
     const country = findCountry(callsignData);
 
     return (
-        <>
+        <Stack>
             {callsignData && (
                 <Grid container>
                     <Grid item xs={4}>
@@ -49,17 +50,19 @@ export const CallsignInput: CallsignInputComponent = ({ callsign, handleAdd, set
                     </Grid>
                 </Grid>
             )}
-            <View>
-                <TextInput
-                    onChangeText={(text: string) => setCallsign(text.toUpperCase())}
-                    onKeyPress={(e) => {
-                        if ((e as any).keyCode === 13) handleAdd();
-                    }}
-                    value={callsign}
-                    placeholder="Callsign"
-                />
+            <Stack direction="row">
+                <View style={{ flexGrow: 1 }}>
+                    <TextInput
+                        onChangeText={(text: string) => setCallsign(text.toUpperCase())}
+                        onKeyPress={(e) => {
+                            if ((e as any).keyCode === 13) handleAdd();
+                        }}
+                        value={callsign}
+                        placeholder="Callsign"
+                    />
+                </View>
                 <Ionicons name="add" size={24} color="black" />
-            </View>
-        </>
+            </Stack>
+        </Stack>
     );
 };

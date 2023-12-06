@@ -10,9 +10,18 @@ export type StackProps = {
 
 export type StackComponent = React.FC<React.PropsWithChildren<StackProps>>;
 
+const defaultRowStyles = (): ViewStyle => ({ alignItems: "center" });
+const defaultColStyles = (): ViewStyle => ({ alignContent: "flex-start" });
+
 export const Stack: StackComponent = ({ style, gap = "xs", direction = "column", children }): JSX.Element => {
     return (
-        <View style={[style, { display: "flex", flexDirection: direction, alignItems: "center", gap: spacing[gap] }]}>
+        <View
+            style={[
+                style,
+                { display: "flex", flexDirection: direction, gap: spacing[gap] },
+                direction == "row" ? defaultRowStyles() : defaultColStyles(),
+            ]}
+        >
             {children}
         </View>
     );
