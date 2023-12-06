@@ -1,7 +1,8 @@
-import { Button, ButtonText, HStack, ScrollView, Text } from "@gluestack-ui/themed";
+import { P } from "@expo/html-elements";
 import { NativeStackScreenProps } from "@react-navigation/native-stack";
 import React from "react";
 import { useForm } from "react-hook-form";
+import { Button, ScrollView, View } from "react-native";
 import { RootStackParamList } from "../../RootStack";
 import { freq2band } from "../../data/bands";
 import { useStore } from "../../store";
@@ -37,9 +38,7 @@ export const QsoForm: QsoFormComponent = ({ navigation, route }): JSX.Element =>
 
     return (
         <ScrollView>
-            <Button onPress={() => navigation.navigate("Home")}>
-                <ButtonText>Back</ButtonText>
-            </Button>
+            <Button title="Back" onPress={() => navigation.navigate("Home")} />
             <Grid container>
                 <Grid item xs={12} sm={6}>
                     <FormField name="callsign" label="Callsign:" control={control} />
@@ -62,8 +61,8 @@ export const QsoForm: QsoFormComponent = ({ navigation, route }): JSX.Element =>
                     <FormField name="frequency" label="Frequency:" control={control} placeholder="In Khz" />
                 </Grid>
                 <Grid item xs={4} sm={2}>
-                    <Text>Band:</Text>
-                    <Text>{freq2band(freq) || "N/A"}</Text>
+                    <P>Band:</P>
+                    <P>{freq2band(freq) || "N/A"}</P>
                 </Grid>
                 <Grid item xs={12} sm={3}>
                     <FormField name="power" label="Power:" control={control} />
@@ -78,14 +77,10 @@ export const QsoForm: QsoFormComponent = ({ navigation, route }): JSX.Element =>
                 </Grid>
             </Grid>
             <FormField role="textarea" name="note" label="Note:" control={control} />
-            <HStack>
-                <Button onPress={handleSubmit(onSubmit)}>
-                    <ButtonText>Submit</ButtonText>
-                </Button>
-                <Button onPress={() => onDelete()}>
-                    <ButtonText>Delete</ButtonText>
-                </Button>
-            </HStack>
+            <View>
+                <Button title="Submit" onPress={handleSubmit(onSubmit)} />
+                <Button title="Delete" onPress={() => onDelete()} />
+            </View>
         </ScrollView>
     );
 };

@@ -1,8 +1,10 @@
-import { Pressable, Text } from "@gluestack-ui/themed";
+import { P } from "@expo/html-elements";
 import React from "react";
+import { Pressable, TextStyle } from "react-native";
 import { Grid } from "../../utils/grid";
+import { createStyleSheet, useStyles } from "../../utils/theme";
 
-const classes: Record<string, object> = {
+const stylesheet = createStyleSheet((theme) => ({
     cell: {
         paddingHorizontal: 5,
         paddingVertical: 3,
@@ -11,9 +13,9 @@ const classes: Record<string, object> = {
         fontWeight: "bold",
     },
     rowHighlight: {
-        backgroundColor: "$backgroundLight200",
+        backgroundColor: theme.colors.primary[200],
     },
-};
+}));
 
 export type QsoProps = {
     header?: boolean;
@@ -28,26 +30,27 @@ export type QsoProps = {
 export type QsoComponent = React.FC<QsoProps>;
 
 export const Qso: QsoComponent = ({ onPress, header = false, position, time, band, callsign, name }): JSX.Element => {
-    const cellContent = (content: React.ReactNode, sx: any) =>
-        typeof content === "string" ? <Text sx={sx}>{content}</Text> : content;
-    const sx = header ? classes.header : {};
+    const { styles } = useStyles(stylesheet);
+    const cellContent = (content: React.ReactNode, style: TextStyle) =>
+        typeof content === "string" ? <P style={style}>{content}</P> : content;
+    const cellStyle = header ? styles.header : {};
     return (
         <Pressable onPress={onPress}>
-            <Grid container sx={(+position % 2 || header ? classes.rowHighlight : {}) as any}>
-                <Grid item sx={classes.cell as any} xs={1}>
-                    {cellContent(position, sx)}
+            <Grid container style={(+position % 2 || header ? styles.rowHighlight : {}) as any}>
+                <Grid item style={styles.cell as any} xs={1}>
+                    {cellContent(position, cellStyle)}
                 </Grid>
-                <Grid item sx={classes.cell as any} xs={2}>
-                    {cellContent(time, sx)}
+                <Grid item style={styles.cell as any} xs={2}>
+                    {cellContent(time, cellStyle)}
                 </Grid>
-                <Grid item sx={classes.cell as any} xs={7} md={5}>
-                    {cellContent(callsign, sx)}
+                <Grid item style={styles.cell as any} xs={7} md={5}>
+                    {cellContent(callsign, cellStyle)}
                 </Grid>
-                <Grid item sx={classes.cell as any} xs={-1} md={2}>
-                    {cellContent(name, sx)}
+                <Grid item style={styles.cell as any} xs={-1} md={2}>
+                    {cellContent(name, cellStyle)}
                 </Grid>
-                <Grid item sx={classes.cell as any} xs={2}>
-                    {cellContent(band, sx)}
+                <Grid item style={styles.cell as any} xs={2}>
+                    {cellContent(band, cellStyle)}
                 </Grid>
             </Grid>
         </Pressable>

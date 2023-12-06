@@ -1,9 +1,8 @@
-import { config } from "@gluestack-ui/config";
-import { GluestackUIProvider } from "@gluestack-ui/themed";
 import { NavigationContainer } from "@react-navigation/native";
 import React from "react";
 import { LogBox } from "react-native";
 import { SafeAreaProvider, SafeAreaView } from "react-native-safe-area-context";
+import { UnistylesTheme } from "react-native-unistyles";
 import { RootStack } from "./RootStack";
 import { About } from "./pages/about";
 import { Adif } from "./pages/adif";
@@ -11,6 +10,7 @@ import { Home } from "./pages/home";
 import { QsoForm } from "./pages/qso-form";
 import { useStore } from "./store";
 import { latlong2Maidenhead } from "./utils/locator";
+import { theme } from "./utils/theme";
 import { useLocation } from "./utils/use-location";
 
 LogBox.ignoreLogs([
@@ -28,7 +28,7 @@ const App = (): JSX.Element => {
     return (
         <SafeAreaProvider>
             <NavigationContainer>
-                <GluestackUIProvider config={config}>
+                <UnistylesTheme theme={theme}>
                     <SafeAreaView style={{ flex: 1 }}>
                         <RootStack.Navigator initialRouteName="Home" screenOptions={{ headerShown: false }}>
                             <RootStack.Screen name="Home" component={Home} />
@@ -37,7 +37,7 @@ const App = (): JSX.Element => {
                             <RootStack.Screen name="Adif" component={Adif} />
                         </RootStack.Navigator>
                     </SafeAreaView>
-                </GluestackUIProvider>
+                </UnistylesTheme>
             </NavigationContainer>
         </SafeAreaProvider>
     );

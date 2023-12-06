@@ -1,33 +1,34 @@
 import React from "react";
 
-import { Box } from "@gluestack-ui/themed";
 import { NativeStackScreenProps } from "@react-navigation/native-stack";
+import { View } from "react-native";
 import { RootStackParamList } from "../../RootStack";
 import { useStore } from "../../store";
 import { Clocks } from "../../utils/clocks";
 import { newQso, useQsos } from "../../utils/qso";
+import { createStyleSheet, useStyles } from "../../utils/theme";
 import { CallsignInput } from "./callsign-input";
 import { LocationHeader } from "./location-header";
 import { QsoList } from "./qso-list";
 
-const classes: Record<string, object> = {
+const stylesheet = createStyleSheet((theme) => ({
     container: {
         display: "flex",
         width: "100%",
         height: "100%",
     },
+    top: {},
     table: {
         flexGrow: 1,
         paddingBottom: 45,
     },
     inputs: {
-        position: "fixed",
         left: 0,
         bottom: 0,
         width: "100%",
         backgroundColor: "white",
     },
-};
+}));
 
 export type HomeProps = {} & NativeStackScreenProps<RootStackParamList, "Home">;
 
@@ -36,6 +37,7 @@ export type HomeComponent = React.FC<HomeProps>;
 export const Home: HomeComponent = ({ navigation }): JSX.Element => {
     const [callsign, setCallsign] = React.useState<string>("");
     const qsos = useQsos();
+    const { styles } = useStyles(stylesheet);
     const currentLocation = useStore((state) => state.currentLocation);
     const log = useStore((state) => state.log);
 
@@ -47,20 +49,20 @@ export const Home: HomeComponent = ({ navigation }): JSX.Element => {
     };
 
     return (
-        <Box sx={classes.container}>
-            <Box sx={classes.top}>
+        <View style={styles.container}>
+            <View style={styles.top}>
                 <LocationHeader navigation={navigation} />
                 <Clocks />
-            </Box>
-            <Box sx={classes.table}>
+            </View>
+            <View style={styles.table}>
                 <QsoList
                     qsos={qsos.filter((q) => q.callsign.includes(callsign))}
                     onQsoPress={(qso) => navigation.navigate("QsoForm", { qsoId: qso.id })}
                 />
-            </Box>
-            <Box sx={classes.inputs}>
+            </View>
+            <View style={styles.inputs}>
                 <CallsignInput handleAdd={handleAdd} setCallsign={setCallsign} callsign={callsign} />
-            </Box>
-        </Box>
+            </View>
+        </View>
     );
 };

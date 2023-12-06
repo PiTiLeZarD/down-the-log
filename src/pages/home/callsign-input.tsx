@@ -1,6 +1,7 @@
-import { AddIcon, Input, InputField, InputIcon, InputSlot, Text } from "@gluestack-ui/themed";
+import { P } from "@expo/html-elements";
+import { Ionicons } from "@expo/vector-icons";
 import React from "react";
-import { NativeSyntheticEvent, TextInputChangeEventData } from "react-native";
+import { TextInput, View } from "react-native";
 import cqzones from "../../data/cqzones.json";
 import ituzones from "../../data/ituzones.json";
 import { useStore } from "../../store";
@@ -28,41 +29,37 @@ export const CallsignInput: CallsignInputComponent = ({ callsign, handleAdd, set
             {callsignData && (
                 <Grid container>
                     <Grid item xs={4}>
-                        <Text>
+                        <P>
                             {country?.flag}
                             {country?.name} {callsignData.state ? `(${callsignData.state})` : ""}
-                        </Text>
+                        </P>
                     </Grid>
                     <Grid item xs={3}>
-                        <Text>{maidenDistance(currentLocation, callsignData.gs)}km</Text>
+                        <P>{maidenDistance(currentLocation, callsignData.gs)}km</P>
                     </Grid>
                     <Grid item xs={5} md={3}>
-                        <Text>
+                        <P>
                             CQ: {callsignData.gs ? findZone(cqzones, maidenhead2Latlong(callsignData.gs)) : "??"}, ITU:{" "}
                             {callsignData.gs ? findZone(ituzones, maidenhead2Latlong(callsignData.gs)) : "??"}, DXCC:{" "}
                             {callsignData.dxcc}
-                        </Text>
+                        </P>
                     </Grid>
                     <Grid item xs={-1} md={1}>
-                        <Text>({callsignData.ctn})</Text>
+                        <P>({callsignData.ctn})</P>
                     </Grid>
                 </Grid>
             )}
-            <Input size="lg">
-                <InputField
-                    onChange={(e: NativeSyntheticEvent<TextInputChangeEventData>) =>
-                        setCallsign(e.nativeEvent.text.toUpperCase())
-                    }
+            <View>
+                <TextInput
+                    onChangeText={(text: string) => setCallsign(text.toUpperCase())}
                     onKeyPress={(e) => {
-                        if (e.keyCode === 13) handleAdd();
+                        if ((e as any).keyCode === 13) handleAdd();
                     }}
                     value={callsign}
                     placeholder="Callsign"
                 />
-                <InputSlot pr="$4" onPress={handleAdd}>
-                    <InputIcon as={AddIcon} />
-                </InputSlot>
-            </Input>
+                <Ionicons name="add" size={24} color="black" />
+            </View>
         </>
     );
 };

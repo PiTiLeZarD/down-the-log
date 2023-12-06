@@ -1,6 +1,6 @@
-import { Box } from "@gluestack-ui/themed";
 import React from "react";
 import { useDropzone } from "react-dropzone";
+import { View } from "react-native";
 
 export const toBase64 = (file: File) =>
     new Promise((resolve, reject) => {
@@ -37,9 +37,9 @@ export const Dropzone: DropzoneComponent = ({
     });
 
     return (
-        <Box {...(getRootProps() as any)} {...otherProps}>
+        <View {...(getRootProps() as any)} {...otherProps}>
             <input {...getInputProps()} />
             {children}
-        </Box>
+        </View>
     );
 };

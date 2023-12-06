@@ -1,6 +1,7 @@
-import { Button, ButtonText, Text, VStack } from "@gluestack-ui/themed";
+import { P } from "@expo/html-elements";
 import { NativeStackScreenProps } from "@react-navigation/native-stack";
 import React from "react";
+import { Button, View } from "react-native";
 import uuid from "react-native-uuid";
 import { RootStackParamList } from "../../RootStack";
 import { useStore } from "../../store";
@@ -36,19 +37,15 @@ export const Adif: AdifComponent = ({ navigation }): JSX.Element => {
     };
 
     return (
-        <VStack>
-            <Text>Adif</Text>
-            <Button onPress={() => downloadQsos("adif_export.adif", qsos)}>
-                <ButtonText>Download</ButtonText>
-            </Button>
+        <View>
+            <P>Adif</P>
+            <Button title="Download" onPress={() => downloadQsos("adif_export.adif", qsos)} />
 
             <Dropzone onAcceptedFiles={handleImport} sx={{ margin: 5, padding: 5 }}>
-                <Text sx={{ fontWeight: "bold", textAlign: "center" }}>Upload here</Text>
+                <P style={{ fontWeight: "bold", textAlign: "center" }}>Upload here</P>
             </Dropzone>
 
-            <Button onPress={() => navigation.goBack()}>
-                <ButtonText>Back</ButtonText>
-            </Button>
-        </VStack>
+            <Button title="Back" onPress={() => navigation.goBack()} />
+        </View>
     );
 };

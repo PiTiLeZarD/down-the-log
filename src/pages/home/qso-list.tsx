@@ -1,6 +1,6 @@
-import { Box, HStack, Text } from "@gluestack-ui/themed";
+import { P } from "@expo/html-elements";
 import React from "react";
-import { FlatList } from "react-native";
+import { FlatList, View } from "react-native";
 import { freq2band } from "../../data/bands";
 import { useStore } from "../../store";
 import { findCountry, getCallsignData } from "../../utils/callsign";
@@ -20,16 +20,16 @@ export const QsoList: QsoListComponent = ({ qsos, onQsoPress }): JSX.Element => 
     const separator = (qso: QSO, index: number): JSX.Element => {
         if (index === 0 || qso.date.diff(qsos[index - 1].date).days > 0) {
             return (
-                <Box
-                    sx={{
+                <View
+                    style={{
                         paddingHorizontal: 5,
                         paddingVertical: 3,
                         display: "flex",
                         alignItems: "center",
                     }}
                 >
-                    <Text sx={{ fontWeight: "bold" }}>{qso.date.toFormat("dd/MM/yyyy")}</Text>
-                </Box>
+                    <P style={{ fontWeight: "bold" }}>{qso.date.toFormat("dd/MM/yyyy")}</P>
+                </View>
             );
         }
         return <></>;
@@ -38,11 +38,11 @@ export const QsoList: QsoListComponent = ({ qsos, onQsoPress }): JSX.Element => 
     const callsignCell = (qso: QSO) => {
         const callsignData = getCallsignData(qso.callsign);
         return (
-            <HStack space="sm">
-                <Text>{findCountry(callsignData)?.flag}</Text>
-                <Text>{qso.callsign}</Text>
-                <Text>({maidenDistance(currentLocation, qso.locator || callsignData?.gs || currentLocation)}km)</Text>
-            </HStack>
+            <View>
+                <P>{findCountry(callsignData)?.flag}</P>
+                <P>{qso.callsign}</P>
+                <P>({maidenDistance(currentLocation, qso.locator || callsignData?.gs || currentLocation)}km)</P>
+            </View>
         );
     };
 

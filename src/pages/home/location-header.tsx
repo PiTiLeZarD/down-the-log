@@ -1,18 +1,7 @@
-import {
-    Button,
-    ButtonIcon,
-    Icon,
-    InfoIcon,
-    Menu,
-    MenuItem,
-    MenuItemLabel,
-    ShareIcon,
-    Text,
-    ThreeDotsIcon,
-    VStack,
-} from "@gluestack-ui/themed";
+import { P } from "@expo/html-elements";
 import { NativeStackScreenProps } from "@react-navigation/native-stack";
 import React from "react";
+import { View } from "react-native";
 import { RootStackParamList } from "../../RootStack";
 import cqzones from "../../data/cqzones.json";
 import dxcc from "../../data/dxcc.json";
@@ -21,16 +10,17 @@ import { useStore } from "../../store";
 import { Grid } from "../../utils/grid";
 import { maidenhead2Latlong } from "../../utils/locator";
 import { findZone } from "../../utils/polydec";
+import { createStyleSheet, useStyles } from "../../utils/theme";
 
-const classes = {
+const stylesheet = createStyleSheet((theme) => ({
     header: {
-        backgroundColor: "$primary200",
+        backgroundColor: theme.colors.primary[200],
         padding: 4,
     },
     text: {
-        color: "$textDark800",
+        color: theme.colors.primary[800],
     },
-};
+}));
 
 export type LocationHeaderProps = {} & Pick<NativeStackScreenProps<RootStackParamList, "Home">, "navigation">;
 
@@ -38,23 +28,24 @@ export type LocationHeaderComponent = React.FC<LocationHeaderProps>;
 
 export const LocationHeader: LocationHeaderComponent = ({ navigation }): JSX.Element => {
     const currentLocation = useStore((state) => state.currentLocation);
+    const { styles } = useStyles(stylesheet);
 
-    if (!currentLocation) return <Text>Looking for your location...</Text>;
+    if (!currentLocation) return <P>Looking for your location...</P>;
 
     return (
-        <Grid container sx={classes.header as any}>
+        <Grid container style={styles.header}>
             <Grid item xs={10} sm={11}>
-                <VStack>
-                    <Text sx={classes.text}>Locator: {currentLocation}</Text>
-                    <Text sx={classes.text}>
+                <View>
+                    <P style={styles.text}>Locator: {currentLocation}</P>
+                    <P style={styles.text}>
                         (CQ: {findZone(cqzones, maidenhead2Latlong(currentLocation))}, ITU:{" "}
                         {findZone(ituzones, maidenhead2Latlong(currentLocation))}, DXCC:{" "}
                         {findZone(dxcc, maidenhead2Latlong(currentLocation))})
-                    </Text>
-                </VStack>
+                    </P>
+                </View>
             </Grid>
             <Grid item xs={2} sm={1}>
-                <Menu
+                {/* <Menu
                     placement="bottom left"
                     trigger={(props) => (
                         <Button {...props}>
@@ -70,7 +61,7 @@ export const LocationHeader: LocationHeaderComponent = ({ navigation }): JSX.Ele
                         <Icon as={ShareIcon} size="sm" mr="$2" />
                         <MenuItemLabel size="sm">Import/Export</MenuItemLabel>
                     </MenuItem>
-                </Menu>
+                </Menu> */}
             </Grid>
         </Grid>
     );

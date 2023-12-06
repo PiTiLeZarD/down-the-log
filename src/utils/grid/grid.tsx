@@ -1,27 +1,30 @@
-import { Box } from "@gluestack-ui/themed";
 import React from "react";
+import { View, ViewStyle } from "react-native";
 import { merge } from "../merge";
-import { SxProps, useStyles } from "./styles";
+import { useStyles } from "../theme";
+import { useGeneratedStyles } from "./styles";
 
 export type GridProps = {
     container?: boolean;
     item?: boolean;
-    sx?: SxProps;
+    style?: ViewStyle;
     xs?: number;
     sm?: number;
     md?: number;
     lg?: number;
     xl?: number;
+    xxl?: number;
 };
 
 export type GridComponent = React.FC<React.PropsWithChildren<GridProps>>;
 
-export const Grid: GridComponent = ({ container, item, sx, xs, sm, md, lg, xl, children }): JSX.Element => {
-    const { gridStyles, screenSize } = useStyles();
+export const Grid: GridComponent = ({ container, item, style, xs, sm, md, lg, xl, xxl, children }): JSX.Element => {
+    const { gridStyles, screenSize } = useGeneratedStyles();
+    const { styles } = useStyles(gridStyles);
 
     if ((container && item) || (!container && !item)) throw Error("Pick one, container or item");
 
-    if (container) return <Box sx={merge(gridStyles.row, sx || {})}>{children}</Box>;
+    if (container) return <View style={merge(styles.row, style || {})}>{children}</View>;
 
     const colSpan: number =
         (screenSize === "xs"
@@ -34,11 +37,13 @@ export const Grid: GridComponent = ({ container, item, sx, xs, sm, md, lg, xl, c
             ? lg || md || sm || xs
             : screenSize === "xl"
             ? xl || lg || md || sm || xs
+            : screenSize === "xxl"
+            ? xxl || xl || lg || md || sm || xs
             : 12) || 12;
 
     if (colSpan === -1) return <></>;
 
-    const colStyles = (gridStyles as SxProps)[`col_${colSpan}`];
+    const colStyles = (styles as Record<string, any>)[`col_${colSpan}`];
 
-    return <Box sx={merge(colStyles, sx || {})}>{children}</Box>;
+    return <View style={merge(colStyles, style || {})}>{children}</View>;
 };
