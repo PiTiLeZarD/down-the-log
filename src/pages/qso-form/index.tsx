@@ -1,13 +1,14 @@
 import { NativeStackScreenProps } from "@react-navigation/native-stack";
 import React from "react";
 import { useForm } from "react-hook-form";
-import { Button, ScrollView, View } from "react-native";
+import { ScrollView, View } from "react-native";
 import { RootStackParamList } from "../../RootStack";
 import { freq2band } from "../../data/bands";
 import { useStore } from "../../store";
 import { FormField } from "../../utils/form-field";
 import { Grid } from "../../utils/grid";
 import { QSO, useQsos } from "../../utils/qso";
+import { Button } from "../../utils/theme/components/button";
 import { Typography } from "../../utils/theme/components/typography";
 
 export type QsoFormProps = {} & NativeStackScreenProps<RootStackParamList, "QsoForm">;
@@ -38,7 +39,7 @@ export const QsoForm: QsoFormComponent = ({ navigation, route }): JSX.Element =>
 
     return (
         <ScrollView>
-            <Button title="Back" onPress={() => navigation.navigate("Home")} />
+            <Button text="Back" onPress={() => navigation.navigate("Home")} />
             <Grid container>
                 <Grid item xs={12} sm={6}>
                     <FormField name="callsign" label="Callsign:" control={control} />
@@ -78,8 +79,8 @@ export const QsoForm: QsoFormComponent = ({ navigation, route }): JSX.Element =>
             </Grid>
             <FormField role="textarea" name="note" label="Note:" control={control} />
             <View>
-                <Button title="Submit" onPress={handleSubmit(onSubmit)} />
-                <Button title="Delete" onPress={() => onDelete()} />
+                <Button text="Submit" onPress={handleSubmit(onSubmit)} />
+                <Button text="Delete" colour="secondary" onPress={() => onDelete()} />
             </View>
         </ScrollView>
     );

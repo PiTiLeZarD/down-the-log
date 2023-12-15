@@ -15,6 +15,18 @@ export const theme = {
             fontWeight: "400",
             fontSize: 15,
         },
+        button: {
+            paddingTop: 8,
+            paddingBottom: 8,
+            paddingLeft: 16,
+            paddingRight: 16,
+            borderRadius: 3,
+        },
+        buttonText: {
+            textAlign: "center",
+            textTransform: "uppercase",
+            fontWeight: "bold",
+        },
     },
     margins: {
         sm: 2,
@@ -23,3 +35,5 @@ export const theme = {
         xl: 12,
     },
 } as const;
+
+export type ColourVariant = keyof typeof theme.colours;

@@ -1,12 +1,13 @@
 import { NativeStackScreenProps } from "@react-navigation/native-stack";
 import React from "react";
-import { Button, View } from "react-native";
+import { View } from "react-native";
 import uuid from "react-native-uuid";
 import { RootStackParamList } from "../../RootStack";
 import { useStore } from "../../store";
 import { adifFile2Qso, downloadQsos } from "../../utils/adif";
 import { Dropzone, FileWithPreview } from "../../utils/dropzone";
 import { QSO, findMatchingQso, useQsos } from "../../utils/qso";
+import { Button } from "../../utils/theme/components/button";
 import { Typography } from "../../utils/theme/components/typography";
 
 export type AdifProps = {} & NativeStackScreenProps<RootStackParamList, "Adif">;
@@ -23,7 +24,7 @@ export const Adif: AdifComponent = ({ navigation }): JSX.Element => {
             fr.onload = () => {
                 if (fr.result) {
                     const qsos: QSO[] = adifFile2Qso(
-                        typeof fr.result == "string" ? fr.result : new TextDecoder("utf-8").decode(fr.result)
+                        typeof fr.result == "string" ? fr.result : new TextDecoder("utf-8").decode(fr.result),
                     );
                     qsos.forEach((q) => {
                         const matchingQso = findMatchingQso(qsos, q) || { id: uuid.v4() as string };
@@ -39,13 +40,13 @@ export const Adif: AdifComponent = ({ navigation }): JSX.Element => {
     return (
         <View>
             <Typography>Adif</Typography>
-            <Button title="Download" onPress={() => downloadQsos("adif_export.adif", qsos)} />
+            <Button text="Download" onPress={() => downloadQsos("adif_export.adif", qsos)} />
 
             <Dropzone onAcceptedFiles={handleImport} sx={{ margin: 5, padding: 5 }}>
                 <Typography style={{ fontWeight: "bold", textAlign: "center" }}>Upload here</Typography>
             </Dropzone>
 
-            <Button title="Back" onPress={() => navigation.goBack()} />
+            <Button text="Back" onPress={() => navigation.goBack()} />
         </View>
     );
 };

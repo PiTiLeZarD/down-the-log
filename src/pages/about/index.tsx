@@ -1,7 +1,8 @@
 import { NativeStackScreenProps } from "@react-navigation/native-stack";
 import React from "react";
-import { Button, ScrollView } from "react-native";
+import { ScrollView } from "react-native";
 import { RootStackParamList } from "../../RootStack";
+import { Button } from "../../utils/theme/components/button";
 import { Typography } from "../../utils/theme/components/typography";
 
 export type AboutProps = {} & NativeStackScreenProps<RootStackParamList, "About">;
@@ -34,7 +35,7 @@ export const About: AboutComponent = ({ navigation }): JSX.Element => {
             </Typography>
             <Typography>5) Special modes for SOTA, WWFF, POTA, pileups and so on.</Typography>
             <Typography>6) down the track, integrated with HamQTH, QRZ, lotw and all the goodies</Typography>
-            <Button title="Back" onPress={() => navigation.goBack()} />
+            <Button text="Back" onPress={() => navigation.goBack()} />
         </ScrollView>
     );
 };

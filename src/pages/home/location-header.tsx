@@ -1,6 +1,7 @@
+import { Ionicons } from "@expo/vector-icons";
 import { NativeStackScreenProps } from "@react-navigation/native-stack";
 import React from "react";
-import { Text, View } from "react-native";
+import { View } from "react-native";
 import { RootStackParamList } from "../../RootStack";
 import cqzones from "../../data/cqzones.json";
 import dxcc from "../../data/dxcc.json";
@@ -10,6 +11,7 @@ import { maidenhead2Latlong } from "../../utils/locator";
 import { findZone } from "../../utils/polydec";
 import { Stack } from "../../utils/stack";
 import { createStyleSheet, useStyles } from "../../utils/theme";
+import { Button } from "../../utils/theme/components/button";
 import { Typography } from "../../utils/theme/components/typography";
 
 const stylesheet = createStyleSheet((theme) => ({
@@ -43,7 +45,9 @@ export const LocationHeader: LocationHeaderComponent = ({ navigation }): JSX.Ele
                 </Typography>
             </Stack>
             <View>
-                <Text>Menu</Text>
+                <Button>
+                    <Ionicons name="menu" size={20} color="white" />
+                </Button>
             </View>
         </Stack>
     );

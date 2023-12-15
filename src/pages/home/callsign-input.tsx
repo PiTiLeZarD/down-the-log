@@ -9,6 +9,7 @@ import { Grid } from "../../utils/grid";
 import { maidenDistance, maidenhead2Latlong } from "../../utils/locator";
 import { findZone } from "../../utils/polydec";
 import { Stack } from "../../utils/stack";
+import { Button } from "../../utils/theme/components/button";
 import { Typography } from "../../utils/theme/components/typography";
 
 export type CallsignInputProps = {
@@ -61,7 +62,9 @@ export const CallsignInput: CallsignInputComponent = ({ callsign, handleAdd, set
                         placeholder="Callsign"
                     />
                 </View>
-                <Ionicons name="add" size={24} color="black" />
+                <Button onPress={() => handleAdd()}>
+                    <Ionicons name="add" size={24} color="white" />
+                </Button>
             </Stack>
         </Stack>
     );
