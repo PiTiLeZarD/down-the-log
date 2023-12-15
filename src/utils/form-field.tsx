@@ -1,12 +1,15 @@
-import { P } from "@expo/html-elements";
 import React from "react";
-import { Control } from "react-hook-form";
+import { Control, useController } from "react-hook-form";
+import { Text, View } from "react-native";
+import RNPickerSelect from "react-native-picker-select";
 import { QSO } from "./qso";
+import { Input } from "./theme/components/input";
 
 export type FormFieldProps = {
     name: keyof QSO;
     label?: string;
     placeholder?: string;
+    numberOfLines?: number;
     role?: "text" | "select" | "textarea";
     options?: Record<string, string>;
     control: Control<QSO, string>;
@@ -19,51 +22,51 @@ export const FormField: FormFieldComponent = ({
     name,
     label,
     placeholder,
+    numberOfLines = 4,
     options,
     control,
 }): JSX.Element => {
-    return <P>TODO</P>;
-    // const { field } = useController({ name, control });
+    const { field } = useController({ name, control });
 
-    // const value = String(field.value || "");
-    // return (
-    //     <FormControl>
-    //         {label && (
-    //             <FormControlLabel>
-    //                 <P>{label}</P>
-    //             </FormControlLabel>
-    //         )}
-    //         {role === "text" && (
-    //             <Input>
-    //                 <InputField value={value} onChangeText={field.onChange} placeholder={placeholder} />
-    //             </Input>
-    //         )}
-    //         {role === "select" && (
-    //             <Select selectedValue={value} onValueChange={field.onChange}>
-    //                 <SelectTrigger variant="outline" size="md">
-    //                     <SelectInput placeholder={placeholder || "Select option"} />
-    //                     <SelectIcon mr="$3">
-    //                         <Icon as={ChevronDownIcon} />
-    //                     </SelectIcon>
-    //                 </SelectTrigger>
-    //                 <SelectPortal>
-    //                     <SelectBackdrop />
-    //                     <SelectContent>
-    //                         <SelectDragIndicatorWrapper>
-    //                             <SelectDragIndicator />
-    //                         </SelectDragIndicatorWrapper>
-    //                         {Object.entries(options || {}).map(([key, value]) => (
-    //                             <SelectItem label={value} value={key} key={`${name}_${key}`} />
-    //                         ))}
-    //                     </SelectContent>
-    //                 </SelectPortal>
-    //             </Select>
-    //         )}
-    //         {role === "textarea" && (
-    //             <Textarea>
-    //                 <TextareaInput value={value} onChangeText={field.onChange} placeholder={placeholder} />
-    //             </Textarea>
-    //         )}
-    //     </FormControl>
-    // );
+    const value = String(field.value || "");
+
+    return (
+        <View>
+            {label && (
+                <Text aria-label={`Label for ${field.name}`} nativeID={`label${field.name}`}>
+                    {label}
+                </Text>
+            )}
+
+            {(role === "text" || role === "textarea") && (
+                <Input
+                    value={value}
+                    onChangeText={field.onChange}
+                    placeholder={placeholder}
+                    aria-label="input"
+                    multiline={role === "textarea"}
+                    numberOfLines={numberOfLines}
+                    {...(label ? { "aria-labelledby": `label${field.name}` } : {})}
+                />
+            )}
+
+            {role === "select" && (
+                <RNPickerSelect
+                    style={{
+                        inputWeb: {
+                            borderWidth: 1,
+                            borderStyle: "solid",
+                            borderColor: "black",
+                            borderRadius: 3,
+                            padding: 8,
+                            backgroundColor: "inherit",
+                        },
+                    }}
+                    value={value}
+                    onValueChange={field.onChange}
+                    items={Object.entries(options || {}).map(([value, label]) => ({ label, value }))}
+                />
+            )}
+        </View>
+    );
 };

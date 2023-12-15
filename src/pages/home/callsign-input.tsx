@@ -1,6 +1,6 @@
 import { Ionicons } from "@expo/vector-icons";
 import React from "react";
-import { TextInput, View } from "react-native";
+import { View } from "react-native";
 import cqzones from "../../data/cqzones.json";
 import ituzones from "../../data/ituzones.json";
 import { useStore } from "../../store";
@@ -10,6 +10,7 @@ import { maidenDistance, maidenhead2Latlong } from "../../utils/locator";
 import { findZone } from "../../utils/polydec";
 import { Stack } from "../../utils/stack";
 import { Button } from "../../utils/theme/components/button";
+import { Input } from "../../utils/theme/components/input";
 import { Typography } from "../../utils/theme/components/typography";
 
 export type CallsignInputProps = {
@@ -53,7 +54,7 @@ export const CallsignInput: CallsignInputComponent = ({ callsign, handleAdd, set
             )}
             <Stack direction="row">
                 <View style={{ flexGrow: 1 }}>
-                    <TextInput
+                    <Input
                         onChangeText={(text: string) => setCallsign(text.toUpperCase())}
                         onKeyPress={(e) => {
                             if ((e as any).keyCode === 13) handleAdd();
