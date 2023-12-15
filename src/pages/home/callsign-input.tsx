@@ -12,6 +12,7 @@ import { Stack } from "../../utils/stack";
 import { Button } from "../../utils/theme/components/button";
 import { Input } from "../../utils/theme/components/input";
 import { Typography } from "../../utils/theme/components/typography";
+import { useThrottle } from "../../utils/useThrottle";
 
 export type CallsignInputProps = {
     callsign: string;
@@ -22,10 +23,11 @@ export type CallsignInputProps = {
 export type CallsignInputComponent = React.FC<CallsignInputProps>;
 
 export const CallsignInput: CallsignInputComponent = ({ callsign, handleAdd, setCallsign }): JSX.Element => {
-    const callsignData = callsign ? getCallsignData(callsign) : undefined;
+    const callGetCallsignData = useThrottle(getCallsignData, 500);
+    const callsignData = callsign ? callGetCallsignData(callsign) : undefined;
     const currentLocation = useStore((state) => state.currentLocation);
 
-    const country = findCountry(callsignData);
+    const country = callsignData ? findCountry(callsignData) : null;
 
     return (
         <Stack>
