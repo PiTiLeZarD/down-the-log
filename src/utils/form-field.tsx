@@ -43,9 +43,9 @@ export const FormField: FormFieldComponent = ({
                     value={value}
                     onChangeText={field.onChange}
                     placeholder={placeholder}
-                    aria-label="input"
                     multiline={role === "textarea"}
                     numberOfLines={numberOfLines}
+                    aria-label={role === "text" ? "input" : "textarea"}
                     {...(label ? { "aria-labelledby": `label${field.name}` } : {})}
                 />
             )}
@@ -65,6 +65,8 @@ export const FormField: FormFieldComponent = ({
                     value={value}
                     onValueChange={field.onChange}
                     items={Object.entries(options || {}).map(([value, label]) => ({ label, value }))}
+                    aria-label="select"
+                    {...(label ? { "aria-labelledby": `label${field.name}` } : {})}
                 />
             )}
         </View>
