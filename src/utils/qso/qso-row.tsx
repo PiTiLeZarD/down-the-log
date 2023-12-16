@@ -17,7 +17,7 @@ const stylesheet = createStyleSheet((theme) => ({
     },
 }));
 
-export type QsoProps = {
+export type QsoRowProps = {
     header?: boolean;
     position: string;
     time: React.ReactNode;
@@ -27,9 +27,17 @@ export type QsoProps = {
     onPress?: () => void;
 };
 
-export type QsoComponent = React.FC<QsoProps>;
+export type QsoRowComponent = React.FC<QsoRowProps>;
 
-export const Qso: QsoComponent = ({ onPress, header = false, position, time, band, callsign, name }): JSX.Element => {
+export const QsoRow: QsoRowComponent = ({
+    onPress,
+    header = false,
+    position,
+    time,
+    band,
+    callsign,
+    name,
+}): JSX.Element => {
     const { styles } = useStyles(stylesheet);
     const cellContent = (content: React.ReactNode, style: TextStyle) =>
         typeof content === "string" ? <Typography style={style}>{content}</Typography> : content;

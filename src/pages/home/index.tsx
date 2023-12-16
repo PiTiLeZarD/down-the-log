@@ -6,10 +6,10 @@ import { RootStackParamList } from "../../RootStack";
 import { useStore } from "../../store";
 import { Clocks } from "../../utils/clocks";
 import { newQso, useQsos } from "../../utils/qso";
+import { QsoList } from "../../utils/qso/qso-list";
 import { createStyleSheet, useStyles } from "../../utils/theme";
 import { CallsignInput } from "./callsign-input";
 import { LocationHeader } from "./location-header";
-import { QsoList } from "./qso-list";
 
 const stylesheet = createStyleSheet((theme) => ({
     container: {

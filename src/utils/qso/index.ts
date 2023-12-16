@@ -1,7 +1,7 @@
 import { DateTime } from "luxon";
 import uuid from "react-native-uuid";
-import { useStore } from "../store";
-import { findCountry, getCallsignData } from "./callsign";
+import { useStore } from "../../store";
+import { findCountry, getCallsignData } from "../callsign";
 
 export const useQsos = (): QSO[] => {
     const qsos = useStore((state) => state.qsos);
@@ -40,5 +40,5 @@ export const newQso = (callsign: string, currentLocation: string, qsos: QSO[]): 
 
 export const findMatchingQso = (qsos: QSO[], data: QSO): QSO | null =>
     qsos.filter(
-        (q) => q.callsign === data.callsign && Math.abs(q.date.diff(data.date).toObject().minutes || 100) < 10
+        (q) => q.callsign === data.callsign && Math.abs(q.date.diff(data.date).toObject().minutes || 100) < 10,
     )[0] || null;
