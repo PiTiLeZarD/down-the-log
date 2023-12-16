@@ -1,13 +1,12 @@
-import React, { useEffect } from "react";
+import React, { useMemo } from "react";
 
 import { NativeStackScreenProps } from "@react-navigation/native-stack";
 import { ScrollView, View } from "react-native";
 import { RootStackParamList } from "../../RootStack";
 import { useStore } from "../../store";
 import { Clocks } from "../../utils/clocks";
-import { QSO, newQso, useQsos } from "../../utils/qso";
+import { newQso, useQsos } from "../../utils/qso";
 import { createStyleSheet, useStyles } from "../../utils/theme";
-import { useThrottle } from "../../utils/useThrottle";
 import { CallsignInput } from "./callsign-input";
 import { LocationHeader } from "./location-header";
 import { QsoList } from "./qso-list";
@@ -39,18 +38,14 @@ export type HomeComponent = React.FC<HomeProps>;
 export const Home: HomeComponent = ({ navigation }): JSX.Element => {
     const [callsign, setCallsign] = React.useState<string>("");
     const qsos = useQsos();
-    const [filteredQsos, setFilteredQsos] = React.useState<QSO[]>(qsos);
     const { styles } = useStyles(stylesheet);
     const currentLocation = useStore((state) => state.currentLocation);
     const log = useStore((state) => state.log);
 
-    const applyFilter = useThrottle(() => {
-        setFilteredQsos(qsos.filter((q) => q.callsign.includes(callsign)));
-    }, 200);
-
-    useEffect(() => {
-        applyFilter();
-    }, [callsign]);
+    const filteredQsos = useMemo(
+        () => (callsign ? qsos.filter((q) => q.callsign.includes(callsign)) || qsos : qsos),
+        [callsign],
+    );
 
     const handleAdd = () => {
         const qso = newQso(callsign, currentLocation, qsos);
