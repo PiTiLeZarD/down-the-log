@@ -1,8 +1,8 @@
 import { Ionicons } from "@expo/vector-icons";
-import { NativeStackScreenProps } from "@react-navigation/native-stack";
+import { DrawerScreenProps } from "@react-navigation/drawer";
 import React from "react";
 import { View } from "react-native";
-import { RootStackParamList } from "../../RootStack";
+import { NavigationParamList } from "../../Navigation";
 import cqzones from "../../data/cqzones.json";
 import dxcc from "../../data/dxcc.json";
 import ituzones from "../../data/ituzones.json";
@@ -21,7 +21,7 @@ const stylesheet = createStyleSheet((theme) => ({
     },
 }));
 
-export type LocationHeaderProps = {} & Pick<NativeStackScreenProps<RootStackParamList, "Home">, "navigation">;
+export type LocationHeaderProps = {} & Pick<DrawerScreenProps<NavigationParamList, "Home">, "navigation">;
 
 export type LocationHeaderComponent = React.FC<LocationHeaderProps>;
 
@@ -45,7 +45,7 @@ export const LocationHeader: LocationHeaderComponent = ({ navigation }): JSX.Ele
                 </Typography>
             </Stack>
             <View>
-                <Button>
+                <Button onPress={() => navigation.openDrawer()}>
                     <Ionicons name="menu" size={20} color="white" />
                 </Button>
             </View>

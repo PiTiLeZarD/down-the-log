@@ -1,8 +1,8 @@
-import { NativeStackScreenProps } from "@react-navigation/native-stack";
+import { DrawerScreenProps } from "@react-navigation/drawer";
 import React from "react";
 import { useForm } from "react-hook-form";
 import { ScrollView, View } from "react-native";
-import { RootStackParamList } from "../../RootStack";
+import { NavigationParamList } from "../../Navigation";
 import { freq2band } from "../../data/bands";
 import { useStore } from "../../store";
 import { FormField } from "../../utils/form-field";
@@ -11,7 +11,7 @@ import { QSO, useQsos } from "../../utils/qso";
 import { Button } from "../../utils/theme/components/button";
 import { Typography } from "../../utils/theme/components/typography";
 
-export type QsoFormProps = {} & NativeStackScreenProps<RootStackParamList, "QsoForm">;
+export type QsoFormProps = {} & DrawerScreenProps<NavigationParamList, "QsoForm">;
 
 export type QsoFormComponent = React.FC<QsoFormProps>;
 

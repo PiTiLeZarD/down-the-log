@@ -1,11 +1,11 @@
-import { NativeStackScreenProps } from "@react-navigation/native-stack";
+import { DrawerScreenProps } from "@react-navigation/drawer";
 import React from "react";
 import { ScrollView } from "react-native";
-import { RootStackParamList } from "../../RootStack";
+import { NavigationParamList } from "../../Navigation";
 import { Button } from "../../utils/theme/components/button";
 import { Typography } from "../../utils/theme/components/typography";
 
-export type AboutProps = {} & NativeStackScreenProps<RootStackParamList, "About">;
+export type AboutProps = {} & DrawerScreenProps<NavigationParamList, "About">;
 
 export type AboutComponent = React.FC<AboutProps>;
 

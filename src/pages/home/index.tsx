@@ -1,8 +1,7 @@
+import { DrawerScreenProps } from "@react-navigation/drawer";
 import React, { useMemo } from "react";
-
-import { NativeStackScreenProps } from "@react-navigation/native-stack";
 import { ScrollView, View } from "react-native";
-import { RootStackParamList } from "../../RootStack";
+import { NavigationParamList } from "../../Navigation";
 import { useStore } from "../../store";
 import { Clocks } from "../../utils/clocks";
 import { newQso, useQsos } from "../../utils/qso";
@@ -31,7 +30,7 @@ const stylesheet = createStyleSheet((theme) => ({
     },
 }));
 
-export type HomeProps = {} & NativeStackScreenProps<RootStackParamList, "Home">;
+export type HomeProps = {} & DrawerScreenProps<NavigationParamList, "Home">;
 
 export type HomeComponent = React.FC<HomeProps>;
 

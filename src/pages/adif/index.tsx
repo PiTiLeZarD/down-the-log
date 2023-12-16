@@ -1,8 +1,8 @@
-import { NativeStackScreenProps } from "@react-navigation/native-stack";
+import { DrawerScreenProps } from "@react-navigation/drawer";
 import React from "react";
 import { View } from "react-native";
 import uuid from "react-native-uuid";
-import { RootStackParamList } from "../../RootStack";
+import { NavigationParamList } from "../../Navigation";
 import { useStore } from "../../store";
 import { adifFile2Qso, downloadQsos } from "../../utils/adif";
 import { Dropzone, FileWithPreview } from "../../utils/dropzone";
@@ -10,7 +10,7 @@ import { QSO, findMatchingQso, useQsos } from "../../utils/qso";
 import { Button } from "../../utils/theme/components/button";
 import { Typography } from "../../utils/theme/components/typography";
 
-export type AdifProps = {} & NativeStackScreenProps<RootStackParamList, "Adif">;
+export type AdifProps = {} & DrawerScreenProps<NavigationParamList, "Adif">;
 
 export type AdifComponent = React.FC<AdifProps>;
 
