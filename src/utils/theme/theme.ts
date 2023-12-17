@@ -21,7 +21,7 @@ export const theme = {
             paddingBottom: 8,
             paddingLeft: 16,
             paddingRight: 16,
-            borderRadius: 3,
+            borderRadius: 4,
         },
         buttonText: {
             textAlign: "center",
