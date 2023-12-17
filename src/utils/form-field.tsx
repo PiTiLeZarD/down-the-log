@@ -1,9 +1,9 @@
 import React from "react";
 import { Control, useController } from "react-hook-form";
 import { Text, View } from "react-native";
-import RNPickerSelect from "react-native-picker-select";
 import { QSO } from "./qso";
 import { Input } from "./theme/components/input";
+import { SelectInput } from "./theme/components/select-input";
 
 export type FormFieldProps = {
     name: keyof QSO;
@@ -51,21 +51,10 @@ export const FormField: FormFieldComponent = ({
             )}
 
             {role === "select" && (
-                <RNPickerSelect
-                    style={{
-                        inputWeb: {
-                            borderWidth: 1,
-                            borderStyle: "solid",
-                            borderColor: "black",
-                            borderRadius: 3,
-                            padding: 8,
-                            backgroundColor: "inherit",
-                        },
-                    }}
+                <SelectInput
                     value={value}
                     onValueChange={field.onChange}
                     items={Object.entries(options || {}).map(([value, label]) => ({ label, value }))}
-                    aria-label="select"
                     {...(label ? { "aria-labelledby": `label${field.name}` } : {})}
                 />
             )}
