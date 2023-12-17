@@ -4,7 +4,7 @@ import * as SplashScreen from "expo-splash-screen";
 import React, { useCallback } from "react";
 import { SafeAreaProvider, SafeAreaView } from "react-native-safe-area-context";
 import { UnistylesTheme } from "react-native-unistyles";
-import { Navigation } from "./Navigation";
+import { DrawerContent, Navigation } from "./Navigation";
 import { About } from "./pages/about";
 import { Adif } from "./pages/adif";
 import { Home } from "./pages/home";
@@ -43,7 +43,11 @@ const App = (): JSX.Element => {
             <NavigationContainer>
                 <UnistylesTheme theme={theme}>
                     <SafeAreaView style={{ flex: 1 }} onLayout={onLayoutRootView}>
-                        <Navigation.Navigator initialRouteName="Home" screenOptions={{ headerShown: false }}>
+                        <Navigation.Navigator
+                            initialRouteName="Home"
+                            screenOptions={{ headerShown: false }}
+                            drawerContent={DrawerContent}
+                        >
                             <Navigation.Screen name="Home" component={Home} />
                             <Navigation.Screen name="QsoForm" component={QsoForm} />
                             <Navigation.Screen name="About" component={About} />
