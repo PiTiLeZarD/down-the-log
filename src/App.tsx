@@ -10,6 +10,7 @@ import { Adif } from "./pages/adif";
 import { Home } from "./pages/home";
 import { QsoForm } from "./pages/qso-form";
 import { useStore } from "./store";
+import { LocationHeader } from "./utils/location-header";
 import { latlong2Maidenhead } from "./utils/locator";
 import { theme } from "./utils/theme";
 import { useLocation } from "./utils/use-location";
@@ -45,7 +46,10 @@ const App = (): JSX.Element => {
                     <SafeAreaView style={{ flex: 1 }} onLayout={onLayoutRootView}>
                         <Navigation.Navigator
                             initialRouteName="Home"
-                            screenOptions={{ headerShown: false }}
+                            screenOptions={{
+                                header: (props) => <LocationHeader {...props} />,
+                                drawerPosition: "right",
+                            }}
                             drawerContent={DrawerContent}
                         >
                             <Navigation.Screen name="Home" component={Home} />

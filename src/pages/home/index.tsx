@@ -3,12 +3,10 @@ import React, { useMemo } from "react";
 import { ScrollView, View } from "react-native";
 import { NavigationParamList } from "../../Navigation";
 import { useStore } from "../../store";
-import { Clocks } from "../../utils/clocks";
 import { newQso, useQsos } from "../../utils/qso";
 import { QsoList } from "../../utils/qso/qso-list";
 import { createStyleSheet, useStyles } from "../../utils/theme";
 import { CallsignInput } from "./callsign-input";
-import { LocationHeader } from "./location-header";
 
 const stylesheet = createStyleSheet((theme) => ({
     container: {
@@ -17,7 +15,6 @@ const stylesheet = createStyleSheet((theme) => ({
         width: "100%",
         height: "100%",
     },
-    top: {},
     table: {
         flexGrow: 1,
         paddingBottom: 45,
@@ -55,10 +52,6 @@ export const Home: HomeComponent = ({ navigation }): JSX.Element => {
 
     return (
         <View style={styles.container}>
-            <View style={styles.top}>
-                <LocationHeader navigation={navigation} />
-                <Clocks />
-            </View>
             <ScrollView style={styles.table}>
                 <QsoList qsos={filteredQsos} onQsoPress={(qso) => navigation.navigate("QsoForm", { qsoId: qso.id })} />
             </ScrollView>
