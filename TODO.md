@@ -6,7 +6,11 @@ This is the rough todolist I want to work on, I'll try to chunk all this in 5mn 
 
 This is what I'll be working on next.
 
--   [ ] web fonts and icons not working
+-   [ ] web
+    -   [ ] fonts not loaded
+    -   [ ] icons not working
+    -   [ ] huge padding at the bottom of the page on mobile
+    -   [ ] rotating the screens bugs the whole thing
 -   [ ] ios errors galore
 -   [ ] Perf issues, typing a callsign is way too slow
 -   [ ] adif import export
