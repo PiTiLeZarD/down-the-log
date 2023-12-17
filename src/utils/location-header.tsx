@@ -18,7 +18,7 @@ import { Typography } from "./theme/components/typography";
 const stylesheet = createStyleSheet((theme) => ({
     header: {
         backgroundColor: theme.colours.primary[theme.shades.light],
-        padding: 4,
+        padding: theme.margins.md,
     },
 }));
 

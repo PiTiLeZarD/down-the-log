@@ -4,11 +4,11 @@ import { createStyleSheet, useStyles } from "../styles";
 
 const stylesheet = createStyleSheet((theme) => ({
     web: {
-        borderWidth: 1,
+        borderWidth: theme.margins.xs,
         borderStyle: "solid",
         borderColor: theme.colours.primary[theme.shades.light],
-        borderRadius: 3,
-        padding: 8,
+        borderRadius: theme.margins.sm,
+        padding: theme.margins.lg,
         backgroundColor: "inherit",
     },
 }));

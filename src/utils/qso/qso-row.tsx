@@ -6,8 +6,8 @@ import { Typography } from "../../utils/theme/components/typography";
 
 const stylesheet = createStyleSheet((theme) => ({
     cell: {
-        paddingHorizontal: 5,
-        paddingVertical: 3,
+        paddingHorizontal: theme.margins.md,
+        paddingVertical: theme.margins.sm,
     },
     header: {
         fontWeight: "bold",

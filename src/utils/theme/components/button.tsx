@@ -8,21 +8,21 @@ const stylesheet = createStyleSheet((theme) => ({
         ...theme.components.button,
     },
     button_contained: (colour: ColourVariant) => ({
-        backgroundColor: theme.colours[colour][700],
+        backgroundColor: theme.colours[colour][theme.shades.dark],
     }),
     button_outlined: (colour: ColourVariant) => ({
         borderStyle: "solid",
-        borderWidth: 2,
-        borderColor: theme.colours[colour][700],
+        borderWidth: theme.margins.sm,
+        borderColor: theme.colours[colour][theme.shades.dark],
     }),
     buttonText: {
         ...theme.components.buttonText,
     },
     buttonText_contained: (colour: ColourVariant) => ({
-        color: theme.colours[colour][100],
+        color: theme.colours[colour][theme.shades.lighter],
     }),
     buttonText_outlined: (colour: ColourVariant) => ({
-        color: theme.colours[colour][700],
+        color: theme.colours[colour][theme.shades.dark],
     }),
 }));
 
