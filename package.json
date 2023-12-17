@@ -16,7 +16,7 @@
         "build:tauri": "tauri build",
         "types": "tsc --noEmit",
         "clean": "rm -Rf dist",
-        "prepages": "yarn clean && yarn build:web && sed -i -e 's/bundles/down-the-log\\/bundles/g' ./dist/index.html",
+        "prepages": "yarn clean && yarn build:web && sed -i -e 's/bundles/down-the-log\\/bundles/g' ./dist/index.html && sed -i -e 's/assets/down-the-log\\/assets/g' ./dist/bundles/*.js",
         "pages": "gh-pages -b ghpages -d dist"
     },
     "dependencies": {
