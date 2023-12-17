@@ -16,6 +16,7 @@ export const theme = {
             fontSize: 15,
         },
         button: {
+            flex: 1,
             paddingTop: 8,
             paddingBottom: 8,
             paddingLeft: 16,

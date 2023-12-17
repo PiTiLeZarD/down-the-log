@@ -1,13 +1,14 @@
 import { DrawerScreenProps } from "@react-navigation/drawer";
 import React from "react";
 import { useForm } from "react-hook-form";
-import { ScrollView, View } from "react-native";
 import { NavigationParamList } from "../../Navigation";
 import { freq2band } from "../../data/bands";
 import { useStore } from "../../store";
 import { FormField } from "../../utils/form-field";
 import { Grid } from "../../utils/grid";
+import { PageLayout } from "../../utils/page-layout";
 import { QSO, useQsos } from "../../utils/qso";
+import { Stack } from "../../utils/stack";
 import { Button } from "../../utils/theme/components/button";
 import { Typography } from "../../utils/theme/components/typography";
 
@@ -38,8 +39,7 @@ export const QsoForm: QsoFormComponent = ({ navigation, route }): JSX.Element =>
     };
 
     return (
-        <ScrollView>
-            <Button text="Back" onPress={() => navigation.navigate("Home")} />
+        <PageLayout title="Qso Form">
             <Grid container>
                 <Grid item xs={12} sm={6}>
                     <FormField name="callsign" label="Callsign:" control={control} />
@@ -78,10 +78,11 @@ export const QsoForm: QsoFormComponent = ({ navigation, route }): JSX.Element =>
                 </Grid>
             </Grid>
             <FormField role="textarea" name="note" label="Note:" control={control} />
-            <View>
-                <Button text="Submit" onPress={handleSubmit(onSubmit)} />
-                <Button text="Delete" colour="secondary" onPress={() => onDelete()} />
-            </View>
-        </ScrollView>
+            <Stack direction="row">
+                <Button variant="outlined" text="Submit" onPress={handleSubmit(onSubmit)} />
+                <Button variant="outlined" text="Delete" colour="secondary" onPress={() => onDelete()} />
+            </Stack>
+            <Button text="Back" onPress={() => navigation.navigate("Home")} />
+        </PageLayout>
     );
 };

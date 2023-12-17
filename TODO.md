@@ -6,7 +6,7 @@ This is the rough todolist I want to work on, I'll try to chunk all this in 5mn 
 
 This is what I'll be working on next.
 
--   [ ] Perf issues, migrate to unistyles
+-   [ ] Perf issues, typing a callsign is way too slow
 -   [ ] adif import export
     -   [x] download qsos as adif
     -   [ ] ability to ask "download from last export"
@@ -73,6 +73,7 @@ Got too many ideas, here is where I chuck them
 
 ## Done
 
+-   [x] Perf issues, migrate to unistyles
 -   [x] fix the burger menu (https://github.com/gluestack/gluestack-ui/issues/491#issuecomment-1797030604)
 -   [x] Add time column in qso list
 -   [x] Fix the date being lost somehow
