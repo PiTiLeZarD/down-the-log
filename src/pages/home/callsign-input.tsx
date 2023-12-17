@@ -1,4 +1,3 @@
-import { Ionicons } from "@expo/vector-icons";
 import React, { useMemo } from "react";
 import { View } from "react-native";
 import cqzones from "../../data/cqzones.json";
@@ -10,6 +9,7 @@ import { maidenDistance, maidenhead2Latlong } from "../../utils/locator";
 import { findZone } from "../../utils/polydec";
 import { Stack } from "../../utils/stack";
 import { Button } from "../../utils/theme/components/button";
+import { Icon } from "../../utils/theme/components/icon";
 import { Input } from "../../utils/theme/components/input";
 import { Typography } from "../../utils/theme/components/typography";
 
@@ -64,7 +64,7 @@ export const CallsignInput: CallsignInputComponent = ({ callsign, handleAdd, set
                     />
                 </View>
                 <Button onPress={() => handleAdd()}>
-                    <Ionicons name="add" size={24} color="white" />
+                    <Icon name="add" contrast />
                 </Button>
             </Stack>
         </Stack>

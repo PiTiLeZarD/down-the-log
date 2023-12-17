@@ -1,4 +1,3 @@
-import { Ionicons } from "@expo/vector-icons";
 import { DrawerScreenProps } from "@react-navigation/drawer";
 import React from "react";
 import { Text } from "react-native";
@@ -11,6 +10,7 @@ import { PageLayout } from "../../utils/page-layout";
 import { QSO, findMatchingQso, useQsos } from "../../utils/qso";
 import { Stack } from "../../utils/stack";
 import { Button } from "../../utils/theme/components/button";
+import { Icon } from "../../utils/theme/components/icon";
 import { Typography } from "../../utils/theme/components/typography";
 
 export type AdifProps = {} & DrawerScreenProps<NavigationParamList, "Adif">;
@@ -45,7 +45,7 @@ export const Adif: AdifComponent = ({ navigation }): JSX.Element => {
             <Button
                 text={
                     <Stack direction="row" style={{ justifyContent: "center" }}>
-                        <Ionicons name="download-outline" size={24} color="black" />
+                        <Icon name="download-outline" />
                         <Text>Download</Text>
                     </Stack>
                 }

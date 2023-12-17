@@ -35,6 +35,13 @@ export const theme = {
         lg: 8,
         xl: 12,
     },
+    shades: {
+        lighter: 100,
+        light: 300,
+        main: 500,
+        dark: 700,
+        darker: 900,
+    },
 } as const;
 
 export type ColourVariant = keyof typeof theme.colours;

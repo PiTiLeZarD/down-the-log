@@ -1,4 +1,3 @@
-import { Ionicons } from "@expo/vector-icons";
 import { DrawerScreenProps } from "@react-navigation/drawer";
 import { ParamListBase } from "@react-navigation/native";
 import React from "react";
@@ -13,11 +12,12 @@ import { findZone } from "./polydec";
 import { Stack } from "./stack";
 import { createStyleSheet, useStyles } from "./theme";
 import { Button } from "./theme/components/button";
+import { Icon } from "./theme/components/icon";
 import { Typography } from "./theme/components/typography";
 
 const stylesheet = createStyleSheet((theme) => ({
     header: {
-        backgroundColor: theme.colours.primary[300],
+        backgroundColor: theme.colours.primary[theme.shades.light],
         padding: 4,
     },
 }));
@@ -48,7 +48,7 @@ export const LocationHeader: LocationHeaderComponent = ({ navigation }): JSX.Ele
                 </Stack>
                 <View>
                     <Button onPress={() => navigation.openDrawer()}>
-                        <Ionicons name="menu" size={20} color="white" />
+                        <Icon name="menu" contrast />
                     </Button>
                 </View>
             </Stack>

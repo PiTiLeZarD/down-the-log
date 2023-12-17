@@ -6,7 +6,7 @@ const stylesheet = createStyleSheet((theme) => ({
     input: {
         borderWidth: 1,
         borderStyle: "solid",
-        borderColor: theme.colours.primary[300],
+        borderColor: theme.colours.primary[theme.shades.light],
         borderRadius: 3,
         padding: 8,
     },
