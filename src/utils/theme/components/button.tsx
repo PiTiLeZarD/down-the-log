@@ -49,7 +49,7 @@ export const ButtonText: ButtonTextComponent = ({
 };
 
 export type ButtonProps = Omit<PressableProps, "style"> & {
-    text?: string;
+    text?: React.ReactNode;
     style?: ViewStyle;
     variant?: "contained" | "outlined";
     colour?: ColourVariant;
