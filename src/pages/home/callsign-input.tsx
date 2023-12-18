@@ -63,9 +63,11 @@ export const CallsignInput: CallsignInputComponent = ({ callsign, handleAdd, set
                         placeholder="Callsign"
                     />
                 </View>
-                <Button onPress={() => handleAdd()}>
-                    <Icon name="add" contrast />
-                </Button>
+                <View>
+                    <Button onPress={() => handleAdd()}>
+                        <Icon name="add" contrast />
+                    </Button>
+                </View>
             </Stack>
         </Stack>
     );
