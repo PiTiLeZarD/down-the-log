@@ -12,7 +12,6 @@ import { findZone } from "./polydec";
 import { Stack } from "./stack";
 import { createStyleSheet, useStyles } from "./theme";
 import { Button } from "./theme/components/button";
-import { Icon } from "./theme/components/icon";
 import { Typography } from "./theme/components/typography";
 
 const stylesheet = createStyleSheet((theme) => ({
@@ -47,9 +46,7 @@ export const LocationHeader: LocationHeaderComponent = ({ navigation }): JSX.Ele
                     </Typography>
                 </Stack>
                 <View>
-                    <Button onPress={() => navigation.openDrawer()}>
-                        <Icon name="menu" contrast />
-                    </Button>
+                    <Button onPress={() => navigation.openDrawer()} startIcon="menu" />
                 </View>
             </Stack>
             <Clocks />

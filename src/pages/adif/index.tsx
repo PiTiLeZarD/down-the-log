@@ -1,6 +1,5 @@
 import { DrawerScreenProps } from "@react-navigation/drawer";
 import React from "react";
-import { Text } from "react-native";
 import uuid from "react-native-uuid";
 import { NavigationParamList } from "../../Navigation";
 import { useStore } from "../../store";
@@ -8,9 +7,7 @@ import { adifFile2Qso, downloadQsos } from "../../utils/adif";
 import { Dropzone, FileWithPreview } from "../../utils/dropzone";
 import { PageLayout } from "../../utils/page-layout";
 import { QSO, findMatchingQso, useQsos } from "../../utils/qso";
-import { Stack } from "../../utils/stack";
 import { Button } from "../../utils/theme/components/button";
-import { Icon } from "../../utils/theme/components/icon";
 import { Typography } from "../../utils/theme/components/typography";
 
 export type AdifProps = {} & DrawerScreenProps<NavigationParamList, "Adif">;
@@ -43,12 +40,8 @@ export const Adif: AdifComponent = ({ navigation }): JSX.Element => {
     return (
         <PageLayout title="Import/Export">
             <Button
-                text={
-                    <Stack direction="row" style={{ justifyContent: "center" }}>
-                        <Icon name="download-outline" />
-                        <Text>Download</Text>
-                    </Stack>
-                }
+                startIcon="download-outline"
+                text="Download"
                 variant="outlined"
                 onPress={() => downloadQsos("adif_export.adif", qsos)}
             />

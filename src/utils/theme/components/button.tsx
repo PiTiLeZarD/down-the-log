@@ -1,7 +1,9 @@
 import React from "react";
 import { Pressable, PressableProps, Text, TextProps, ViewStyle } from "react-native";
+import { Stack } from "../../stack";
 import { createStyleSheet, useStyles } from "../styles";
 import { ColourVariant } from "../theme";
+import { Icon } from "./icon";
 
 const stylesheet = createStyleSheet((theme) => ({
     button: {
@@ -51,6 +53,8 @@ export const ButtonText: ButtonTextComponent = ({
 export type ButtonProps = Omit<PressableProps, "style"> & {
     text?: React.ReactNode;
     style?: ViewStyle;
+    startIcon?: string;
+    endIcon?: string;
     variant?: "contained" | "outlined";
     colour?: ColourVariant;
 };
@@ -62,19 +66,33 @@ export const Button: ButtonComponent = ({
     variant = "contained",
     colour = "primary",
     text,
+    startIcon,
+    endIcon,
     children,
     ...otherProps
 }): JSX.Element => {
     const { styles } = useStyles(stylesheet);
     return (
         <Pressable style={[styles.button, styles[`button_${variant}`](colour), style]} {...otherProps}>
-            {text ? (
-                <ButtonText variant={variant} colour={colour}>
-                    {text}
-                </ButtonText>
-            ) : (
-                children
-            )}
+            <Stack direction="row" style={{ justifyContent: "center" }}>
+                {startIcon && (
+                    <ButtonText variant={variant} colour={colour}>
+                        <Icon name={startIcon} color={colour} contrast={variant == "contained"} />
+                    </ButtonText>
+                )}
+                {text ? (
+                    <ButtonText variant={variant} colour={colour}>
+                        {text}
+                    </ButtonText>
+                ) : (
+                    children
+                )}
+                {endIcon && (
+                    <ButtonText variant={variant} colour={colour}>
+                        <Icon name={endIcon} color={colour} contrast={variant == "contained"} />
+                    </ButtonText>
+                )}
+            </Stack>
         </Pressable>
     );
 };

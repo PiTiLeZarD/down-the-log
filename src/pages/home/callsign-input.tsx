@@ -9,7 +9,6 @@ import { maidenDistance, maidenhead2Latlong } from "../../utils/locator";
 import { findZone } from "../../utils/polydec";
 import { Stack } from "../../utils/stack";
 import { Button } from "../../utils/theme/components/button";
-import { Icon } from "../../utils/theme/components/icon";
 import { Input } from "../../utils/theme/components/input";
 import { Typography } from "../../utils/theme/components/typography";
 
@@ -64,9 +63,7 @@ export const CallsignInput: CallsignInputComponent = ({ callsign, handleAdd, set
                     />
                 </View>
                 <View>
-                    <Button onPress={() => handleAdd()}>
-                        <Icon name="add" contrast />
-                    </Button>
+                    <Button onPress={() => handleAdd()} startIcon="add" />
                 </View>
             </Stack>
         </Stack>
