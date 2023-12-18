@@ -29,21 +29,21 @@ export const LocationHeader: LocationHeaderComponent = ({ navigation }): JSX.Ele
     const currentLocation = useStore((state) => state.currentLocation);
     const { styles } = useStyles(stylesheet);
 
-    if (!currentLocation) return <Typography>Looking for your location...</Typography>;
-
     return (
         <View>
             <Stack direction="row" style={styles.header}>
                 <Stack style={{ flexGrow: 1 }}>
                     <Stack direction="row">
                         <Typography>Locator: </Typography>
-                        <Typography>{currentLocation}</Typography>
+                        <Typography>{currentLocation ? currentLocation : "Looking for your location..."}</Typography>
                     </Stack>
-                    <Typography>
-                        (CQ: {findZone(cqzones, maidenhead2Latlong(currentLocation))}, ITU:{" "}
-                        {findZone(ituzones, maidenhead2Latlong(currentLocation))}, DXCC:{" "}
-                        {findZone(dxcc, maidenhead2Latlong(currentLocation))})
-                    </Typography>
+                    {currentLocation && (
+                        <Typography>
+                            (CQ: {findZone(cqzones, maidenhead2Latlong(currentLocation))}, ITU:{" "}
+                            {findZone(ituzones, maidenhead2Latlong(currentLocation))}, DXCC:{" "}
+                            {findZone(dxcc, maidenhead2Latlong(currentLocation))})
+                        </Typography>
+                    )}
                 </Stack>
                 <View>
                     <Button onPress={() => navigation.openDrawer()} startIcon="menu" />
