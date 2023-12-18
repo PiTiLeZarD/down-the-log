@@ -20,37 +20,37 @@ const variantComponentMap: Record<TypographyVariant, React.ElementType> = {
 const stylesheet = createStyleSheet((theme) => ({
     h1: {
         ...theme.components.typography,
-        fontSize: 36,
+        fontSize: theme.components.typography.fontSize * 1.6,
         marginBottom: 18,
         marginTop: 18,
     },
     h2: {
         ...theme.components.typography,
-        fontSize: 30,
+        fontSize: theme.components.typography.fontSize * 1.5,
         marginBottom: 15,
         marginTop: 15,
     },
     h3: {
         ...theme.components.typography,
-        fontSize: 26,
+        fontSize: theme.components.typography.fontSize * 1.4,
         marginBottom: 13,
         marginTop: 13,
     },
     h4: {
         ...theme.components.typography,
-        fontSize: 22,
+        fontSize: theme.components.typography.fontSize * 1.3,
         marginBottom: 11,
         marginTop: 11,
     },
     h5: {
         ...theme.components.typography,
-        fontSize: 18,
+        fontSize: theme.components.typography.fontSize * 1.2,
         marginBottom: 9,
         marginTop: 9,
     },
     h6: {
         ...theme.components.typography,
-        fontSize: 16,
+        fontSize: theme.components.typography.fontSize * 1.1,
         marginBottom: 8,
         marginTop: 8,
     },
@@ -62,7 +62,7 @@ const stylesheet = createStyleSheet((theme) => ({
     },
     subtitle: {
         ...theme.components.typography,
-        fontSize: 12,
+        fontSize: theme.components.typography.fontSize * 0.9,
         color: theme.colours.grey[theme.shades.dark],
         fontStyle: "italic",
     },

@@ -1,3 +1,4 @@
+import { PixelRatio } from "react-native";
 import colours from "./colours.json";
 
 export const colour = (name: string, shade: number) =>
@@ -13,7 +14,7 @@ export const theme = {
         typography: {
             fontFamily: "Quicksand",
             fontWeight: "400",
-            fontSize: 15,
+            fontSize: PixelRatio.getFontScale() * 16,
         },
         button: {
             flex: 1,
