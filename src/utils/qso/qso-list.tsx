@@ -1,5 +1,5 @@
 import React from "react";
-import { SectionList, View } from "react-native";
+import { SectionList, View, ViewStyle } from "react-native";
 import { QSO } from ".";
 import { Typography } from "../../utils/theme/components/typography";
 import { QsoListItem } from "./qso-list-item";
@@ -22,12 +22,14 @@ const qsos2sections = (qsos: QSO[]): QSOSection[] =>
 export type QsoListProps = {
     qsos: QSO[];
     onQsoPress: (qso: QSO) => void;
+    style?: ViewStyle;
 };
 
 export type QsoListComponent = React.FC<QsoListProps>;
 
-export const QsoList: QsoListComponent = ({ qsos, onQsoPress }): JSX.Element => (
+export const QsoList: QsoListComponent = ({ style, qsos, onQsoPress }): JSX.Element => (
     <SectionList
+        style={style}
         ListHeaderComponent={<QsoRow header position="ID" time="Time" callsign="Callsign" name="Name" band="Band" />}
         sections={qsos2sections(qsos)}
         keyExtractor={(item) => item.id}

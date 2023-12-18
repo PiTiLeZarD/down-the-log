@@ -1,6 +1,6 @@
 import { DrawerScreenProps } from "@react-navigation/drawer";
 import React, { useMemo } from "react";
-import { ScrollView, View } from "react-native";
+import { View } from "react-native";
 import { NavigationParamList } from "../../Navigation";
 import { useStore } from "../../store";
 import { newQso, useQsos } from "../../utils/qso";
@@ -52,9 +52,11 @@ export const Home: HomeComponent = ({ navigation }): JSX.Element => {
 
     return (
         <View style={styles.container}>
-            <ScrollView style={styles.table}>
-                <QsoList qsos={filteredQsos} onQsoPress={(qso) => navigation.navigate("QsoForm", { qsoId: qso.id })} />
-            </ScrollView>
+            <QsoList
+                style={styles.table}
+                qsos={filteredQsos}
+                onQsoPress={(qso) => navigation.navigate("QsoForm", { qsoId: qso.id })}
+            />
             <View style={styles.inputs}>
                 <CallsignInput handleAdd={handleAdd} setCallsign={setCallsign} callsign={callsign} />
             </View>
