@@ -1,6 +1,6 @@
 import React from "react";
 import { View, ViewStyle } from "react-native";
-import { useStyles } from "../theme";
+import { useStyles } from "react-native-unistyles";
 import { useGeneratedStyles } from "./styles";
 
 export type GridProps = {
@@ -29,16 +29,16 @@ export const Grid: GridComponent = ({ container, item, style, xs, sm, md, lg, xl
         (screenSize === "xs"
             ? xs
             : screenSize === "sm"
-            ? sm || xs
-            : screenSize === "md"
-            ? md || sm || xs
-            : screenSize === "lg"
-            ? lg || md || sm || xs
-            : screenSize === "xl"
-            ? xl || lg || md || sm || xs
-            : screenSize === "xxl"
-            ? xxl || xl || lg || md || sm || xs
-            : 12) || 12;
+              ? sm || xs
+              : screenSize === "md"
+                ? md || sm || xs
+                : screenSize === "lg"
+                  ? lg || md || sm || xs
+                  : screenSize === "xl"
+                    ? xl || lg || md || sm || xs
+                    : screenSize === "xxl"
+                      ? xxl || xl || lg || md || sm || xs
+                      : 12) || 12;
 
     if (colSpan === -1) return <></>;
 

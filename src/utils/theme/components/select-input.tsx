@@ -1,6 +1,6 @@
 import React from "react";
 import RNPickerSelect, { PickerSelectProps } from "react-native-picker-select";
-import { createStyleSheet, useStyles } from "../styles";
+import { createStyleSheet, useStyles } from "react-native-unistyles";
 
 const stylesheet = createStyleSheet((theme) => ({
     web: {

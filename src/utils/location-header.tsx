@@ -2,6 +2,7 @@ import { DrawerScreenProps } from "@react-navigation/drawer";
 import { ParamListBase } from "@react-navigation/native";
 import React from "react";
 import { View } from "react-native";
+import { createStyleSheet, useStyles } from "react-native-unistyles";
 import cqzones from "../data/cqzones.json";
 import dxcc from "../data/dxcc.json";
 import ituzones from "../data/ituzones.json";
@@ -10,7 +11,6 @@ import { Clocks } from "./clocks";
 import { maidenhead2Latlong } from "./locator";
 import { findZone } from "./polydec";
 import { Stack } from "./stack";
-import { createStyleSheet, useStyles } from "./theme";
 import { Button } from "./theme/components/button";
 import { Typography } from "./theme/components/typography";
 

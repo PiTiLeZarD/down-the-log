@@ -1,6 +1,7 @@
 import React from "react";
 import { useWindowDimensions } from "react-native";
-import { createStyleSheet, getScreenSize, spacing } from "../theme";
+import { createStyleSheet } from "react-native-unistyles";
+import { getScreenSize, spacing } from "../theme";
 
 const generateStyles = (width: number, nbCols: number = 12) => {
     const colWidth = 100 / nbCols;
@@ -16,7 +17,7 @@ const generateStyles = (width: number, nbCols: number = 12) => {
         ...Object.fromEntries(
             new Array(nbCols)
                 .fill(null)
-                .map((_, c) => [`col_${c + 1}`, { width: `${colWidth * (c + 1)}%`, paddingRight: colSpacing }])
+                .map((_, c) => [`col_${c + 1}`, { width: `${colWidth * (c + 1)}%`, paddingRight: colSpacing }]),
         ),
     });
 };
@@ -25,7 +26,7 @@ export const useGeneratedStyles = () => {
     const windowDimensions = useWindowDimensions();
 
     const [gridStyles, setGridStyles] = React.useState<ReturnType<typeof generateStyles>>(
-        generateStyles(windowDimensions.width)
+        generateStyles(windowDimensions.width),
     );
 
     React.useEffect(() => {

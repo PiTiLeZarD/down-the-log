@@ -1,7 +1,7 @@
 import React from "react";
 import { Pressable, PressableProps, Text, TextProps, ViewStyle } from "react-native";
+import { createStyleSheet, useStyles } from "react-native-unistyles";
 import { Stack } from "../../stack";
-import { createStyleSheet, useStyles } from "../styles";
 import { ColourVariant } from "../theme";
 import { Icon } from "./icon";
 

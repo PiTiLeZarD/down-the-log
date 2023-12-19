@@ -1,8 +1,8 @@
 import React from "react";
 import { ScrollView } from "react-native";
+import { useStyles } from "react-native-unistyles";
 import { Grid } from "./grid";
 import { Stack } from "./stack";
-import { useStyles } from "./theme";
 import { Typography } from "./theme/components/typography";
 
 export type PageLayoutProps = {

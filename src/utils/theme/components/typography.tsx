@@ -1,7 +1,7 @@
 import { EM, H1, H2, H3, H4, H5, H6, P, Span } from "@expo/html-elements";
 import React from "react";
 import { TextStyle } from "react-native";
-import { createStyleSheet, useStyles } from "../styles";
+import { createStyleSheet, useStyles } from "react-native-unistyles";
 
 export type TypographyVariant = "h1" | "h2" | "h3" | "h4" | "h5" | "h6" | "body" | "paragraph" | "subtitle" | "em";
 const variantComponentMap: Record<TypographyVariant, React.ElementType> = {

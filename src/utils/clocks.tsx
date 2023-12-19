@@ -1,7 +1,7 @@
 import { DateTime } from "luxon";
 import React from "react";
+import { createStyleSheet, useStyles } from "react-native-unistyles";
 import { Grid } from "./grid";
-import { createStyleSheet, useStyles } from "./theme";
 import { Typography } from "./theme/components/typography";
 
 export type ClocksProps = {};

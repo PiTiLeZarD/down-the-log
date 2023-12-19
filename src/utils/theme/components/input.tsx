@@ -1,6 +1,6 @@
 import React from "react";
 import { TextInput, TextInputProps } from "react-native";
-import { createStyleSheet, useStyles } from "../styles";
+import { createStyleSheet, useStyles } from "react-native-unistyles";
 
 const stylesheet = createStyleSheet((theme) => ({
     input: {

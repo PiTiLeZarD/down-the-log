@@ -1,7 +1,7 @@
 import React from "react";
 import { Pressable, TextStyle } from "react-native";
+import { createStyleSheet, useStyles } from "react-native-unistyles";
 import { Grid } from "../../utils/grid";
-import { createStyleSheet, useStyles } from "../../utils/theme";
 import { Typography } from "../../utils/theme/components/typography";
 
 const stylesheet = createStyleSheet((theme) => ({

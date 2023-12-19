@@ -3,7 +3,6 @@ import { useFonts } from "expo-font";
 import * as SplashScreen from "expo-splash-screen";
 import React, { useCallback } from "react";
 import { SafeAreaProvider, SafeAreaView } from "react-native-safe-area-context";
-import { UnistylesTheme } from "react-native-unistyles";
 import { DrawerContent, Navigation } from "./Navigation";
 import { About } from "./pages/about";
 import { Adif } from "./pages/adif";
@@ -12,7 +11,7 @@ import { QsoForm } from "./pages/qso-form";
 import { useStore } from "./store";
 import { LocationHeader } from "./utils/location-header";
 import { latlong2Maidenhead } from "./utils/locator";
-import { theme } from "./utils/theme";
+import "./utils/theme";
 import { useLocation } from "./utils/use-location";
 
 SplashScreen.preventAutoHideAsync();
@@ -42,23 +41,21 @@ const App = (): JSX.Element => {
     return (
         <SafeAreaProvider>
             <NavigationContainer>
-                <UnistylesTheme theme={theme}>
-                    <SafeAreaView style={{ flex: 1 }} onLayout={onLayoutRootView}>
-                        <Navigation.Navigator
-                            initialRouteName="Home"
-                            screenOptions={{
-                                header: (props) => <LocationHeader {...props} />,
-                                drawerPosition: "right",
-                            }}
-                            drawerContent={DrawerContent}
-                        >
-                            <Navigation.Screen name="Home" component={Home} />
-                            <Navigation.Screen name="QsoForm" component={QsoForm} />
-                            <Navigation.Screen name="About" component={About} />
-                            <Navigation.Screen name="Adif" component={Adif} />
-                        </Navigation.Navigator>
-                    </SafeAreaView>
-                </UnistylesTheme>
+                <SafeAreaView style={{ flex: 1 }} onLayout={onLayoutRootView}>
+                    <Navigation.Navigator
+                        initialRouteName="Home"
+                        screenOptions={{
+                            header: (props) => <LocationHeader {...props} />,
+                            drawerPosition: "right",
+                        }}
+                        drawerContent={DrawerContent}
+                    >
+                        <Navigation.Screen name="Home" component={Home} />
+                        <Navigation.Screen name="QsoForm" component={QsoForm} />
+                        <Navigation.Screen name="About" component={About} />
+                        <Navigation.Screen name="Adif" component={Adif} />
+                    </Navigation.Navigator>
+                </SafeAreaView>
             </NavigationContainer>
         </SafeAreaProvider>
     );
