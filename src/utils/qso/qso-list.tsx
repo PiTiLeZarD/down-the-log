@@ -2,6 +2,7 @@ import debounce from "debounce";
 import React, { useEffect } from "react";
 import { View, ViewStyle } from "react-native";
 import BigList from "react-native-big-list";
+import { createStyleSheet, useStyles } from "react-native-unistyles";
 import { QSO } from ".";
 import { Typography } from "../theme/components/typography";
 import { QsoListItem } from "./qso-list-item";
@@ -15,6 +16,24 @@ const qsos2sections = (qsos: QSO[]): QSO[][] =>
             return sections;
         }, {}),
     );
+
+const LINEHEIGHT = 28;
+
+const stylesheet = createStyleSheet((theme) => ({
+    sectionHeader: {
+        flex: 1,
+        display: "flex",
+        alignItems: "center",
+        borderStyle: "solid",
+        borderColor: theme.colours.primary[theme.shades.darker],
+        borderTopWidth: 1,
+        borderBottomWidth: 1,
+        backgroundColor: theme.colours.primary[theme.shades.lighter],
+    },
+    sectionHeaderText: {
+        lineHeight: LINEHEIGHT,
+    },
+}));
 
 export type QsoListProps = {
     qsos: QSO[];
@@ -30,6 +49,7 @@ const applyFilters = (qsos: QSO[], filters: QsoListProps["filters"]) =>
 
 export const QsoList: QsoListComponent = ({ style, filters, qsos, onQsoPress }): JSX.Element => {
     const [sections, setSections] = React.useState<QSO[][]>(qsos2sections(applyFilters(qsos, filters)));
+    const { styles } = useStyles(stylesheet);
 
     const refresh = debounce(() => {
         setSections(qsos2sections(applyFilters(qsos, filters)));
@@ -44,32 +64,31 @@ export const QsoList: QsoListComponent = ({ style, filters, qsos, onQsoPress }):
             stickySectionHeadersEnabled={false}
             sections={sections}
             keyExtractor={(item) => item.id}
-            renderItem={({ item, index }) => <QsoListItem {...{ onQsoPress, item, index }} />}
-            renderHeader={() => <QsoRow header position="ID" time="Time" callsign="Callsign" name="Name" band="Band" />}
+            renderItem={({ item, index }) => <QsoListItem {...{ onQsoPress, item, index, lineHeight: LINEHEIGHT }} />}
+            renderHeader={() => (
+                <QsoRow
+                    header
+                    lineHeight={LINEHEIGHT}
+                    position="ID"
+                    time="Time"
+                    callsign="Callsign"
+                    name="Name"
+                    band="Band"
+                />
+            )}
             renderSectionHeader={(section) => (
                 <View>
-                    <View
-                        style={{
-                            flex: 1,
-                            paddingHorizontal: 5,
-                            paddingVertical: 3,
-                            display: "flex",
-                            alignItems: "center",
-                            borderStyle: "solid",
-                            borderColor: "black",
-                            borderTopWidth: 1,
-                            borderBottomWidth: 1,
-                            backgroundColor: "white",
-                        }}
-                    >
-                        <Typography>{sections[section][0].date.toFormat("dd/MM/yyyy")}</Typography>
+                    <View style={styles.sectionHeader}>
+                        <Typography style={styles.sectionHeaderText}>
+                            {sections[section][0].date.toFormat("dd/MM/yyyy")}
+                        </Typography>
                     </View>
                 </View>
             )}
             renderFooter={() => <></>}
-            itemHeight={28}
-            headerHeight={28}
-            sectionHeaderHeight={28}
+            itemHeight={LINEHEIGHT}
+            headerHeight={LINEHEIGHT}
+            sectionHeaderHeight={LINEHEIGHT}
         />
     );
 };

@@ -12,17 +12,19 @@ import { QsoRow } from "./qso-row";
 export type QsoListItemProps = {
     item: QSO;
     index: number;
+    lineHeight?: number;
     onQsoPress: QsoListProps["onQsoPress"];
 };
 
 export type QsoListItemComponent = React.FC<QsoListItemProps>;
 
 export const QsoListItem: QsoListItemComponent = React.memo(
-    ({ item: qso, index, onQsoPress }): JSX.Element => {
+    ({ item: qso, index, lineHeight, onQsoPress }): JSX.Element => {
         const currentLocation = useStore((state) => state.currentLocation);
         const callsignData = getCallsignData(qso.callsign);
         return (
             <QsoRow
+                lineHeight={lineHeight}
                 position={String(index + 1)}
                 time={qso.date.toFormat("HH:mm")}
                 callsign={

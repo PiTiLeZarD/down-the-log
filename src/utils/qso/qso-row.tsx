@@ -9,8 +9,12 @@ const stylesheet = createStyleSheet((theme) => ({
         paddingHorizontal: theme.margins.md,
         paddingVertical: theme.margins.sm,
     },
-    header: {
+    header: (lineHeight: number) => ({
+        lineHeight,
         fontWeight: "bold",
+    }),
+    row: {
+        backgroundColor: theme.colours.grey[200],
     },
     rowHighlight: {
         backgroundColor: theme.colours.grey[300],
@@ -19,6 +23,7 @@ const stylesheet = createStyleSheet((theme) => ({
 
 export type QsoRowProps = {
     header?: boolean;
+    lineHeight?: number;
     position: string;
     time: React.ReactNode;
     band: React.ReactNode;
@@ -32,6 +37,7 @@ export type QsoRowComponent = React.FC<QsoRowProps>;
 export const QsoRow: QsoRowComponent = ({
     onPress,
     header = false,
+    lineHeight = 20,
     position,
     time,
     band,
@@ -41,23 +47,23 @@ export const QsoRow: QsoRowComponent = ({
     const { styles } = useStyles(stylesheet);
     const cellContent = (content: React.ReactNode, style: TextStyle) =>
         typeof content === "string" ? <Typography style={style}>{content}</Typography> : content;
-    const cellStyle = header ? styles.header : {};
+    const cellStyle = header ? styles.header(lineHeight) : { lineHeight };
     return (
         <Pressable onPress={onPress}>
-            <Grid container style={(+position % 2 || header ? styles.rowHighlight : {}) as any}>
-                <Grid item style={styles.cell as any} xs={1}>
+            <Grid container style={+position % 2 || header ? styles.rowHighlight : styles.row}>
+                <Grid item style={styles.cell} xs={1}>
                     {cellContent(position, cellStyle)}
                 </Grid>
-                <Grid item style={styles.cell as any} xs={2}>
+                <Grid item style={styles.cell} xs={2}>
                     {cellContent(time, cellStyle)}
                 </Grid>
-                <Grid item style={styles.cell as any} xs={7} md={5}>
+                <Grid item style={styles.cell} xs={7} md={5}>
                     {cellContent(callsign, cellStyle)}
                 </Grid>
-                <Grid item style={styles.cell as any} xs={-1} md={2}>
+                <Grid item style={styles.cell} xs={-1} md={2}>
                     {cellContent(name, cellStyle)}
                 </Grid>
-                <Grid item style={styles.cell as any} xs={2}>
+                <Grid item style={styles.cell} xs={2}>
                     {cellContent(band, cellStyle)}
                 </Grid>
             </Grid>
