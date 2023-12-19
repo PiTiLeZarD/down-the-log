@@ -25,7 +25,7 @@ export const QsoListItem: QsoListItemComponent = React.memo(
         return (
             <QsoRow
                 lineHeight={lineHeight}
-                position={String(index + 1)}
+                position={String((qso.position || index) + 1)}
                 time={qso.date.toFormat("HH:mm")}
                 callsign={
                     <Stack direction="row">

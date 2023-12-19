@@ -10,7 +10,8 @@ import { QsoRow } from "./qso-row";
 
 const qsos2sections = (qsos: QSO[]): QSO[][] =>
     Object.values(
-        qsos.reduce<Record<string, QSO[]>>((sections, qso) => {
+        qsos.reduce<Record<string, QSO[]>>((sections, qso, index) => {
+            qso.position = qsos.length - index - 1;
             const title = qso.date.toFormat("dd/MM/yyyy");
             sections[title] = [...(sections[title] || []), qso];
             return sections;

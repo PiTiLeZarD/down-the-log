@@ -17,7 +17,6 @@ const stylesheet = createStyleSheet((theme) => ({
     },
     table: {
         flexGrow: 1,
-        paddingBottom: 45,
     },
     inputs: {
         left: 0,
