@@ -40,6 +40,8 @@ export const QsoList: QsoListComponent = ({ style, filters, qsos, onQsoPress }):
     return (
         <BigList
             style={style}
+            placeholder
+            stickySectionHeadersEnabled={false}
             sections={sections}
             keyExtractor={(item) => item.id}
             renderItem={({ item, index }) => <QsoListItem {...{ onQsoPress, item, index }} />}
@@ -58,9 +60,7 @@ export const QsoList: QsoListComponent = ({ style, filters, qsos, onQsoPress }):
                         backgroundColor: "white",
                     }}
                 >
-                    <Typography style={{ fontWeight: "bold" }}>
-                        {sections[section][0].date.toFormat("dd/MM/yyyy")}
-                    </Typography>
+                    <Typography>{sections[section][0].date.toFormat("dd/MM/yyyy")}</Typography>
                 </View>
             )}
             renderFooter={() => <></>}
