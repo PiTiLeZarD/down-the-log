@@ -1,5 +1,5 @@
 import { DrawerScreenProps } from "@react-navigation/drawer";
-import React, { useMemo } from "react";
+import React from "react";
 import { View } from "react-native";
 import { NavigationParamList } from "../../Navigation";
 import { useStore } from "../../store";
@@ -38,11 +38,6 @@ export const Home: HomeComponent = ({ navigation }): JSX.Element => {
     const currentLocation = useStore((state) => state.currentLocation);
     const log = useStore((state) => state.log);
 
-    const filteredQsos = useMemo(
-        () => (callsign ? qsos.filter((q) => q.callsign.includes(callsign)) || qsos : qsos),
-        [callsign],
-    );
-
     const handleAdd = () => {
         const qso = newQso(callsign, currentLocation, qsos);
         log(qso);
@@ -54,11 +49,12 @@ export const Home: HomeComponent = ({ navigation }): JSX.Element => {
         <View style={styles.container}>
             <QsoList
                 style={styles.table}
-                qsos={filteredQsos}
+                qsos={qsos}
+                filters={callsign ? [(q) => q.callsign.includes(callsign)] : undefined}
                 onQsoPress={(qso) => navigation.navigate("QsoForm", { qsoId: qso.id })}
             />
             <View style={styles.inputs}>
-                <CallsignInput handleAdd={handleAdd} setCallsign={setCallsign} callsign={callsign} />
+                <CallsignInput handleAdd={handleAdd} onChange={setCallsign} value={callsign} />
             </View>
         </View>
     );

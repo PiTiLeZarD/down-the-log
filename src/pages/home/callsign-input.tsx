@@ -13,15 +13,15 @@ import { Input } from "../../utils/theme/components/input";
 import { Typography } from "../../utils/theme/components/typography";
 
 export type CallsignInputProps = {
-    callsign: string;
     handleAdd: () => void;
-    setCallsign: (callsign: string) => void;
+    value: string;
+    onChange: (callsign: string) => void;
 };
 
 export type CallsignInputComponent = React.FC<CallsignInputProps>;
 
-export const CallsignInput: CallsignInputComponent = ({ callsign, handleAdd, setCallsign }): JSX.Element => {
-    const callsignData = useMemo(() => (callsign ? getCallsignData(callsign) : undefined), [callsign]);
+export const CallsignInput: CallsignInputComponent = ({ value, handleAdd, onChange }): JSX.Element => {
+    const callsignData = useMemo(() => (value ? getCallsignData(value) : undefined), [value]);
     const currentLocation = useStore((state) => state.currentLocation);
 
     const country = callsignData ? findCountry(callsignData) : null;
@@ -54,11 +54,11 @@ export const CallsignInput: CallsignInputComponent = ({ callsign, handleAdd, set
             <Stack direction="row">
                 <View style={{ flexGrow: 1 }}>
                     <Input
-                        onChangeText={(text: string) => setCallsign(text.toUpperCase())}
+                        onChangeText={(text: string) => onChange(text.toUpperCase())}
                         onKeyPress={(e) => {
                             if ((e as any).keyCode === 13) handleAdd();
                         }}
-                        value={callsign}
+                        value={value}
                         placeholder="Callsign"
                     />
                 </View>

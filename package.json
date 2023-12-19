@@ -34,6 +34,7 @@
         "@react-navigation/native": "^6.1.9",
         "@types/luxon": "^3.3.3",
         "@typescript-eslint/eslint-plugin": "^6.9.1",
+        "debounce": "^2.0.0",
         "expo": "^49.0.21",
         "expo-device": "~5.4.0",
         "expo-font": "~11.4.0",
