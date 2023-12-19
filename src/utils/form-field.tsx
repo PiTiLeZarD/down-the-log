@@ -33,7 +33,7 @@ export const FormField: FormFieldComponent = ({
     return (
         <View>
             {label && (
-                <Text aria-label={`Label for ${field.name}`} nativeID={`label${field.name}`}>
+                <Text aria-label={`Label for ${field.name}`} id={`label${field.name}`}>
                     {label}
                 </Text>
             )}
