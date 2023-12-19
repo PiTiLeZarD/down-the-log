@@ -3,7 +3,7 @@ import React, { useEffect } from "react";
 import { View, ViewStyle } from "react-native";
 import BigList from "react-native-big-list";
 import { QSO } from ".";
-import { Typography } from "../../utils/theme/components/typography";
+import { Typography } from "../theme/components/typography";
 import { QsoListItem } from "./qso-list-item";
 import { QsoRow } from "./qso-row";
 
@@ -47,20 +47,23 @@ export const QsoList: QsoListComponent = ({ style, filters, qsos, onQsoPress }):
             renderItem={({ item, index }) => <QsoListItem {...{ onQsoPress, item, index }} />}
             renderHeader={() => <QsoRow header position="ID" time="Time" callsign="Callsign" name="Name" band="Band" />}
             renderSectionHeader={(section) => (
-                <View
-                    style={{
-                        paddingHorizontal: 5,
-                        paddingVertical: 3,
-                        display: "flex",
-                        alignItems: "center",
-                        borderStyle: "solid",
-                        borderColor: "black",
-                        borderTopWidth: 1,
-                        borderBottomWidth: 1,
-                        backgroundColor: "white",
-                    }}
-                >
-                    <Typography>{sections[section][0].date.toFormat("dd/MM/yyyy")}</Typography>
+                <View>
+                    <View
+                        style={{
+                            flex: 1,
+                            paddingHorizontal: 5,
+                            paddingVertical: 3,
+                            display: "flex",
+                            alignItems: "center",
+                            borderStyle: "solid",
+                            borderColor: "black",
+                            borderTopWidth: 1,
+                            borderBottomWidth: 1,
+                            backgroundColor: "white",
+                        }}
+                    >
+                        <Typography>{sections[section][0].date.toFormat("dd/MM/yyyy")}</Typography>
+                    </View>
                 </View>
             )}
             renderFooter={() => <></>}
