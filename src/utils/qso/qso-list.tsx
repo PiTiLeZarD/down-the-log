@@ -1,24 +1,20 @@
 import debounce from "debounce";
 import React, { useEffect } from "react";
-import { SectionList, View, ViewStyle } from "react-native";
+import { View, ViewStyle } from "react-native";
+import BigList from "react-native-big-list";
 import { QSO } from ".";
 import { Typography } from "../../utils/theme/components/typography";
 import { QsoListItem } from "./qso-list-item";
 import { QsoRow } from "./qso-row";
 
-type QSOSection = {
-    title: string;
-    data: QSO[];
-};
-
-const qsos2sections = (qsos: QSO[]): QSOSection[] =>
-    Object.entries(
+const qsos2sections = (qsos: QSO[]): QSO[][] =>
+    Object.values(
         qsos.reduce<Record<string, QSO[]>>((sections, qso) => {
             const title = qso.date.toFormat("dd/MM/yyyy");
             sections[title] = [...(sections[title] || []), qso];
             return sections;
         }, {}),
-    ).map(([title, data]) => ({ title, data }) as QSOSection);
+    );
 
 export type QsoListProps = {
     qsos: QSO[];
@@ -29,37 +25,26 @@ export type QsoListProps = {
 
 export type QsoListComponent = React.FC<QsoListProps>;
 
-const applyFilters = (sections: QSOSection[], filters: QsoListProps["filters"]) =>
-    sections.reduce<QSOSection[]>((all, section) => {
-        if (filters) {
-            section.data = section.data.filter((qso) => filters.reduce((facc, f) => facc && f(qso), true));
-        }
-        if (section.data.length) {
-            all.push(section);
-        }
-        return all;
-    }, []);
+const applyFilters = (qsos: QSO[], filters: QsoListProps["filters"]) =>
+    filters ? qsos.filter((qso) => filters.reduce((facc, f) => facc && f(qso), true)) : qsos;
 
 export const QsoList: QsoListComponent = ({ style, filters, qsos, onQsoPress }): JSX.Element => {
-    const [sections, setSections] = React.useState<QSOSection[]>(qsos2sections(qsos));
+    const [sections, setSections] = React.useState<QSO[][]>(qsos2sections(applyFilters(qsos, filters)));
 
     const refresh = debounce(() => {
-        setSections(applyFilters(qsos2sections(qsos), filters));
+        setSections(qsos2sections(applyFilters(qsos, filters)));
     }, 250);
 
     useEffect(refresh, [qsos, filters]);
 
     return (
-        <SectionList
+        <BigList
             style={style}
-            ListHeaderComponent={
-                <QsoRow header position="ID" time="Time" callsign="Callsign" name="Name" band="Band" />
-            }
             sections={sections}
             keyExtractor={(item) => item.id}
-            initialNumToRender={25}
             renderItem={({ item, index }) => <QsoListItem {...{ onQsoPress, item, index }} />}
-            renderSectionHeader={({ section }) => (
+            renderHeader={() => <QsoRow header position="ID" time="Time" callsign="Callsign" name="Name" band="Band" />}
+            renderSectionHeader={(section) => (
                 <View
                     style={{
                         paddingHorizontal: 5,
@@ -70,11 +55,18 @@ export const QsoList: QsoListComponent = ({ style, filters, qsos, onQsoPress }):
                         borderColor: "black",
                         borderTopWidth: 1,
                         borderBottomWidth: 1,
+                        backgroundColor: "white",
                     }}
                 >
-                    <Typography style={{ fontWeight: "bold" }}>{section.title}</Typography>
+                    <Typography style={{ fontWeight: "bold" }}>
+                        {sections[section][0].date.toFormat("dd/MM/yyyy")}
+                    </Typography>
                 </View>
             )}
+            renderFooter={() => <></>}
+            itemHeight={28}
+            headerHeight={28}
+            sectionHeaderHeight={28}
         />
     );
 };
