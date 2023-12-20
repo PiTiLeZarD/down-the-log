@@ -25,6 +25,7 @@ export const QsoListItem: QsoListItemComponent = React.memo(
         return (
             <QsoRow
                 lineHeight={lineHeight}
+                success={qso.lotw_received || qso.eqsl_received}
                 position={String((qso.position || index) + 1)}
                 time={qso.date.toFormat("HH:mm")}
                 callsign={
@@ -32,7 +33,11 @@ export const QsoListItem: QsoListItemComponent = React.memo(
                         <Typography>{findCountry(callsignData)?.flag}</Typography>
                         <Typography>{qso.callsign}</Typography>
                         <Typography>
-                            ({maidenDistance(currentLocation, qso.locator || callsignData?.gs || currentLocation)}
+                            (
+                            {maidenDistance(
+                                qso.myLocator || currentLocation,
+                                qso.locator || callsignData?.gs || currentLocation,
+                            )}
                             km)
                         </Typography>
                     </Stack>

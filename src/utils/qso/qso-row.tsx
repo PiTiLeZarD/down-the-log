@@ -13,16 +13,17 @@ const stylesheet = createStyleSheet((theme) => ({
         lineHeight,
         fontWeight: "bold",
     }),
-    row: {
-        backgroundColor: theme.colours.grey[200],
-    },
-    rowHighlight: {
-        backgroundColor: theme.colours.grey[300],
-    },
+    row: (success: boolean) => ({
+        backgroundColor: theme.colours[success ? "success" : "grey"][200],
+    }),
+    rowHighlight: (success: boolean) => ({
+        backgroundColor: theme.colours[success ? "success" : "grey"][300],
+    }),
 }));
 
 export type QsoRowProps = {
     header?: boolean;
+    success?: boolean;
     lineHeight?: number;
     position: string;
     time: React.ReactNode;
@@ -37,6 +38,7 @@ export type QsoRowComponent = React.FC<QsoRowProps>;
 export const QsoRow: QsoRowComponent = ({
     onPress,
     header = false,
+    success = false,
     lineHeight = 20,
     position,
     time,
@@ -50,7 +52,7 @@ export const QsoRow: QsoRowComponent = ({
     const cellStyle = header ? styles.header(lineHeight) : { lineHeight };
     return (
         <Pressable onPress={onPress}>
-            <Grid container style={+position % 2 || header ? styles.rowHighlight : styles.row}>
+            <Grid container style={(+position % 2 || header ? styles.rowHighlight : styles.row)(success)}>
                 <Grid item style={styles.cell} xs={1}>
                     {cellContent(position, cellStyle)}
                 </Grid>

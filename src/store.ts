@@ -12,12 +12,13 @@ type DTLStoreProps = {
 type DTLStoreActionsProps = {
     log: (qso: QSO) => void;
     deleteLog: (qso: QSO) => void;
+    resetStore: () => void;
     setCurrentLocation: (location: string) => void;
 };
 
 type DTLStoreActionsMutatorProps = (
     set: (stateMutator: (state: DTLStoreProps) => Partial<DTLStoreProps>) => void,
-    get: () => DTLStoreProps
+    get: () => DTLStoreProps,
 ) => DTLStoreActionsProps;
 
 const InitialStore: DTLStoreProps = {
@@ -28,6 +29,7 @@ const InitialStore: DTLStoreProps = {
 const StoreActions: DTLStoreActionsMutatorProps = (set) => ({
     log: (qso) => set((state) => ({ qsos: [...state.qsos.filter((q) => q.id != qso.id), qso] })),
     deleteLog: (qso) => set((state) => ({ qsos: [...state.qsos.filter((q) => q.id != qso.id)] })),
+    resetStore: () => set(() => ({ qsos: [] })),
     setCurrentLocation: (location) => set((state) => ({ currentLocation: location })),
 });
 
@@ -51,6 +53,6 @@ export const useStore = create<
 
                 return storage;
             },
-        })
-    )
+        }),
+    ),
 );

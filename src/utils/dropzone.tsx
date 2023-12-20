@@ -1,6 +1,6 @@
 import React from "react";
 import { useDropzone } from "react-dropzone";
-import { View } from "react-native";
+import { View, ViewProps } from "react-native";
 
 export const toBase64 = (file: File) =>
     new Promise((resolve, reject) => {
@@ -15,7 +15,7 @@ export type FileWithPreview = File & { preview: string };
 export type DropzoneProps = {
     dropzoneOptions?: Object;
     onAcceptedFiles: (files: FileWithPreview[]) => void;
-} & any;
+} & ViewProps;
 
 export type DropzoneComponent = React.FC<React.PropsWithChildren<DropzoneProps>>;
 
@@ -29,8 +29,8 @@ export const Dropzone: DropzoneComponent = ({
         onDrop: (acceptedFiles) => {
             onAcceptedFiles(
                 acceptedFiles.map(
-                    (file: File): FileWithPreview => Object.assign(file, { preview: URL.createObjectURL(file) })
-                )
+                    (file: File): FileWithPreview => Object.assign(file, { preview: URL.createObjectURL(file) }),
+                ),
             );
         },
         ...(dropzoneOptions || {}),

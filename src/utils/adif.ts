@@ -92,15 +92,28 @@ export const adifLine2Qso = (adif: string): QSO | null => {
 
     return {
         date,
+        callsign: qsoData.call,
+        prefix: qsoData.prefix,
+        dxcc: +qsoData.dxcc,
+        cqzone: +qsoData.cqz,
+        ituzone: +qsoData.ituz,
+        continent: qsoData.cont,
         frequency: +qsoData.freq,
         mode: qsoData.mode,
         power: +qsoData.tx_pwr,
-        callsign: qsoData.call,
         name: qsoData.name,
         state: qsoData.state,
         locator: qsoData.gridsquare,
         qth: qsoData.qth,
         myQth: qsoData.qth,
+        myLocator: qsoData.my_gridsquare,
+        note: qsoData.comment,
+        rst_sent: qsoData.rst_sent,
+        rst_received: qsoData.rst_rcvd,
+        eqsl_received: qsoData.eqsl_qsl_rcvd === "Y",
+        eqsl_sent: qsoData.eqsl_qsl_sent === "Y",
+        lotw_received: qsoData.lotw_qsl_rcvd === "Y",
+        lotw_sent: qsoData.lotw_qsl_send === "Y",
     } as any as QSO;
 };
 

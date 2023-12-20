@@ -13,14 +13,26 @@ export type QSO = {
     position?: number;
     date: DateTime;
     callsign: string;
+    dxcc?: number;
+    prefix?: string;
+    cqzone?: number;
+    ituzone?: number;
+    continent?: "NA" | "SA" | "EU" | "AF" | "OC" | "AS" | "AN";
+    rst_sent?: string;
+    rsr_received?: string;
     name?: string;
     frequency?: number;
     mode?: "SSB" | "FM" | "AM" | "CW";
     power?: number;
-    myQth: string;
+    myQth?: string;
+    myLocator?: string;
     qth?: string;
     locator?: string;
     note?: string;
+    eqsl_received?: boolean;
+    eqsl_sent?: boolean;
+    lotw_received?: boolean;
+    lotw_sent?: boolean;
 };
 
 export const newQso = (callsign: string, currentLocation: string, qsos: QSO[]): QSO => {

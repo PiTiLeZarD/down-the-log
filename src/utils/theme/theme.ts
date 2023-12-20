@@ -9,6 +9,7 @@ export const theme = {
         primary: colours.blue,
         secondary: colours.orange,
         grey: colours.gray,
+        success: colours.green,
     },
     components: {
         typography: {
