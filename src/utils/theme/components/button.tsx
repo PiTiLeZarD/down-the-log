@@ -3,7 +3,7 @@ import { Pressable, PressableProps, Text, TextProps, ViewStyle } from "react-nat
 import { createStyleSheet, useStyles } from "react-native-unistyles";
 import { Stack } from "../../stack";
 import { ColourVariant } from "../theme";
-import { Icon } from "./icon";
+import { Icon, IconName } from "./icon";
 
 const stylesheet = createStyleSheet((theme) => ({
     button: {
@@ -53,8 +53,8 @@ export const ButtonText: ButtonTextComponent = ({
 export type ButtonProps = Omit<PressableProps, "style"> & {
     text?: React.ReactNode;
     style?: ViewStyle;
-    startIcon?: string;
-    endIcon?: string;
+    startIcon?: IconName;
+    endIcon?: IconName;
     variant?: "contained" | "outlined";
     colour?: ColourVariant;
 };

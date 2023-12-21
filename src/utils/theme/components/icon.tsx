@@ -4,8 +4,10 @@ import React from "react";
 import { useStyles } from "react-native-unistyles";
 import { ColourVariant } from "../theme";
 
+export type IconName = keyof (typeof Ionicons)["glyphMap"];
+
 export type IconProps = {
-    name: string;
+    name: IconName;
     size?: number;
     contrast?: boolean;
     colour?: ColourVariant;
