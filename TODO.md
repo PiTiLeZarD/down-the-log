@@ -12,24 +12,22 @@ This is what I'll be working on next.
     -   [ ] huge padding at the bottom of the page on mobile
     -   [ ] rotating the screens bugs the whole thing
 -   [ ] ios errors galore
--   [ ] Perf issues, typing a callsign is way too slow
 -   [ ] adif import export
     -   [x] download qsos as adif
     -   [ ] ability to ask "download from last export"
     -   [x] upload adif file, merge with current qsos, find duplicates etc...
-    -   [ ] improve adif page interface
+    -   [x] improve adif page interface
     -   [ ] find a solution for mobile (download works, upload probably doesn't)
     -   [ ] use gdrive as backup/restore
 -   [ ] Improve the QSO form page so it's nice usable and has all details fillable
     -   [ ] add tx/rx input for received sent
     -   [ ] add all the rest of the fields (check adif spec and rumlog)
--   [ ] fix images on mobile app, fix all notice/warnings as well.
+    -   [ ] add https://docs.expo.dev/versions/latest/sdk/date-time-picker/ in the form to edit date/time
 
 ## Backlog
 
 Got too many ideas, here is where I chuck them
 
--   [ ] Adif aren't necessarily one line one record. Change the parser so it finds <EOR> before parsing it instead of parling lines
 -   [ ] implement ADX file format
 -   [ ] S/N input to help fill that up real quick
 -   [ ] Stats
@@ -40,10 +38,7 @@ Got too many ideas, here is where I chuck them
     -   [ ] db with all parks, location and polilines
     -   [ ] qsoform to be able to set it (both ours and theirs)
     -   [ ] adif to export/import it properly
--   [ ] improve performance of callsign input, for now it's doing a lot of un-necessary work
--   [ ] Fix the SxProps vs Record<string, object> business
 -   [ ] DXCC for australia doesn't include me, let's find out why (need some map tooling)
--   [ ] add https://docs.expo.dev/versions/latest/sdk/date-time-picker/ in the form to edit date/time
 -   [ ] yarn release should use ghpages to create the demo, build the tauri app and release it, build ios/android apps
     -   [x] demo website on github
     -   [ ] look into automatic/programatic github release
@@ -55,7 +50,6 @@ Got too many ideas, here is where I chuck them
     -   [x] typing a callsign should filter the list based on what's being typed
     -   [ ] today/this month/this year/all
     -   [x] list should display the date (QSOsecretary style)
-    -   [ ] group by session (session are all qsos in a chunk of time (same freq, close to each other))
 -   [ ] qso's map view (wide screen could have both displayed, phone could have a selector?)
     -   [ ] https://github.com/react-native-maps/react-native-maps
     -   [ ] work on the layout using the responsive grid
@@ -79,6 +73,7 @@ Got too many ideas, here is where I chuck them
 
 ## Done
 
+-   [x] Perf issues, typing a callsign is way too slow
 -   [x] Perf issues, migrate to unistyles
 -   [x] fix the burger menu (https://github.com/gluestack/gluestack-ui/issues/491#issuecomment-1797030604)
 -   [x] Add time column in qso list
@@ -95,3 +90,5 @@ Got too many ideas, here is where I chuck them
 -   [x] ability to delete a qso
 -   [x] automatic prefix recognition, show location/distance
 -   [x] Fix the qso list pushing the input all the way down
+-   [x] Adif aren't necessarily one line one record. Change the parser so it finds <EOR> before parsing it instead of parling lines
+-   [x] improve performance of callsign input, for now it's doing a lot of un-necessary work
