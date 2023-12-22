@@ -1,9 +1,11 @@
+import { QSO } from "../utils/qso";
+
 export type CallsignData = {
     iso3: string;
     dxcc: string;
     regexp: RegExp;
     gs: string;
-    ctn: string;
+    ctn: QSO["continent"];
     states?: Record<string, RegExp>;
 };
 
