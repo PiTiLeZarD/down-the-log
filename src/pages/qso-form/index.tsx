@@ -39,7 +39,7 @@ export const QsoForm: QsoFormComponent = ({ navigation, route }): JSX.Element =>
     };
 
     return (
-        <PageLayout title="Qso Form">
+        <PageLayout title="Qso Form" navigation={navigation}>
             <Grid container>
                 <Grid item xs={12} sm={6}>
                     <FormField name="callsign" label="Callsign:" control={control} />
@@ -82,7 +82,6 @@ export const QsoForm: QsoFormComponent = ({ navigation, route }): JSX.Element =>
                 <Button variant="outlined" text="Submit" onPress={handleSubmit(onSubmit)} />
                 <Button variant="outlined" text="Delete" colour="secondary" onPress={() => onDelete()} />
             </Stack>
-            <Button text="Back" onPress={() => navigation.navigate("Home")} />
         </PageLayout>
     );
 };

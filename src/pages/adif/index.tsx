@@ -70,7 +70,7 @@ export const Adif: AdifComponent = ({ navigation }): JSX.Element => {
     };
 
     return (
-        <PageLayout title="Import/Export">
+        <PageLayout title="Import/Export" navigation={navigation}>
             {!!importRemaining.length && (
                 <Stack>
                     <Typography variant="h1">QSOs left to import: {importRemaining.length}</Typography>
@@ -94,8 +94,6 @@ export const Adif: AdifComponent = ({ navigation }): JSX.Element => {
             </Dropzone>
 
             <Button colour="secondary" text="Erase data" onPress={handleErase} />
-
-            <Button text="Back" onPress={() => navigation.goBack()} />
         </PageLayout>
     );
 };

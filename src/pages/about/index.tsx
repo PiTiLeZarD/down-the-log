@@ -3,7 +3,6 @@ import React from "react";
 import { NavigationParamList } from "../../Navigation";
 import { PageLayout } from "../../utils/page-layout";
 import { Stack } from "../../utils/stack";
-import { Button } from "../../utils/theme/components/button";
 import { Typography } from "../../utils/theme/components/typography";
 
 export type AboutProps = {} & DrawerScreenProps<NavigationParamList, "About">;
@@ -12,7 +11,7 @@ export type AboutComponent = React.FC<AboutProps>;
 
 export const About: AboutComponent = ({ navigation }): JSX.Element => {
     return (
-        <PageLayout title="About">
+        <PageLayout title="About" navigation={navigation}>
             <Stack>
                 <Typography>
                     Look, this app is absolute rubbish for now. Just so you know, I'm coding this in chunks of 5mn when
@@ -41,7 +40,6 @@ export const About: AboutComponent = ({ navigation }): JSX.Element => {
                     6) down the track, integrated with HamQTH, QRZ, lotw and all the goodies
                 </Typography>
             </Stack>
-            <Button text="Back" onPress={() => navigation.goBack()} />
         </PageLayout>
     );
 };
