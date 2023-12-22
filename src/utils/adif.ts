@@ -5,7 +5,7 @@ import ituzones from "../data/ituzones.json";
 import { getCallsignData } from "./callsign";
 import { maidenhead2Latlong } from "./locator";
 import { findZone } from "./polydec";
-import { QSO } from "./qso";
+import { QSO, newQso } from "./qso";
 
 const header = (): string[] => [
     "ADIF Export from down-the-log by VK4ALE",
@@ -71,8 +71,6 @@ export const qso2adif = (qso: QSO): string => {
 export const qsos2Adif = (qsos: QSO[]): string => [...header(), ...qsos.map(qso2adif)].join("\n");
 
 export const adifLine2Qso = (adif: string): QSO | null => {
-    if (!adif.toUpperCase().endsWith("<EOR>")) return null;
-
     const qsoData: Record<string, string> = {};
     let tagName: string, value: string;
     let remaining = adif.trim();
@@ -88,10 +86,8 @@ export const adifLine2Qso = (adif: string): QSO | null => {
         qsoData[tagName] = value;
     }
 
-    const date = DateTime.fromFormat(`${qsoData.qso_date} ${qsoData.time_on}`, "yyyyMMdd HHmmss");
-
-    return {
-        date,
+    const adifQso = {
+        date: DateTime.fromFormat(`${qsoData.qso_date} ${qsoData.time_on}`, "yyyyMMdd HHmmss"),
         callsign: qsoData.call,
         prefix: qsoData.prefix,
         dxcc: +qsoData.dxcc,
@@ -105,7 +101,7 @@ export const adifLine2Qso = (adif: string): QSO | null => {
         state: qsoData.state,
         locator: qsoData.gridsquare,
         qth: qsoData.qth,
-        myQth: qsoData.qth,
+        myQth: qsoData.my_city,
         myLocator: qsoData.my_gridsquare,
         note: qsoData.comment,
         rst_sent: qsoData.rst_sent,
@@ -115,14 +111,30 @@ export const adifLine2Qso = (adif: string): QSO | null => {
         lotw_received: qsoData.lotw_qsl_rcvd === "Y",
         lotw_sent: qsoData.lotw_qsl_send === "Y",
     } as any as QSO;
+
+    return {
+        ...newQso(qsoData.call, [], undefined, qsoData.locator),
+        ...Object.fromEntries(Object.entries(adifQso).filter(([k, v]) => v !== undefined)),
+    };
 };
 
-export const adifFile2Qso = (adif: string): QSO[] => {
+export const splitAdifInRecords = (adif: string): string[] => {
     let lines = adif.split("\n");
     if (!lines[0].startsWith("<")) {
         lines = lines.splice(lines.findIndex((v) => v.toUpperCase().startsWith("<EOH>")) + 1);
     }
-    return lines.map((l) => adifLine2Qso(l.trim())).filter((q) => !!q) as QSO[];
+    return lines
+        .reduce<string[][]>((records, line) => {
+            const lastRecord = records.length ? records.splice(records.length - 1, 1)[0] : [];
+            if (!line.toUpperCase().includes("<EOR>")) {
+                lastRecord.push(line);
+                return [...records, lastRecord];
+            }
+            const [last, next] = line.split(/<[eE][oO][rR]>/);
+            return [...records, [...lastRecord, last], next.length ? [next] : []];
+        }, [])
+        .filter((record) => Boolean(record.length))
+        .map((record) => record.join("\n"));
 };
 
 export const downloadQsos = (title: string, qsos: QSO[]) =>

@@ -1,13 +1,13 @@
 import { DrawerScreenProps } from "@react-navigation/drawer";
-import React from "react";
+import React, { useEffect } from "react";
 import { createStyleSheet, useStyles } from "react-native-unistyles";
-import uuid from "react-native-uuid";
 import { NavigationParamList } from "../../Navigation";
 import { useStore } from "../../store";
-import { adifFile2Qso, downloadQsos } from "../../utils/adif";
+import { adifLine2Qso, downloadQsos, splitAdifInRecords } from "../../utils/adif";
 import { Dropzone, FileWithPreview } from "../../utils/dropzone";
 import { PageLayout } from "../../utils/page-layout";
-import { QSO, findMatchingQso, useQsos } from "../../utils/qso";
+import { findMatchingQso, useQsos } from "../../utils/qso";
+import { Stack } from "../../utils/stack";
 import { Button } from "../../utils/theme/components/button";
 import { Typography } from "../../utils/theme/components/typography";
 
@@ -36,22 +36,27 @@ export type AdifComponent = React.FC<AdifProps>;
 export const Adif: AdifComponent = ({ navigation }): JSX.Element => {
     const { styles } = useStyles(stylesheet);
     const resetStore = useStore((state) => state.resetStore);
+    const [importRemaining, setImportRemaining] = React.useState<string[]>([]);
     const qsos = useQsos();
     const log = useStore((state) => state.log);
+
+    useEffect(() => {
+        if (importRemaining.length) {
+            const toImport = adifLine2Qso(importRemaining[0]);
+            const newImportRemaining = importRemaining.slice(1);
+            if (toImport) log(findMatchingQso(qsos, toImport) || toImport);
+            setImportRemaining(newImportRemaining);
+        }
+    }, [importRemaining]);
 
     const handleImport = (files: FileWithPreview[]) => {
         files.map((file) => {
             const fr = new FileReader();
             fr.onload = () => {
                 if (fr.result) {
-                    const qsos: QSO[] = adifFile2Qso(
-                        typeof fr.result == "string" ? fr.result : new TextDecoder("utf-8").decode(fr.result),
-                    );
-                    qsos.forEach((q) => {
-                        const matchingQso = findMatchingQso(qsos, q) || { id: uuid.v4() as string };
-                        log({ ...matchingQso, ...q });
-                    });
-                    alert("done!");
+                    const content =
+                        typeof fr.result == "string" ? fr.result : new TextDecoder("utf-8").decode(fr.result);
+                    setImportRemaining(splitAdifInRecords(content));
                 }
             };
 
@@ -66,6 +71,15 @@ export const Adif: AdifComponent = ({ navigation }): JSX.Element => {
 
     return (
         <PageLayout title="Import/Export">
+            {!!importRemaining.length && (
+                <Stack>
+                    <Typography variant="h1">QSOs left to import: {importRemaining.length}</Typography>
+                    <Typography variant="subtitle">
+                        It's slow because we're backfilling all missing data (zones (itu, cq, dxcc), country/state,
+                        prefex, etc...)
+                    </Typography>
+                </Stack>
+            )}
             <Button
                 startIcon="download-outline"
                 text="Download"

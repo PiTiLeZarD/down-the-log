@@ -1,7 +1,12 @@
 import { DateTime } from "luxon";
 import uuid from "react-native-uuid";
+import cqzones from "../../data/cqzones.json";
+import dxcc from "../../data/dxcc.json";
+import ituzones from "../../data/ituzones.json";
 import { useStore } from "../../store";
-import { findCountry, getCallsignData } from "../callsign";
+import { findCountry, getCallsignData, parseCallsign } from "../callsign";
+import { maidenhead2Latlong } from "../locator";
+import { findZone } from "../polydec";
 
 export const useQsos = (): QSO[] => {
     const qsos = useStore((state) => state.qsos);
@@ -18,6 +23,7 @@ export type QSO = {
     cqzone?: number;
     ituzone?: number;
     continent?: "NA" | "SA" | "EU" | "AF" | "OC" | "AS" | "AN";
+    state?: string;
     rst_sent?: string;
     rsr_received?: string;
     name?: string;
@@ -35,17 +41,29 @@ export type QSO = {
     lotw_sent?: boolean;
 };
 
-export const newQso = (callsign: string, currentLocation: string, qsos: QSO[]): QSO => {
+export const newQso = (callsign: string, qsos: QSO[], currentLocation?: string, qsoLocator?: string): QSO => {
+    const parsed = parseCallsign(callsign);
     const callsignData = getCallsignData(callsign);
     const previousQsosWithCallsign = qsos.filter((q) => q.callsign === callsign);
+    const locator = qsoLocator || callsignData?.gs;
 
     return {
         callsign,
         id: uuid.v4() as string,
         date: DateTime.now(),
-        myQth: currentLocation,
-        locator: callsignData?.gs,
+        myLocator: currentLocation,
+        prefix: parsed && `${parsed.prefix}${parsed.index}`,
+        locator: locator,
+        state: callsignData?.state,
+        continent: callsignData?.ctn,
         qth: findCountry(callsignData)?.name,
+        ...(locator
+            ? {
+                  dxcc: +(callsignData?.dxcc || findZone(dxcc, maidenhead2Latlong(locator))),
+                  ituzone: +findZone(ituzones, maidenhead2Latlong(locator)),
+                  cqzone: +findZone(cqzones, maidenhead2Latlong(locator)),
+              }
+            : { dxcc: callsignData ? +callsignData.dxcc : undefined }),
         ...(qsos.length ? { frequency: qsos[0].frequency, mode: qsos[0].mode, power: qsos[0].power } : {}),
         ...(previousQsosWithCallsign.length ? { name: previousQsosWithCallsign[0].name } : {}),
     };

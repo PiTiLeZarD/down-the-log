@@ -38,7 +38,7 @@ export const Home: HomeComponent = ({ navigation }): JSX.Element => {
     const log = useStore((state) => state.log);
 
     const handleAdd = () => {
-        const qso = newQso(callsign, currentLocation, qsos);
+        const qso = newQso(callsign, qsos, currentLocation);
         log(qso);
         setCallsign("");
         navigation.navigate("QsoForm", { qsoId: qso.id });
