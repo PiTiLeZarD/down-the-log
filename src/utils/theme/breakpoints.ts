@@ -1,3 +1,5 @@
+import { useWindowDimensions } from "react-native";
+
 export const breakpoints = {
     xs: 0,
     sm: 576,
@@ -23,4 +25,11 @@ export const spacing: Record<keyof typeof breakpoints, number> = {
     lg: 8,
     xl: 9,
     xxl: 10,
+};
+
+export const widthMatches = (from?: keyof typeof breakpoints, to?: keyof typeof breakpoints): boolean => {
+    const { width } = useWindowDimensions();
+    const fromWidth = from ? breakpoints[from] : 0;
+    const toWidth = to ? breakpoints[to] : Infinity;
+    return width > fromWidth && width < toWidth;
 };

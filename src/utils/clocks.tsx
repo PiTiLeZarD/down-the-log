@@ -13,8 +13,6 @@ const stylesheet = createStyleSheet((theme) => ({
         backgroundColor: theme.colours.primary[theme.shades.light],
         paddingTop: theme.margins.md,
         paddingBottom: theme.margins.md,
-        borderBottomWidth: theme.margins.sm,
-        borderBottomColor: theme.colours.grey[theme.shades.darker],
     },
 }));
 
@@ -33,12 +31,12 @@ export const Clocks: ClocksComponent = (): JSX.Element => {
 
     return (
         <Grid container style={styles.container}>
-            <Grid item xs={6}>
+            <Grid item xs={6} md={12}>
                 <Typography variant="em" style={{ textAlign: "center" }}>
                     Local: {time.toFormat("HH:mm")}
                 </Typography>
             </Grid>
-            <Grid item xs={6}>
+            <Grid item xs={6} md={12}>
                 <Typography variant="em" style={{ textAlign: "center" }}>
                     UTC: {time.toUTC().toFormat("HH:mm")}
                 </Typography>

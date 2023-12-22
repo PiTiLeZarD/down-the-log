@@ -11,6 +11,7 @@ import { Clocks } from "./clocks";
 import { maidenhead2Latlong } from "./locator";
 import { findZone } from "./polydec";
 import { Stack } from "./stack";
+import { widthMatches } from "./theme/breakpoints";
 import { Button } from "./theme/components/button";
 import { Typography } from "./theme/components/typography";
 
@@ -18,6 +19,8 @@ const stylesheet = createStyleSheet((theme) => ({
     header: {
         backgroundColor: theme.colours.primary[theme.shades.light],
         padding: theme.margins.md,
+        borderBottomWidth: theme.margins.sm,
+        borderBottomColor: theme.colours.grey[theme.shades.darker],
     },
 }));
 
@@ -30,8 +33,8 @@ export const LocationHeader: LocationHeaderComponent = ({ navigation }): JSX.Ele
     const { styles } = useStyles(stylesheet);
 
     return (
-        <View>
-            <Stack direction="row" style={styles.header}>
+        <View style={styles.header}>
+            <Stack direction="row">
                 <Stack style={{ flexGrow: 1 }}>
                     <Stack direction="row">
                         <Typography>Locator: </Typography>
@@ -45,11 +48,16 @@ export const LocationHeader: LocationHeaderComponent = ({ navigation }): JSX.Ele
                         </Typography>
                     )}
                 </Stack>
+                <View style={widthMatches("md") ? {} : { display: "none" }}>
+                    <Clocks />
+                </View>
                 <View>
                     <Button onPress={() => navigation.openDrawer()} startIcon="menu" />
                 </View>
             </Stack>
-            <Clocks />
+            <View style={widthMatches(undefined, "md") ? {} : { display: "none" }}>
+                <Clocks />
+            </View>
         </View>
     );
 };
