@@ -1,7 +1,6 @@
 import React from "react";
 import { freq2band } from "../../data/bands";
-import { useStore } from "../../store";
-import { findCountry, getCallsignData } from "../../utils/callsign";
+import { countries } from "../../data/countries";
 import { maidenDistance } from "../../utils/locator";
 import { QSO } from "../../utils/qso";
 import { Stack } from "../../utils/stack";
@@ -14,14 +13,13 @@ export type QsoListItemProps = {
     index: number;
     lineHeight?: number;
     onQsoPress: QsoListProps["onQsoPress"];
+    currentLocation: string;
 };
 
 export type QsoListItemComponent = React.FC<QsoListItemProps>;
 
 export const QsoListItem: QsoListItemComponent = React.memo(
-    ({ item: qso, index, lineHeight, onQsoPress }): JSX.Element => {
-        const currentLocation = useStore((state) => state.currentLocation);
-        const callsignData = getCallsignData(qso.callsign);
+    ({ item: qso, index, lineHeight, onQsoPress, currentLocation }): JSX.Element => {
         return (
             <QsoRow
                 lineHeight={lineHeight}
@@ -30,14 +28,10 @@ export const QsoListItem: QsoListItemComponent = React.memo(
                 time={qso.date.toFormat("HH:mm")}
                 callsign={
                     <Stack direction="row">
-                        <Typography>{findCountry(callsignData)?.flag}</Typography>
+                        <Typography>{qso.country ? countries[qso.country]?.flag : ""}</Typography>
                         <Typography>{qso.callsign}</Typography>
                         <Typography>
-                            (
-                            {maidenDistance(
-                                qso.myLocator || currentLocation,
-                                qso.locator || callsignData?.gs || currentLocation,
-                            )}
+                            ({maidenDistance(qso.myLocator || currentLocation, qso.locator || currentLocation)}
                             km)
                         </Typography>
                     </Stack>

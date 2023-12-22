@@ -50,6 +50,7 @@ export const qso2adif = (qso: QSO): string => {
 
             field("call", qso.callsign),
             field("pfx", qso.prefix),
+            field("country", qso.country),
             field("state", qso.state),
             field("name", qso.name),
 
@@ -100,6 +101,7 @@ export const adifLine2Qso = (adif: string): QSO | null => {
         dxcc: +qsoData.dxcc,
         cqzone: +qsoData.cqz,
         ituzone: +qsoData.ituz,
+        country: qsoData.country,
         continent: qsoData.cont,
         frequency: +qsoData.freq,
         mode: qsoData.mode,

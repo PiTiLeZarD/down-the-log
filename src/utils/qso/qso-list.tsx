@@ -4,6 +4,7 @@ import { View, ViewStyle } from "react-native";
 import BigList from "react-native-big-list";
 import { createStyleSheet, useStyles } from "react-native-unistyles";
 import { QSO } from ".";
+import { useStore } from "../../store";
 import { Typography } from "../theme/components/typography";
 import { QsoListItem } from "./qso-list-item";
 import { QsoRow } from "./qso-row";
@@ -50,6 +51,7 @@ const applyFilters = (qsos: QSO[], filters: QsoListProps["filters"]) =>
 
 export const QsoList: QsoListComponent = ({ style, filters, qsos, onQsoPress }): JSX.Element => {
     const [sections, setSections] = React.useState<QSO[][]>(qsos2sections(applyFilters(qsos, filters)));
+    const currentLocation = useStore((state) => state.currentLocation);
     const { styles } = useStyles(stylesheet);
 
     const refresh = debounce(() => {
@@ -65,7 +67,9 @@ export const QsoList: QsoListComponent = ({ style, filters, qsos, onQsoPress }):
             stickySectionHeadersEnabled={false}
             sections={sections}
             keyExtractor={(item) => item.id}
-            renderItem={({ item, index }) => <QsoListItem {...{ onQsoPress, item, index, lineHeight: LINEHEIGHT }} />}
+            renderItem={({ item, index }) => (
+                <QsoListItem {...{ onQsoPress, item, index, lineHeight: LINEHEIGHT, currentLocation }} />
+            )}
             renderHeader={() => (
                 <QsoRow
                     header

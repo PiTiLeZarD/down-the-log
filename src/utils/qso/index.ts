@@ -4,7 +4,7 @@ import cqzones from "../../data/cqzones.json";
 import dxcc from "../../data/dxcc.json";
 import ituzones from "../../data/ituzones.json";
 import { useStore } from "../../store";
-import { findCountry, getCallsignData, parseCallsign } from "../callsign";
+import { getCallsignData, parseCallsign } from "../callsign";
 import { maidenhead2Latlong } from "../locator";
 import { findZone } from "../polydec";
 
@@ -18,6 +18,7 @@ export type QSO = {
     position?: number;
     date: DateTime;
     callsign: string;
+    country?: string;
     dxcc?: number;
     prefix?: string;
     cqzone?: number;
@@ -56,7 +57,7 @@ export const newQso = (callsign: string, qsos: QSO[], currentLocation?: string, 
         locator: locator,
         state: callsignData?.state,
         continent: callsignData?.ctn,
-        qth: findCountry(callsignData)?.name,
+        country: callsignData?.iso3,
         ...(locator
             ? {
                   dxcc: +(callsignData?.dxcc || findZone(dxcc, maidenhead2Latlong(locator))),
