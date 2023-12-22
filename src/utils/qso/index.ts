@@ -25,7 +25,7 @@ export type QSO = {
     continent?: "NA" | "SA" | "EU" | "AF" | "OC" | "AS" | "AN";
     state?: string;
     rst_sent?: string;
-    rsr_received?: string;
+    rst_received?: string;
     name?: string;
     frequency?: number;
     mode?: "SSB" | "FM" | "AM" | "CW";

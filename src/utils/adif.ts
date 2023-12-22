@@ -1,10 +1,5 @@
 import { DateTime } from "luxon";
 import { freq2band } from "../data/bands";
-import cqzones from "../data/cqzones.json";
-import ituzones from "../data/ituzones.json";
-import { getCallsignData } from "./callsign";
-import { maidenhead2Latlong } from "./locator";
-import { findZone } from "./polydec";
 import { QSO, newQso } from "./qso";
 
 const header = (): string[] => [
@@ -20,10 +15,8 @@ const header = (): string[] => [
     "",
 ];
 
-const field = (label: string, value?: string): string =>
-    typeof value !== "undefined" && value !== null
-        ? "<" + label.toUpperCase() + ":" + ("" + value).length + ">" + value
-        : "";
+const field = (label: string, value?: string | number): string =>
+    typeof value !== "undefined" && value !== null ? `<${label.toUpperCase()}:${("" + value).length}>${value}` : "";
 
 const parseField = (adif: string): string[] => {
     let remaining = adif.trim();
@@ -42,26 +35,40 @@ const parseField = (adif: string): string[] => {
 };
 
 export const qso2adif = (qso: QSO): string => {
-    const callsignData = getCallsignData(qso.callsign);
     return (
         [
             qso.date ? field("qso_date", qso.date.toFormat("yyyyMMdd")) : null,
             qso.date ? field("time_on", qso.date.toFormat("HHmmss")) : null,
 
             field("band", freq2band(qso.frequency) as string),
-            qso.frequency ? field("freq", String(qso.frequency)) : null,
+            field("freq", qso.frequency),
             field("mode", qso.mode),
-            qso.power ? field("tx_pwr", String(qso.power)) : null,
+            field("tx_pwr", String(qso.power)),
+
+            field("rst_sent", qso.rst_sent),
+            field("rst_rcvd", qso.rst_received),
 
             field("call", qso.callsign),
-            field("state", callsignData?.state),
+            field("pfx", qso.prefix),
+            field("state", qso.state),
             field("name", qso.name),
+
+            field("my_city", qso.myQth),
+            field("my_gridsquare", qso.myLocator),
 
             field("qth", qso.qth),
             field("gridsquare", qso.locator),
-            field("cont", callsignData?.ctn),
-            qso.locator ? field("cqz", findZone(cqzones, maidenhead2Latlong(qso.locator))) : null,
-            qso.locator ? field("ituz", findZone(ituzones, maidenhead2Latlong(qso.locator))) : null,
+            field("cont", qso.continent),
+            field("dxcc", qso.dxcc),
+            field("cqz", qso.cqzone),
+            field("ituz", qso.ituzone),
+
+            field("eqsl_qsl_rcvd", qso.eqsl_received ? "Y" : "N"),
+            field("eqsl_qsl_sent", qso.eqsl_sent ? "Y" : "N"),
+            field("lotw_qsl_rcvd", qso.lotw_received ? "Y" : "N"),
+            field("lotw_qsl_send", qso.lotw_sent ? "Y" : "N"),
+
+            field("comment", qso.note),
         ]
             .filter((v) => !!v)
             .join(" ") + "<EOR>"
