@@ -37,11 +37,13 @@ export const LocationHeader: LocationHeaderComponent = ({ navigation }): JSX.Ele
             <Stack direction="row">
                 <Stack style={{ flexGrow: 1 }}>
                     <Stack direction="row">
-                        <Typography>Locator: </Typography>
-                        <Typography>{currentLocation ? currentLocation : "Looking for your location..."}</Typography>
+                        <Typography>My gridsquare: </Typography>
+                        <Typography variant="em">
+                            {currentLocation ? currentLocation : "Looking for your location..."}
+                        </Typography>
                     </Stack>
                     {currentLocation && (
-                        <Typography>
+                        <Typography variant="subtitle">
                             (CQ: {findZone(cqzones, maidenhead2Latlong(currentLocation))}, ITU:{" "}
                             {findZone(ituzones, maidenhead2Latlong(currentLocation))}, DXCC:{" "}
                             {findZone(dxcc, maidenhead2Latlong(currentLocation))})

@@ -1,5 +1,6 @@
 import React, { useMemo } from "react";
 import { View } from "react-native";
+import { createStyleSheet, useStyles } from "react-native-unistyles";
 import cqzones from "../../data/cqzones.json";
 import ituzones from "../../data/ituzones.json";
 import { useStore } from "../../store";
@@ -12,6 +13,19 @@ import { Button } from "../../utils/theme/components/button";
 import { Input } from "../../utils/theme/components/input";
 import { Typography } from "../../utils/theme/components/typography";
 
+const stylesheet = createStyleSheet((theme) => ({
+    inputBox: {
+        backgroundColor: theme.colours.primary[theme.shades.light],
+        borderTopColor: theme.colours.primary[theme.shades.darker],
+        borderTopWidth: theme.margins.sm,
+        borderTopStyle: "solid",
+        padding: theme.margins.md,
+    },
+    input: {
+        backgroundColor: "white",
+    },
+}));
+
 export type CallsignInputProps = {
     handleAdd: () => void;
     value: string;
@@ -21,13 +35,14 @@ export type CallsignInputProps = {
 export type CallsignInputComponent = React.FC<CallsignInputProps>;
 
 export const CallsignInput: CallsignInputComponent = ({ value, handleAdd, onChange }): JSX.Element => {
+    const { styles } = useStyles(stylesheet);
     const callsignData = useMemo(() => (value ? getCallsignData(value) : undefined), [value]);
     const currentLocation = useStore((state) => state.currentLocation);
 
     const country = callsignData ? findCountry(callsignData) : null;
 
     return (
-        <Stack>
+        <Stack style={styles.inputBox}>
             {callsignData && (
                 <Grid container>
                     <Grid item xs={4}>
@@ -51,9 +66,10 @@ export const CallsignInput: CallsignInputComponent = ({ value, handleAdd, onChan
                     </Grid>
                 </Grid>
             )}
-            <Stack direction="row">
+            <Stack direction="row" gap="xxl">
                 <View style={{ flexGrow: 1 }}>
                     <Input
+                        style={styles.input}
                         onChangeText={(text: string) => onChange(text.toUpperCase())}
                         onKeyPress={(e) => {
                             if ((e as any).keyCode === 13) handleAdd();

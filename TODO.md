@@ -23,13 +23,13 @@ This is what I'll be working on next.
     -   [ ] add tx/rx input for received sent
     -   [ ] add all the rest of the fields (check adif spec and rumlog)
     -   [ ] add https://docs.expo.dev/versions/latest/sdk/date-time-picker/ in the form to edit date/time
+    -   [ ] S/N input to help fill that up real quick
 
 ## Backlog
 
 Got too many ideas, here is where I chuck them
 
 -   [ ] implement ADX file format
--   [ ] S/N input to help fill that up real quick
 -   [ ] Stats
     -   [ ] qsos /continent /country /year,month
     -   [ ] heatmap of qso per day (github style)
