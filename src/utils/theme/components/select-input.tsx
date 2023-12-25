@@ -17,7 +17,7 @@ export type SelectInputProps = PickerSelectProps;
 
 export type SelectInputComponent = React.FC<SelectInputProps>;
 
-export const SelectInput: SelectInputComponent = (props): JSX.Element => {
+export const SelectInput: SelectInputComponent = ({ ...otherProps }): JSX.Element => {
     const { styles } = useStyles(stylesheet);
     return (
         <RNPickerSelect
@@ -25,7 +25,7 @@ export const SelectInput: SelectInputComponent = (props): JSX.Element => {
                 inputWeb: styles.web,
             }}
             aria-label="select"
-            {...props}
+            {...otherProps}
         />
     );
 };

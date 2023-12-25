@@ -9,7 +9,7 @@ import { Button } from "./theme/components/button";
 import { Typography } from "./theme/components/typography";
 
 export type PageLayoutProps = {
-    title: string;
+    title: React.ReactNode;
 } & Pick<DrawerScreenProps<NavigationParamList, any>, "navigation">;
 
 export type PageLayoutComponent = React.FC<React.PropsWithChildren<PageLayoutProps>>;
@@ -23,9 +23,14 @@ export const PageLayout: PageLayoutComponent = ({ title, navigation, children })
                 <ScrollView style={{ paddingLeft: theme.margins.xl, paddingRight: theme.margins.xl }}>
                     <Stack gap="xxl">
                         <Stack direction="row">
-                            <Typography variant="h1" style={{ flexGrow: 1 }}>
-                                {title}
-                            </Typography>
+                            {typeof title === "string" ? (
+                                <Typography variant="h1" style={{ flexGrow: 1 }}>
+                                    {title}
+                                </Typography>
+                            ) : (
+                                <View style={{ flexGrow: 1, marginTop: 18, marginBottom: 18 }}>{title}</View>
+                            )}
+
                             <View>
                                 <Button
                                     text="Back"

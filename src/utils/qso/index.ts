@@ -5,7 +5,7 @@ import dxcc from "../../data/dxcc.json";
 import ituzones from "../../data/ituzones.json";
 import { useStore } from "../../store";
 import { getCallsignData, parseCallsign } from "../callsign";
-import { maidenhead2Latlong } from "../locator";
+import { maidenDistance, maidenhead2Latlong } from "../locator";
 import { findZone } from "../polydec";
 
 export const useQsos = (): QSO[] => {
@@ -18,6 +18,7 @@ export type QSO = {
     position?: number;
     date: DateTime;
     callsign: string;
+    distance?: number;
     country?: string;
     dxcc?: number;
     prefix?: string;
@@ -55,6 +56,7 @@ export const newQso = (callsign: string, qsos: QSO[], currentLocation?: string, 
         myLocator: currentLocation,
         prefix: parsed && `${parsed.prefix}${parsed.index}`,
         locator: locator,
+        distance: currentLocation && locator ? maidenDistance(currentLocation, locator) : undefined,
         state: callsignData?.state,
         continent: callsignData?.ctn,
         country: callsignData?.iso3,

@@ -1,7 +1,6 @@
 import React from "react";
 import { freq2band } from "../../data/bands";
 import { countries } from "../../data/countries";
-import { maidenDistance } from "../../utils/locator";
 import { QSO } from "../../utils/qso";
 import { Stack } from "../../utils/stack";
 import { Typography } from "../../utils/theme/components/typography";
@@ -30,10 +29,7 @@ export const QsoListItem: QsoListItemComponent = React.memo(
                     <Stack direction="row">
                         <Typography>{qso.country ? countries[qso.country]?.flag : ""}</Typography>
                         <Typography>{qso.callsign}</Typography>
-                        <Typography>
-                            ({maidenDistance(qso.myLocator || currentLocation, qso.locator || currentLocation)}
-                            km)
-                        </Typography>
+                        <Typography>({qso.distance}km)</Typography>
                     </Stack>
                 }
                 name={qso.name || "N/A"}

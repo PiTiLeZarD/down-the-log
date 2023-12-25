@@ -53,6 +53,7 @@ export const qso2adif = (qso: QSO): string => {
             field("country", qso.country),
             field("state", qso.state),
             field("name", qso.name),
+            field("distance", qso.distance),
 
             field("my_city", qso.myQth),
             field("my_gridsquare", qso.myLocator),
@@ -78,7 +79,7 @@ export const qso2adif = (qso: QSO): string => {
 
 export const qsos2Adif = (qsos: QSO[]): string => [...header(), ...qsos.map(qso2adif)].join("\n");
 
-export const adifLine2Qso = (adif: string): QSO | null => {
+export const adifLine2Qso = (adif: string, currentLocation?: string): QSO | null => {
     const qsoData: Record<string, string> = {};
     let tagName: string, value: string;
     let remaining = adif.trim();
@@ -94,18 +95,21 @@ export const adifLine2Qso = (adif: string): QSO | null => {
         qsoData[tagName] = value;
     }
 
+    const int = (v: string) => (v !== undefined ? +v : undefined);
+
     const adifQso = {
         date: DateTime.fromFormat(`${qsoData.qso_date} ${qsoData.time_on}`, "yyyyMMdd HHmmss"),
         callsign: qsoData.call,
         prefix: qsoData.prefix,
-        dxcc: +qsoData.dxcc,
-        cqzone: +qsoData.cqz,
-        ituzone: +qsoData.ituz,
+        dxcc: int(qsoData.dxcc),
+        cqzone: int(qsoData.cqz),
+        ituzone: int(qsoData.ituz),
         country: qsoData.country,
         continent: qsoData.cont,
-        frequency: +qsoData.freq,
+        distance: int(qsoData.distance),
+        frequency: int(qsoData.freq),
         mode: qsoData.mode,
-        power: +qsoData.tx_pwr,
+        power: int(qsoData.tx_pwr),
         name: qsoData.name,
         state: qsoData.state,
         locator: qsoData.gridsquare,
@@ -122,7 +126,7 @@ export const adifLine2Qso = (adif: string): QSO | null => {
     } as any as QSO;
 
     return {
-        ...newQso(qsoData.call, [], undefined, qsoData.locator),
+        ...newQso(qsoData.call, [], currentLocation, qsoData.locator),
         ...Object.fromEntries(Object.entries(adifQso).filter(([k, v]) => v !== undefined)),
     };
 };
