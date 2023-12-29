@@ -1,5 +1,5 @@
 import { DrawerScreenProps } from "@react-navigation/drawer";
-import React from "react";
+import React, { useEffect } from "react";
 import { useForm } from "react-hook-form";
 import { createStyleSheet, useStyles } from "react-native-unistyles";
 import { NavigationParamList } from "../../Navigation";
@@ -32,14 +32,15 @@ export const QsoForm: QsoFormComponent = ({ navigation, route }): JSX.Element =>
     const log = useStore((state) => state.log);
     const deleteLog = useStore((state) => state.deleteLog);
 
-    const { handleSubmit, control, watch } = useForm<QSO>({
+    const { handleSubmit, control, watch, reset } = useForm<QSO>({
         defaultValues: qso,
     });
+    useEffect(() => reset(qso), [qsoId]);
 
     const freq = watch("frequency");
 
-    const onSubmit = (qso: QSO) => {
-        log(qso);
+    const onSubmit = (q: QSO) => {
+        log(q);
         navigation.navigate("Home");
     };
 
