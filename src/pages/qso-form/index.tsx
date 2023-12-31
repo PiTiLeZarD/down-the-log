@@ -12,6 +12,7 @@ import { QSO, useQsos } from "../../utils/qso";
 import { Stack } from "../../utils/stack";
 import { Button } from "../../utils/theme/components/button";
 import { Typography } from "../../utils/theme/components/typography";
+import { useAutoSave } from "../../utils/use-auto-save";
 
 const stylesheet = createStyleSheet((theme) => ({
     datetime: {
@@ -28,52 +29,52 @@ export type QsoFormComponent = React.FC<QsoFormProps>;
 export const QsoForm: QsoFormComponent = ({ navigation, route }): JSX.Element => {
     const { styles } = useStyles(stylesheet);
     const { qsoId } = route.params;
-    const qso = useQsos().filter((q) => q.id == qsoId)[0];
+    const qso = useQsos().find((q) => q.id == qsoId);
     const log = useStore((state) => state.log);
     const deleteLog = useStore((state) => state.deleteLog);
 
-    const { handleSubmit, control, watch, reset } = useForm<QSO>({
+    const { control, watch, reset } = useForm<QSO>({
         defaultValues: qso,
     });
     useEffect(() => reset(qso), [qsoId]);
+    useAutoSave(control, log);
 
     const freq = watch("frequency");
 
-    const onSubmit = (q: QSO) => {
-        log(q);
-        navigation.navigate("Home");
-    };
-
     const onDelete = () => {
-        deleteLog(qso);
+        if (qso) deleteLog(qso);
         navigation.navigate("Home");
     };
 
     return (
         <PageLayout title={<FormField name="callsign" control={control} />} navigation={navigation}>
             <Stack style={styles.datetime}>
-                <Stack direction="row">
-                    <Typography variant="subtitle" style={{ flex: 1, textAlign: "center" }}>
-                        CQ: {qso.cqzone}
-                    </Typography>
-                    <Typography variant="subtitle" style={{ flex: 1, textAlign: "center" }}>
-                        ITU: {qso.ituzone}
-                    </Typography>
-                    <Typography variant="subtitle" style={{ flex: 1, textAlign: "center" }}>
-                        ITU: {qso.dxcc}
-                    </Typography>
-                    <Typography variant="subtitle" style={{ flex: 1, textAlign: "center" }}>
-                        QRB: {qso.distance}km
-                    </Typography>
-                </Stack>
-                <Stack direction="row">
-                    <Typography variant="h6" style={{ flex: 1 }}>
-                        {qso.date.toFormat("dd/MM/yyyy")}
-                    </Typography>
-                    <Typography variant="h6" style={{ flex: 1, textAlign: "right" }}>
-                        {qso.date.toFormat("HH:mm:ss")}
-                    </Typography>
-                </Stack>
+                {qso && (
+                    <>
+                        <Stack direction="row">
+                            <Typography variant="subtitle" style={{ flex: 1, textAlign: "center" }}>
+                                CQ: {qso.cqzone}
+                            </Typography>
+                            <Typography variant="subtitle" style={{ flex: 1, textAlign: "center" }}>
+                                ITU: {qso.ituzone}
+                            </Typography>
+                            <Typography variant="subtitle" style={{ flex: 1, textAlign: "center" }}>
+                                ITU: {qso.dxcc}
+                            </Typography>
+                            <Typography variant="subtitle" style={{ flex: 1, textAlign: "center" }}>
+                                QRB: {qso.distance}km
+                            </Typography>
+                        </Stack>
+                        <Stack direction="row">
+                            <Typography variant="h6" style={{ flex: 1 }}>
+                                {qso.date.toFormat("dd/MM/yyyy")}
+                            </Typography>
+                            <Typography variant="h6" style={{ flex: 1, textAlign: "right" }}>
+                                {qso.date.toFormat("HH:mm:ss")}
+                            </Typography>
+                        </Stack>
+                    </>
+                )}
             </Stack>
             <Grid container>
                 <Grid item xs={6} md={3}>
@@ -138,7 +139,6 @@ export const QsoForm: QsoFormComponent = ({ navigation, route }): JSX.Element =>
             </Grid>
             <FormField role="textarea" name="note" label="Note:" control={control} />
             <Stack direction="row">
-                <Button variant="outlined" text="Submit" onPress={handleSubmit(onSubmit)} />
                 <Button variant="outlined" text="Delete" colour="secondary" onPress={() => onDelete()} />
             </Stack>
         </PageLayout>
