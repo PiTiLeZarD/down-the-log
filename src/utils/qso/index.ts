@@ -4,7 +4,7 @@ import cqzones from "../../data/cqzones.json";
 import dxcc from "../../data/dxcc.json";
 import ituzones from "../../data/ituzones.json";
 import { useStore } from "../../store";
-import { getCallsignData, parseCallsign } from "../callsign";
+import { CsDataType, getCallsignData, parseCallsign } from "../callsign";
 import { maidenDistance, maidenhead2Latlong } from "../locator";
 import { findZone } from "../polydec";
 
@@ -43,34 +43,51 @@ export type QSO = {
     lotw_sent?: boolean;
 };
 
-export const newQso = (callsign: string, qsos: QSO[], currentLocation?: string, qsoLocator?: string): QSO => {
+export const newQsoID = () => uuid.v4() as string;
+
+export const newQso = (callsign: string, qsos: QSO[], myLocator?: string, qsoLocator?: string): QSO => {
     const parsed = parseCallsign(callsign);
     const callsignData = getCallsignData(callsign);
     const previousQsosWithCallsign = qsos.filter((q) => q.callsign === callsign);
     const locator = qsoLocator || callsignData?.gs;
 
+    return qsoLocationFill(
+        {
+            callsign,
+            id: newQsoID(),
+            date: DateTime.now(),
+            prefix: parsed && `${parsed.prefix}${parsed.index}`,
+            locator,
+            myLocator,
+            rst_received: "59",
+            rst_sent: "59",
+            ...(qsos.length ? { frequency: qsos[0].frequency, mode: qsos[0].mode, power: qsos[0].power } : {}),
+            ...(previousQsosWithCallsign.length ? { name: previousQsosWithCallsign[0].name } : {}),
+        },
+        callsignData,
+    );
+};
+
+export const qsoLocationFill = (qso: QSO, callsignDataProvided?: CsDataType) => {
+    const callsignData = callsignDataProvided || getCallsignData(qso.callsign);
+
     return {
-        callsign,
-        id: uuid.v4() as string,
-        date: DateTime.now(),
-        myLocator: currentLocation,
-        prefix: parsed && `${parsed.prefix}${parsed.index}`,
-        locator: locator,
-        rst_received: "59",
-        rst_sent: "59",
-        distance: currentLocation && locator ? maidenDistance(currentLocation, locator) : undefined,
+        ...qso,
         state: callsignData?.state,
         continent: callsignData?.ctn,
         country: callsignData?.iso3,
-        ...(locator
+        ...(qso.myLocator && qso.locator
             ? {
-                  dxcc: +(callsignData?.dxcc || findZone(dxcc, maidenhead2Latlong(locator))),
-                  ituzone: +findZone(ituzones, maidenhead2Latlong(locator)),
-                  cqzone: +findZone(cqzones, maidenhead2Latlong(locator)),
+                  distance: maidenDistance(qso.myLocator, qso.locator),
+              }
+            : {}),
+        ...(qso.locator
+            ? {
+                  dxcc: qso.dxcc || +(callsignData?.dxcc || findZone(dxcc, maidenhead2Latlong(qso.locator))),
+                  ituzone: qso.ituzone || +findZone(ituzones, maidenhead2Latlong(qso.locator)),
+                  cqzone: qso.cqzone || +findZone(cqzones, maidenhead2Latlong(qso.locator)),
               }
             : { dxcc: callsignData ? +callsignData.dxcc : undefined }),
-        ...(qsos.length ? { frequency: qsos[0].frequency, mode: qsos[0].mode, power: qsos[0].power } : {}),
-        ...(previousQsosWithCallsign.length ? { name: previousQsosWithCallsign[0].name } : {}),
     };
 };
 

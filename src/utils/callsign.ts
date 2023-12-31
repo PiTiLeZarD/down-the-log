@@ -3,7 +3,7 @@ import { countries } from "../data/countries";
 
 const callsignRegexp = /^(([0-9]{0,1}[^0-9]+)([0-9]{1,2})\/)?([0-9]{0,1}[^0-9]+)([0-9]{1,2})([^\/]+)\/{0,1}(.*)$/g;
 
-type CsDataType = (CallsignData & { state?: string }) | undefined;
+export type CsDataType = (CallsignData & { state?: string }) | undefined;
 export const getCallsignData = (callsign: string): CsDataType => {
     if (!callsign) return undefined;
 
@@ -11,7 +11,7 @@ export const getCallsignData = (callsign: string): CsDataType => {
     if (data?.states) {
         data.state = Object.entries(data.states).reduce<string | undefined>(
             (acc, [state, regexp]) => acc || (regexp.test(callsign) ? state : undefined),
-            undefined
+            undefined,
         );
     }
     return data;

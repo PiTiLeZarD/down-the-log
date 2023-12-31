@@ -1,6 +1,6 @@
 import { DateTime } from "luxon";
 import { freq2band } from "../data/bands";
-import { QSO, newQso } from "./qso";
+import { QSO, newQsoID, qsoLocationFill } from "./qso";
 
 const header = (): string[] => [
     "ADIF Export from down-the-log by VK4ALE",
@@ -98,6 +98,7 @@ export const adifLine2Qso = (adif: string, currentLocation?: string): QSO | null
     const int = (v: string) => (v !== undefined ? +v : undefined);
 
     const adifQso = {
+        id: newQsoID(),
         date: DateTime.fromFormat(`${qsoData.qso_date} ${qsoData.time_on}`, "yyyyMMdd HHmmss"),
         callsign: qsoData.call,
         prefix: qsoData.prefix,
@@ -115,7 +116,7 @@ export const adifLine2Qso = (adif: string, currentLocation?: string): QSO | null
         locator: qsoData.gridsquare,
         qth: qsoData.qth,
         myQth: qsoData.my_city,
-        myLocator: qsoData.my_gridsquare,
+        myLocator: qsoData.my_gridsquare || currentLocation,
         note: qsoData.comment,
         rst_sent: qsoData.rst_sent,
         rst_received: qsoData.rst_rcvd,
@@ -123,12 +124,9 @@ export const adifLine2Qso = (adif: string, currentLocation?: string): QSO | null
         eqsl_sent: qsoData.eqsl_qsl_sent === "Y",
         lotw_received: qsoData.lotw_qsl_rcvd === "Y",
         lotw_sent: qsoData.lotw_qsl_send === "Y",
-    } as any as QSO;
-
-    return {
-        ...newQso(qsoData.call, [], currentLocation, qsoData.locator),
-        ...Object.fromEntries(Object.entries(adifQso).filter(([k, v]) => v !== undefined)),
     };
+
+    return qsoLocationFill(Object.fromEntries(Object.entries(adifQso).filter(([k, v]) => v !== undefined)) as QSO);
 };
 
 export const splitAdifInRecords = (adif: string): string[] => {
