@@ -9,7 +9,7 @@ This is what I'll be working on next.
 -   [ ] web
     -   [x] fonts not loaded
     -   [x] icons not working
-    -   [ ] huge padding at the bottom of the page on mobile
+    -   [x] huge padding at the bottom of the page on mobile
     -   [ ] rotating the screens bugs the whole thing
 -   [ ] ios errors galore
 -   [ ] adif import export
@@ -20,10 +20,9 @@ This is what I'll be working on next.
     -   [ ] find a solution for mobile (download works, upload probably doesn't)
     -   [ ] use gdrive as backup/restore
 -   [ ] Improve the QSO form page so it's nice usable and has all details fillable
-    -   [ ] add tx/rx input for received sent
-    -   [ ] add all the rest of the fields (check adif spec and rumlog)
+    -   [ ] S/N input to help fill tx/rx report up real quick
+    -   [x] add all the rest of the fields (check adif spec and rumlog)
     -   [ ] add https://docs.expo.dev/versions/latest/sdk/date-time-picker/ in the form to edit date/time
-    -   [ ] S/N input to help fill that up real quick
 
 ## Backlog
 
@@ -66,10 +65,10 @@ Got too many ideas, here is where I chuck them
     -   [ ] should be able to select our own callsign, maybe prompt at the start of the app
     -   [ ] choose favorite bands
     -   [ ] choose favorite modes
+    -   [ ] fix location vs use gps
     -   [ ] light/dark theme
     -   [ ] input callsign vs contest
     -   [ ] choose grouping (date vs sesh vs contest vs...)
-    -   [ ] fix location vs use gps
 
 ## Done
 
