@@ -33,7 +33,7 @@ export const FormFields: FormFieldsComponent = ({ navigation, qso }): JSX.Elemen
     const { styles } = useStyles(stylesheet);
     const deleteLog = useStore((state) => state.deleteLog);
 
-    const { control, watch } = useFormContext<QSO>();
+    const { watch } = useFormContext<QSO>();
     const freq = watch("frequency");
 
     const onDelete = () => {
@@ -42,7 +42,7 @@ export const FormFields: FormFieldsComponent = ({ navigation, qso }): JSX.Elemen
     };
 
     return (
-        <PageLayout title={<FormField name="callsign" control={control} />} navigation={navigation}>
+        <PageLayout title={<FormField name="callsign" />} navigation={navigation}>
             <Stack style={styles.datetime}>
                 {qso && (
                     <>
@@ -73,7 +73,7 @@ export const FormFields: FormFieldsComponent = ({ navigation, qso }): JSX.Elemen
             </Stack>
             <Grid container>
                 <Grid item xs={12} md={6} xxl={8}>
-                    <FormField name="name" label="Name:" control={control} />
+                    <FormField name="name" label="Name:" />
                 </Grid>
                 <Grid item xs={6} md={3} xxl={2} style={{ justifyContent: "center" }}>
                     <View>
@@ -88,10 +88,10 @@ export const FormFields: FormFieldsComponent = ({ navigation, qso }): JSX.Elemen
             </Grid>
             <Grid container>
                 <Grid item xs={8}>
-                    <FormField name="qth" label="QTH:" control={control} />
+                    <FormField name="qth" label="QTH:" />
                 </Grid>
                 <Grid item xs={4}>
-                    <FormField name="locator" label="Locator:" control={control} />
+                    <FormField name="locator" label="Locator:" />
                 </Grid>
             </Grid>
             <Grid container>
@@ -99,7 +99,7 @@ export const FormFields: FormFieldsComponent = ({ navigation, qso }): JSX.Elemen
                     <Stack>
                         <Grid container>
                             <Grid item xs={8}>
-                                <FormField name="frequency" label="Frequency:" control={control} placeholder="In Khz" />
+                                <FormField name="frequency" label="Frequency:" placeholder="In Khz" />
                             </Grid>
                             <Grid item xs={4}>
                                 <Typography>Band:</Typography>
@@ -113,30 +113,29 @@ export const FormFields: FormFieldsComponent = ({ navigation, qso }): JSX.Elemen
                                     name="mode"
                                     label="Mode:"
                                     options={{ SSB: "SSB", AM: "AM", FM: "FM", CW: "CW" }}
-                                    control={control}
                                 />
                             </Grid>
                             <Grid item xs={4}>
-                                <FormField name="power" label="Power:" control={control} />
+                                <FormField name="power" label="Power:" />
                             </Grid>
                         </Grid>
                     </Stack>
                 </Grid>
                 <Grid item xs={12} md={6}>
                     <Stack>
-                        <FormField name="country" label="Country:" control={control} />
+                        <FormField name="country" label="Country:" />
                         <Grid container>
                             <Grid item xs={6}>
-                                <FormField name="state" label="State:" control={control} />
+                                <FormField name="state" label="State:" />
                             </Grid>
                             <Grid item xs={6}>
-                                <FormField name="continent" label="Continent:" control={control} />
+                                <FormField name="continent" label="Continent:" />
                             </Grid>
                         </Grid>
                     </Stack>
                 </Grid>
             </Grid>
-            <FormField role="textarea" name="note" label="Note:" control={control} />
+            <FormField role="textarea" name="note" label="Note:" />
             <Stack direction="row">
                 <Button variant="outlined" text="Delete" colour="secondary" onPress={() => onDelete()} />
             </Stack>

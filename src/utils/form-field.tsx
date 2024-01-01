@@ -1,5 +1,5 @@
 import React from "react";
-import { Control, useController } from "react-hook-form";
+import { useController, useFormContext } from "react-hook-form";
 import { Text, View } from "react-native";
 import { QSO } from "./qso";
 import { Input } from "./theme/components/input";
@@ -12,7 +12,6 @@ export type FormFieldProps = {
     numberOfLines?: number;
     role?: "text" | "select" | "textarea";
     options?: Record<string, string>;
-    control: Control<QSO, string>;
 };
 
 export type FormFieldComponent = React.FC<FormFieldProps>;
@@ -24,8 +23,8 @@ export const FormField: FormFieldComponent = ({
     placeholder,
     numberOfLines = 4,
     options,
-    control,
 }): JSX.Element => {
+    const { control } = useFormContext();
     const { field } = useController({ name, control });
 
     const value = String(field.value || "");
