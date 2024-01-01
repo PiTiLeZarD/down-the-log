@@ -20,7 +20,7 @@ This is what I'll be working on next.
     -   [ ] find a solution for mobile (download works, upload probably doesn't)
     -   [ ] use gdrive as backup/restore
 -   [ ] Improve the QSO form page so it's nice usable and has all details fillable
-    -   [ ] S/N input to help fill tx/rx report up real quick
+    -   [x] S/N input to help fill tx/rx report up real quick
     -   [x] add all the rest of the fields (check adif spec and rumlog)
     -   [ ] add https://docs.expo.dev/versions/latest/sdk/date-time-picker/ in the form to edit date/time
 
