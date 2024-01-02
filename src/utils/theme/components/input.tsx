@@ -6,21 +6,18 @@ import { Styles, mergeStyles } from "./styles";
 import { Typography } from "./typography";
 
 const stylesheet = createStyleSheet((theme) => ({
-    container: {
-        alignItems: "stretch",
-    },
     input: {
         ...theme.components.typography,
         borderWidth: theme.margins.xs,
         borderStyle: "solid",
         borderColor: theme.colours.primary[theme.shades.light],
-        borderRadius: theme.margins.lg,
-        padding: theme.margins.md,
+        borderRadius: theme.margins.md,
+        padding: theme.margins.lg,
         flexGrow: 1,
     },
     inputText: {
         backgroundColor: theme.colours.primary[theme.shades.light],
-        borderRadius: theme.margins.lg,
+        borderRadius: theme.margins.md,
         padding: theme.margins.lg,
         height: "100%",
     },
@@ -52,8 +49,9 @@ export const Input: InputComponent = ({
     ...otherProps
 }): JSX.Element => {
     const { styles } = useStyles(stylesheet);
+
     return (
-        <Stack direction="row" gap={0} style={styles.container}>
+        <Stack direction="row" gap={0}>
             {prefix &&
                 (typeof prefix == "string" ? (
                     <Typography variant="em" style={[styles.inputText, styles.rightFlatBorders, textStyle]}>
