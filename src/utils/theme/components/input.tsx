@@ -13,11 +13,19 @@ const stylesheet = createStyleSheet((theme) => ({
     },
 }));
 
-export type InputProps = TextInputProps & {};
+export type InputProps = TextInputProps & {
+    numeric?: boolean;
+};
 
 export type InputComponent = React.FC<InputProps>;
 
-export const Input: InputComponent = ({ style, ...otherProps }): JSX.Element => {
+export const Input: InputComponent = ({ style, numeric = false, ...otherProps }): JSX.Element => {
     const { styles } = useStyles(stylesheet);
-    return <TextInput style={[styles.input, style]} {...otherProps} />;
+    return (
+        <TextInput
+            style={[styles.input, style]}
+            {...(numeric ? { keyboardType: "numeric", type: "number", pattern: "[0-9]*", inputmode: "numeric" } : {})}
+            {...otherProps}
+        />
+    );
 };

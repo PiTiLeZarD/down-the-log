@@ -54,6 +54,7 @@ export const BandFreqInput: BandFreqInputComponent = (): JSX.Element => {
                             </Grid>
                             <Typography variant="em">Frequency (in khz):</Typography>
                             <Input
+                                numeric
                                 style={{ textAlign: "center", fontSize: 30 }}
                                 value={String(freqValue(frequency, band))}
                                 onChangeText={(nfreq) => setValue("frequency", +nfreq / 1000)}
