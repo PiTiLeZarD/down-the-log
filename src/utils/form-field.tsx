@@ -1,5 +1,6 @@
 import React from "react";
 import { useController, useFormContext } from "react-hook-form";
+import { countries } from "../data/countries";
 import { QSO } from "./qso";
 import { Stack } from "./stack";
 import { Input } from "./theme/components/input";
@@ -11,7 +12,7 @@ export type FormFieldProps = {
     label?: string;
     placeholder?: string;
     numberOfLines?: number;
-    role?: "text" | "select" | "textarea";
+    role?: "text" | "select" | "textarea" | "country";
     options?: Record<string, string>;
 };
 
@@ -51,6 +52,18 @@ export const FormField: FormFieldComponent = ({
                     value={value}
                     onValueChange={field.onChange}
                     items={Object.entries(options || {}).map(([value, label]) => ({ label, value }))}
+                    {...(label ? { "aria-labelledby": `label${field.name}` } : {})}
+                />
+            )}
+
+            {role === "country" && (
+                <SelectInput
+                    value={value}
+                    onValueChange={field.onChange}
+                    items={Object.entries(countries).map(([value, { name, flag }]) => ({
+                        label: `${flag} ${name}`,
+                        value,
+                    }))}
                     {...(label ? { "aria-labelledby": `label${field.name}` } : {})}
                 />
             )}

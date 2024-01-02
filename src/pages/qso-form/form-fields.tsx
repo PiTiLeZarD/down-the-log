@@ -115,7 +115,7 @@ export const FormFields: FormFieldsComponent = ({ navigation, qso }): JSX.Elemen
                 </Grid>
                 <Grid item xs={12} md={6}>
                     <Stack>
-                        <FormField name="country" label="Country:" />
+                        <FormField role="country" name="country" label="Country:" />
                         <Grid container>
                             <Grid item xs={6}>
                                 <FormField name="state" label="State:" />
