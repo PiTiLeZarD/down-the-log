@@ -2,7 +2,7 @@ import React from "react";
 import { useFormContext } from "react-hook-form";
 import { Modal } from "react-native";
 import { useStyles } from "react-native-unistyles";
-import { Band, band2freq, bands } from "../../data/bands";
+import { Band, band2freq, bands, freq2band } from "../../data/bands";
 import { Grid } from "../../utils/grid";
 import { QSO } from "../../utils/qso";
 import { Stack } from "../../utils/stack";
@@ -28,6 +28,7 @@ export const BandFreqInput: BandFreqInputComponent = (): JSX.Element => {
     const frequency = watch("frequency");
     const band = watch("band");
     const [freqUserInput, setFreqUserInput] = React.useState<string>(String(freqValue(frequency, band)));
+    const bandUserInput = freq2band(+freqUserInput / 1000);
 
     React.useEffect(() => {
         setFreqUserInput(String(freqValue(frequency, band)));
@@ -36,6 +37,7 @@ export const BandFreqInput: BandFreqInputComponent = (): JSX.Element => {
     React.useEffect(() => {
         if (!Number.isNaN(+freqUserInput)) {
             setValue("frequency", +freqUserInput / 1000);
+            if (bandUserInput !== null) setValue("band", bandUserInput);
         }
     }, [freqUserInput]);
     return (
@@ -65,7 +67,12 @@ export const BandFreqInput: BandFreqInputComponent = (): JSX.Element => {
                             </Grid>
                             <Input
                                 numeric
-                                style={{ textAlign: "center", fontSize: 30 }}
+                                style={[
+                                    { textAlign: "center", fontSize: 30 },
+                                    !bandUserInput
+                                        ? { backgroundColor: theme.colours.secondary[theme.shades.main] }
+                                        : {},
+                                ]}
                                 textStyle={{ fontSize: 20, lineHeight: 30 }}
                                 value={freqUserInput}
                                 prefix="Frequency:"
