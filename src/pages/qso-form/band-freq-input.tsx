@@ -27,7 +27,17 @@ export const BandFreqInput: BandFreqInputComponent = (): JSX.Element => {
 
     const frequency = watch("frequency");
     const band = watch("band");
+    const [freqUserInput, setFreqUserInput] = React.useState<string>(String(freqValue(frequency, band)));
 
+    React.useEffect(() => {
+        setFreqUserInput(String(freqValue(frequency, band)));
+    }, [frequency]);
+
+    React.useEffect(() => {
+        if (!Number.isNaN(+freqUserInput)) {
+            setValue("frequency", +freqUserInput / 1000);
+        }
+    }, [freqUserInput]);
     return (
         <Stack>
             <Typography>Frequency:</Typography>
@@ -41,7 +51,7 @@ export const BandFreqInput: BandFreqInputComponent = (): JSX.Element => {
                                 {Object.keys(bands).map((b) => (
                                     <Grid key={b} item xs={2}>
                                         <Button
-                                            style={{ padding: theme.margins.xl }}
+                                            style={{ padding: theme.margins.md, margin: theme.margins.md }}
                                             text={b}
                                             variant={b == band ? "contained" : "outlined"}
                                             onPress={() => {
@@ -56,9 +66,10 @@ export const BandFreqInput: BandFreqInputComponent = (): JSX.Element => {
                             <Input
                                 numeric
                                 style={{ textAlign: "center", fontSize: 30 }}
-                                value={String(freqValue(frequency, band))}
-                                onChangeText={(nfreq) => setValue("frequency", +nfreq / 1000)}
+                                value={freqUserInput}
+                                onChangeText={(nfreq) => setFreqUserInput(nfreq)}
                             />
+                            <Button text="Close" onPress={() => setOpen(false)} />
                         </Stack>
                     </Grid>
                     <Grid item xs={4} />
