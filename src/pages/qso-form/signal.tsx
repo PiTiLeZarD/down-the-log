@@ -29,8 +29,8 @@ export const Signal: SignalComponent = ({ field }): JSX.Element => {
             <Modal animationType="none" visible={open} onRequestClose={() => setOpen(false)}>
                 <Stack>
                     <Grid container>
-                        <Grid item xs={5} />
-                        <Grid item xs={1}>
+                        <Grid item xs={1} md={2} lg={3} xl={4} xxl={5} />
+                        <Grid item xs={5} md={4} lg={3} xl={2} xxl={1}>
                             <Stack>
                                 <Typography style={{ textAlign: "center" }}>Readability</Typography>
                                 {new Array(5).fill(null).map((_, i) => (
@@ -43,7 +43,7 @@ export const Signal: SignalComponent = ({ field }): JSX.Element => {
                                 ))}
                             </Stack>
                         </Grid>
-                        <Grid item xs={1}>
+                        <Grid item xs={5} md={4} lg={3} xl={2} xxl={1}>
                             <Stack>
                                 <Typography style={{ textAlign: "center" }}>Strength</Typography>
                                 {new Array(9).fill(null).map((_, i) => (
@@ -60,14 +60,14 @@ export const Signal: SignalComponent = ({ field }): JSX.Element => {
                                 ))}
                             </Stack>
                         </Grid>
-                        <Grid item xs={5} />
+                        <Grid item xs={1} md={2} lg={3} xl={4} xxl={5} />
                     </Grid>
                     <Grid container>
-                        <Grid item xs={5} />
-                        <Grid item xs={2}>
+                        <Grid item xs={1} md={2} lg={3} xl={4} xxl={5} />
+                        <Grid item xs={10} md={8} lg={6} xl={4} xxl={2}>
                             <Button text="Close" onPress={() => setOpen(false)} />
                         </Grid>
-                        <Grid item xs={5} />
+                        <Grid item xs={1} md={2} lg={3} xl={4} xxl={5} />
                     </Grid>
                 </Stack>
             </Modal>
