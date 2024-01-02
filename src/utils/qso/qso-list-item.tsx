@@ -28,7 +28,7 @@ export const QsoListItem: QsoListItemComponent = React.memo(
                     <Stack direction="row">
                         <Typography>{qso.country ? countries[qso.country]?.flag : ""}</Typography>
                         <Typography>{qso.callsign}</Typography>
-                        <Typography>({qso.distance}km)</Typography>
+                        {qso.distance && <Typography>({qso.distance}km)</Typography>}
                     </Stack>
                 }
                 name={qso.name || "N/A"}
