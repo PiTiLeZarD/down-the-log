@@ -132,7 +132,7 @@ export const adifLine2Qso = (adif: string, currentLocation?: string): QSO | null
 };
 
 export const splitAdifInRecords = (adif: string): string[] => {
-    let lines = adif.split("\n");
+    let lines = adif.replace(/(?:\\[r]|[\r]+)+/g, "").split("\n");
     if (!lines[0].startsWith("<")) {
         lines = lines.splice(lines.findIndex((v) => v.toUpperCase().startsWith("<EOH>")) + 1);
     }
@@ -146,7 +146,7 @@ export const splitAdifInRecords = (adif: string): string[] => {
             const [last, next] = line.split(/<[eE][oO][rR]>/);
             return [...records, [...lastRecord, last], next.length ? [next] : []];
         }, [])
-        .filter((record) => Boolean(record.length))
+        .filter((record) => record.filter((l) => Boolean(l)).length > 0)
         .map((record) => record.join("\n"));
 };
 
