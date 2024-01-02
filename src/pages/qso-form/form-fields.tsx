@@ -42,7 +42,7 @@ export const FormFields: FormFieldsComponent = ({ navigation, qso }): JSX.Elemen
     };
 
     return (
-        <PageLayout title={<FormField name="callsign" />} navigation={navigation}>
+        <PageLayout title={<FormField name="callsign" />} navigation={navigation} titleMargin={10}>
             <Stack style={styles.datetime}>
                 {qso && (
                     <>

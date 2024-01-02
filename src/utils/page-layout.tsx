@@ -10,11 +10,12 @@ import { Typography } from "./theme/components/typography";
 
 export type PageLayoutProps = {
     title: React.ReactNode;
+    titleMargin?: number;
 } & Pick<DrawerScreenProps<NavigationParamList, any>, "navigation">;
 
 export type PageLayoutComponent = React.FC<React.PropsWithChildren<PageLayoutProps>>;
 
-export const PageLayout: PageLayoutComponent = ({ title, navigation, children }): JSX.Element => {
+export const PageLayout: PageLayoutComponent = ({ title, titleMargin = 18, navigation, children }): JSX.Element => {
     const { theme } = useStyles();
     return (
         <Grid container>
@@ -28,7 +29,9 @@ export const PageLayout: PageLayoutComponent = ({ title, navigation, children })
                                     {title}
                                 </Typography>
                             ) : (
-                                <View style={{ flexGrow: 1, marginTop: 18, marginBottom: 18 }}>{title}</View>
+                                <View style={{ flexGrow: 1, marginTop: titleMargin, marginBottom: titleMargin }}>
+                                    {title}
+                                </View>
                             )}
 
                             <View>
