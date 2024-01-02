@@ -5,7 +5,7 @@ import { breakpoints, spacing } from "../theme";
 export type StackProps = {
     style?: ViewStyle;
     direction?: "row" | "column";
-    gap?: keyof typeof breakpoints;
+    gap?: keyof typeof breakpoints | number;
 };
 
 export type StackComponent = React.FC<React.PropsWithChildren<StackProps>>;
@@ -18,7 +18,7 @@ export const Stack: StackComponent = ({ style, gap = "xs", direction = "column",
         <View
             style={[
                 style,
-                { display: "flex", flexDirection: direction, gap: spacing[gap] },
+                { display: "flex", flexDirection: direction, gap: typeof gap === "number" ? 0 : spacing[gap] },
                 direction == "row" ? defaultRowStyles() : defaultColStyles(),
             ]}
         >

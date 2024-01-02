@@ -1,9 +1,10 @@
 import React from "react";
-import { Pressable, PressableProps, Text, TextProps, ViewStyle } from "react-native";
+import { Pressable, PressableProps, Text, TextProps, TextStyle, ViewStyle } from "react-native";
 import { createStyleSheet, useStyles } from "react-native-unistyles";
 import { Stack } from "../../stack";
 import { ColourVariant } from "../theme";
 import { Icon, IconName } from "./icon";
+import { Styles, mergeStyles } from "./styles";
 
 const stylesheet = createStyleSheet((theme) => ({
     button: {
@@ -44,7 +45,14 @@ export const ButtonText: ButtonTextComponent = ({
 }): JSX.Element => {
     const { styles } = useStyles(stylesheet);
     return (
-        <Text style={[styles.buttonText, styles[`buttonText_${variant}`](colour), style]} {...otherProps}>
+        <Text
+            style={mergeStyles<TextStyle>(
+                styles.buttonText,
+                styles[`buttonText_${variant}`](colour),
+                style as Styles<TextStyle>,
+            )}
+            {...otherProps}
+        >
             {children}
         </Text>
     );
@@ -52,7 +60,8 @@ export const ButtonText: ButtonTextComponent = ({
 
 export type ButtonProps = Omit<PressableProps, "style"> & {
     text?: React.ReactNode;
-    style?: ViewStyle;
+    style?: Styles<ViewStyle>;
+    textStyle?: Styles<TextStyle>;
     startIcon?: IconName;
     endIcon?: IconName;
     variant?: "contained" | "outlined";
@@ -63,6 +72,7 @@ export type ButtonComponent = React.FC<React.PropsWithChildren<ButtonProps>>;
 
 export const Button: ButtonComponent = ({
     style,
+    textStyle,
     variant = "contained",
     colour = "primary",
     text,
@@ -73,22 +83,25 @@ export const Button: ButtonComponent = ({
 }): JSX.Element => {
     const { styles } = useStyles(stylesheet);
     return (
-        <Pressable style={[styles.button, styles[`button_${variant}`](colour), style]} {...otherProps}>
+        <Pressable
+            style={mergeStyles<ViewStyle>(styles.button, styles[`button_${variant}`](colour), style)}
+            {...otherProps}
+        >
             <Stack direction="row" style={{ justifyContent: "center" }}>
                 {startIcon && (
-                    <ButtonText variant={variant} colour={colour}>
+                    <ButtonText style={textStyle} variant={variant} colour={colour}>
                         <Icon name={startIcon} color={colour} contrast={variant == "contained"} />
                     </ButtonText>
                 )}
                 {text !== undefined ? (
-                    <ButtonText variant={variant} colour={colour}>
+                    <ButtonText style={textStyle} variant={variant} colour={colour}>
                         {text}
                     </ButtonText>
                 ) : (
                     children
                 )}
                 {endIcon && (
-                    <ButtonText variant={variant} colour={colour}>
+                    <ButtonText style={textStyle} variant={variant} colour={colour}>
                         <Icon name={endIcon} color={colour} contrast={variant == "contained"} />
                     </ButtonText>
                 )}

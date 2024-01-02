@@ -1,31 +1,87 @@
 import React from "react";
-import { TextInput, TextInputProps } from "react-native";
+import { TextInput, TextInputProps, TextStyle } from "react-native";
 import { createStyleSheet, useStyles } from "react-native-unistyles";
+import { Stack } from "../../stack";
+import { Styles, mergeStyles } from "./styles";
+import { Typography } from "./typography";
 
 const stylesheet = createStyleSheet((theme) => ({
+    container: {
+        alignItems: "stretch",
+    },
     input: {
         ...theme.components.typography,
         borderWidth: theme.margins.xs,
         borderStyle: "solid",
         borderColor: theme.colours.primary[theme.shades.light],
-        borderRadius: theme.margins.md,
+        borderRadius: theme.margins.lg,
+        padding: theme.margins.md,
+        flexGrow: 1,
+    },
+    inputText: {
+        backgroundColor: theme.colours.primary[theme.shades.light],
+        borderRadius: theme.margins.lg,
         padding: theme.margins.lg,
+        height: "100%",
+    },
+    leftFlatBorders: {
+        borderTopLeftRadius: 0,
+        borderBottomLeftRadius: 0,
+    },
+    rightFlatBorders: {
+        borderTopRightRadius: 0,
+        borderBottomRightRadius: 0,
     },
 }));
 
 export type InputProps = TextInputProps & {
     numeric?: boolean;
+    textStyle?: TextStyle;
+    prefix?: React.ReactNode;
+    suffix?: React.ReactNode;
 };
 
 export type InputComponent = React.FC<InputProps>;
 
-export const Input: InputComponent = ({ style, numeric = false, ...otherProps }): JSX.Element => {
+export const Input: InputComponent = ({
+    style,
+    textStyle,
+    prefix,
+    suffix,
+    numeric = false,
+    ...otherProps
+}): JSX.Element => {
     const { styles } = useStyles(stylesheet);
     return (
-        <TextInput
-            style={[styles.input, style]}
-            {...(numeric ? { keyboardType: "numeric", type: "number", pattern: "[0-9]*", inputmode: "numeric" } : {})}
-            {...otherProps}
-        />
+        <Stack direction="row" gap={0} style={styles.container}>
+            {prefix &&
+                (typeof prefix == "string" ? (
+                    <Typography variant="em" style={[styles.inputText, styles.rightFlatBorders, textStyle]}>
+                        {prefix}
+                    </Typography>
+                ) : (
+                    prefix
+                ))}
+            <TextInput
+                style={mergeStyles<TextStyle>(
+                    styles.input,
+                    style as Styles<TextStyle>,
+                    prefix ? styles.leftFlatBorders : [],
+                    suffix ? styles.rightFlatBorders : [],
+                )}
+                {...(numeric
+                    ? { keyboardType: "numeric", type: "number", pattern: "[0-9]*", inputmode: "numeric" }
+                    : {})}
+                {...otherProps}
+            />
+            {suffix &&
+                (typeof suffix == "string" ? (
+                    <Typography variant="em" style={[styles.inputText, styles.leftFlatBorders, textStyle]}>
+                        {suffix}
+                    </Typography>
+                ) : (
+                    suffix
+                ))}
+        </Stack>
     );
 };
