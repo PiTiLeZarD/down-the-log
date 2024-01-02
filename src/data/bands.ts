@@ -1,3 +1,5 @@
+import { roundTo } from "../utils/math";
+
 export const bands = {
     "2.2km": [0.135, 0.138],
     "630m": [0.472, 0.479],
@@ -28,10 +30,13 @@ export const bands = {
 
 export type Band = keyof typeof bands;
 
+export const band2freq = (band?: Band): number | null =>
+    band ? roundTo((bands[band][0] + bands[band][0]) / 2, 3) : null;
+
 export const freq2band = (freq?: number): Band | null =>
     freq
         ? Object.entries(bands).reduce<Band | null>(
               (acc: Band | null, [band, [low, high]]) => acc || (freq >= low && freq <= high ? (band as Band) : acc),
-              null
+              null,
           )
         : null;

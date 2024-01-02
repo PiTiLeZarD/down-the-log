@@ -4,6 +4,7 @@ import { createStyleSheet, useStyles } from "react-native-unistyles";
 
 const stylesheet = createStyleSheet((theme) => ({
     input: {
+        ...theme.components.typography,
         borderWidth: theme.margins.xs,
         borderStyle: "solid",
         borderColor: theme.colours.primary[theme.shades.light],

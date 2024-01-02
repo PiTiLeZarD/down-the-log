@@ -4,7 +4,6 @@ import { useFormContext } from "react-hook-form";
 import { View } from "react-native";
 import { createStyleSheet, useStyles } from "react-native-unistyles";
 import { NavigationParamList } from "../../Navigation";
-import { freq2band } from "../../data/bands";
 import { useStore } from "../../store";
 import { FormField } from "../../utils/form-field";
 import { Grid } from "../../utils/grid";
@@ -13,6 +12,7 @@ import { QSO } from "../../utils/qso";
 import { Stack } from "../../utils/stack";
 import { Button } from "../../utils/theme/components/button";
 import { Typography } from "../../utils/theme/components/typography";
+import { BandFreqInput } from "./band-freq-input";
 import { Signal } from "./signal";
 
 const stylesheet = createStyleSheet((theme) => ({
@@ -97,15 +97,7 @@ export const FormFields: FormFieldsComponent = ({ navigation, qso }): JSX.Elemen
             <Grid container>
                 <Grid item xs={12} md={6}>
                     <Stack>
-                        <Grid container>
-                            <Grid item xs={8}>
-                                <FormField name="frequency" label="Frequency:" placeholder="In Khz" />
-                            </Grid>
-                            <Grid item xs={4}>
-                                <Typography>Band:</Typography>
-                                <Typography>{freq2band(freq) || "N/A"}</Typography>
-                            </Grid>
-                        </Grid>
+                        <BandFreqInput />
                         <Grid container>
                             <Grid item xs={8}>
                                 <FormField

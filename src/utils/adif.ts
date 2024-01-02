@@ -1,5 +1,5 @@
 import { DateTime } from "luxon";
-import { freq2band } from "../data/bands";
+import { bands, freq2band } from "../data/bands";
 import { QSO, newQsoID, qsoLocationFill } from "./qso";
 
 const header = (): string[] => [
@@ -40,7 +40,7 @@ export const qso2adif = (qso: QSO): string => {
             qso.date ? field("qso_date", qso.date.toFormat("yyyyMMdd")) : null,
             qso.date ? field("time_on", qso.date.toFormat("HHmmss")) : null,
 
-            field("band", freq2band(qso.frequency) as string),
+            field("band", qso.band),
             field("freq", qso.frequency),
             field("mode", qso.mode),
             field("tx_pwr", String(qso.power)),
@@ -95,7 +95,8 @@ export const adifLine2Qso = (adif: string, currentLocation?: string): QSO | null
         qsoData[tagName] = value;
     }
 
-    const int = (v: string) => (v !== undefined ? +v : undefined);
+    const int = (v?: string) => (v !== undefined ? +v : undefined);
+    const band = (b?: string, f?: string) => (Object.keys(bands).includes(b || "") ? b : f ? freq2band(+f) : undefined);
 
     const adifQso = {
         id: newQsoID(),
@@ -109,6 +110,7 @@ export const adifLine2Qso = (adif: string, currentLocation?: string): QSO | null
         continent: qsoData.cont,
         distance: int(qsoData.distance),
         frequency: int(qsoData.freq),
+        band: band(qsoData.band, qsoData.freq),
         mode: qsoData.mode,
         power: int(qsoData.tx_pwr),
         name: qsoData.name,

@@ -1,5 +1,6 @@
 import { DateTime } from "luxon";
 import uuid from "react-native-uuid";
+import { Band } from "../../data/bands";
 import cqzones from "../../data/cqzones.json";
 import dxcc from "../../data/dxcc.json";
 import ituzones from "../../data/ituzones.json";
@@ -30,6 +31,7 @@ export type QSO = {
     rst_received?: string;
     name?: string;
     frequency?: number;
+    band?: Band;
     mode?: "SSB" | "FM" | "AM" | "CW";
     power?: number;
     myQth?: string;

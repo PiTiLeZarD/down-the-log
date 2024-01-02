@@ -1,5 +1,4 @@
 import React from "react";
-import { freq2band } from "../../data/bands";
 import { countries } from "../../data/countries";
 import { QSO } from "../../utils/qso";
 import { Stack } from "../../utils/stack";
@@ -33,7 +32,7 @@ export const QsoListItem: QsoListItemComponent = React.memo(
                     </Stack>
                 }
                 name={qso.name || "N/A"}
-                band={`${qso.frequency ? freq2band(+qso.frequency) || "N/A" : "N/A"} (${qso.mode || "N/A"})`}
+                band={`${qso.band || "N/A"} (${qso.mode || "N/A"})`}
                 onPress={() => onQsoPress(qso)}
             />
         );

@@ -80,7 +80,7 @@ export const Button: ButtonComponent = ({
                         <Icon name={startIcon} color={colour} contrast={variant == "contained"} />
                     </ButtonText>
                 )}
-                {text ? (
+                {text !== undefined ? (
                     <ButtonText variant={variant} colour={colour}>
                         {text}
                     </ButtonText>

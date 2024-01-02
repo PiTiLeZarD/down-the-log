@@ -1,9 +1,10 @@
 import React from "react";
 import { useController, useFormContext } from "react-hook-form";
-import { Text, View } from "react-native";
 import { QSO } from "./qso";
+import { Stack } from "./stack";
 import { Input } from "./theme/components/input";
 import { SelectInput } from "./theme/components/select-input";
+import { Typography } from "./theme/components/typography";
 
 export type FormFieldProps = {
     name: keyof QSO;
@@ -30,12 +31,8 @@ export const FormField: FormFieldComponent = ({
     const value = String(field.value || "");
 
     return (
-        <View>
-            {label && (
-                <Text aria-label={`Label for ${field.name}`} id={`label${field.name}`}>
-                    {label}
-                </Text>
-            )}
+        <Stack>
+            {label && <Typography aria-label={`Label for ${field.name}`}>{label}</Typography>}
 
             {(role === "text" || role === "textarea") && (
                 <Input
@@ -57,6 +54,6 @@ export const FormField: FormFieldComponent = ({
                     {...(label ? { "aria-labelledby": `label${field.name}` } : {})}
                 />
             )}
-        </View>
+        </Stack>
     );
 };
