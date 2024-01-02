@@ -31,7 +31,7 @@ export const bands = {
 export type Band = keyof typeof bands;
 
 export const band2freq = (band?: Band): number | null =>
-    band ? roundTo((bands[band][0] + bands[band][0]) / 2, 3) : null;
+    band ? roundTo((bands[band][0] + bands[band][1]) / 2, 3) : null;
 
 export const freq2band = (freq?: number): Band | null =>
     freq
