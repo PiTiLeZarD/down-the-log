@@ -36,6 +36,7 @@ export type QSO = {
     power?: number;
     myQth?: string;
     myLocator?: string;
+    myCallsign?: string;
     qth?: string;
     locator?: string;
     note?: string;
@@ -47,7 +48,13 @@ export type QSO = {
 
 export const newQsoID = () => uuid.v4() as string;
 
-export const newQso = (callsign: string, qsos: QSO[], myLocator?: string, qsoLocator?: string): QSO => {
+export const newQso = (
+    callsign: string,
+    qsos: QSO[],
+    myLocator?: string,
+    qsoLocator?: string,
+    myCallsign?: string,
+): QSO => {
     const parsed = parseCallsign(callsign);
     const callsignData = getCallsignData(callsign);
     const previousQsosWithCallsign = qsos.filter((q) => q.callsign === callsign);
@@ -61,6 +68,7 @@ export const newQso = (callsign: string, qsos: QSO[], myLocator?: string, qsoLoc
             prefix: parsed && `${parsed.prefix}${parsed.index}`,
             locator,
             myLocator,
+            myCallsign,
             rst_received: "59",
             rst_sent: "59",
             ...(qsos.length ? { frequency: qsos[0].frequency, mode: qsos[0].mode, power: qsos[0].power } : {}),

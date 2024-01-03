@@ -36,6 +36,7 @@ export type AdifComponent = React.FC<AdifProps>;
 export const Adif: AdifComponent = ({ navigation }): JSX.Element => {
     const { styles } = useStyles(stylesheet);
     const currentLocation = useStore((state) => state.currentLocation);
+    const settings = useStore((state) => state.settings);
     const resetStore = useStore((state) => state.resetStore);
     const [importRemaining, setImportRemaining] = React.useState<string[]>([]);
     const qsos = useQsos();
@@ -43,7 +44,7 @@ export const Adif: AdifComponent = ({ navigation }): JSX.Element => {
 
     useEffect(() => {
         if (importRemaining.length) {
-            const toImport = adifLine2Qso(importRemaining[0], currentLocation);
+            const toImport = adifLine2Qso(importRemaining[0], currentLocation, settings.myCallsign);
             const newImportRemaining = importRemaining.slice(1);
             if (toImport) log(findMatchingQso(qsos, toImport) || toImport);
             setImportRemaining(newImportRemaining);

@@ -8,6 +8,7 @@ import { About } from "./pages/about";
 import { Adif } from "./pages/adif";
 import { Home } from "./pages/home";
 import { QsoForm } from "./pages/qso-form";
+import { Settings } from "./pages/settings";
 import { useStore } from "./store";
 import { LocationHeader } from "./utils/location-header";
 import { latlong2Maidenhead } from "./utils/locator";
@@ -54,6 +55,7 @@ const App = (): JSX.Element => {
                         <Navigation.Screen name="QsoForm" component={QsoForm} />
                         <Navigation.Screen name="About" component={About} />
                         <Navigation.Screen name="Adif" component={Adif} />
+                        <Navigation.Screen name="Settings" component={Settings} />
                     </Navigation.Navigator>
                 </SafeAreaView>
             </NavigationContainer>

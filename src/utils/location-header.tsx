@@ -22,6 +22,11 @@ const stylesheet = createStyleSheet((theme) => ({
         borderBottomWidth: theme.margins.sm,
         borderBottomColor: theme.colours.grey[theme.shades.darker],
     },
+    callsign: {
+        marginTop: 5,
+        marginBottom: 5,
+        fontWeight: "bold",
+    },
 }));
 
 export type LocationHeaderProps = {} & Pick<DrawerScreenProps<ParamListBase, string>, "navigation">;
@@ -30,6 +35,7 @@ export type LocationHeaderComponent = React.FC<LocationHeaderProps>;
 
 export const LocationHeader: LocationHeaderComponent = ({ navigation }): JSX.Element => {
     const currentLocation = useStore((state) => state.currentLocation);
+    const settings = useStore((state) => state.settings);
     const { styles } = useStyles(stylesheet);
 
     return (
@@ -50,6 +56,11 @@ export const LocationHeader: LocationHeaderComponent = ({ navigation }): JSX.Ele
                         </Typography>
                     )}
                 </Stack>
+                <View style={{ flexGrow: 1 }}>
+                    <Typography variant={widthMatches("md") ? "h1" : "h5"} style={styles.callsign}>
+                        {settings.myCallsign}
+                    </Typography>
+                </View>
                 <View style={widthMatches("md") ? {} : { display: "none" }}>
                     <Clocks />
                 </View>
