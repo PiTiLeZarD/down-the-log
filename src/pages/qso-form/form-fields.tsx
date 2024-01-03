@@ -45,32 +45,32 @@ export const FormFields: FormFieldsComponent = ({ navigation, qso }): JSX.Elemen
         <PageLayout title={<FormField name="callsign" />} navigation={navigation} titleMargin={10}>
             <Stack style={styles.datetime}>
                 {qso && (
-                    <>
-                        <Stack direction="row">
-                            <Typography variant="subtitle" style={{ flex: 1, textAlign: "center" }}>
-                                CQ: {qso.cqzone}
-                            </Typography>
-                            <Typography variant="subtitle" style={{ flex: 1, textAlign: "center" }}>
-                                ITU: {qso.ituzone}
-                            </Typography>
-                            <Typography variant="subtitle" style={{ flex: 1, textAlign: "center" }}>
-                                ITU: {qso.dxcc}
-                            </Typography>
-                            <Typography variant="subtitle" style={{ flex: 1, textAlign: "center" }}>
-                                QRB: {qso.distance}km
-                            </Typography>
-                        </Stack>
-                        <Stack direction="row">
-                            <Typography variant="h6" style={{ flex: 1 }}>
-                                {qso.date.toFormat("dd/MM/yyyy")}
-                            </Typography>
-                            <Typography variant="h6" style={{ flex: 1, textAlign: "right" }}>
-                                {qso.date.toFormat("HH:mm:ss")}
-                            </Typography>
-                        </Stack>
-                    </>
+                    <Stack direction="row">
+                        <Typography variant="h6" style={{ flex: 1 }}>
+                            {qso.date.toFormat("dd/MM/yyyy")}
+                        </Typography>
+                        <Typography variant="h6" style={{ flex: 1, textAlign: "right" }}>
+                            {qso.date.toFormat("HH:mm:ss")}
+                        </Typography>
+                    </Stack>
                 )}
             </Stack>
+            {qso && (
+                <Stack direction="row">
+                    <Typography variant="subtitle" style={{ flex: 1, textAlign: "center" }}>
+                        CQ: {qso.cqzone}
+                    </Typography>
+                    <Typography variant="subtitle" style={{ flex: 1, textAlign: "center" }}>
+                        ITU: {qso.ituzone}
+                    </Typography>
+                    <Typography variant="subtitle" style={{ flex: 1, textAlign: "center" }}>
+                        DXCC: {qso.dxcc}
+                    </Typography>
+                    <Typography variant="subtitle" style={{ flex: 1, textAlign: "center" }}>
+                        QRB: {qso.distance}km
+                    </Typography>
+                </Stack>
+            )}
             <Grid container>
                 <Grid item xs={12} md={6} xxl={8}>
                     <FormField name="name" label="Name:" />
