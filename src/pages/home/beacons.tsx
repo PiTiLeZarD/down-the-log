@@ -45,17 +45,18 @@ export const Beacons: BeaconsComponent = (): JSX.Element => {
     const [band, setBand] = React.useState<Band>("20m");
     const [beacon, setBeacon] = React.useState<string>(beacons[0]);
 
+    const updateBeacon = (b: Band) => {
+        if (band != b) setBand(b);
+        setBeacon(beaconOn(b));
+    };
+
     useEffect(() => {
         const beaconInterval = setInterval(() => {
-            setBeacon(beaconOn(band));
+            updateBeacon(band);
         }, 500);
         return () => {
             clearInterval(beaconInterval);
         };
-    }, []);
-
-    useEffect(() => {
-        setBeacon(beaconOn(band));
     }, [band]);
 
     const csdata = getCallsignData(beacon);
@@ -68,7 +69,7 @@ export const Beacons: BeaconsComponent = (): JSX.Element => {
                 {frequencies.map((f) => (
                     <Button
                         variant={freq2band(f) == band ? "contained" : "outlined"}
-                        onPress={() => setBand(freq2band(f) || "20m")}
+                        onPress={() => updateBeacon(freq2band(f) || "20m")}
                         text={freq2band(f)}
                     />
                 ))}
