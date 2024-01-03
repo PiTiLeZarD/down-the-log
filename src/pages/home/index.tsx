@@ -6,6 +6,8 @@ import { NavigationParamList } from "../../Navigation";
 import { useStore } from "../../store";
 import { newQso, useQsos } from "../../utils/qso";
 import { QsoList } from "../../utils/qso/qso-list";
+import { Alert } from "../../utils/theme/components/alert";
+import { Typography } from "../../utils/theme/components/typography";
 import { CallsignInput } from "./callsign-input";
 
 const stylesheet = createStyleSheet((theme) => ({
@@ -47,6 +49,11 @@ export const Home: HomeComponent = ({ navigation }): JSX.Element => {
 
     return (
         <View style={styles.container}>
+            {!settings.myCallsign && (
+                <Alert severity="warning">
+                    <Typography>Your callsign isn't set properly, check the settings to set it up!</Typography>
+                </Alert>
+            )}
             <QsoList
                 style={styles.table}
                 qsos={qsos}

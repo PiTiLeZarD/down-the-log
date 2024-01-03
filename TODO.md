@@ -62,7 +62,7 @@ Got too many ideas, here is where I chuck them
     -   [ ] lotw (this one sounds tough, let's see)
 -   [ ] cluster?
 -   [ ] Settings
-    -   [ ] should be able to select our own callsign, maybe prompt at the start of the app
+    -   [x] should be able to select our own callsign, maybe prompt at the start of the app
     -   [ ] choose favorite bands
     -   [ ] choose favorite modes
     -   [ ] fix location vs use gps
