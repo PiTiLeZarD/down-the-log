@@ -1,9 +1,11 @@
 import { DateTime } from "luxon";
 import uuid from "react-native-uuid";
 import { Band } from "../../data/bands";
+import { Continent } from "../../data/callsigns";
 import cqzones from "../../data/cqzones.json";
 import dxcc from "../../data/dxcc.json";
 import ituzones from "../../data/ituzones.json";
+import { Mode } from "../../data/modes";
 import { useStore } from "../../store";
 import { CsDataType, getCallsignData, parseCallsign } from "../callsign";
 import { maidenDistance, maidenhead2Latlong } from "../locator";
@@ -25,14 +27,14 @@ export type QSO = {
     prefix?: string;
     cqzone?: number;
     ituzone?: number;
-    continent?: "NA" | "SA" | "EU" | "AF" | "OC" | "AS" | "AN";
+    continent?: Continent;
     state?: string;
     rst_sent?: string;
     rst_received?: string;
     name?: string;
     frequency?: number;
     band?: Band;
-    mode?: "SSB" | "FM" | "AM" | "CW";
+    mode?: Mode;
     power?: number;
     myQth?: string;
     myLocator?: string;

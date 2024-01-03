@@ -1,9 +1,10 @@
 import { DrawerScreenProps } from "@react-navigation/drawer";
 import React from "react";
-import { useFormContext } from "react-hook-form";
 import { View } from "react-native";
 import { createStyleSheet, useStyles } from "react-native-unistyles";
 import { NavigationParamList } from "../../Navigation";
+import { continents } from "../../data/callsigns";
+import { modes } from "../../data/modes";
 import { useStore } from "../../store";
 import { FormField } from "../../utils/form-field";
 import { Grid } from "../../utils/grid";
@@ -13,6 +14,8 @@ import { Stack } from "../../utils/stack";
 import { Button } from "../../utils/theme/components/button";
 import { Typography } from "../../utils/theme/components/typography";
 import { BandFreqInput } from "./band-freq-input";
+import { ContinentWarning } from "./continent-warning";
+import { CountryWarning } from "./country-warning";
 import { Signal } from "./signal";
 
 const stylesheet = createStyleSheet((theme) => ({
@@ -32,9 +35,6 @@ export type FormFieldsComponent = React.FC<FormFieldsProps>;
 export const FormFields: FormFieldsComponent = ({ navigation, qso }): JSX.Element => {
     const { styles } = useStyles(stylesheet);
     const deleteLog = useStore((state) => state.deleteLog);
-
-    const { watch } = useFormContext<QSO>();
-    const freq = watch("frequency");
 
     const onDelete = () => {
         if (qso) deleteLog(qso);
@@ -104,7 +104,7 @@ export const FormFields: FormFieldsComponent = ({ navigation, qso }): JSX.Elemen
                                     role="select"
                                     name="mode"
                                     label="Mode:"
-                                    options={{ SSB: "SSB", AM: "AM", FM: "FM", CW: "CW" }}
+                                    options={Object.fromEntries(modes.map((mode) => [mode, mode]))}
                                 />
                             </Grid>
                             <Grid item xs={4}>
@@ -116,12 +116,19 @@ export const FormFields: FormFieldsComponent = ({ navigation, qso }): JSX.Elemen
                 <Grid item xs={12} md={6}>
                     <Stack>
                         <FormField role="country" name="country" label="Country:" />
+                        <CountryWarning />
                         <Grid container>
                             <Grid item xs={6}>
                                 <FormField name="state" label="State:" />
                             </Grid>
                             <Grid item xs={6}>
-                                <FormField name="continent" label="Continent:" />
+                                <FormField
+                                    role="select"
+                                    name="continent"
+                                    label="Continent:"
+                                    options={Object.fromEntries(continents.map((ctn) => [ctn, ctn]))}
+                                />
+                                <ContinentWarning />
                             </Grid>
                         </Grid>
                     </Stack>
