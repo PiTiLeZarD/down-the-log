@@ -1654,6 +1654,13 @@ export const callsigns: CallsignData[] = [
     {
         iso3: "USA",
         dxcc: "291",
+        regexp: /^4U.*/,
+        gs: "FN30ar",
+        ctn: "NA",
+    },
+    {
+        iso3: "USA",
+        dxcc: "291",
         regexp: /^(K(?!(P[234]|H[28]|C4(AA|US)))|[WN](?!(H[28]|P[234]))|A[A-GI-L]|AH(?![28])).*/,
         gs: "DN05hd",
         ctn: "NA",
