@@ -7,6 +7,7 @@ import { QSO } from "./utils/qso";
 export type Settings = {
     myCallsign: string;
     showBeacons: boolean;
+    imperial: boolean;
 };
 
 type DTLStoreProps = {
@@ -30,7 +31,7 @@ type DTLStoreActionsMutatorProps = (
 
 const InitialStore: DTLStoreProps = {
     qsos: [],
-    settings: { myCallsign: "", showBeacons: false },
+    settings: { myCallsign: "", showBeacons: false, imperial: false },
     currentLocation: "",
 };
 

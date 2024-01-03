@@ -46,6 +46,7 @@ export type BeaconsComponent = React.FC<BeaconsProps>;
 
 export const Beacons: BeaconsComponent = (): JSX.Element => {
     const currentLocation = useStore((state) => state.currentLocation);
+    const settings = useStore((state) => state.settings);
     const [band, setBand] = React.useState<Band>("20m");
     const [beacon, setBeacon] = React.useState<string>(Object.keys(beaconsMap)[0]);
 
@@ -83,7 +84,12 @@ export const Beacons: BeaconsComponent = (): JSX.Element => {
                     <Typography>{beacon}</Typography>
                     <Typography variant="em">
                         {country?.flag} {country?.name} ({csdata?.ctn}){" "}
-                        {maidenDistance(beaconsMap[beacon as keyof typeof beaconsMap], currentLocation)}km
+                        {maidenDistance(
+                            beaconsMap[beacon as keyof typeof beaconsMap],
+                            currentLocation,
+                            settings.imperial,
+                        )}
+                        {settings.imperial ? "mi" : "km"}
                     </Typography>
                 </Stack>
             </Alert>

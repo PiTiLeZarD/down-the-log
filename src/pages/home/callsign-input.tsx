@@ -38,6 +38,7 @@ export const CallsignInput: CallsignInputComponent = ({ value, handleAdd, onChan
     const { styles } = useStyles(stylesheet);
     const callsignData = useMemo(() => (value ? getCallsignData(value) : undefined), [value]);
     const currentLocation = useStore((state) => state.currentLocation);
+    const settings = useStore((state) => state.settings);
 
     const country = callsignData ? findCountry(callsignData) : null;
 
@@ -52,7 +53,10 @@ export const CallsignInput: CallsignInputComponent = ({ value, handleAdd, onChan
                         </Typography>
                     </Grid>
                     <Grid item xs={3}>
-                        <Typography>{maidenDistance(currentLocation, callsignData.gs)}km</Typography>
+                        <Typography>
+                            {maidenDistance(currentLocation, callsignData.gs, settings.imperial)}
+                            {settings.imperial ? "mi" : "km"}
+                        </Typography>
                     </Grid>
                     <Grid item xs={5} md={3}>
                         <Typography>

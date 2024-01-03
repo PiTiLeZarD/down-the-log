@@ -3,6 +3,7 @@ import { countries } from "../../data/countries";
 import { QSO } from "../../utils/qso";
 import { Stack } from "../../utils/stack";
 import { Typography } from "../../utils/theme/components/typography";
+import { roundTo } from "../math";
 import { QsoListProps } from "./qso-list";
 import { QsoRow } from "./qso-row";
 
@@ -11,13 +12,13 @@ export type QsoListItemProps = {
     index: number;
     lineHeight?: number;
     onQsoPress: QsoListProps["onQsoPress"];
-    currentLocation: string;
+    imperial: boolean;
 };
 
 export type QsoListItemComponent = React.FC<QsoListItemProps>;
 
 export const QsoListItem: QsoListItemComponent = React.memo(
-    ({ item: qso, index, lineHeight, onQsoPress, currentLocation }): JSX.Element => {
+    ({ item: qso, index, lineHeight, onQsoPress, imperial }): JSX.Element => {
         return (
             <QsoRow
                 lineHeight={lineHeight}
@@ -28,7 +29,12 @@ export const QsoListItem: QsoListItemComponent = React.memo(
                     <Stack direction="row">
                         <Typography>{qso.country ? countries[qso.country]?.flag : ""}</Typography>
                         <Typography>{qso.callsign}</Typography>
-                        {qso.distance && <Typography>({qso.distance}km)</Typography>}
+                        {qso.distance && (
+                            <Typography>
+                                ({imperial ? roundTo(qso.distance / 1.6, 2) : qso.distance}
+                                {imperial ? "mi" : "km"})
+                            </Typography>
+                        )}
                     </Stack>
                 }
                 name={qso.name || "N/A"}
