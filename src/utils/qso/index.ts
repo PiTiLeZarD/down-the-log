@@ -64,7 +64,7 @@ export const newQso = (
         {
             callsign,
             id: newQsoID(),
-            date: DateTime.now(),
+            date: DateTime.utc(),
             prefix: parsed && `${parsed.prefix}${parsed.index}`,
             locator,
             myLocator,
