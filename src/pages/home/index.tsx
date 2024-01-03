@@ -8,6 +8,7 @@ import { newQso, useQsos } from "../../utils/qso";
 import { QsoList } from "../../utils/qso/qso-list";
 import { Alert } from "../../utils/theme/components/alert";
 import { Typography } from "../../utils/theme/components/typography";
+import { Beacons } from "./beacons";
 import { CallsignInput } from "./callsign-input";
 
 const stylesheet = createStyleSheet((theme) => ({
@@ -54,6 +55,7 @@ export const Home: HomeComponent = ({ navigation }): JSX.Element => {
                     <Typography>Your callsign isn't set properly, check the settings to set it up!</Typography>
                 </Alert>
             )}
+            {settings.showBeacons && <Beacons />}
             <QsoList
                 style={styles.table}
                 qsos={qsos}

@@ -1,8 +1,10 @@
 import React from "react";
+import { ViewStyle } from "react-native";
 import { createStyleSheet, useStyles } from "react-native-unistyles";
 import { Stack } from "../../stack";
 import { ColourVariant } from "../theme";
 import { Icon, IconName } from "./icon";
+import { Styles, mergeStyles } from "./styles";
 
 type Severity = "info" | "warning" | "success";
 
@@ -22,15 +24,16 @@ const stylesheet = createStyleSheet((theme) => ({
 }));
 
 export type AlertProps = {
+    style?: Styles<ViewStyle>;
     severity?: Severity;
 };
 
 export type AlertComponent = React.FC<React.PropsWithChildren<AlertProps>>;
 
-export const Alert: AlertComponent = ({ severity = "warning", children }): JSX.Element => {
+export const Alert: AlertComponent = ({ style, severity = "warning", children }): JSX.Element => {
     const { styles } = useStyles(stylesheet);
     return (
-        <Stack direction="row" gap="xxl" style={styles.container(severity)}>
+        <Stack direction="row" gap="xxl" style={mergeStyles<ViewStyle>(styles.container(severity), style)}>
             <Icon
                 name={
                     {

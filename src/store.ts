@@ -6,6 +6,7 @@ import { QSO } from "./utils/qso";
 
 export type Settings = {
     myCallsign: string;
+    showBeacons: boolean;
 };
 
 type DTLStoreProps = {
@@ -29,7 +30,7 @@ type DTLStoreActionsMutatorProps = (
 
 const InitialStore: DTLStoreProps = {
     qsos: [],
-    settings: { myCallsign: "" },
+    settings: { myCallsign: "", showBeacons: false },
     currentLocation: "",
 };
 
@@ -38,7 +39,7 @@ const StoreActions: DTLStoreActionsMutatorProps = (set) => ({
     updateSetting: (field, value) => set((state) => ({ settings: { ...state.settings, [field]: value } })),
     deleteLog: (qso) => set((state) => ({ qsos: [...state.qsos.filter((q) => q.id != qso.id)] })),
     resetStore: () => set(() => ({ qsos: [] })),
-    setCurrentLocation: (location) => set((state) => ({ currentLocation: location })),
+    setCurrentLocation: (location) => set(() => ({ currentLocation: location })),
 });
 
 export type UseStorePropsType = DTLStoreProps & DTLStoreActionsProps;
