@@ -14,7 +14,7 @@ export type FormFieldProps = {
     numberOfLines?: number;
     role?: "text" | "select" | "textarea" | "country";
     options?: Record<string, string>;
-};
+} & Record<string, unknown>;
 
 export type FormFieldComponent = React.FC<FormFieldProps>;
 
@@ -25,6 +25,7 @@ export const FormField: FormFieldComponent = ({
     placeholder,
     numberOfLines = 4,
     options,
+    ...otherProps
 }): JSX.Element => {
     const { control } = useFormContext();
     const { field } = useController({ name, control });
@@ -44,6 +45,7 @@ export const FormField: FormFieldComponent = ({
                     numberOfLines={numberOfLines}
                     aria-label={role === "text" ? "input" : "textarea"}
                     {...(label ? { "aria-labelledby": `label${field.name}` } : {})}
+                    {...otherProps}
                 />
             )}
 
@@ -53,6 +55,7 @@ export const FormField: FormFieldComponent = ({
                     onValueChange={field.onChange}
                     items={Object.entries(options || {}).map(([value, label]) => ({ label, value }))}
                     {...(label ? { "aria-labelledby": `label${field.name}` } : {})}
+                    {...otherProps}
                 />
             )}
 
@@ -65,6 +68,7 @@ export const FormField: FormFieldComponent = ({
                         value,
                     }))}
                     {...(label ? { "aria-labelledby": `label${field.name}` } : {})}
+                    {...otherProps}
                 />
             )}
         </Stack>
