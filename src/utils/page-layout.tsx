@@ -21,7 +21,7 @@ export const PageLayout: PageLayoutComponent = ({ title, titleMargin = 18, navig
         <Grid container>
             <Grid item xs={0} md={2} lg={3} />
             <Grid item xs={12} md={8} lg={6}>
-                <ScrollView style={{ paddingLeft: theme.margins.xl, paddingRight: theme.margins.xl }}>
+                <ScrollView style={{ paddingLeft: theme.margins.lg, paddingRight: theme.margins.lg }}>
                     <Stack gap="xxl">
                         <Stack direction="row">
                             {typeof title === "string" ? (
