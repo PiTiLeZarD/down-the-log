@@ -24,7 +24,7 @@ export const Settings: SettingsComponent = ({ navigation }): JSX.Element => {
                     value={settings.myCallsign != undefined ? settings.myCallsign : ""}
                     onChangeText={(newCallsign) => updateSetting("myCallsign", newCallsign)}
                 />
-                <Typography>Show Beacons:</Typography>
+                <Typography>Show NCDXF/IARU Beacons:</Typography>
                 <Switch
                     value={settings.showBeacons != undefined ? settings.showBeacons : false}
                     onValueChange={(v) => updateSetting("showBeacons", v)}
