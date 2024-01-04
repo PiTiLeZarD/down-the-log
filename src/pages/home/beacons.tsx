@@ -1,10 +1,13 @@
 import { DateTime } from "luxon";
 import React, { useEffect } from "react";
+import { Modal } from "react-native";
 import { Band, freq2band } from "../../data/bands";
 import { useStore } from "../../store";
 import { findCountry, getCallsignData } from "../../utils/callsign";
+import { Grid } from "../../utils/grid";
 import { maidenDistance } from "../../utils/locator";
 import { Stack } from "../../utils/stack";
+import { widthMatches } from "../../utils/theme/breakpoints";
 import { Alert } from "../../utils/theme/components/alert";
 import { Button } from "../../utils/theme/components/button";
 import { Typography } from "../../utils/theme/components/typography";
@@ -45,10 +48,12 @@ export type BeaconsProps = {};
 export type BeaconsComponent = React.FC<BeaconsProps>;
 
 export const Beacons: BeaconsComponent = (): JSX.Element => {
+    const [modalOpen, setModalOpen] = React.useState<boolean>(false);
     const currentLocation = useStore((state) => state.currentLocation);
     const settings = useStore((state) => state.settings);
     const [band, setBand] = React.useState<Band>("20m");
     const [beacon, setBeacon] = React.useState<string>(Object.keys(beaconsMap)[0]);
+    const smallScreen = widthMatches(undefined, "md");
 
     const updateBeacon = (b: Band) => {
         if (band != b) setBand(b);
@@ -69,30 +74,57 @@ export const Beacons: BeaconsComponent = (): JSX.Element => {
 
     return (
         <Stack direction="row" gap="xxl">
-            <Typography variant="em">NCDXF/IARU Beacons:</Typography>
+            <Typography variant="em">{smallScreen ? "Beacons:" : "NCDXF/IARU Beacons:"}</Typography>
             <Stack direction="row">
-                {frequencies.map((f) => (
-                    <Button
-                        variant={freq2band(f) == band ? "contained" : "outlined"}
-                        onPress={() => updateBeacon(freq2band(f) || "20m")}
-                        text={freq2band(f)}
-                    />
-                ))}
+                {smallScreen && <Button text={band} onPress={() => setModalOpen(true)} />}
+                {!smallScreen &&
+                    frequencies.map((f) => (
+                        <Button
+                            key={f}
+                            variant={freq2band(f) == band ? "contained" : "outlined"}
+                            onPress={() => updateBeacon(freq2band(f) || "20m")}
+                            text={freq2band(f)}
+                        />
+                    ))}
             </Stack>
             <Alert severity="info" style={{ flexGrow: 1 }}>
                 <Stack direction="row">
                     <Typography>{beacon}</Typography>
-                    <Typography variant="em">
-                        {country?.flag} {country?.name} ({csdata?.ctn}){" "}
-                        {maidenDistance(
-                            beaconsMap[beacon as keyof typeof beaconsMap],
-                            currentLocation,
-                            settings.imperial,
-                        )}
-                        {settings.imperial ? "mi" : "km"}
-                    </Typography>
+                    {smallScreen && <Typography variant="em">{country?.name}</Typography>}
+                    {!smallScreen && (
+                        <Typography variant="em">
+                            {country?.flag} {country?.name} ({csdata?.ctn}){" "}
+                            {maidenDistance(
+                                beaconsMap[beacon as keyof typeof beaconsMap],
+                                currentLocation,
+                                settings.imperial,
+                            )}
+                            {settings.imperial ? "mi" : "km"}
+                        </Typography>
+                    )}
                 </Stack>
             </Alert>
+            <Modal animationType="none" visible={modalOpen} onRequestClose={() => setModalOpen(false)}>
+                <Grid container>
+                    <Grid item xs={1} md={2} lg={3} xl={4} xxl={5} />
+                    <Grid item xs={10} md={8} lg={6} xl={4} xxl={2}>
+                        <Stack gap="xxl">
+                            {frequencies.map((f) => (
+                                <Button
+                                    key={f}
+                                    variant={freq2band(f) == band ? "contained" : "outlined"}
+                                    onPress={() => {
+                                        updateBeacon(freq2band(f) || "20m");
+                                        setModalOpen(false);
+                                    }}
+                                    text={freq2band(f)}
+                                />
+                            ))}
+                        </Stack>
+                    </Grid>
+                    <Grid item xs={1} md={2} lg={3} xl={4} xxl={5} />
+                </Grid>
+            </Modal>
         </Stack>
     );
 };
