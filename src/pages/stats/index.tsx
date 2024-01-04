@@ -6,9 +6,10 @@ import { Grid } from "../../utils/grid";
 import { PageLayout } from "../../utils/page-layout";
 import { QSO, useQsos } from "../../utils/qso";
 import { Stack } from "../../utils/stack";
+import { SelectInput } from "../../utils/theme/components/select-input";
 import { Typography } from "../../utils/theme/components/typography";
 
-const statsTypes = ["mode", "cq", "itu"] as const;
+const statsTypes = ["mode", "cq", "itu", "dxcc", "gridsquare", "year"] as const;
 type StatType = (typeof statsTypes)[number];
 
 const groupBy = <T extends object, K extends string>(a: T[], f: (o: T) => K): Record<K, T[]> =>
@@ -21,19 +22,17 @@ const groupBy = <T extends object, K extends string>(a: T[], f: (o: T) => K): Re
     );
 
 const groupQsos = (qsos: QSO[], statType: StatType): Record<string, Record<string, QSO[]>> => {
-    let ret: Record<string, QSO[]> = {};
-
-    switch (statType) {
-        case "mode":
-            ret = groupBy(
-                qsos.filter((q) => !!q.mode),
-                (o) => o.mode as string,
-            );
-            break;
-    }
+    const filters: Record<StatType, (o: QSO) => any> = {
+        mode: (o) => o.mode as string,
+        cq: (o) => String(o.cqzone),
+        itu: (o) => String(o.ituzone),
+        dxcc: (o) => String(o.dxcc),
+        gridsquare: (o) => o.locator?.substring(0, 3),
+        year: (o) => o.date.toObject().year,
+    };
 
     return Object.fromEntries(
-        Object.entries(ret).map(([k, qs]) => [
+        Object.entries(groupBy(qsos, filters[statType])).map(([k, qs]) => [
             k,
             groupBy<QSO, string>(
                 qs.filter((q) => !!q.frequency),
@@ -64,6 +63,11 @@ export const Stats: StatsComponent = ({ navigation }): JSX.Element => {
     return (
         <PageLayout title="Stats" navigation={navigation}>
             <Stack>
+                <SelectInput
+                    value={statType}
+                    onValueChange={(newStatType) => setStatType(newStatType)}
+                    items={statsTypes.map((t) => ({ label: t, value: t }))}
+                />
                 <Grid container>
                     <Grid item columns={columns} xs={1}>
                         <Typography variant="em">{statType}</Typography>
