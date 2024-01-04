@@ -10,6 +10,7 @@ import { QSO } from "./utils/qso";
 
 export type NavigationParamList = {
     Home: undefined;
+    Stats: undefined;
     About: undefined;
     QsoForm: { qsoId: QSO["id"] };
     Adif: undefined;
@@ -53,6 +54,7 @@ export const DrawerContent: DrawerContentComponent = (props): JSX.Element => {
         <DrawerContentScrollView ref={drawerRef} {...props}>
             <View>
                 <DrawerItem label="Home" onPress={() => props.navigation.navigate("Home")} />
+                <DrawerItem label="Stats" onPress={() => props.navigation.navigate("Stats")} />
                 <DrawerItem label="Settings" onPress={() => props.navigation.navigate("Settings")} />
                 <DrawerItem label="Import/Export" onPress={() => props.navigation.navigate("Adif")} />
                 <DrawerItem label="About" onPress={() => props.navigation.navigate("About")} />

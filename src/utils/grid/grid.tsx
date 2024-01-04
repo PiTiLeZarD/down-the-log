@@ -13,12 +13,25 @@ export type GridProps = {
     lg?: number;
     xl?: number;
     xxl?: number;
+    columns?: number;
 };
 
 export type GridComponent = React.FC<React.PropsWithChildren<GridProps>>;
 
-export const Grid: GridComponent = ({ container, item, style, xs, sm, md, lg, xl, xxl, children }): JSX.Element => {
-    const { gridStyles, screenSize } = useGeneratedStyles();
+export const Grid: GridComponent = ({
+    container,
+    item,
+    style,
+    xs,
+    sm,
+    md,
+    lg,
+    xl,
+    xxl,
+    columns = 12,
+    children,
+}): JSX.Element => {
+    const { gridStyles, screenSize } = useGeneratedStyles(columns);
     const { styles } = useStyles(gridStyles);
 
     if ((container && item) || (!container && !item)) throw Error("Pick one, container or item");
@@ -38,7 +51,7 @@ export const Grid: GridComponent = ({ container, item, style, xs, sm, md, lg, xl
                     ? xl || lg || md || sm || xs
                     : screenSize === "xxl"
                       ? xxl || xl || lg || md || sm || xs
-                      : 12) || 12;
+                      : columns) || columns;
 
     if (colSpan === -1) return <></>;
 
