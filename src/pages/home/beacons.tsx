@@ -50,6 +50,7 @@ export type BeaconsComponent = React.FC<BeaconsProps>;
 export const Beacons: BeaconsComponent = (): JSX.Element => {
     const [modalOpen, setModalOpen] = React.useState<boolean>(false);
     const currentLocation = useStore((state) => state.currentLocation);
+    const updateSetting = useStore((state) => state.updateSetting);
     const settings = useStore((state) => state.settings);
     const [band, setBand] = React.useState<Band>("20m");
     const [beacon, setBeacon] = React.useState<string>(Object.keys(beaconsMap)[0]);
@@ -104,6 +105,9 @@ export const Beacons: BeaconsComponent = (): JSX.Element => {
                     )}
                 </Stack>
             </Alert>
+            {!smallScreen && (
+                <Button startIcon="close" onPress={() => updateSetting("showBeacons", false)} style={{ flexGrow: 0 }} />
+            )}
             <Modal animationType="none" visible={modalOpen} onRequestClose={() => setModalOpen(false)}>
                 <Grid container>
                     <Grid item xs={1} md={2} lg={3} xl={4} xxl={5} />
