@@ -1,9 +1,11 @@
 import { DateTime } from "luxon";
 import uuid from "react-native-uuid";
 import { Band } from "../../data/bands";
+import { Continent } from "../../data/callsigns";
 import cqzones from "../../data/cqzones.json";
 import dxcc from "../../data/dxcc.json";
 import ituzones from "../../data/ituzones.json";
+import { Mode } from "../../data/modes";
 import { useStore } from "../../store";
 import { CsDataType, getCallsignData, parseCallsign } from "../callsign";
 import { maidenDistance, maidenhead2Latlong } from "../locator";
@@ -25,17 +27,18 @@ export type QSO = {
     prefix?: string;
     cqzone?: number;
     ituzone?: number;
-    continent?: "NA" | "SA" | "EU" | "AF" | "OC" | "AS" | "AN";
+    continent?: Continent;
     state?: string;
     rst_sent?: string;
     rst_received?: string;
     name?: string;
     frequency?: number;
     band?: Band;
-    mode?: "SSB" | "FM" | "AM" | "CW";
+    mode?: Mode;
     power?: number;
     myQth?: string;
     myLocator?: string;
+    myCallsign?: string;
     qth?: string;
     locator?: string;
     note?: string;
@@ -47,7 +50,13 @@ export type QSO = {
 
 export const newQsoID = () => uuid.v4() as string;
 
-export const newQso = (callsign: string, qsos: QSO[], myLocator?: string, qsoLocator?: string): QSO => {
+export const newQso = (
+    callsign: string,
+    qsos: QSO[],
+    myLocator?: string,
+    qsoLocator?: string,
+    myCallsign?: string,
+): QSO => {
     const parsed = parseCallsign(callsign);
     const callsignData = getCallsignData(callsign);
     const previousQsosWithCallsign = qsos.filter((q) => q.callsign === callsign);
@@ -57,10 +66,11 @@ export const newQso = (callsign: string, qsos: QSO[], myLocator?: string, qsoLoc
         {
             callsign,
             id: newQsoID(),
-            date: DateTime.now(),
+            date: DateTime.utc(),
             prefix: parsed && `${parsed.prefix}${parsed.index}`,
             locator,
             myLocator,
+            myCallsign,
             rst_received: "59",
             rst_sent: "59",
             ...(qsos.length ? { frequency: qsos[0].frequency, mode: qsos[0].mode, power: qsos[0].power } : {}),

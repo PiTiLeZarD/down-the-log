@@ -6,6 +6,9 @@ import { NavigationParamList } from "../../Navigation";
 import { useStore } from "../../store";
 import { newQso, useQsos } from "../../utils/qso";
 import { QsoList } from "../../utils/qso/qso-list";
+import { Alert } from "../../utils/theme/components/alert";
+import { Typography } from "../../utils/theme/components/typography";
+import { Beacons } from "./beacons";
 import { CallsignInput } from "./callsign-input";
 
 const stylesheet = createStyleSheet((theme) => ({
@@ -35,10 +38,11 @@ export const Home: HomeComponent = ({ navigation }): JSX.Element => {
     const qsos = useQsos();
     const { styles } = useStyles(stylesheet);
     const currentLocation = useStore((state) => state.currentLocation);
+    const settings = useStore((state) => state.settings);
     const log = useStore((state) => state.log);
 
     const handleAdd = () => {
-        const qso = newQso(callsign, qsos, currentLocation);
+        const qso = newQso(callsign, qsos, currentLocation, undefined, settings.myCallsign);
         log(qso);
         setCallsign("");
         navigation.navigate("QsoForm", { qsoId: qso.id });
@@ -46,6 +50,12 @@ export const Home: HomeComponent = ({ navigation }): JSX.Element => {
 
     return (
         <View style={styles.container}>
+            {!settings.myCallsign && (
+                <Alert severity="warning">
+                    <Typography>Your callsign isn't set properly, check the settings to set it up!</Typography>
+                </Alert>
+            )}
+            {settings.showBeacons && <Beacons />}
             <QsoList
                 style={styles.table}
                 qsos={qsos}

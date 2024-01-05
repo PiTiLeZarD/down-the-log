@@ -14,6 +14,7 @@ const stylesheet = createStyleSheet((theme) => ({
         borderRadius: theme.margins.md,
         padding: theme.margins.lg,
         flexGrow: 1,
+        maxWidth: "100%",
     },
     inputText: {
         backgroundColor: theme.colours.primary[theme.shades.light],

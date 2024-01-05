@@ -43,7 +43,7 @@ export const BandFreqInput: BandFreqInputComponent = (): JSX.Element => {
     return (
         <Stack>
             <Typography>Frequency:</Typography>
-            <Button text={`${frequency} Mhz (${band})`} onPress={() => setOpen(true)} />
+            <Button text={`${frequency ? (+frequency).toFixed(3) : ""} Mhz (${band})`} onPress={() => setOpen(true)} />
             <Modal animationType="none" visible={open} onRequestClose={() => setOpen(false)}>
                 <Grid container>
                     <Grid item xs={-1} md={1} lg={2} xl={3} xxl={4} />
@@ -53,7 +53,7 @@ export const BandFreqInput: BandFreqInputComponent = (): JSX.Element => {
                                 {Object.keys(bands).map((b) => (
                                     <Grid key={b} item xs={2}>
                                         <Button
-                                            style={{ padding: theme.margins.md, margin: theme.margins.md }}
+                                            style={{ padding: theme.margins.sm, margin: theme.margins.sm }}
                                             textStyle={{ fontSize: 18 }}
                                             text={b}
                                             variant={b == band ? "contained" : "outlined"}
@@ -65,6 +65,7 @@ export const BandFreqInput: BandFreqInputComponent = (): JSX.Element => {
                                     </Grid>
                                 ))}
                             </Grid>
+                            <Typography>Frequency: </Typography>
                             <Input
                                 numeric
                                 style={[
@@ -75,7 +76,6 @@ export const BandFreqInput: BandFreqInputComponent = (): JSX.Element => {
                                 ]}
                                 textStyle={{ fontSize: 20, lineHeight: 30 }}
                                 value={freqUserInput}
-                                prefix="Frequency:"
                                 suffix="kHz"
                                 onChangeText={(nfreq) => setFreqUserInput(nfreq)}
                             />

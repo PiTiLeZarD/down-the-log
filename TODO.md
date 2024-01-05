@@ -33,10 +33,12 @@ Got too many ideas, here is where I chuck them
     -   [ ] qsos /continent /country /year,month
     -   [ ] heatmap of qso per day (github style)
     -   [ ] qsos/band,mode
--   [ ] WWFF
-    -   [ ] db with all parks, location and polilines
-    -   [ ] qsoform to be able to set it (both ours and theirs)
+-   [ ] Events (WWFF/POTA/SOTA/etc...)
+    -   [ ] db with all parks, locations and polylines
+    -   [ ] button a-la band/SN to set events id, add in QSOForm and possibly have an option to add it straight in the callsign input
     -   [ ] adif to export/import it properly
+    -   [ ] adif has WWFF/SOTA/POTA also SIG will have to be parsed on import to put in the right spot (if VKFF still uses SIG for WWFF, have a setting during export, or maybe a remapping of fields?)
+-   [ ] manage multiple rigs/antenna and use ADIF to store/retrieve it
 -   [ ] DXCC for australia doesn't include me, let's find out why (need some map tooling)
 -   [ ] yarn release should use ghpages to create the demo, build the tauri app and release it, build ios/android apps
     -   [x] demo website on github
@@ -59,10 +61,10 @@ Got too many ideas, here is where I chuck them
 -   [ ] integrations
     -   [ ] qrz integration
     -   [ ] hamQTH
-    -   [ ] lotw (this one sounds tough, let's see)
+    -   [ ] lotw (this one sounds tough, gotta sign adif exports, let's see)
 -   [ ] cluster?
 -   [ ] Settings
-    -   [ ] should be able to select our own callsign, maybe prompt at the start of the app
+    -   [x] should be able to select our own callsign, maybe prompt at the start of the app
     -   [ ] choose favorite bands
     -   [ ] choose favorite modes
     -   [ ] fix location vs use gps

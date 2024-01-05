@@ -51,7 +51,7 @@ const applyFilters = (qsos: QSO[], filters: QsoListProps["filters"]) =>
 
 export const QsoList: QsoListComponent = ({ style, filters, qsos, onQsoPress }): JSX.Element => {
     const [sections, setSections] = React.useState<QSO[][]>(qsos2sections(applyFilters(qsos, filters)));
-    const currentLocation = useStore((state) => state.currentLocation);
+    const settings = useStore((state) => state.settings);
     const { styles } = useStyles(stylesheet);
 
     const refresh = debounce(() => {
@@ -68,7 +68,7 @@ export const QsoList: QsoListComponent = ({ style, filters, qsos, onQsoPress }):
             sections={sections}
             keyExtractor={(item) => item.id}
             renderItem={({ item, index }) => (
-                <QsoListItem {...{ onQsoPress, item, index, lineHeight: LINEHEIGHT, currentLocation }} />
+                <QsoListItem {...{ onQsoPress, item, index, lineHeight: LINEHEIGHT, imperial: settings.imperial }} />
             )}
             renderHeader={() => (
                 <QsoRow

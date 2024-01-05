@@ -1,11 +1,11 @@
-import { QSO } from "../utils/qso";
-
+export const continents = ["NA", "SA", "EU", "AF", "OC", "AS", "AN"] as const;
+export type Continent = (typeof continents)[number];
 export type CallsignData = {
     iso3: string;
     dxcc: string;
     regexp: RegExp;
     gs: string;
-    ctn: QSO["continent"];
+    ctn: Continent;
     states?: Record<string, RegExp>;
 };
 
@@ -1650,6 +1650,13 @@ export const callsigns: CallsignData[] = [
         regexp: /^(2A|[GM](?![PU]1)|Z[NOQ]).*/,
         gs: "IO84mh",
         ctn: "EU",
+    },
+    {
+        iso3: "USA",
+        dxcc: "291",
+        regexp: /^4U.*/,
+        gs: "FN30ar",
+        ctn: "NA",
     },
     {
         iso3: "USA",

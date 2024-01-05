@@ -55,6 +55,7 @@ export const qso2adif = (qso: QSO): string => {
             field("name", qso.name),
             field("distance", qso.distance),
 
+            field("station_callsign", qso.myCallsign),
             field("my_city", qso.myQth),
             field("my_gridsquare", qso.myLocator),
 
@@ -79,7 +80,7 @@ export const qso2adif = (qso: QSO): string => {
 
 export const qsos2Adif = (qsos: QSO[]): string => [...header(), ...qsos.map(qso2adif)].join("\n");
 
-export const adifLine2Qso = (adif: string, currentLocation?: string): QSO | null => {
+export const adifLine2Qso = (adif: string, currentLocation?: string, myCallsign?: string): QSO | null => {
     const qsoData: Record<string, string> = {};
     let tagName: string, value: string;
     let remaining = adif.trim();
@@ -118,6 +119,7 @@ export const adifLine2Qso = (adif: string, currentLocation?: string): QSO | null
         locator: qsoData.gridsquare,
         qth: qsoData.qth,
         myQth: qsoData.my_city,
+        myCallsign: qsoData.station_callsign || myCallsign,
         myLocator: qsoData.my_gridsquare || currentLocation,
         note: qsoData.comment,
         rst_sent: qsoData.rst_sent,

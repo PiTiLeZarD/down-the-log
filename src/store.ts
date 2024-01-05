@@ -4,13 +4,21 @@ import { create } from "zustand";
 import { combine, createJSONStorage, devtools, persist } from "zustand/middleware";
 import { QSO } from "./utils/qso";
 
+export type Settings = {
+    myCallsign: string;
+    showBeacons: boolean;
+    imperial: boolean;
+};
+
 type DTLStoreProps = {
     qsos: QSO[];
+    settings: Settings;
     currentLocation: string;
 };
 
 type DTLStoreActionsProps = {
     log: (qso: QSO) => void;
+    updateSetting: <T extends keyof Settings>(field: T, value: Settings[T]) => void;
     deleteLog: (qso: QSO) => void;
     resetStore: () => void;
     setCurrentLocation: (location: string) => void;
@@ -23,14 +31,16 @@ type DTLStoreActionsMutatorProps = (
 
 const InitialStore: DTLStoreProps = {
     qsos: [],
+    settings: { myCallsign: "", showBeacons: false, imperial: false },
     currentLocation: "",
 };
 
 const StoreActions: DTLStoreActionsMutatorProps = (set) => ({
     log: (qso) => set((state) => ({ qsos: [...state.qsos.filter((q) => q.id != qso.id), qso] })),
+    updateSetting: (field, value) => set((state) => ({ settings: { ...state.settings, [field]: value } })),
     deleteLog: (qso) => set((state) => ({ qsos: [...state.qsos.filter((q) => q.id != qso.id)] })),
     resetStore: () => set(() => ({ qsos: [] })),
-    setCurrentLocation: (location) => set((state) => ({ currentLocation: location })),
+    setCurrentLocation: (location) => set(() => ({ currentLocation: location })),
 });
 
 export type UseStorePropsType = DTLStoreProps & DTLStoreActionsProps;
