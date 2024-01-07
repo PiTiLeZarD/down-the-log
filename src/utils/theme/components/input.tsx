@@ -1,7 +1,8 @@
-import React from "react";
-import { TextInput, TextInputProps, TextStyle } from "react-native";
+import React, { useEffect } from "react";
+import { Pressable, TextInput, TextInputProps, TextStyle, View } from "react-native";
 import { createStyleSheet, useStyles } from "react-native-unistyles";
 import { Stack } from "../../stack";
+import { Icon } from "./icon";
 import { Styles, mergeStyles } from "./styles";
 import { Typography } from "./typography";
 
@@ -34,6 +35,7 @@ const stylesheet = createStyleSheet((theme) => ({
 
 export type InputProps = TextInputProps & {
     numeric?: boolean;
+    password?: boolean;
     textStyle?: TextStyle;
     prefix?: React.ReactNode;
     suffix?: React.ReactNode;
@@ -47,8 +49,19 @@ export const Input: InputComponent = ({
     prefix,
     suffix,
     numeric = false,
+    password = false,
     ...otherProps
 }): JSX.Element => {
+    const [secure, setSecure] = React.useState<boolean>(password);
+    useEffect(() => setSecure(password), [password]);
+
+    if (password)
+        suffix = (
+            <Pressable onPress={() => setSecure(!secure)}>
+                <Icon name={secure ? "eye-off" : "eye"} />
+            </Pressable>
+        );
+
     const { styles } = useStyles(stylesheet);
 
     return (
@@ -62,6 +75,7 @@ export const Input: InputComponent = ({
                     prefix
                 ))}
             <TextInput
+                secureTextEntry={secure}
                 style={mergeStyles<TextStyle>(
                     styles.input,
                     style as Styles<TextStyle>,
@@ -79,7 +93,7 @@ export const Input: InputComponent = ({
                         {suffix}
                     </Typography>
                 ) : (
-                    suffix
+                    <View style={[styles.inputText, styles.leftFlatBorders]}>{suffix}</View>
                 ))}
         </Stack>
     );
