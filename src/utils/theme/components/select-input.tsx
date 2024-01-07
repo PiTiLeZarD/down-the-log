@@ -4,6 +4,7 @@ import { createStyleSheet, useStyles } from "react-native-unistyles";
 
 const stylesheet = createStyleSheet((theme) => ({
     web: {
+        ...theme.components.typography,
         borderWidth: theme.margins.xs,
         borderStyle: "solid",
         borderColor: theme.colours.primary[theme.shades.light],
@@ -23,6 +24,7 @@ export const SelectInput: SelectInputComponent = ({ ...otherProps }): JSX.Elemen
         <RNPickerSelect
             style={{
                 inputWeb: styles.web,
+                inputIOS: styles.web,
             }}
             aria-label="select"
             {...otherProps}

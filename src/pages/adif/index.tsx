@@ -1,5 +1,6 @@
 import { DrawerScreenProps } from "@react-navigation/drawer";
 import React, { useEffect } from "react";
+import { Platform } from "react-native";
 import { createStyleSheet, useStyles } from "react-native-unistyles";
 import { NavigationParamList } from "../../Navigation";
 import { useStore } from "../../store";
@@ -88,12 +89,13 @@ export const Adif: AdifComponent = ({ navigation }): JSX.Element => {
                 variant="outlined"
                 onPress={() => downloadQsos("adif_export.adif", qsos)}
             />
-
-            <Dropzone onAcceptedFiles={handleImport} style={styles.dropzone}>
-                <Typography style={styles.dropzoneText} variant="h2">
-                    Upload here
-                </Typography>
-            </Dropzone>
+            {!["ios", "android"].includes(Platform.OS) && (
+                <Dropzone onAcceptedFiles={handleImport} style={styles.dropzone}>
+                    <Typography style={styles.dropzoneText} variant="h2">
+                        Upload here
+                    </Typography>
+                </Dropzone>
+            )}
 
             <Button colour="secondary" text="Erase data" onPress={handleErase} />
         </PageLayout>

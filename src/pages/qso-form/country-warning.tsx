@@ -3,6 +3,7 @@ import { useFormContext } from "react-hook-form";
 import { getCallsignData } from "../../utils/callsign";
 import { QSO } from "../../utils/qso";
 import { Alert } from "../../utils/theme/components/alert";
+import { Typography } from "../../utils/theme/components/typography";
 
 export type CountryWarningProps = {};
 
@@ -15,5 +16,9 @@ export const CountryWarning: CountryWarningComponent = (): JSX.Element => {
 
     const csdata = getCallsignData(callsign);
     if (!csdata || csdata.iso3 == country) return <></>;
-    return <Alert severity="warning">The country selected doesn't match the callsign</Alert>;
+    return (
+        <Alert severity="warning">
+            <Typography>The country selected doesn't match the callsign</Typography>
+        </Alert>
+    );
 };

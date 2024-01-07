@@ -43,7 +43,10 @@ export const BandFreqInput: BandFreqInputComponent = (): JSX.Element => {
     return (
         <Stack>
             <Typography>Frequency:</Typography>
-            <Button text={`${frequency ? (+frequency).toFixed(3) : ""} Mhz (${band})`} onPress={() => setOpen(true)} />
+            <Button
+                text={`${frequency ? (+frequency).toFixed(3) : "N/A"} Mhz (${band || "N/A"})`}
+                onPress={() => setOpen(true)}
+            />
             <Modal animationType="none" visible={open} onRequestClose={() => setOpen(false)}>
                 <Grid container>
                     <Grid item xs={-1} md={1} lg={2} xl={3} xxl={4} />

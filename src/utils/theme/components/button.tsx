@@ -95,7 +95,7 @@ export const Button: ButtonComponent = ({
                 )}
                 {text !== undefined ? (
                     <ButtonText style={textStyle} variant={variant} colour={colour}>
-                        {text}
+                        {String(text)}
                     </ButtonText>
                 ) : (
                     children
