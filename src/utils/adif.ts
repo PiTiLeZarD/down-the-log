@@ -1,5 +1,6 @@
 import { DateTime } from "luxon";
 import { bands, freq2band } from "../data/bands";
+import { normalise } from "./locator";
 import { QSO, newQsoID, qsoLocationFill } from "./qso";
 
 const header = (): string[] => [
@@ -116,11 +117,11 @@ export const adifLine2Qso = (adif: string, currentLocation?: string, myCallsign?
         power: int(qsoData.tx_pwr),
         name: qsoData.name,
         state: qsoData.state,
-        locator: qsoData.gridsquare,
+        locator: normalise(qsoData.gridsquare),
         qth: qsoData.qth,
         myQth: qsoData.my_city,
         myCallsign: qsoData.station_callsign || myCallsign,
-        myLocator: qsoData.my_gridsquare || currentLocation,
+        myLocator: normalise(qsoData.my_gridsquare || currentLocation),
         note: qsoData.comment,
         rst_sent: qsoData.rst_sent,
         rst_received: qsoData.rst_rcvd,
