@@ -70,7 +70,7 @@ export const CallsignInput: CallsignInputComponent = ({ value, handleAdd, onChan
                     if (data) setHamqthCSData(data);
                 });
             }
-        }, 250),
+        }, 500),
         [value],
     );
 
