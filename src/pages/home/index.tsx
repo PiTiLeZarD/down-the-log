@@ -4,6 +4,7 @@ import { View } from "react-native";
 import { createStyleSheet, useStyles } from "react-native-unistyles";
 import { NavigationParamList } from "../../Navigation";
 import { useStore } from "../../store";
+import { HamQTHCallsignData } from "../../utils/hamqth";
 import { newQso, useQsos } from "../../utils/qso";
 import { QsoList } from "../../utils/qso/qso-list";
 import { Alert } from "../../utils/theme/components/alert";
@@ -41,8 +42,13 @@ export const Home: HomeComponent = ({ navigation }): JSX.Element => {
     const settings = useStore((state) => state.settings);
     const log = useStore((state) => state.log);
 
-    const handleAdd = () => {
+    const handleAdd = (hamqthCSData?: HamQTHCallsignData) => {
         const qso = newQso(callsign, qsos, currentLocation, undefined, settings.myCallsign);
+        if (hamqthCSData) {
+            qso.name = hamqthCSData.name;
+            qso.qth = hamqthCSData.qth;
+            qso.locator = hamqthCSData.grid;
+        }
         log(qso);
         setCallsign("");
         navigation.navigate("QsoForm", { qsoId: qso.id });

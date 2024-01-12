@@ -36,7 +36,7 @@ const stylesheet = createStyleSheet((theme) => ({
 }));
 
 export type CallsignInputProps = {
-    handleAdd: () => void;
+    handleAdd: (hamqthCSData?: HamQTHCallsignData) => void;
     value: string;
     onChange: (callsign: string) => void;
 };
@@ -45,7 +45,7 @@ export type CallsignInputComponent = React.FC<CallsignInputProps>;
 
 export const CallsignInput: CallsignInputComponent = ({ value, handleAdd, onChange }): JSX.Element => {
     const { styles } = useStyles(stylesheet);
-    const [hamqthCSData, setHamqthCSData] = React.useState<HamQTHCallsignData | null>(null);
+    const [hamqthCSData, setHamqthCSData] = React.useState<HamQTHCallsignData | undefined>(undefined);
     const callsignData = useMemo(() => (value ? getCallsignData(value) : undefined), [value]);
     const currentLocation = useStore((state) => state.currentLocation);
     const settings = useStore((state) => state.settings);
@@ -54,6 +54,7 @@ export const CallsignInput: CallsignInputComponent = ({ value, handleAdd, onChan
     useEffect(() => {
         if (settings.hamqth?.user && settings.hamqth.password) {
             if (!isSessionValid(settings.hamqth)) {
+                console.info("Fetching new hamqth session");
                 fetchSessionId(settings.hamqth.user, settings.hamqth.password).then((sessionId) => {
                     if (sessionId) {
                         updateSetting("hamqth", newSessionId(settings.hamqth, sessionId));
@@ -66,13 +67,14 @@ export const CallsignInput: CallsignInputComponent = ({ value, handleAdd, onChan
     useEffect(
         debounce(() => {
             if (value && isSessionValid(settings.hamqth)) {
-                fetchCallsignData(settings.hamqth?.sessionId, value).then((data) => {
-                    if (data) setHamqthCSData(data);
-                });
+                fetchCallsignData(settings.hamqth?.sessionId, value).then((data) => setHamqthCSData(data));
+            } else {
+                setHamqthCSData(undefined);
             }
         }, 500),
         [value],
     );
+    console.log({ callsignData, hamqthCSData });
 
     const country = callsignData ? findCountry(callsignData) : null;
 
@@ -90,7 +92,7 @@ export const CallsignInput: CallsignInputComponent = ({ value, handleAdd, onChan
                         <Typography>
                             {maidenDistance(
                                 currentLocation,
-                                hamqthCSData ? hamqthCSData.grid : callsignData.gs,
+                                hamqthCSData && hamqthCSData.grid ? hamqthCSData.grid : callsignData.gs,
                                 settings.imperial,
                             )}
                             {settings.imperial ? "mi" : "km"}
@@ -121,7 +123,16 @@ export const CallsignInput: CallsignInputComponent = ({ value, handleAdd, onChan
                     </Grid>
                     <Grid item xs={3}>
                         <Typography>
-                            Local time: {DateTime.utc().setZone(`UTC${hamqthCSData.utc_offset}`).toFormat("HH:mm")}
+                            Local time:{" "}
+                            {DateTime.utc()
+                                .setZone(
+                                    `UTC${
+                                        hamqthCSData.utc_offset > 0
+                                            ? `+${hamqthCSData.utc_offset}`
+                                            : hamqthCSData.utc_offset
+                                    }`,
+                                )
+                                .toFormat("HH:mm")}
                         </Typography>
                     </Grid>
                 </Grid>
@@ -132,14 +143,14 @@ export const CallsignInput: CallsignInputComponent = ({ value, handleAdd, onChan
                         style={styles.input}
                         onChangeText={(text: string) => onChange(text.toUpperCase())}
                         onKeyPress={(e) => {
-                            if ((e as any).keyCode === 13) handleAdd();
+                            if ((e as any).keyCode === 13) handleAdd(hamqthCSData);
                         }}
                         value={value}
                         placeholder="Callsign"
                     />
                 </View>
                 <View>
-                    <Button onPress={() => handleAdd()} startIcon="add" />
+                    <Button onPress={() => handleAdd(hamqthCSData)} startIcon="add" />
                 </View>
             </Stack>
         </Stack>

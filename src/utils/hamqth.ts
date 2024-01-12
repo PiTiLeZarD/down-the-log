@@ -1,5 +1,6 @@
 import axios from "axios";
 import { DateTime } from "luxon";
+import { normalise } from "./locator";
 
 export type HamQTHSettingsType = {
     user: string;
@@ -39,7 +40,11 @@ const pickXML = (doc: Document, tag: string): string | undefined => {
 };
 
 export const isSessionValid = (hamqth: HamQTHSettingsType | undefined) =>
-    hamqth && hamqth.sessionId && (hamqth.sessionStart?.diff(DateTime.now(), ["hours"]).toObject().hours || 2) < 1;
+    hamqth &&
+    hamqth.sessionId &&
+    hamqth.sessionStart &&
+    Math.abs(DateTime.now().diff(hamqth.sessionStart, ["hours"]).toObject().hours || 2) < 1;
+
 export const newSessionId = (hamqth: HamQTHSettingsType | undefined, newSession: string) =>
     ({ ...(hamqth || {}), sessionId: newSession, sessionStart: DateTime.now() }) as HamQTHSettingsType;
 
@@ -55,7 +60,7 @@ export const fetchCallsignData = async (sessionId: string | undefined, callsign:
             country: pickXML(doc, "country"),
             itu: pickXML(doc, "itu"),
             cq: pickXML(doc, "cq"),
-            grid: pickXML(doc, "grid"),
+            grid: normalise(pickXML(doc, "grid")),
             email: pickXML(doc, "email"),
             age: pickXML(doc, "birth_year")
                 ? DateTime.now().toObject().year - +(pickXML(doc, "birth_year") as string)
