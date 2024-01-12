@@ -34,6 +34,27 @@ export const Settings: SettingsComponent = ({ navigation }): JSX.Element => {
                     value={settings.imperial != undefined ? settings.imperial : false}
                     onValueChange={(v) => updateSetting("imperial", v)}
                 />
+                <Typography>HamQTH:</Typography>
+                <Typography variant="subtitle">
+                    All data is stored locally in your browser and is never sent anywhere (except for hamqth of course)
+                </Typography>
+                <Stack direction="row">
+                    <Typography>User:</Typography>
+                    <Input
+                        value={settings.hamqth != undefined ? settings.hamqth.user : ""}
+                        onChangeText={(v) =>
+                            updateSetting("hamqth", { ...(settings.hamqth || { user: "", password: "" }), user: v })
+                        }
+                    />
+                    <Typography>Password:</Typography>
+                    <Input
+                        password
+                        value={settings.hamqth != undefined ? settings.hamqth.password : ""}
+                        onChangeText={(v) =>
+                            updateSetting("hamqth", { ...(settings.hamqth || { user: "", password: "" }), password: v })
+                        }
+                    />
+                </Stack>
             </Stack>
         </PageLayout>
     );

@@ -2,12 +2,14 @@ import asyncstorage from "@react-native-async-storage/async-storage";
 import { DateTime } from "luxon";
 import { create } from "zustand";
 import { combine, createJSONStorage, devtools, persist } from "zustand/middleware";
+import { HamQTHSettingsType } from "./utils/hamqth";
 import { QSO } from "./utils/qso";
 
 export type Settings = {
     myCallsign: string;
     showBeacons: boolean;
     imperial: boolean;
+    hamqth?: HamQTHSettingsType;
 };
 
 type DTLStoreProps = {
@@ -60,6 +62,13 @@ export const useStore = create<
                     q.date = DateTime.fromISO(q.date as unknown as string, { setZone: true });
                     return q;
                 });
+
+                if (storage.state.settings.hamqth?.sessionStart) {
+                    storage.state.settings.hamqth!.sessionStart = DateTime.fromISO(
+                        storage.state.settings.hamqth?.sessionStart as unknown as string,
+                        { setZone: true },
+                    );
+                }
 
                 return storage;
             },

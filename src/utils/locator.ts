@@ -64,3 +64,5 @@ export const distance = (l1: LatLng, l2: LatLng, imperial?: boolean): number => 
 
 export const maidenDistance = (m1: string, m2: string, imperial?: boolean): number =>
     distance(maidenhead2Latlong(m1), maidenhead2Latlong(m2), imperial);
+
+export const normalise = (grid: string) => latlong2Maidenhead(maidenhead2Latlong(grid));

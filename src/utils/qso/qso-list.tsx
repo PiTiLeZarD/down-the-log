@@ -54,11 +54,12 @@ export const QsoList: QsoListComponent = ({ style, filters, qsos, onQsoPress }):
     const settings = useStore((state) => state.settings);
     const { styles } = useStyles(stylesheet);
 
-    const refresh = debounce(() => {
-        setSections(qsos2sections(applyFilters(qsos, filters)));
-    }, 250);
-
-    useEffect(refresh, [qsos, filters]);
+    useEffect(
+        debounce(() => {
+            setSections(qsos2sections(applyFilters(qsos, filters)));
+        }, 250),
+        [qsos, filters],
+    );
 
     return (
         <BigList
