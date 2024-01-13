@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { useFormContext } from "react-hook-form";
 import { Modal } from "react-native";
 import { Grid } from "../../utils/grid";
@@ -15,14 +15,19 @@ export type SignalComponent = React.FC<SignalProps>;
 
 export const Signal: SignalComponent = ({ field }): JSX.Element => {
     const { watch, setValue } = useFormContext<QSO>();
-    const signal = String(watch(field));
-    const [readability, strength] = signal ? signal.split("") : [5, 9];
+    const signal = watch(field);
+
+    useEffect(() => {
+        if (signal == undefined) setValue(field, "59");
+    }, []);
+
+    const [readability, strength] = signal ? String(signal).split("") : [5, 9];
     const [open, setOpen] = React.useState<boolean>(false);
     return (
         <>
             <Button
                 startIcon={field.includes("received") ? "arrow-down" : "arrow-up"}
-                text={`${field.includes("received") ? "Rx" : "Tx"}: ${signal}`}
+                text={`${field.includes("received") ? "Rx" : "Tx"}: ${signal || "59"}`}
                 variant="outlined"
                 onPress={() => setOpen(true)}
             />
@@ -38,7 +43,7 @@ export const Signal: SignalComponent = ({ field }): JSX.Element => {
                                         key={i}
                                         text={i + 1}
                                         variant={readability == i + 1 ? "contained" : "outlined"}
-                                        onPress={() => setValue(field, `${i + 1}${signal.charAt(1)}`)}
+                                        onPress={() => setValue(field, `${i + 1}${strength}`)}
                                     />
                                 ))}
                             </Stack>
@@ -53,7 +58,7 @@ export const Signal: SignalComponent = ({ field }): JSX.Element => {
                                         variant={strength == i + 1 ? "contained" : "outlined"}
                                         colour="secondary"
                                         onPress={() => {
-                                            setValue(field, `${signal.charAt(0)}${i + 1}`);
+                                            setValue(field, `${readability}${i + 1}`);
                                             setOpen(false);
                                         }}
                                     />
