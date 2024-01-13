@@ -51,14 +51,14 @@ export const Signal: SignalComponent = ({ field }): JSX.Element => {
                         <Grid item xs={5} md={4} lg={3} xl={2} xxl={1}>
                             <Stack>
                                 <Typography style={{ textAlign: "center" }}>Strength</Typography>
-                                {new Array(9).fill(null).map((_, i) => (
+                                {new Array(10).fill(null).map((_, i) => (
                                     <Button
                                         key={i}
-                                        text={i + 1}
-                                        variant={strength == i + 1 ? "contained" : "outlined"}
+                                        text={i}
+                                        variant={strength == i ? "contained" : "outlined"}
                                         colour="secondary"
                                         onPress={() => {
-                                            setValue(field, `${readability}${i + 1}`);
+                                            setValue(field, `${readability}${i}`);
                                             setOpen(false);
                                         }}
                                     />
