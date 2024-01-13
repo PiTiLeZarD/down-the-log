@@ -24,6 +24,15 @@ const stylesheet = createStyleSheet((theme) => ({
         borderBottomWidth: theme.margins.sm,
         borderBottomColor: theme.colours.grey[theme.shades.darker],
     },
+    callsignInput: {
+        textAlign: "center",
+        color: theme.colours.primary[theme.shades.darker],
+        fontWeight: "700",
+        fontSize: 20,
+        borderBottomWidth: 3,
+        borderBottomColor: theme.colours.primary[theme.shades.dark],
+        borderStyle: "dashed",
+    },
 }));
 
 export type FormFieldsProps = {
@@ -42,7 +51,11 @@ export const FormFields: FormFieldsComponent = ({ navigation, qso }): JSX.Elemen
     };
 
     return (
-        <PageLayout title={<FormField name="callsign" />} navigation={navigation} titleMargin={10}>
+        <PageLayout
+            title={<FormField name="callsign" style={styles.callsignInput} />}
+            navigation={navigation}
+            titleMargin={10}
+        >
             <Stack style={styles.datetime}>
                 {qso && (
                     <Stack direction="row">
