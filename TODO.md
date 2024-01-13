@@ -60,7 +60,7 @@ Got too many ideas, here is where I chuck them
 -   [ ] hamclock modules (sunspot or sun data, propagaion, greyline, short/long path etc...)
 -   [ ] integrations
     -   [ ] qrz integration
-    -   [ ] hamQTH
+    -   [x] hamQTH
     -   [ ] lotw (this one sounds tough, gotta sign adif exports, let's see)
 -   [ ] cluster?
 -   [ ] Settings
