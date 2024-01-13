@@ -1,6 +1,6 @@
 import axios from "axios";
 import { DateTime } from "luxon";
-import { normalise } from "./locator";
+import { latlong2Maidenhead, normalise } from "./locator";
 
 export type HamQTHSettingsType = {
     user: string;
@@ -60,7 +60,14 @@ export const fetchCallsignData = async (sessionId: string | undefined, callsign:
             country: pickXML(doc, "country"),
             itu: pickXML(doc, "itu"),
             cq: pickXML(doc, "cq"),
-            grid: normalise(pickXML(doc, "grid")),
+            grid: pickXML(doc, "grid")
+                ? normalise(pickXML(doc, "grid"))
+                : pickXML(doc, "latitude") && pickXML(doc, "longitude")
+                  ? latlong2Maidenhead({
+                        latitude: +(pickXML(doc, "latitude") as string),
+                        longitude: +(pickXML(doc, "longitude") as string),
+                    })
+                  : undefined,
             email: pickXML(doc, "email"),
             age: pickXML(doc, "birth_year")
                 ? DateTime.now().toObject().year - +(pickXML(doc, "birth_year") as string)
