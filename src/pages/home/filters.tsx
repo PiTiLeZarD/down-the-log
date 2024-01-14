@@ -67,7 +67,15 @@ export const Filters: FiltersComponent = ({ filters, setFilters }): JSX.Element 
                     <Grid item xs={1} md={2} lg={3} xl={4} xxl={5} />
                     <Grid item xs={10} md={8} lg={6} xl={4} xxl={2}>
                         <Stack>
-                            {filter && <Button text={filter} onPress={() => setFilter(undefined)} />}
+                            {filter && (
+                                <Button
+                                    text={filter}
+                                    onPress={() => {
+                                        setFilter(undefined);
+                                        setValues([]);
+                                    }}
+                                />
+                            )}
                             {!filter &&
                                 Object.keys(filterMap).map((name) => (
                                     <Button key={name} text={name} variant="outlined" onPress={() => setFilter(name)} />
@@ -98,7 +106,7 @@ export const Filters: FiltersComponent = ({ filters, setFilters }): JSX.Element 
                                     colour="success"
                                     text="OK"
                                     onPress={() => {
-                                        setFilters([...filters, { name: filter, values }]);
+                                        if (values.length) setFilters([...filters, { name: filter, values }]);
                                         setModal(false);
                                         setFilter(undefined);
                                         setValues([]);
