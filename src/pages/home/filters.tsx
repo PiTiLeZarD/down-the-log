@@ -1,7 +1,5 @@
 import React from "react";
-import { Modal, View } from "react-native";
-import { FlatList } from "react-native-gesture-handler";
-import { createStyleSheet, useStyles } from "react-native-unistyles";
+import { Modal, ScrollView, View } from "react-native";
 import { countries } from "../../data/countries";
 import { Grid } from "../../utils/grid";
 import { QSO, useQsos } from "../../utils/qso";
@@ -10,16 +8,6 @@ import { Button } from "../../utils/theme/components/button";
 import { Typography } from "../../utils/theme/components/typography";
 
 const unique: <T>(a: Array<T>) => Array<T> = (a) => a.filter((v, i, aa) => aa.indexOf(v) === i);
-
-const stylesheet = createStyleSheet((theme) => ({
-    hr: {
-        height: 2,
-        flexGrow: 1,
-        backgroundColor: theme.colours.primary[theme.shades.darker],
-        marginTop: theme.margins.xl,
-        marginBottom: theme.margins.xl,
-    },
-}));
 
 export type FilterFunction = (qso: QSO) => string;
 export const filterMap: Record<string, FilterFunction> = {
@@ -48,11 +36,24 @@ export type FiltersProps = {
 export type FiltersComponent = React.FC<FiltersProps>;
 
 export const Filters: FiltersComponent = ({ filters, setFilters }): JSX.Element => {
-    const { styles } = useStyles(stylesheet);
     const qsos = useQsos();
     const [modal, setModal] = React.useState<boolean>(false);
     const [filter, setFilter] = React.useState<FilterName | undefined>(undefined);
     const [values, setValues] = React.useState<Array<unknown>>([]);
+
+    const handleSelectFilter = (name: string) => () => {
+        setFilter(filter === name ? undefined : name);
+        setValues([]);
+    };
+    const handleSelectValue = (value: string) => () => {
+        setValues(values.includes(value) ? values.filter((vi) => vi !== value) : [...values, value]);
+    };
+    const handleOk = () => {
+        if (values.length) setFilters([...filters, { name: filter as string, values }]);
+        setModal(false);
+        setFilter(undefined);
+        setValues([]);
+    };
     return (
         <Stack direction="row">
             <Stack direction="row" style={{ flexGrow: 1 }}>
@@ -62,6 +63,7 @@ export const Filters: FiltersComponent = ({ filters, setFilters }): JSX.Element 
                         <Button
                             variant="chip"
                             colour="grey"
+                            endIcon="close"
                             text={`${name}: ${values.map((v) => String(v)).join(", ")}`}
                             onPress={() => setFilters(filters.filter((f) => f.name !== name))}
                         />
@@ -77,52 +79,33 @@ export const Filters: FiltersComponent = ({ filters, setFilters }): JSX.Element 
                     <Grid item xs={1} md={2} lg={3} xl={4} xxl={5} />
                     <Grid item xs={10} md={8} lg={6} xl={4} xxl={2}>
                         <Stack>
-                            {filter && (
-                                <Button
-                                    text={filter}
-                                    onPress={() => {
-                                        setFilter(undefined);
-                                        setValues([]);
-                                    }}
-                                />
-                            )}
+                            {filter && <Button text={filter} onPress={handleSelectFilter(filter)} />}
                             {!filter &&
                                 Object.keys(filterMap).map((name) => (
-                                    <Button key={name} text={name} variant="outlined" onPress={() => setFilter(name)} />
+                                    <Button
+                                        key={name}
+                                        text={name}
+                                        variant="outlined"
+                                        onPress={handleSelectFilter(name)}
+                                    />
                                 ))}
                         </Stack>
-                        <View style={styles.hr} />
                         {!filter && <Typography>Select a filter</Typography>}
                         {filter && (
-                            <Stack style={{ maxHeight: "100%" }}>
-                                <FlatList
-                                    data={unique(qsos.map((q) => filterMap[filter](q)))}
-                                    renderItem={({ item }) => (
+                            <ScrollView>
+                                <Stack>
+                                    {unique(qsos.map((q) => filterMap[filter](q))).map((v) => (
                                         <Button
+                                            key={v}
                                             style={{ marginTop: 2, marginBottom: 2 }}
-                                            text={String(item)}
-                                            variant={values.includes(item) ? "contained" : "outlined"}
-                                            onPress={() =>
-                                                setValues(
-                                                    values.includes(item)
-                                                        ? values.filter((vi) => vi !== item)
-                                                        : [...values, item],
-                                                )
-                                            }
+                                            text={String(v)}
+                                            variant={values.includes(v) ? "contained" : "outlined"}
+                                            onPress={handleSelectValue(v)}
                                         />
-                                    )}
-                                />
-                                <Button
-                                    colour="success"
-                                    text="OK"
-                                    onPress={() => {
-                                        if (values.length) setFilters([...filters, { name: filter, values }]);
-                                        setModal(false);
-                                        setFilter(undefined);
-                                        setValues([]);
-                                    }}
-                                />
-                            </Stack>
+                                    ))}
+                                    <Button colour="success" text="OK" onPress={handleOk} />
+                                </Stack>
+                            </ScrollView>
                         )}
                     </Grid>
                     <Grid item xs={1} md={2} lg={3} xl={4} xxl={5} />
