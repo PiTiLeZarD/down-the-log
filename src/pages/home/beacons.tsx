@@ -33,14 +33,23 @@ const beaconsMap = {
     YV5B: "FK60nl",
 };
 
+type Beacon = keyof typeof beaconsMap;
+
 const frequencies = [14.1, 18.11, 21.15, 24.93, 28.2];
 
-const beaconOn = (band: Band) => {
+const beaconOn = (band: Band): Beacon => {
     const utc = DateTime.utc().toObject();
     const b20 = ((utc.hour * 60 + utc.minute) % 3) * 6 + Math.floor(utc.second / 10);
     const beacons = Object.keys(beaconsMap);
     const beaconIndex = (b20 + beacons.length - frequencies.findIndex((f) => freq2band(f) == band)) % beacons.length;
-    return beacons[beaconIndex];
+    return beacons[beaconIndex] as Beacon;
+};
+
+const rotateBeacons = (a: Array<Beacon>, b: Beacon): Array<Beacon> => {
+    for (let i = 0; i < a.findIndex((bi) => bi === b); i++) {
+        a.unshift(a.pop() as Beacon);
+    }
+    return a;
 };
 
 export type BeaconsProps = {};
@@ -53,7 +62,7 @@ export const Beacons: BeaconsComponent = (): JSX.Element => {
     const updateSetting = useStore((state) => state.updateSetting);
     const settings = useStore((state) => state.settings);
     const [band, setBand] = React.useState<Band>("20m");
-    const [beacon, setBeacon] = React.useState<string>(Object.keys(beaconsMap)[0]);
+    const [beacon, setBeacon] = React.useState<Beacon>(Object.keys(beaconsMap)[0] as Beacon);
     const smallScreen = widthMatches(undefined, "md");
 
     const updateBeacon = (b: Band) => {
@@ -90,17 +99,26 @@ export const Beacons: BeaconsComponent = (): JSX.Element => {
             </Stack>
             <Alert severity="info" style={{ flexGrow: 1 }}>
                 <Stack direction="row">
+                    {!smallScreen && (
+                        <Typography variant="subtitle">
+                            {(frequencies.find((f) => freq2band(f) === band) as number).toFixed(3)}Mhz
+                        </Typography>
+                    )}
                     <Typography>{beacon}</Typography>
                     {smallScreen && <Typography variant="em">{country?.name}</Typography>}
                     {!smallScreen && (
                         <Typography variant="em">
                             {country?.flag} {country?.name} ({csdata?.ctn}){" "}
-                            {maidenDistance(
-                                beaconsMap[beacon as keyof typeof beaconsMap],
-                                currentLocation,
-                                settings.imperial,
-                            )}
+                            {maidenDistance(beaconsMap[beacon as Beacon], currentLocation, settings.imperial)}
                             {settings.imperial ? "mi" : "km"}
+                        </Typography>
+                    )}
+                    {!smallScreen && (
+                        <Typography>
+                            Next:{" "}
+                            {rotateBeacons(Object.keys(beaconsMap) as Array<Beacon>, beacon)
+                                .splice(1, 5)
+                                .join(", ")}
                         </Typography>
                     )}
                 </Stack>
