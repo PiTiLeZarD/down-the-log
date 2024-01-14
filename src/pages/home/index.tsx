@@ -11,6 +11,7 @@ import { Alert } from "../../utils/theme/components/alert";
 import { Typography } from "../../utils/theme/components/typography";
 import { Beacons } from "./beacons";
 import { CallsignInput } from "./callsign-input";
+import { Filters, QsoFilter, filterMap } from "./filters";
 
 const stylesheet = createStyleSheet((theme) => ({
     container: {
@@ -36,6 +37,7 @@ export type HomeComponent = React.FC<HomeProps>;
 
 export const Home: HomeComponent = ({ navigation }): JSX.Element => {
     const [callsign, setCallsign] = React.useState<string>("");
+    const [qsosFilters, setQsosFilters] = React.useState<QsoFilter[]>([]);
     const qsos = useQsos();
     const { styles } = useStyles(stylesheet);
     const currentLocation = useStore((state) => state.currentLocation);
@@ -53,6 +55,7 @@ export const Home: HomeComponent = ({ navigation }): JSX.Element => {
         setCallsign("");
         navigation.navigate("QsoForm", { qsoId: qso.id });
     };
+    console.log({ qsosFilters });
 
     return (
         <View style={styles.container}>
@@ -62,9 +65,12 @@ export const Home: HomeComponent = ({ navigation }): JSX.Element => {
                 </Alert>
             )}
             {settings.showBeacons && <Beacons />}
+            {settings.showFilters && <Filters filters={qsosFilters} setFilters={setQsosFilters} />}
             <QsoList
                 style={styles.table}
-                qsos={qsos}
+                qsos={qsos.filter((q) =>
+                    qsosFilters.reduce((acc, { name, values }) => acc && values.includes(filterMap[name](q)), true),
+                )}
                 filters={callsign ? [(q) => q.callsign.includes(callsign)] : undefined}
                 onQsoPress={(qso) => navigation.navigate("QsoForm", { qsoId: qso.id })}
             />

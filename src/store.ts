@@ -8,6 +8,7 @@ import { QSO } from "./utils/qso";
 export type Settings = {
     myCallsign: string;
     showBeacons: boolean;
+    showFilters: boolean;
     imperial: boolean;
     hamqth?: HamQTHSettingsType;
 };
@@ -33,7 +34,7 @@ type DTLStoreActionsMutatorProps = (
 
 const InitialStore: DTLStoreProps = {
     qsos: [],
-    settings: { myCallsign: "", showBeacons: false, imperial: false },
+    settings: { myCallsign: "", showBeacons: false, imperial: false, showFilters: false },
     currentLocation: "",
 };
 

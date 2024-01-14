@@ -29,6 +29,11 @@ export const Settings: SettingsComponent = ({ navigation }): JSX.Element => {
                     value={settings.showBeacons != undefined ? settings.showBeacons : false}
                     onValueChange={(v) => updateSetting("showBeacons", v)}
                 />
+                <Typography>Show Filters:</Typography>
+                <Switch
+                    value={settings.showFilters != undefined ? settings.showFilters : false}
+                    onValueChange={(v) => updateSetting("showFilters", v)}
+                />
                 <Typography>Imperial distances:</Typography>
                 <Switch
                     value={settings.imperial != undefined ? settings.imperial : false}

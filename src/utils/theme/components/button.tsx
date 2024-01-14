@@ -6,6 +6,7 @@ import { ColourVariant } from "../theme";
 import { Icon, IconName } from "./icon";
 import { Styles, mergeStyles } from "./styles";
 
+export type ButtonVariants = "contained" | "outlined" | "chip";
 const stylesheet = createStyleSheet((theme) => ({
     button: {
         ...theme.components.button,
@@ -18,6 +19,14 @@ const stylesheet = createStyleSheet((theme) => ({
         borderWidth: theme.margins.sm,
         borderColor: theme.colours[colour][theme.shades.dark],
     }),
+    button_chip: (colour: ColourVariant) => ({
+        backgroundColor: theme.colours[colour][theme.shades.light],
+        borderRadius: 15,
+        paddingTop: 3,
+        paddingBottom: 3,
+        paddingLeft: 8,
+        paddingRight: 8,
+    }),
     buttonText: {
         ...theme.components.buttonText,
     },
@@ -27,10 +36,13 @@ const stylesheet = createStyleSheet((theme) => ({
     buttonText_outlined: (colour: ColourVariant) => ({
         color: theme.colours[colour][theme.shades.dark],
     }),
+    buttonText_chip: (colour: ColourVariant) => ({
+        color: theme.colours[colour][theme.shades.darker],
+    }),
 }));
 
 export type ButtonTextProps = TextProps & {
-    variant?: "contained" | "outlined";
+    variant?: ButtonVariants;
     colour?: ColourVariant;
 };
 
@@ -64,7 +76,7 @@ export type ButtonProps = Omit<PressableProps, "style"> & {
     textStyle?: Styles<TextStyle>;
     startIcon?: IconName;
     endIcon?: IconName;
-    variant?: "contained" | "outlined";
+    variant?: ButtonVariants;
     colour?: ColourVariant;
 };
 
