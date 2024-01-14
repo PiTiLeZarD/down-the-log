@@ -2,6 +2,7 @@ import React from "react";
 import { Modal, View } from "react-native";
 import { FlatList } from "react-native-gesture-handler";
 import { createStyleSheet, useStyles } from "react-native-unistyles";
+import { countries } from "../../data/countries";
 import { Grid } from "../../utils/grid";
 import { QSO, useQsos } from "../../utils/qso";
 import { Stack } from "../../utils/stack";
@@ -20,12 +21,17 @@ const stylesheet = createStyleSheet((theme) => ({
     },
 }));
 
-export const filterMap: Record<string, (qso: QSO) => unknown> = {
-    year: (qso) => qso.date.toObject().year,
-    band: (qso) => qso.band,
-    mode: (qso) => qso.mode,
-    continent: (qso) => qso.continent,
-    country: (qso) => qso.country,
+export type FilterFunction = (qso: QSO) => string;
+export const filterMap: Record<string, FilterFunction> = {
+    year: (qso) => String(qso.date.toObject().year),
+    band: (qso) => String(qso.band),
+    mode: (qso) => String(qso.mode),
+    cq: (qso) => String(qso.cqzone),
+    itu: (qso) => String(qso.ituzone),
+    dxcc: (qso) => String(qso.dxcc),
+    gridsquare: (qso) => qso.locator?.substring(0, 3) || "",
+    continent: (qso) => qso.continent || "",
+    country: (qso) => (qso.country ? countries[qso.country].name : ""),
 };
 export type FilterName = keyof typeof filterMap;
 export type QsoFilter = { name: FilterName; values: unknown[] };

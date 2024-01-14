@@ -8,9 +8,7 @@ import { QSO, useQsos } from "../../utils/qso";
 import { Stack } from "../../utils/stack";
 import { SelectInput } from "../../utils/theme/components/select-input";
 import { Typography } from "../../utils/theme/components/typography";
-
-const statsTypes = ["mode", "cq", "itu", "dxcc", "gridsquare", "year"] as const;
-type StatType = (typeof statsTypes)[number];
+import { FilterName, filterMap } from "../home/filters";
 
 const groupBy = <T extends object, K extends string>(a: T[], f: (o: T) => K): Record<K, T[]> =>
     a.reduce<Record<K, T[]>>(
@@ -21,18 +19,9 @@ const groupBy = <T extends object, K extends string>(a: T[], f: (o: T) => K): Re
         {} as Record<K, T[]>,
     );
 
-const groupQsos = (qsos: QSO[], statType: StatType): Record<string, Record<string, QSO[]>> => {
-    const filters: Record<StatType, (o: QSO) => any> = {
-        mode: (o) => o.mode as string,
-        cq: (o) => String(o.cqzone),
-        itu: (o) => String(o.ituzone),
-        dxcc: (o) => String(o.dxcc),
-        gridsquare: (o) => o.locator?.substring(0, 3),
-        year: (o) => o.date.toObject().year,
-    };
-
-    return Object.fromEntries(
-        Object.entries(groupBy(qsos, filters[statType])).map(([k, qs]) => [
+const groupQsos = (qsos: QSO[], statType: FilterName): Record<string, Record<string, QSO[]>> =>
+    Object.fromEntries(
+        Object.entries(groupBy(qsos, filterMap[statType])).map(([k, qs]) => [
             k,
             groupBy<QSO, string>(
                 qs.filter((q) => !!q.frequency),
@@ -40,14 +29,13 @@ const groupQsos = (qsos: QSO[], statType: StatType): Record<string, Record<strin
             ),
         ]),
     );
-};
 
 export type StatsProps = {} & DrawerScreenProps<NavigationParamList, "Stats">;
 
 export type StatsComponent = React.FC<StatsProps>;
 
 export const Stats: StatsComponent = ({ navigation }): JSX.Element => {
-    const [statType, setStatType] = React.useState<StatType>("mode");
+    const [statType, setStatType] = React.useState<FilterName>("mode");
     const qsos = useQsos();
     const groups = groupQsos(qsos, statType);
 
@@ -66,7 +54,7 @@ export const Stats: StatsComponent = ({ navigation }): JSX.Element => {
                 <SelectInput
                     value={statType}
                     onValueChange={(newStatType) => setStatType(newStatType)}
-                    items={statsTypes.map((t) => ({ label: t, value: t }))}
+                    items={Object.keys(filterMap).map((t) => ({ label: t, value: t }))}
                 />
                 <Grid container>
                     <Grid item columns={columns} xs={1}>
