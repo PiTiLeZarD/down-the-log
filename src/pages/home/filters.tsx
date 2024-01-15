@@ -34,6 +34,12 @@ export type FiltersProps = {
     setFilters: (filters: QsoFilter[]) => void;
 };
 
+const isNumber = (v: string) => String(+v) === v;
+export const sortResults = (r1: string, r2: string) => {
+    if (isNumber(r1) && isNumber(r2)) return +r1 - +r2;
+    return r1 < r2 ? -1 : r1 === r2 ? 0 : 1;
+};
+
 export type FiltersComponent = React.FC<FiltersProps>;
 
 export const Filters: FiltersComponent = ({ filters, setFilters }): JSX.Element => {
@@ -99,7 +105,7 @@ export const Filters: FiltersComponent = ({ filters, setFilters }): JSX.Element 
                             {filter && (
                                 <PaginatedList itemsPerPage={itemsPerPage}>
                                     {unique(qsos.map((q) => filterMap[filter](q)))
-                                        .sort()
+                                        .sort(sortResults)
                                         .map((v) => (
                                             <Button
                                                 key={v}

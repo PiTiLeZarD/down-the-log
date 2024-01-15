@@ -8,7 +8,7 @@ import { QSO, useQsos } from "../../utils/qso";
 import { Stack } from "../../utils/stack";
 import { SelectInput } from "../../utils/theme/components/select-input";
 import { Typography } from "../../utils/theme/components/typography";
-import { FilterName, filterMap } from "../home/filters";
+import { FilterName, filterMap, sortResults } from "../home/filters";
 
 const groupBy = <T extends object, K extends string>(a: T[], f: (o: T) => K): Record<K, T[]> =>
     a.reduce<Record<K, T[]>>(
@@ -69,21 +69,23 @@ export const Stats: StatsComponent = ({ navigation }): JSX.Element => {
                         <Typography variant="em">Total</Typography>
                     </Grid>
                 </Grid>
-                {Object.keys(groups).map((group) => (
-                    <Grid container key={group}>
-                        <Grid item columns={columns} xs={1}>
-                            <Typography variant="em">{group}</Typography>
-                        </Grid>
-                        {usedBands.map((band) => (
-                            <Grid item columns={columns} xs={1} key={`${group}_${band}`}>
-                                <Typography>{(groups[group][band] || []).length}</Typography>
+                {Object.keys(groups)
+                    .sort(sortResults)
+                    .map((group) => (
+                        <Grid container key={group}>
+                            <Grid item columns={columns} xs={1}>
+                                <Typography variant="em">{group}</Typography>
                             </Grid>
-                        ))}
-                        <Grid item columns={columns} xs={1}>
-                            <Typography>{Object.values(groups[group]).flat().length}</Typography>
+                            {usedBands.map((band) => (
+                                <Grid item columns={columns} xs={1} key={`${group}_${band}`}>
+                                    <Typography>{(groups[group][band] || []).length}</Typography>
+                                </Grid>
+                            ))}
+                            <Grid item columns={columns} xs={1}>
+                                <Typography>{Object.values(groups[group]).flat().length}</Typography>
+                            </Grid>
                         </Grid>
-                    </Grid>
-                ))}
+                    ))}
                 <Grid container>
                     <Grid item columns={columns} xs={1}>
                         <Typography variant="em">Total</Typography>
