@@ -23,6 +23,7 @@ This is what I'll be working on next.
     -   [x] S/N input to help fill tx/rx report up real quick
     -   [x] add all the rest of the fields (check adif spec and rumlog)
     -   [ ] add https://docs.expo.dev/versions/latest/sdk/date-time-picker/ in the form to edit date/time
+    -   [ ] allow filling up itu/cq/dxx and all that
 
 ## Backlog
 
@@ -47,10 +48,6 @@ Got too many ideas, here is where I chuck them
         -   [ ] Create playstore dev account and release there
 -   [ ] contest mode (instead of Callsign > Form, have all relevant details on the bottom and log directly, ability to edit later)
 -   [ ] band map, ability to link callsign/frequency on the band, use this to start qso's (also ability to write name/qth and other details so it's prefilled)
--   [ ] qso filters and grouping
-    -   [x] typing a callsign should filter the list based on what's being typed
-    -   [ ] today/this month/this year/all
-    -   [x] list should display the date (QSOsecretary style)
 -   [ ] qso's map view (wide screen could have both displayed, phone could have a selector?)
     -   [ ] https://github.com/react-native-maps/react-native-maps
     -   [ ] work on the layout using the responsive grid
@@ -70,7 +67,7 @@ Got too many ideas, here is where I chuck them
     -   [ ] fix location vs use gps
     -   [ ] light/dark theme
     -   [ ] input callsign vs contest
-    -   [ ] choose grouping (date vs sesh vs contest vs...)
+    -   [x] choose grouping (date vs sesh vs contest vs...)
 
 ## Done
 
@@ -93,3 +90,7 @@ Got too many ideas, here is where I chuck them
 -   [x] Fix the qso list pushing the input all the way down
 -   [x] Adif aren't necessarily one line one record. Change the parser so it finds <EOR> before parsing it instead of parling lines
 -   [x] improve performance of callsign input, for now it's doing a lot of un-necessary work
+-   [x] qso filters and grouping
+    -   [x] typing a callsign should filter the list based on what's being typed
+    -   [x] today/this month/this year/all
+    -   [x] list should display the date (QSOsecretary style)
