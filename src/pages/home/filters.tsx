@@ -1,10 +1,11 @@
 import React from "react";
-import { Modal, ScrollView, View } from "react-native";
+import { Modal, View, useWindowDimensions } from "react-native";
 import { countries } from "../../data/countries";
 import { Grid } from "../../utils/grid";
 import { QSO, useQsos } from "../../utils/qso";
 import { Stack } from "../../utils/stack";
 import { Button } from "../../utils/theme/components/button";
+import { PaginatedList } from "../../utils/theme/components/paginated-list";
 import { Typography } from "../../utils/theme/components/typography";
 
 const unique: <T>(a: Array<T>) => Array<T> = (a) => a.filter((v, i, aa) => aa.indexOf(v) === i);
@@ -37,9 +38,12 @@ export type FiltersComponent = React.FC<FiltersProps>;
 
 export const Filters: FiltersComponent = ({ filters, setFilters }): JSX.Element => {
     const qsos = useQsos();
+    const { height } = useWindowDimensions();
     const [modal, setModal] = React.useState<boolean>(false);
     const [filter, setFilter] = React.useState<FilterName | undefined>(undefined);
     const [values, setValues] = React.useState<Array<unknown>>([]);
+
+    const itemsPerPage = Math.floor((height - 40 * 5) / 40);
 
     const handleSelectFilter = (name: string) => () => {
         setFilter(filter === name ? undefined : name);
@@ -80,20 +84,21 @@ export const Filters: FiltersComponent = ({ filters, setFilters }): JSX.Element 
                     <Grid item xs={10} md={8} lg={6} xl={4} xxl={2}>
                         <Stack>
                             {filter && <Button text={filter} onPress={handleSelectFilter(filter)} />}
-                            {!filter &&
-                                Object.keys(filterMap).map((name) => (
-                                    <Button
-                                        key={name}
-                                        text={name}
-                                        variant="outlined"
-                                        onPress={handleSelectFilter(name)}
-                                    />
-                                ))}
-                        </Stack>
-                        {!filter && <Typography>Select a filter</Typography>}
-                        {filter && (
-                            <ScrollView>
-                                <Stack>
+                            {!filter && (
+                                <PaginatedList itemsPerPage={itemsPerPage}>
+                                    {Object.keys(filterMap).map((name) => (
+                                        <Button
+                                            key={name}
+                                            text={name}
+                                            variant="outlined"
+                                            onPress={handleSelectFilter(name)}
+                                        />
+                                    ))}
+                                </PaginatedList>
+                            )}
+                            {!filter && <Typography>Select a filter</Typography>}
+                            {filter && (
+                                <PaginatedList itemsPerPage={itemsPerPage}>
                                     {unique(qsos.map((q) => filterMap[filter](q))).map((v) => (
                                         <Button
                                             key={v}
@@ -103,10 +108,10 @@ export const Filters: FiltersComponent = ({ filters, setFilters }): JSX.Element 
                                             onPress={handleSelectValue(v)}
                                         />
                                     ))}
-                                    <Button colour="success" text="OK" onPress={handleOk} />
-                                </Stack>
-                            </ScrollView>
-                        )}
+                                </PaginatedList>
+                            )}
+                            <Button colour="success" text="OK" onPress={handleOk} />
+                        </Stack>
                     </Grid>
                     <Grid item xs={1} md={2} lg={3} xl={4} xxl={5} />
                 </Grid>
