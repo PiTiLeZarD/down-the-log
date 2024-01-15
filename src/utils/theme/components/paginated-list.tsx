@@ -12,7 +12,7 @@ export const PaginatedList: PaginatedListComponent = ({ itemsPerPage = 10, child
     const elements = React.Children.toArray(children);
     const [page, setPage] = React.useState<number>(0);
 
-    useEffect(() => setPage(0), [children]);
+    useEffect(() => setPage(0), [elements.length]);
 
     if (elements.length < itemsPerPage) return <>{children}</>;
     return (

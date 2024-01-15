@@ -96,18 +96,19 @@ export const Filters: FiltersComponent = ({ filters, setFilters }): JSX.Element 
                                     ))}
                                 </PaginatedList>
                             )}
-                            {!filter && <Typography>Select a filter</Typography>}
                             {filter && (
                                 <PaginatedList itemsPerPage={itemsPerPage}>
-                                    {unique(qsos.map((q) => filterMap[filter](q))).map((v) => (
-                                        <Button
-                                            key={v}
-                                            style={{ marginTop: 2, marginBottom: 2 }}
-                                            text={String(v)}
-                                            variant={values.includes(v) ? "contained" : "outlined"}
-                                            onPress={handleSelectValue(v)}
-                                        />
-                                    ))}
+                                    {unique(qsos.map((q) => filterMap[filter](q)))
+                                        .sort()
+                                        .map((v) => (
+                                            <Button
+                                                key={v}
+                                                style={{ marginTop: 2, marginBottom: 2 }}
+                                                text={String(v)}
+                                                variant={values.includes(v) ? "contained" : "outlined"}
+                                                onPress={handleSelectValue(v)}
+                                            />
+                                        ))}
                                 </PaginatedList>
                             )}
                             <Button colour="success" text="OK" onPress={handleOk} />
