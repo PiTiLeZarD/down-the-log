@@ -55,7 +55,6 @@ export const Home: HomeComponent = ({ navigation }): JSX.Element => {
         setCallsign("");
         navigation.navigate("QsoForm", { qsoId: qso.id });
     };
-    console.log({ qsosFilters });
 
     return (
         <View style={styles.container}>
