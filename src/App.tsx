@@ -24,7 +24,8 @@ const App = (): JSX.Element => {
     });
 
     const setCurrentLocation = useStore((state) => state.setCurrentLocation);
-    const location = useLocation();
+    const settings = useStore((state) => state.settings);
+    const location = useLocation(settings.myGridsquare);
 
     React.useEffect(() => {
         if (location) setCurrentLocation(latlong2Maidenhead(location.coords));

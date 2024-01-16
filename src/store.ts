@@ -6,6 +6,7 @@ import { HamQTHSettingsType } from "./utils/hamqth";
 import { QSO } from "./utils/qso";
 
 export type Settings = {
+    myGridsquare?: string;
     myCallsign: string;
     showBeacons: boolean;
     showFilters: boolean;

@@ -64,7 +64,7 @@ Got too many ideas, here is where I chuck them
     -   [x] should be able to select our own callsign, maybe prompt at the start of the app
     -   [ ] choose favorite bands
     -   [ ] choose favorite modes
-    -   [ ] fix location vs use gps
+    -   [x] fix location vs use gps
     -   [ ] light/dark theme
     -   [ ] input callsign vs contest
     -   [x] choose grouping (date vs sesh vs contest vs...)

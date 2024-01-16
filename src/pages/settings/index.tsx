@@ -3,6 +3,7 @@ import React from "react";
 import { Switch } from "react-native";
 import { NavigationParamList } from "../../Navigation";
 import { useStore } from "../../store";
+import { normalise } from "../../utils/locator";
 import { PageLayout } from "../../utils/page-layout";
 import { Stack } from "../../utils/stack";
 import { Input } from "../../utils/theme/components/input";
@@ -24,6 +25,17 @@ export const Settings: SettingsComponent = ({ navigation }): JSX.Element => {
                     value={settings.myCallsign != undefined ? settings.myCallsign : ""}
                     onChangeText={(newCallsign) => updateSetting("myCallsign", newCallsign)}
                 />
+                <Typography>My Gridsquare:</Typography>
+                <Stack direction="row" gap="xxl">
+                    {settings.myGridsquare && <Typography variant="em">Static:</Typography>}
+                    {!settings.myGridsquare && <Typography variant="em">Dynamic</Typography>}
+                    <Input
+                        value={settings.myGridsquare != undefined ? settings.myGridsquare : ""}
+                        onChangeText={(newCallsign) =>
+                            updateSetting("myGridsquare", newCallsign === "" ? undefined : normalise(newCallsign))
+                        }
+                    />
+                </Stack>
                 <Typography>Show NCDXF/IARU Beacons:</Typography>
                 <Switch
                     value={settings.showBeacons != undefined ? settings.showBeacons : false}
