@@ -4,6 +4,7 @@ import { Linking } from "react-native";
 import { NavigationParamList } from "../../Navigation";
 import { PageLayout } from "../../utils/page-layout";
 import { Stack } from "../../utils/stack";
+import { Alert } from "../../utils/theme/components/alert";
 import { Button } from "../../utils/theme/components/button";
 import { Typography } from "../../utils/theme/components/typography";
 
@@ -46,6 +47,11 @@ export const About: AboutComponent = ({ navigation }): JSX.Element => {
                     onPress={handleLink("https://github.com/PiTiLeZarD/down-the-log/blob/master/TODO.md")}
                 />
                 <Typography variant="subtitle">But I have so many more ideas and projects!</Typography>
+                <Alert severity="info">
+                    <Typography>
+                        It is primarily a web browser tool for now, ios/android/mac/windows versions coming soon
+                    </Typography>
+                </Alert>
             </Stack>
         </PageLayout>
     );
