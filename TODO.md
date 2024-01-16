@@ -1,10 +1,6 @@
 # TODO
 
-This is the rough todolist I want to work on, I'll try to chunk all this in 5mn increments
-
-## WIP
-
-This is what I'll be working on next.
+This is the rough todolist I want to work on.
 
 -   [ ] web
     -   [x] fonts not loaded
@@ -24,16 +20,11 @@ This is what I'll be working on next.
     -   [x] add all the rest of the fields (check adif spec and rumlog)
     -   [ ] add https://docs.expo.dev/versions/latest/sdk/date-time-picker/ in the form to edit date/time
     -   [ ] allow filling up itu/cq/dxx and all that
-
-## Backlog
-
-Got too many ideas, here is where I chuck them
-
 -   [ ] implement ADX file format
--   [ ] Stats
-    -   [ ] qsos /continent /country /year,month
+-   [x] Stats
+    -   [x] qsos /continent /country /year,month
     -   [ ] heatmap of qso per day (github style)
-    -   [ ] qsos/band,mode
+    -   [x] qsos/band,mode
 -   [ ] Events (WWFF/POTA/SOTA/etc...)
     -   [ ] db with all parks, locations and polylines
     -   [ ] button a-la band/SN to set events id, add in QSOForm and possibly have an option to add it straight in the callsign input
