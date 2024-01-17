@@ -1,6 +1,6 @@
 import { DrawerScreenProps } from "@react-navigation/drawer";
 import React from "react";
-import { View } from "react-native";
+import { Pressable, View } from "react-native";
 import { createStyleSheet, useStyles } from "react-native-unistyles";
 import { NavigationParamList } from "../../Navigation";
 import { continents } from "../../data/callsigns";
@@ -8,6 +8,7 @@ import { modes } from "../../data/modes";
 import { useStore } from "../../store";
 import { FormField } from "../../utils/form-field";
 import { Grid } from "../../utils/grid";
+import { Modal } from "../../utils/modal";
 import { PageLayout } from "../../utils/page-layout";
 import { QSO } from "../../utils/qso";
 import { Stack } from "../../utils/stack";
@@ -42,6 +43,7 @@ export type FormFieldsProps = {
 export type FormFieldsComponent = React.FC<FormFieldsProps>;
 
 export const FormFields: FormFieldsComponent = ({ navigation, qso }): JSX.Element => {
+    const [openTimeLocModal, setOpenTimeLocModal] = React.useState<boolean>(false);
     const { styles } = useStyles(stylesheet);
     const deleteLog = useStore((state) => state.deleteLog);
 
@@ -56,34 +58,44 @@ export const FormFields: FormFieldsComponent = ({ navigation, qso }): JSX.Elemen
             navigation={navigation}
             titleMargin={10}
         >
-            <Stack style={styles.datetime}>
+            <Pressable onPress={() => setOpenTimeLocModal(true)}>
+                <Stack style={styles.datetime}>
+                    {qso && (
+                        <Stack direction="row">
+                            <Typography variant="h6" style={{ flex: 1 }}>
+                                {qso.date.toFormat("dd/MM/yyyy")}
+                            </Typography>
+                            <Typography variant="h6" style={{ flex: 1, textAlign: "right" }}>
+                                {qso.date.toFormat("HH:mm:ss")}
+                            </Typography>
+                        </Stack>
+                    )}
+                </Stack>
                 {qso && (
                     <Stack direction="row">
-                        <Typography variant="h6" style={{ flex: 1 }}>
-                            {qso.date.toFormat("dd/MM/yyyy")}
+                        <Typography variant="subtitle" style={{ flex: 1, textAlign: "center" }}>
+                            CQ: {qso.cqzone}
                         </Typography>
-                        <Typography variant="h6" style={{ flex: 1, textAlign: "right" }}>
-                            {qso.date.toFormat("HH:mm:ss")}
+                        <Typography variant="subtitle" style={{ flex: 1, textAlign: "center" }}>
+                            ITU: {qso.ituzone}
+                        </Typography>
+                        <Typography variant="subtitle" style={{ flex: 1, textAlign: "center" }}>
+                            DXCC: {qso.dxcc}
+                        </Typography>
+                        <Typography variant="subtitle" style={{ flex: 1, textAlign: "center" }}>
+                            QRB: {qso.distance}km
                         </Typography>
                     </Stack>
                 )}
-            </Stack>
-            {qso && (
-                <Stack direction="row">
-                    <Typography variant="subtitle" style={{ flex: 1, textAlign: "center" }}>
-                        CQ: {qso.cqzone}
-                    </Typography>
-                    <Typography variant="subtitle" style={{ flex: 1, textAlign: "center" }}>
-                        ITU: {qso.ituzone}
-                    </Typography>
-                    <Typography variant="subtitle" style={{ flex: 1, textAlign: "center" }}>
-                        DXCC: {qso.dxcc}
-                    </Typography>
-                    <Typography variant="subtitle" style={{ flex: 1, textAlign: "center" }}>
-                        QRB: {qso.distance}km
-                    </Typography>
+            </Pressable>
+            <Modal open={openTimeLocModal} onClose={() => setOpenTimeLocModal(false)}>
+                <Stack>
+                    <FormField name="cqzone" label="CQZone:" />
+                    <FormField name="ituzone" label="ITUZone:" />
+                    <FormField name="dxcc" label="DXCC:" />
+                    <Button text="OK" colour="success" onPress={() => setOpenTimeLocModal(false)} />
                 </Stack>
-            )}
+            </Modal>
             <Grid container>
                 <Grid item xs={12} md={6} xxl={8}>
                     <FormField name="name" label="Name:" />
