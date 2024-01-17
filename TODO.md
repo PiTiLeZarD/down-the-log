@@ -7,6 +7,7 @@ This is the rough todolist I want to work on.
     -   [x] icons not working
     -   [x] huge padding at the bottom of the page on mobile
     -   [ ] rotating the screens bugs the whole thing
+-   [ ] Manage errors from HamQTH
 -   [ ] ios errors galore
 -   [ ] adif import export
     -   [x] download qsos as adif
