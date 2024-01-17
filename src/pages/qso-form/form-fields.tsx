@@ -17,6 +17,7 @@ import { Typography } from "../../utils/theme/components/typography";
 import { BandFreqInput } from "./band-freq-input";
 import { ContinentWarning } from "./continent-warning";
 import { CountryWarning } from "./country-warning";
+import { GeocodeButton } from "./geocode-button";
 import { LocatorField } from "./locator-field";
 import { Signal } from "./signal";
 
@@ -116,7 +117,10 @@ export const FormFields: FormFieldsComponent = ({ navigation, qso }): JSX.Elemen
                 <Grid item xs={8}>
                     <FormField name="qth" label="QTH:" />
                 </Grid>
-                <Grid item xs={4}>
+                <Grid item xs={1}>
+                    <GeocodeButton />
+                </Grid>
+                <Grid item xs={3}>
                     <LocatorField name="locator" label="Locator:" />
                 </Grid>
             </Grid>
