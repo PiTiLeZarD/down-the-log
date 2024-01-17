@@ -1,7 +1,7 @@
 import React from "react";
-import { Modal, View, useWindowDimensions } from "react-native";
+import { View, useWindowDimensions } from "react-native";
 import { countries } from "../../data/countries";
-import { Grid } from "../../utils/grid";
+import { Modal } from "../../utils/modal";
 import { QSO, useQsos } from "../../utils/qso";
 import { Stack } from "../../utils/stack";
 import { Button } from "../../utils/theme/components/button";
@@ -84,44 +84,33 @@ export const Filters: FiltersComponent = ({ filters, setFilters }): JSX.Element 
             <View>
                 <Button startIcon="add" onPress={() => setModal(true)} />
             </View>
-            <Modal animationType="none" visible={modal} onRequestClose={() => setModal(false)}>
-                <Grid container>
-                    <Grid item xs={1} md={2} lg={3} xl={4} xxl={5} />
-                    <Grid item xs={10} md={8} lg={6} xl={4} xxl={2}>
-                        <Stack>
-                            {filter && <Button text={filter} onPress={handleSelectFilter(filter)} />}
-                            {!filter && (
-                                <PaginatedList itemsPerPage={itemsPerPage}>
-                                    {Object.keys(filterMap).map((name) => (
-                                        <Button
-                                            key={name}
-                                            text={name}
-                                            variant="outlined"
-                                            onPress={handleSelectFilter(name)}
-                                        />
-                                    ))}
-                                </PaginatedList>
-                            )}
-                            {filter && (
-                                <PaginatedList itemsPerPage={itemsPerPage}>
-                                    {unique(qsos.map((q) => filterMap[filter](q)))
-                                        .sort(sortResults)
-                                        .map((v) => (
-                                            <Button
-                                                key={v}
-                                                style={{ marginTop: 2, marginBottom: 2 }}
-                                                text={String(v)}
-                                                variant={values.includes(v) ? "contained" : "outlined"}
-                                                onPress={handleSelectValue(v)}
-                                            />
-                                        ))}
-                                </PaginatedList>
-                            )}
-                            <Button colour="success" text="OK" onPress={handleOk} />
-                        </Stack>
-                    </Grid>
-                    <Grid item xs={1} md={2} lg={3} xl={4} xxl={5} />
-                </Grid>
+            <Modal open={modal} onClose={() => setModal(false)}>
+                <Stack>
+                    {filter && <Button text={filter} onPress={handleSelectFilter(filter)} />}
+                    {!filter && (
+                        <PaginatedList itemsPerPage={itemsPerPage}>
+                            {Object.keys(filterMap).map((name) => (
+                                <Button key={name} text={name} variant="outlined" onPress={handleSelectFilter(name)} />
+                            ))}
+                        </PaginatedList>
+                    )}
+                    {filter && (
+                        <PaginatedList itemsPerPage={itemsPerPage}>
+                            {unique(qsos.map((q) => filterMap[filter](q)))
+                                .sort(sortResults)
+                                .map((v) => (
+                                    <Button
+                                        key={v}
+                                        style={{ marginTop: 2, marginBottom: 2 }}
+                                        text={String(v)}
+                                        variant={values.includes(v) ? "contained" : "outlined"}
+                                        onPress={handleSelectValue(v)}
+                                    />
+                                ))}
+                        </PaginatedList>
+                    )}
+                    <Button colour="success" text="OK" onPress={handleOk} />
+                </Stack>
             </Modal>
         </Stack>
     );

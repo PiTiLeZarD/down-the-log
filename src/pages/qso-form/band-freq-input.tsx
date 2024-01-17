@@ -1,9 +1,9 @@
 import React from "react";
 import { useFormContext } from "react-hook-form";
-import { Modal } from "react-native";
 import { useStyles } from "react-native-unistyles";
 import { Band, band2freq, bands, freq2band } from "../../data/bands";
 import { Grid } from "../../utils/grid";
+import { Modal } from "../../utils/modal";
 import { QSO } from "../../utils/qso";
 import { Stack } from "../../utils/stack";
 import { Button } from "../../utils/theme/components/button";
@@ -47,46 +47,38 @@ export const BandFreqInput: BandFreqInputComponent = (): JSX.Element => {
                 text={`${frequency ? (+frequency).toFixed(3) : "N/A"} Mhz (${band || "N/A"})`}
                 onPress={() => setOpen(true)}
             />
-            <Modal animationType="none" visible={open} onRequestClose={() => setOpen(false)}>
-                <Grid container>
-                    <Grid item xs={-1} md={1} lg={2} xl={3} xxl={4} />
-                    <Grid item xs={12} md={10} lg={8} xl={6} xxl={4}>
-                        <Stack gap="xxl">
-                            <Grid container>
-                                {Object.keys(bands).map((b) => (
-                                    <Grid key={b} item xs={2}>
-                                        <Button
-                                            style={{ padding: theme.margins.sm, margin: theme.margins.sm }}
-                                            textStyle={{ fontSize: 18 }}
-                                            text={b}
-                                            variant={b == band ? "contained" : "outlined"}
-                                            onPress={() => {
-                                                setValue("band", b as Band);
-                                                setValue("frequency", band2freq(b as Band) || 14.144);
-                                            }}
-                                        />
-                                    </Grid>
-                                ))}
+            <Modal wide open={open} onClose={() => setOpen(false)}>
+                <Stack gap="xxl">
+                    <Grid container>
+                        {Object.keys(bands).map((b) => (
+                            <Grid key={b} item xs={2}>
+                                <Button
+                                    style={{ padding: theme.margins.sm, margin: theme.margins.sm }}
+                                    textStyle={{ fontSize: 18 }}
+                                    text={b}
+                                    variant={b == band ? "contained" : "outlined"}
+                                    onPress={() => {
+                                        setValue("band", b as Band);
+                                        setValue("frequency", band2freq(b as Band) || 14.144);
+                                    }}
+                                />
                             </Grid>
-                            <Typography>Frequency: </Typography>
-                            <Input
-                                numeric
-                                style={[
-                                    { textAlign: "center", fontSize: 30 },
-                                    !bandUserInput
-                                        ? { backgroundColor: theme.colours.secondary[theme.shades.main] }
-                                        : {},
-                                ]}
-                                textStyle={{ fontSize: 20, lineHeight: 30 }}
-                                value={freqUserInput}
-                                suffix="kHz"
-                                onChangeText={(nfreq) => setFreqUserInput(nfreq)}
-                            />
-                            <Button text="Close" onPress={() => setOpen(false)} />
-                        </Stack>
+                        ))}
                     </Grid>
-                    <Grid item xs={-1} md={1} lg={2} xl={3} xxl={4} />
-                </Grid>
+                    <Typography>Frequency: </Typography>
+                    <Input
+                        numeric
+                        style={[
+                            { textAlign: "center", fontSize: 30 },
+                            !bandUserInput ? { backgroundColor: theme.colours.secondary[theme.shades.main] } : {},
+                        ]}
+                        textStyle={{ fontSize: 20, lineHeight: 30 }}
+                        value={freqUserInput}
+                        suffix="kHz"
+                        onChangeText={(nfreq) => setFreqUserInput(nfreq)}
+                    />
+                    <Button text="Close" onPress={() => setOpen(false)} />
+                </Stack>
             </Modal>
         </Stack>
     );
