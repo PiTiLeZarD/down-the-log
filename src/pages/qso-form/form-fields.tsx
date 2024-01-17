@@ -17,6 +17,7 @@ import { Typography } from "../../utils/theme/components/typography";
 import { BandFreqInput } from "./band-freq-input";
 import { ContinentWarning } from "./continent-warning";
 import { CountryWarning } from "./country-warning";
+import { LocatorField } from "./locator-field";
 import { Signal } from "./signal";
 
 const stylesheet = createStyleSheet((theme) => ({
@@ -116,7 +117,7 @@ export const FormFields: FormFieldsComponent = ({ navigation, qso }): JSX.Elemen
                     <FormField name="qth" label="QTH:" />
                 </Grid>
                 <Grid item xs={4}>
-                    <FormField name="locator" label="Locator:" />
+                    <LocatorField name="locator" label="Locator:" />
                 </Grid>
             </Grid>
             <Grid container>
