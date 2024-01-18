@@ -86,7 +86,7 @@ export const QsoList: QsoListComponent = ({ style, filters, qsos, onQsoPress }):
                 <View>
                     <View style={styles.sectionHeader}>
                         <Typography style={styles.sectionHeaderText}>
-                            {sections[section][0].date.toFormat("dd/MM/yyyy")}
+                            {sections[section][0].date.toFormat("dd/MM/yyyy")} ({sections[section].length})
                         </Typography>
                     </View>
                 </View>
