@@ -60,10 +60,12 @@ export const Settings: SettingsComponent = ({ navigation }): JSX.Element => {
                     value={settings.imperial != undefined ? settings.imperial : false}
                     onValueChange={(v) => updateSetting("imperial", v)}
                 />
-                <Typography>HamQTH:</Typography>
+                <Typography variant="h3">API's</Typography>
                 <Typography variant="subtitle">
-                    All data is stored locally in your browser and is never sent anywhere (except for hamqth of course)
+                    All data is stored locally in your browser and is never sent anywhere (except for hamqth or google
+                    when using their api)
                 </Typography>
+                <Typography>HamQTH:</Typography>
                 <Stack direction="row">
                     <Typography>User:</Typography>
                     <Input
@@ -78,6 +80,25 @@ export const Settings: SettingsComponent = ({ navigation }): JSX.Element => {
                         value={settings.hamqth != undefined ? settings.hamqth.password : ""}
                         onChangeText={(v) =>
                             updateSetting("hamqth", { ...(settings.hamqth || { user: "", password: "" }), password: v })
+                        }
+                    />
+                </Stack>
+                <Typography>Google Static Maps:</Typography>
+                <Stack direction="row">
+                    <Typography>Key:</Typography>
+                    <Input
+                        password
+                        value={settings.google != undefined ? settings.google.key : ""}
+                        onChangeText={(v) =>
+                            updateSetting("google", { ...(settings.google || { key: "", secret: "" }), key: v })
+                        }
+                    />
+                    <Typography>Signing Secret:</Typography>
+                    <Input
+                        password
+                        value={settings.google != undefined ? settings.google.secret : ""}
+                        onChangeText={(v) =>
+                            updateSetting("google", { ...(settings.google || { key: "", secret: "" }), secret: v })
                         }
                     />
                 </Stack>

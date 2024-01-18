@@ -2,6 +2,7 @@ import asyncstorage from "@react-native-async-storage/async-storage";
 import { DateTime } from "luxon";
 import { create } from "zustand";
 import { combine, createJSONStorage, devtools, persist } from "zustand/middleware";
+import { GoogleCredentials } from "./utils/google-static-map/map";
 import { HamQTHSettingsType } from "./utils/hamqth";
 import { QSO } from "./utils/qso";
 
@@ -12,6 +13,7 @@ export type Settings = {
     showFilters: boolean;
     imperial: boolean;
     hamqth?: HamQTHSettingsType;
+    google?: GoogleCredentials;
 };
 
 type DTLStoreProps = {

@@ -1,5 +1,6 @@
 import { DrawerScreenProps } from "@react-navigation/drawer";
 import React from "react";
+import { useFormContext } from "react-hook-form";
 import { Pressable, View } from "react-native";
 import { createStyleSheet, useStyles } from "react-native-unistyles";
 import { NavigationParamList } from "../../Navigation";
@@ -11,6 +12,7 @@ import { Grid } from "../../utils/grid";
 import { Modal } from "../../utils/modal";
 import { PageLayout } from "../../utils/page-layout";
 import { QSO } from "../../utils/qso";
+import { QsoMap } from "../../utils/qso/qso-map";
 import { Stack } from "../../utils/stack";
 import { Button } from "../../utils/theme/components/button";
 import { Typography } from "../../utils/theme/components/typography";
@@ -47,6 +49,7 @@ export type FormFieldsComponent = React.FC<FormFieldsProps>;
 export const FormFields: FormFieldsComponent = ({ navigation, qso }): JSX.Element => {
     const [openTimeLocModal, setOpenTimeLocModal] = React.useState<boolean>(false);
     const { styles } = useStyles(stylesheet);
+    const { getValues } = useFormContext<QSO>();
     const deleteLog = useStore((state) => state.deleteLog);
 
     const onDelete = () => {
@@ -165,6 +168,7 @@ export const FormFields: FormFieldsComponent = ({ navigation, qso }): JSX.Elemen
                 </Grid>
             </Grid>
             <FormField role="textarea" name="note" label="Note:" />
+            <QsoMap qso={getValues()} />
             <Stack direction="row">
                 <Button variant="outlined" text="Delete" colour="secondary" onPress={() => onDelete()} />
             </Stack>
