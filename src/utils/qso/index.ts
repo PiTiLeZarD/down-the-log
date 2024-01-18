@@ -73,7 +73,9 @@ export const newQso = (
             myCallsign,
             rst_received: "59",
             rst_sent: "59",
-            ...(qsos.length ? { frequency: qsos[0].frequency, mode: qsos[0].mode, power: qsos[0].power } : {}),
+            ...(qsos.length
+                ? { frequency: qsos[0].frequency, band: qsos[0].band, mode: qsos[0].mode, power: qsos[0].power }
+                : {}),
             ...(previousQsosWithCallsign.length ? { name: previousQsosWithCallsign[0].name } : {}),
         },
         callsignData,
