@@ -2,22 +2,14 @@ import { DrawerScreenProps } from "@react-navigation/drawer";
 import React from "react";
 import { NavigationParamList } from "../../Navigation";
 import { Band, freq2band } from "../../data/bands";
+import { groupBy, sortNumsAndAlpha } from "../../utils/arrays";
 import { Grid } from "../../utils/grid";
 import { PageLayout } from "../../utils/page-layout";
 import { QSO, useQsos } from "../../utils/qso";
 import { Stack } from "../../utils/stack";
 import { SelectInput } from "../../utils/theme/components/select-input";
 import { Typography } from "../../utils/theme/components/typography";
-import { FilterName, filterMap, sortResults } from "../home/filters";
-
-const groupBy = <T extends object, K extends string>(a: T[], f: (o: T) => K): Record<K, T[]> =>
-    a.reduce<Record<K, T[]>>(
-        (groups, elt) => ({
-            ...groups,
-            [f(elt)]: [...(groups[f(elt)] || []), elt],
-        }),
-        {} as Record<K, T[]>,
-    );
+import { FilterName, filterMap } from "../home/filters";
 
 const groupQsos = (qsos: QSO[], statType: FilterName): Record<string, Record<string, QSO[]>> =>
     Object.fromEntries(
@@ -70,7 +62,7 @@ export const Stats: StatsComponent = ({ navigation }): JSX.Element => {
                     </Grid>
                 </Grid>
                 {Object.keys(groups)
-                    .sort(sortResults)
+                    .sort(sortNumsAndAlpha)
                     .map((group) => (
                         <Grid container key={group}>
                             <Grid item columns={columns} xs={1}>

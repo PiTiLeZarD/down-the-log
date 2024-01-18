@@ -11,7 +11,7 @@ import { Alert } from "../../utils/theme/components/alert";
 import { Typography } from "../../utils/theme/components/typography";
 import { Beacons } from "./beacons";
 import { CallsignInput } from "./callsign-input";
-import { Filters, QsoFilter, filterMap } from "./filters";
+import { Filters, QsoFilter, filterQsos } from "./filters";
 
 const stylesheet = createStyleSheet((theme) => ({
     container: {
@@ -67,9 +67,7 @@ export const Home: HomeComponent = ({ navigation }): JSX.Element => {
             {settings.showFilters && <Filters filters={qsosFilters} setFilters={setQsosFilters} />}
             <QsoList
                 style={styles.table}
-                qsos={qsos.filter((q) =>
-                    qsosFilters.reduce((acc, { name, values }) => acc && values.includes(filterMap[name](q)), true),
-                )}
+                qsos={filterQsos(qsos, qsosFilters)}
                 filters={callsign ? [(q) => q.callsign.includes(callsign)] : undefined}
                 onQsoPress={(qso) => navigation.navigate("QsoForm", { qsoId: qso.id })}
             />

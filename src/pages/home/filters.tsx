@@ -1,14 +1,13 @@
 import React from "react";
 import { View, useWindowDimensions } from "react-native";
 import { countries } from "../../data/countries";
+import { sortNumsAndAlpha, unique } from "../../utils/arrays";
 import { Modal } from "../../utils/modal";
 import { QSO, useQsos } from "../../utils/qso";
 import { Stack } from "../../utils/stack";
 import { Button } from "../../utils/theme/components/button";
 import { PaginatedList } from "../../utils/theme/components/paginated-list";
 import { Typography } from "../../utils/theme/components/typography";
-
-const unique: <T>(a: Array<T>) => Array<T> = (a) => a.filter((v, i, aa) => aa.indexOf(v) === i);
 
 export type FilterFunction = (qso: QSO) => string;
 export const filterMap: Record<string, FilterFunction> = {
@@ -29,15 +28,12 @@ export const filterMap: Record<string, FilterFunction> = {
 export type FilterName = keyof typeof filterMap;
 export type QsoFilter = { name: FilterName; values: unknown[] };
 
+export const filterQsos = (qsos: QSO[], qsosFilters: QsoFilter[]) =>
+    qsos.filter((q) => qsosFilters.reduce((acc, { name, values }) => acc && values.includes(filterMap[name](q)), true));
+
 export type FiltersProps = {
     filters: QsoFilter[];
     setFilters: (filters: QsoFilter[]) => void;
-};
-
-const isNumber = (v: string) => String(+v) === v;
-export const sortResults = (r1: string, r2: string) => {
-    if (isNumber(r1) && isNumber(r2)) return +r1 - +r2;
-    return r1 < r2 ? -1 : r1 === r2 ? 0 : 1;
 };
 
 export type FiltersComponent = React.FC<FiltersProps>;
@@ -81,6 +77,7 @@ export const Filters: FiltersComponent = ({ filters, setFilters }): JSX.Element 
                 ))}
                 {filters.length === 0 && <Typography>None</Typography>}
             </Stack>
+            <Typography variant="subtitle">({filterQsos(qsos, filters).length})</Typography>
             <View>
                 <Button startIcon="add" onPress={() => setModal(true)} />
             </View>
@@ -97,7 +94,7 @@ export const Filters: FiltersComponent = ({ filters, setFilters }): JSX.Element 
                     {filter && (
                         <PaginatedList itemsPerPage={itemsPerPage}>
                             {unique(qsos.map((q) => filterMap[filter](q)))
-                                .sort(sortResults)
+                                .sort(sortNumsAndAlpha)
                                 .map((v) => (
                                     <Button
                                         key={v}
