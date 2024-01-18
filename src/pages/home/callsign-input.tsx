@@ -6,7 +6,7 @@ import { createStyleSheet, useStyles } from "react-native-unistyles";
 import cqzones from "../../data/cqzones.json";
 import ituzones from "../../data/ituzones.json";
 import { useStore } from "../../store";
-import { findCountry, getCallsignData } from "../../utils/callsign";
+import { findCountry, getCallsignData, parseCallsign } from "../../utils/callsign";
 import { Grid } from "../../utils/grid";
 import {
     HamQTHCallsignData,
@@ -66,7 +66,8 @@ export const CallsignInput: CallsignInputComponent = ({ value, handleAdd, onChan
 
     useEffect(
         debounce(() => {
-            if (value && isSessionValid(settings.hamqth)) {
+            const parsedCallsign = parseCallsign(value);
+            if (value && (parsedCallsign?.delineation || "").length && isSessionValid(settings.hamqth)) {
                 fetchCallsignData(settings.hamqth?.sessionId, value).then((data) => setHamqthCSData(data));
             } else {
                 setHamqthCSData(undefined);
