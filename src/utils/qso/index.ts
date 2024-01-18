@@ -76,7 +76,9 @@ export const newQso = (
             ...(qsos.length
                 ? { frequency: qsos[0].frequency, band: qsos[0].band, mode: qsos[0].mode, power: qsos[0].power }
                 : {}),
-            ...(previousQsosWithCallsign.length ? { name: previousQsosWithCallsign[0].name } : {}),
+            ...(previousQsosWithCallsign.length
+                ? { name: previousQsosWithCallsign[0].name, qth: previousQsosWithCallsign[0].qth }
+                : {}),
         },
         callsignData,
     );
