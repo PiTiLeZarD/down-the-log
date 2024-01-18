@@ -60,6 +60,7 @@ This is the rough todolist I want to work on.
     -   [ ] light/dark theme
     -   [ ] input callsign vs contest
     -   [x] choose grouping (date vs sesh vs contest vs...)
+-   [ ] Look into the clublog dxcc db (https://dl2rum.de/RUMlogNG/docs/en/pages/Online_CLDX.html)
 
 ## Done
 
