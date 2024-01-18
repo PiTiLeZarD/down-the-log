@@ -6,6 +6,7 @@ import { useStore } from "../../store";
 import { normalise } from "../../utils/locator";
 import { PageLayout } from "../../utils/page-layout";
 import { Stack } from "../../utils/stack";
+import { Button } from "../../utils/theme/components/button";
 import { Input } from "../../utils/theme/components/input";
 import { Typography } from "../../utils/theme/components/typography";
 
@@ -15,6 +16,7 @@ export type SettingsComponent = React.FC<SettingsProps>;
 
 export const Settings: SettingsComponent = ({ navigation }): JSX.Element => {
     const settings = useStore((state) => state.settings);
+    const currentLocation = useStore((state) => state.currentLocation);
     const updateSetting = useStore((state) => state.updateSetting);
 
     return (
@@ -27,6 +29,7 @@ export const Settings: SettingsComponent = ({ navigation }): JSX.Element => {
                 />
                 <Typography>My Gridsquare:</Typography>
                 <Stack direction="row" gap="xxl">
+                    <Typography>Currently:</Typography>
                     {settings.myGridsquare && <Typography variant="em">Static:</Typography>}
                     {!settings.myGridsquare && <Typography variant="em">Dynamic</Typography>}
                     <Input
@@ -35,6 +38,12 @@ export const Settings: SettingsComponent = ({ navigation }): JSX.Element => {
                             updateSetting("myGridsquare", newCallsign === "" ? undefined : normalise(newCallsign))
                         }
                     />
+                    {!settings.myGridsquare && currentLocation && (
+                        <Button
+                            text={`Set ${currentLocation} as static`}
+                            onPress={() => updateSetting("myGridsquare", currentLocation)}
+                        />
+                    )}
                 </Stack>
                 <Typography>Show NCDXF/IARU Beacons:</Typography>
                 <Switch
