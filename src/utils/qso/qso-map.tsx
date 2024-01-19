@@ -20,10 +20,6 @@ export const QsoMap: QsoMapComponent = ({ qso }): JSX.Element => {
     const from = maidenhead2Latlong(qso.myLocator as string);
     const to = maidenhead2Latlong(qso.locator as string);
 
-    /**
-     * Map to figure out center/zoom based on markers if not provided
-     * Path to accept a polyline (and to encode it properly)
-     */
     return (
         <Map height={200} google={google}>
             <Marker location={from} style={{ color: "blue", label: "A" }} />
