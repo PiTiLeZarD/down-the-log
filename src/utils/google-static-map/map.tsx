@@ -53,15 +53,19 @@ export const Map: MapComponent = ({ width = "auto", height, google, children }):
 
     const actualWidth = getActualWidth(width, widthRef);
 
-    let url = `https://maps.googleapis.com/maps/api/staticmap`;
-    if (actualWidth) url = `${url}?&size=${actualWidth}x${height}`;
-    Object.keys(features).forEach(
-        (e) =>
-            (url = `${url}&${e}${e.includes("=") ? "|" : "="}${encodeURIComponent(
-                features[e].map((f) => f.data).join("|"),
-            )}`),
-    );
-    url = `${url}&key=${google.key}`;
+    let url = "";
+
+    if (actualWidth) {
+        url = `https://maps.googleapis.com/maps/api/staticmap`;
+        url = `${url}?&size=${actualWidth}x${height}`;
+        Object.keys(features).forEach(
+            (e) =>
+                (url = `${url}&${e}${e.includes("=") ? "|" : "="}${encodeURIComponent(
+                    features[e].map((f) => f.data).join("|"),
+                )}`),
+        );
+        url = `${url}&key=${google.key}`;
+    }
 
     return (
         <>
