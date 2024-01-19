@@ -45,6 +45,7 @@ This is the rough todolist I want to work on.
 -   [ ] integrations
     -   [ ] qrz integration
     -   [x] hamQTH
+    -   [ ] eqsl
     -   [ ] lotw (this one sounds tough, gotta sign adif exports, let's see)
 -   [ ] cluster?
 -   [ ] Settings
@@ -56,6 +57,7 @@ This is the rough todolist I want to work on.
     -   [ ] input callsign vs contest
     -   [x] choose grouping (date vs sesh vs contest vs...)
 -   [ ] Look into the clublog dxcc db (https://dl2rum.de/RUMlogNG/docs/en/pages/Online_CLDX.html)
+-   [ ] Band plan (typical adif band spread or australian band plan with ability to switch, also display band usage from https://www.wia.org.au/members/bandplans/data/documents/Australian%20Band%20Plans%20200901.pdf or whichever by country)
 
 ## Done
 
