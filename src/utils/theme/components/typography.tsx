@@ -72,17 +72,26 @@ const stylesheet = createStyleSheet((theme) => ({
         fontStyle: "normal",
         fontWeight: "700",
     },
+    underline: {
+        textDecorationStyle: "solid",
+        textDecorationLine: "underline",
+    },
 }));
 
 export type TypographyProps = {
     variant?: TypographyVariant;
     style?: Styles<TextStyle>;
+    underline?: boolean;
 };
 
 export type TypographyComponent = React.FC<React.PropsWithChildren<TypographyProps>>;
 
-export const Typography: TypographyComponent = ({ style, variant = "body", children }): JSX.Element => {
+export const Typography: TypographyComponent = ({ style, underline, variant = "body", children }): JSX.Element => {
     const { styles } = useStyles(stylesheet);
     const Comp = variantComponentMap[variant];
-    return <Comp style={mergeStyles<TextStyle>(styles[variant], style)}>{children}</Comp>;
+    return (
+        <Comp style={mergeStyles<TextStyle>(styles[variant], underline ? styles.underline : {}, style)}>
+            {children}
+        </Comp>
+    );
 };
