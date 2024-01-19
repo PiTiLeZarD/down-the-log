@@ -98,6 +98,11 @@ export const FormFields: FormFieldsComponent = ({ navigation, qso }): JSX.Elemen
                     <FormField name="cqzone" label="CQZone:" />
                     <FormField name="ituzone" label="ITUZone:" />
                     <FormField name="dxcc" label="DXCC:" />
+                    <Typography variant="h3" underline>
+                        My Details
+                    </Typography>
+                    <FormField name="myLocator" label="My Gridsquare:" />
+                    <FormField name="myCallsign" label="My Callsign:" />
                     <Button text="OK" colour="success" onPress={() => setOpenTimeLocModal(false)} />
                 </Stack>
             </Modal>
@@ -168,7 +173,9 @@ export const FormFields: FormFieldsComponent = ({ navigation, qso }): JSX.Elemen
                 </Grid>
             </Grid>
             <FormField role="textarea" name="note" label="Note:" />
-            <QsoMap qso={getValues()} />
+            <View style={{ alignItems: "center" }}>
+                <QsoMap qso={getValues()} />
+            </View>
             <Stack direction="row">
                 <Button variant="outlined" text="Delete" colour="secondary" onPress={() => onDelete()} />
             </Stack>
