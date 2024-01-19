@@ -33,7 +33,11 @@ export type MapProps = {
 export type MapComponent = React.FC<React.PropsWithChildren<MapProps>>;
 
 const getActualWidth = (width: "auto" | number, ref: React.RefObject<View>) =>
-    typeof width === "number" ? width : ref.current ? (ref.current as unknown as HTMLElement).clientWidth : null;
+    typeof width === "number"
+        ? Math.min(width, 640)
+        : ref.current
+          ? Math.min((ref.current as unknown as HTMLElement).clientWidth, 640)
+          : null;
 
 export const Map: MapComponent = ({ width = "auto", height, google, children }): JSX.Element => {
     const widthRef = useRef<View>(null);
@@ -57,7 +61,7 @@ export const Map: MapComponent = ({ width = "auto", height, google, children }):
 
     if (actualWidth) {
         url = `https://maps.googleapis.com/maps/api/staticmap`;
-        url = `${url}?&size=${actualWidth}x${height}`;
+        url = `${url}?&size=${actualWidth}x${Math.min(height, 640)}`;
         Object.keys(features).forEach(
             (e) =>
                 (url = `${url}&${e}${e.includes("=") ? "|" : "="}${encodeURIComponent(
@@ -72,7 +76,7 @@ export const Map: MapComponent = ({ width = "auto", height, google, children }):
             <View style={{ width: "100%", height: 0 }} ref={widthRef} />
             {actualWidth && (
                 <Image
-                    style={{ width: actualWidth, height }}
+                    style={{ width: actualWidth, height: Math.min(height, 640) }}
                     source={signRequest(url, google.secret)}
                     placeholder={blurhash}
                 />
