@@ -4,8 +4,7 @@ import {
     DrawerItem,
     createDrawerNavigator,
 } from "@react-navigation/drawer";
-import { useRef } from "react";
-import { ScrollView, View } from "react-native";
+import { View } from "react-native";
 import { QSO } from "./utils/qso";
 
 export type NavigationParamList = {
@@ -21,7 +20,7 @@ export const Navigation = createDrawerNavigator<NavigationParamList>();
 export type DrawerContentComponent = React.FC<DrawerContentComponentProps>;
 
 export const DrawerContent: DrawerContentComponent = (props): JSX.Element => {
-    const drawerRef = useRef<ScrollView>(null);
+    // const drawerRef = useRef<ScrollView>(null);
 
     // const { width } = useWindowDimensions();
 
@@ -51,7 +50,7 @@ export const DrawerContent: DrawerContentComponent = (props): JSX.Element => {
     // useEffect(() => handleUpdate, [drawerRef, width]);
 
     return (
-        <DrawerContentScrollView ref={drawerRef} {...props}>
+        <DrawerContentScrollView {...props}>
             <View>
                 <DrawerItem label="Home" onPress={() => props.navigation.navigate("Home")} />
                 <DrawerItem label="Stats" onPress={() => props.navigation.navigate("Stats")} />
