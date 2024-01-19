@@ -1,6 +1,7 @@
 import { Image } from "expo-image";
 import jsSHA from "jssha";
-import React from "react";
+import React, { useRef } from "react";
+import { View } from "react-native";
 import { groupBy } from "../arrays";
 import { Feature } from "./common";
 
@@ -31,7 +32,11 @@ export type MapProps = {
 
 export type MapComponent = React.FC<React.PropsWithChildren<MapProps>>;
 
+const getActualWidth = (width: "auto" | number, ref: React.RefObject<View>) =>
+    typeof width === "number" ? width : ref.current ? (ref.current as unknown as HTMLElement).clientWidth : null;
+
 export const Map: MapComponent = ({ width = "auto", height, google, children }): JSX.Element => {
+    const widthRef = useRef<View>(null);
     const features = groupBy<Feature, Feature["type"]>(
         React.Children.toArray(children)
             .filter((f) => (React.isValidElement(f) ? "renderFeature" in (f as any).type : false))
@@ -39,11 +44,25 @@ export const Map: MapComponent = ({ width = "auto", height, google, children }):
         (o) => o.type, // group with style here
     );
 
-    let url = `https://maps.googleapis.com/maps/api/staticmap?&size=${width}x${height}`;
+    const actualWidth = getActualWidth(width, widthRef);
+
+    let url = `https://maps.googleapis.com/maps/api/staticmap`;
+    if (actualWidth) url = `${url}?&size=${actualWidth}x${height}`;
     Object.keys(features).forEach(
         (e) => (url = `${url}&${e}=${encodeURIComponent(features[e as Feature["type"]].map((f) => f.data).join("|"))}`),
     );
     url = `${url}&key=${google.key}`;
 
-    return <Image style={{ width, height }} source={signRequest(url, google.secret)} placeholder={blurhash} />;
+    return (
+        <>
+            <View style={{ width: "100%", height: 0 }} ref={widthRef} />
+            {actualWidth && (
+                <Image
+                    style={{ width: actualWidth, height }}
+                    source={signRequest(url, google.secret)}
+                    placeholder={blurhash}
+                />
+            )}
+        </>
+    );
 };
