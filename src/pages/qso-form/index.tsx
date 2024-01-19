@@ -1,4 +1,4 @@
-import { DrawerScreenProps } from "@react-navigation/drawer";
+import { StackScreenProps } from "@react-navigation/stack";
 import React, { useEffect } from "react";
 import { FormProvider, useForm } from "react-hook-form";
 import { NavigationParamList } from "../../Navigation";
@@ -7,7 +7,7 @@ import { QSO, useQsos } from "../../utils/qso";
 import { useAutoSave } from "../../utils/use-auto-save";
 import { FormFields } from "./form-fields";
 
-export type QsoFormProps = {} & DrawerScreenProps<NavigationParamList, "QsoForm">;
+export type QsoFormProps = {} & StackScreenProps<NavigationParamList, "QsoForm">;
 
 export type QsoFormComponent = React.FC<QsoFormProps>;
 

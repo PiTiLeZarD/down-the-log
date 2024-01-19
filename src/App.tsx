@@ -3,10 +3,11 @@ import { useFonts } from "expo-font";
 import * as SplashScreen from "expo-splash-screen";
 import React, { useCallback } from "react";
 import { SafeAreaProvider, SafeAreaView } from "react-native-safe-area-context";
-import { DrawerContent, Navigation } from "./Navigation";
+import { Navigation } from "./Navigation";
 import { About } from "./pages/about";
 import { Adif } from "./pages/adif";
 import { Home } from "./pages/home";
+import { Menu } from "./pages/menu";
 import { QsoForm } from "./pages/qso-form";
 import { Settings } from "./pages/settings";
 import { Stats } from "./pages/stats";
@@ -49,15 +50,14 @@ const App = (): JSX.Element => {
                         initialRouteName="Home"
                         screenOptions={{
                             header: (props) => <LocationHeader {...props} />,
-                            drawerPosition: "right",
                         }}
-                        drawerContent={DrawerContent}
                     >
                         <Navigation.Screen name="Home" component={Home} />
                         <Navigation.Screen name="Stats" component={Stats} />
                         <Navigation.Screen name="QsoForm" component={QsoForm} />
                         <Navigation.Screen name="About" component={About} />
                         <Navigation.Screen name="Adif" component={Adif} />
+                        <Navigation.Screen name="Menu" component={Menu} />
                         <Navigation.Screen name="Settings" component={Settings} />
                     </Navigation.Navigator>
                 </SafeAreaView>

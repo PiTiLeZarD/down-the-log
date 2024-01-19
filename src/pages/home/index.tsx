@@ -1,4 +1,4 @@
-import { DrawerScreenProps } from "@react-navigation/drawer";
+import { StackScreenProps } from "@react-navigation/stack";
 import React from "react";
 import { View } from "react-native";
 import { createStyleSheet, useStyles } from "react-native-unistyles";
@@ -31,7 +31,7 @@ const stylesheet = createStyleSheet((theme) => ({
     },
 }));
 
-export type HomeProps = {} & DrawerScreenProps<NavigationParamList, "Home">;
+export type HomeProps = {} & StackScreenProps<NavigationParamList, "Home">;
 
 export type HomeComponent = React.FC<HomeProps>;
 

@@ -1,4 +1,4 @@
-import { DrawerScreenProps } from "@react-navigation/drawer";
+import { StackScreenProps } from "@react-navigation/stack";
 import React from "react";
 import { Switch } from "react-native";
 import { NavigationParamList } from "../../Navigation";
@@ -10,7 +10,7 @@ import { Button } from "../../utils/theme/components/button";
 import { Input } from "../../utils/theme/components/input";
 import { Typography } from "../../utils/theme/components/typography";
 
-export type SettingsProps = {} & DrawerScreenProps<NavigationParamList, "Settings">;
+export type SettingsProps = {} & StackScreenProps<NavigationParamList, "Settings">;
 
 export type SettingsComponent = React.FC<SettingsProps>;
 
@@ -20,7 +20,7 @@ export const Settings: SettingsComponent = ({ navigation }): JSX.Element => {
     const updateSetting = useStore((state) => state.updateSetting);
 
     return (
-        <PageLayout title="Settings" navigation={navigation}>
+        <PageLayout title="Settings" navigate={navigation.navigate}>
             <Stack>
                 <Typography>My Callsign:</Typography>
                 <Input

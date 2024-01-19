@@ -1,5 +1,4 @@
-import { DrawerScreenProps } from "@react-navigation/drawer";
-import { ParamListBase } from "@react-navigation/native";
+import { StackHeaderProps } from "@react-navigation/stack";
 import React from "react";
 import { View } from "react-native";
 import { createStyleSheet, useStyles } from "react-native-unistyles";
@@ -29,7 +28,7 @@ const stylesheet = createStyleSheet((theme) => ({
     },
 }));
 
-export type LocationHeaderProps = {} & Pick<DrawerScreenProps<ParamListBase, string>, "navigation">;
+export type LocationHeaderProps = {} & StackHeaderProps;
 
 export type LocationHeaderComponent = React.FC<LocationHeaderProps>;
 
@@ -65,7 +64,7 @@ export const LocationHeader: LocationHeaderComponent = ({ navigation }): JSX.Ele
                     <Clocks />
                 </View>
                 <View>
-                    <Button onPress={() => navigation.openDrawer()} startIcon="menu" />
+                    <Button onPress={() => navigation.navigate("Menu")} startIcon="menu" />
                 </View>
             </Stack>
             <View style={widthMatches(undefined, "md") ? {} : { display: "none" }}>

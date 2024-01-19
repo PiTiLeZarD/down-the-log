@@ -1,4 +1,4 @@
-import { DrawerScreenProps } from "@react-navigation/drawer";
+import { StackScreenProps } from "@react-navigation/stack";
 import React from "react";
 import { Linking } from "react-native";
 import { NavigationParamList } from "../../Navigation";
@@ -8,7 +8,7 @@ import { Alert } from "../../utils/theme/components/alert";
 import { Button } from "../../utils/theme/components/button";
 import { Typography } from "../../utils/theme/components/typography";
 
-export type AboutProps = {} & DrawerScreenProps<NavigationParamList, "About">;
+export type AboutProps = {} & StackScreenProps<NavigationParamList, "About">;
 
 export type AboutComponent = React.FC<AboutProps>;
 
@@ -19,7 +19,7 @@ export const About: AboutComponent = ({ navigation }): JSX.Element => {
     };
 
     return (
-        <PageLayout title="About" navigation={navigation}>
+        <PageLayout title="About" navigate={navigation.navigate}>
             <Stack gap="xxl">
                 <Stack direction="row" style={{ marginBottom: 25 }}>
                     <Typography>If you like what I'm doing, </Typography>

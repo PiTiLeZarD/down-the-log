@@ -1,4 +1,4 @@
-import { DrawerScreenProps } from "@react-navigation/drawer";
+import { StackScreenProps } from "@react-navigation/stack";
 import React from "react";
 import { useFormContext } from "react-hook-form";
 import { Pressable, View } from "react-native";
@@ -42,7 +42,7 @@ const stylesheet = createStyleSheet((theme) => ({
 
 export type FormFieldsProps = {
     qso: QSO;
-} & Pick<DrawerScreenProps<NavigationParamList, "QsoForm">, "navigation">;
+} & Pick<StackScreenProps<NavigationParamList, "QsoForm">, "navigation">;
 
 export type FormFieldsComponent = React.FC<FormFieldsProps>;
 
@@ -60,7 +60,7 @@ export const FormFields: FormFieldsComponent = ({ navigation, qso }): JSX.Elemen
     return (
         <PageLayout
             title={<FormField name="callsign" style={styles.callsignInput} />}
-            navigation={navigation}
+            navigate={navigation.navigate}
             titleMargin={10}
         >
             <Pressable onPress={() => setOpenTimeLocModal(true)}>

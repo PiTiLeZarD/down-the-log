@@ -2,11 +2,6 @@
 
 This is the rough todolist I want to work on.
 
--   [ ] web
-    -   [x] fonts not loaded
-    -   [x] icons not working
-    -   [x] huge padding at the bottom of the page on mobile
-    -   [ ] rotating the screens bugs the whole thing
 -   [ ] Manage errors from HamQTH
 -   [ ] ios errors galore
 -   [ ] adif import export
@@ -20,7 +15,7 @@ This is the rough todolist I want to work on.
     -   [x] S/N input to help fill tx/rx report up real quick
     -   [x] add all the rest of the fields (check adif spec and rumlog)
     -   [ ] add https://docs.expo.dev/versions/latest/sdk/date-time-picker/ in the form to edit date/time
-    -   [ ] allow filling up itu/cq/dxx and all that
+    -   [x] allow filling up itu/cq/dxcc and all that
 -   [ ] implement ADX file format
 -   [x] Stats
     -   [x] qsos /continent /country /year,month
@@ -40,11 +35,11 @@ This is the rough todolist I want to work on.
         -   [ ] Create playstore dev account and release there
 -   [ ] contest mode (instead of Callsign > Form, have all relevant details on the bottom and log directly, ability to edit later)
 -   [ ] band map, ability to link callsign/frequency on the band, use this to start qso's (also ability to write name/qth and other details so it's prefilled)
--   [ ] qso's map view (wide screen could have both displayed, phone could have a selector?)
-    -   [ ] https://github.com/react-native-maps/react-native-maps
-    -   [ ] work on the layout using the responsive grid
-    -   [ ] find a way to use leaflet or other ways to have maps on react-native
-    -   [ ] display qsos based on maidenhead
+-   [x] qso's map view (wide screen could have both displayed, phone could have a selector?)
+    -   [x] https://github.com/react-native-maps/react-native-maps
+    -   [x] work on the layout using the responsive grid
+    -   [x] find a way to use leaflet or other ways to have maps on react-native
+    -   [x] display qsos based on maidenhead
     -   [ ] cluster qsos
 -   [ ] hamclock modules (sunspot or sun data, propagaion, greyline, short/long path etc...)
 -   [ ] integrations
@@ -64,6 +59,11 @@ This is the rough todolist I want to work on.
 
 ## Done
 
+-   [x] web
+    -   [x] fonts not loaded
+    -   [x] icons not working
+    -   [x] huge padding at the bottom of the page on mobile
+    -   [x] rotating the screens bugs the whole thing
 -   [x] Perf issues, typing a callsign is way too slow
 -   [x] Perf issues, migrate to unistyles
 -   [x] fix the burger menu (https://github.com/gluestack/gluestack-ui/issues/491#issuecomment-1797030604)

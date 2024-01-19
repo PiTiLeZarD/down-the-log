@@ -1,4 +1,4 @@
-import { DrawerScreenProps } from "@react-navigation/drawer";
+import { StackScreenProps } from "@react-navigation/stack";
 import React, { useEffect } from "react";
 import { Platform } from "react-native";
 import { createStyleSheet, useStyles } from "react-native-unistyles";
@@ -30,7 +30,7 @@ const stylesheet = createStyleSheet((theme) => ({
     },
 }));
 
-export type AdifProps = {} & DrawerScreenProps<NavigationParamList, "Adif">;
+export type AdifProps = {} & StackScreenProps<NavigationParamList, "Adif">;
 
 export type AdifComponent = React.FC<AdifProps>;
 
@@ -73,7 +73,7 @@ export const Adif: AdifComponent = ({ navigation }): JSX.Element => {
     };
 
     return (
-        <PageLayout title="Import/Export" navigation={navigation}>
+        <PageLayout title="Import/Export" navigate={navigation.navigate}>
             {!!importRemaining.length && (
                 <Stack>
                     <Typography variant="h1">QSOs left to import: {importRemaining.length}</Typography>

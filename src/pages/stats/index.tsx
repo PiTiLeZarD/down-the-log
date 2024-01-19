@@ -1,4 +1,4 @@
-import { DrawerScreenProps } from "@react-navigation/drawer";
+import { StackScreenProps } from "@react-navigation/stack";
 import React from "react";
 import { NavigationParamList } from "../../Navigation";
 import { Band, freq2band } from "../../data/bands";
@@ -22,7 +22,7 @@ const groupQsos = (qsos: QSO[], statType: FilterName): Record<string, Record<str
         ]),
     );
 
-export type StatsProps = {} & DrawerScreenProps<NavigationParamList, "Stats">;
+export type StatsProps = {} & StackScreenProps<NavigationParamList, "Stats">;
 
 export type StatsComponent = React.FC<StatsProps>;
 
@@ -41,7 +41,7 @@ export const Stats: StatsComponent = ({ navigation }): JSX.Element => {
     const columns = usedBands.length + 2;
 
     return (
-        <PageLayout title="Stats" navigation={navigation}>
+        <PageLayout title="Stats" navigate={navigation.navigate}>
             <Stack>
                 <SelectInput
                     value={statType}
