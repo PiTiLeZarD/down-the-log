@@ -25,7 +25,7 @@ export const QsoMap: QsoMapComponent = ({ qso }): JSX.Element => {
      * Path to accept a polyline (and to encode it properly)
      */
     return (
-        <Map height={200} google={google}>
+        <Map height={200} width={600} google={google}>
             <Marker location={from} label={qso.myCallsign} />
             <Marker location={to} label={qso.callsign} />
             <Path from={from} to={to} />

@@ -9,6 +9,9 @@ export type GoogleCredentials = {
     secret: string;
 };
 
+const blurhash =
+    "|rF?hV%2WCj[ayj[a|j[az_NaeWBj@ayfRayfQfQM{M|azj[azf6fQfQfQIpWXofj[ayj[j[fQayWCoeoeaya}j[ayfQa{oLj?j[WVj[ayayj[fQoff7azayj[ayj[j[ayofayayayj[fQj[ayayj[ayfjj[j[ayjuayj[";
+
 const b64unsafeUrl = (b64: string) => b64.replace(/_/g, "/").replace(/-/g, "+");
 const b64safeUrl = (b64: string) => b64.replace(/\+/g, "-").replace(/\//g, "_");
 
@@ -36,11 +39,11 @@ export const Map: MapComponent = ({ width = "auto", height, google, children }):
         (o) => o.type, // group with style here
     );
 
-    let url = `https://maps.googleapis.com/maps/api/staticmap?&size=600x${height}`;
+    let url = `https://maps.googleapis.com/maps/api/staticmap?&size=${width}x${height}`;
     Object.keys(features).forEach(
         (e) => (url = `${url}&${e}=${encodeURIComponent(features[e as Feature["type"]].map((f) => f.data).join("|"))}`),
     );
     url = `${url}&key=${google.key}`;
 
-    return <Image source={signRequest(url, google.secret)} />;
+    return <Image style={{ width, height }} source={signRequest(url, google.secret)} placeholder={blurhash} />;
 };
