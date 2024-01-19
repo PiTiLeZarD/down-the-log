@@ -26,9 +26,9 @@ export const QsoMap: QsoMapComponent = ({ qso }): JSX.Element => {
      */
     return (
         <Map height={200} google={google}>
-            <Marker location={from} label={qso.myCallsign} />
-            <Marker location={to} label={qso.callsign} />
-            <Path from={from} to={to} />
+            <Marker location={from} style={{ color: "blue", label: "A" }} />
+            <Marker location={to} style={{ label: "B" }} />
+            <Path from={from} to={to} style={{ geodesic: true }} />
         </Map>
     );
 };

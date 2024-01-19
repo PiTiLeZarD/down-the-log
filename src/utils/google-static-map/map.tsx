@@ -37,11 +37,18 @@ const getActualWidth = (width: "auto" | number, ref: React.RefObject<View>) =>
 
 export const Map: MapComponent = ({ width = "auto", height, google, children }): JSX.Element => {
     const widthRef = useRef<View>(null);
-    const features = groupBy<Feature, Feature["type"]>(
+    const features = groupBy<Feature, string>(
         React.Children.toArray(children)
             .filter((f) => (React.isValidElement(f) ? "renderFeature" in (f as any).type : false))
             .map((f: any) => f.type.renderFeature(f.props)),
-        (o) => o.type, // group with style here
+        (o) =>
+            o.style
+                ? `${o.type}=${encodeURIComponent(
+                      Object.entries(o.style)
+                          .map(([k, v]) => `${k}:${v}`)
+                          .join("|"),
+                  )}`
+                : o.type,
     );
 
     const actualWidth = getActualWidth(width, widthRef);
@@ -49,7 +56,10 @@ export const Map: MapComponent = ({ width = "auto", height, google, children }):
     let url = `https://maps.googleapis.com/maps/api/staticmap`;
     if (actualWidth) url = `${url}?&size=${actualWidth}x${height}`;
     Object.keys(features).forEach(
-        (e) => (url = `${url}&${e}=${encodeURIComponent(features[e as Feature["type"]].map((f) => f.data).join("|"))}`),
+        (e) =>
+            (url = `${url}&${e}${e.includes("=") ? "|" : "="}${encodeURIComponent(
+                features[e].map((f) => f.data).join("|"),
+            )}`),
     );
     url = `${url}&key=${google.key}`;
 
