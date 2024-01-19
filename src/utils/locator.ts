@@ -59,7 +59,7 @@ export const distance = (l1: LatLng, l2: LatLng, imperial?: boolean): number => 
         Math.cos(rad(l1.latitude)) * Math.cos(rad(l2.latitude)) * Math.sin(d_long / 2) * Math.sin(d_long / 2);
     const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
 
-    return imperial ? roundTo((EARTH_RADIUS * c) / 1.6, 2) : roundTo(EARTH_RADIUS * c, 2);
+    return roundTo((EARTH_RADIUS * c) / (imperial ? 1.6 : 1), 2);
 };
 
 export const maidenDistance = (m1: string, m2: string, imperial?: boolean): number =>
