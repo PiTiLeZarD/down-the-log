@@ -20,12 +20,10 @@ const stylesheet = createStyleSheet((theme) => ({
         width: "100%",
         height: "100%",
     },
-    table: {
+    content: {
         flexGrow: 1,
     },
     inputs: {
-        left: 0,
-        bottom: 0,
         width: "100%",
         backgroundColor: "white",
     },
@@ -58,19 +56,21 @@ export const Home: HomeComponent = ({ navigation }): JSX.Element => {
 
     return (
         <View style={styles.container}>
-            {!settings.myCallsign && (
-                <Alert severity="warning">
-                    <Typography>Your callsign isn't set properly, check the settings to set it up!</Typography>
-                </Alert>
-            )}
-            {settings.showBeacons && <Beacons />}
-            {settings.showFilters && <Filters filters={qsosFilters} setFilters={setQsosFilters} />}
-            <QsoList
-                style={styles.table}
-                qsos={filterQsos(qsos, qsosFilters)}
-                filters={callsign ? [(q) => q.callsign.includes(callsign)] : undefined}
-                onQsoPress={(qso) => navigation.navigate("QsoForm", { qsoId: qso.id })}
-            />
+            <View style={styles.content}>
+                {!settings.myCallsign && (
+                    <Alert severity="warning">
+                        <Typography>Your callsign isn't set properly, check the settings to set it up!</Typography>
+                    </Alert>
+                )}
+                {settings.showBeacons && <Beacons />}
+                {settings.showFilters && <Filters filters={qsosFilters} setFilters={setQsosFilters} />}
+                <QsoList
+                    style={{ height: 0 }}
+                    qsos={filterQsos(qsos, qsosFilters)}
+                    filters={callsign ? [(q) => q.callsign.includes(callsign)] : undefined}
+                    onQsoPress={(qso) => navigation.navigate("QsoForm", { qsoId: qso.id })}
+                />
+            </View>
             <View style={styles.inputs}>
                 <CallsignInput handleAdd={handleAdd} onChange={setCallsign} value={callsign} />
             </View>
