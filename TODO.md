@@ -46,7 +46,7 @@ This is the rough todolist I want to work on.
     -   [ ] qrz integration
     -   [x] hamQTH
     -   [ ] eqsl
-    -   [ ] lotw (this one sounds tough, gotta sign adif exports, let's see)
+    -   [ ] lotw ([this one sounds tough, gotta sign adif exports, let's see](https://lotw.arrl.org/lotw-help/developer-information/?lang=en))
 -   [ ] cluster?
 -   [ ] Settings
     -   [x] should be able to select our own callsign, maybe prompt at the start of the app
