@@ -48,4 +48,10 @@ export const theme = {
     },
 } as const;
 
+export const SwalTheme = {
+    confirmButtonColor: theme.colours.primary[theme.shades.dark],
+    denyButtonColor: theme.colours.secondary[theme.shades.dark],
+    cancelButtonColor: theme.colours.grey[theme.shades.dark],
+};
+
 export type ColourVariant = keyof typeof theme.colours;

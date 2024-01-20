@@ -2,6 +2,7 @@ import { StackScreenProps } from "@react-navigation/stack";
 import React, { useEffect } from "react";
 import { Platform } from "react-native";
 import { createStyleSheet, useStyles } from "react-native-unistyles";
+import Swal from "sweetalert2";
 import { NavigationParamList } from "../../Navigation";
 import { useStore } from "../../store";
 import { adifLine2Qso, downloadQsos, splitAdifInRecords } from "../../utils/adif";
@@ -11,6 +12,7 @@ import { findMatchingQso, useQsos } from "../../utils/qso";
 import { Stack } from "../../utils/stack";
 import { Button } from "../../utils/theme/components/button";
 import { Typography } from "../../utils/theme/components/typography";
+import { SwalTheme } from "../../utils/theme/theme";
 
 const stylesheet = createStyleSheet((theme) => ({
     dropzone: {
@@ -40,6 +42,7 @@ export const Adif: AdifComponent = ({ navigation }): JSX.Element => {
     const settings = useStore((state) => state.settings);
     const resetStore = useStore((state) => state.resetStore);
     const [importRemaining, setImportRemaining] = React.useState<string[]>([]);
+    const [importing, setImporting] = React.useState<boolean>(false);
     const qsos = useQsos();
     const log = useStore((state) => state.log);
 
@@ -49,6 +52,15 @@ export const Adif: AdifComponent = ({ navigation }): JSX.Element => {
             const newImportRemaining = importRemaining.slice(1);
             if (toImport) log(findMatchingQso(qsos, toImport) || toImport);
             setImportRemaining(newImportRemaining);
+        } else if (importing) {
+            Swal.fire({
+                ...SwalTheme,
+                title: "Done!",
+                text: "All records have been imported!",
+                icon: "success",
+                confirmButtonText: "Ok",
+            });
+            setImporting(false);
         }
     }, [importRemaining]);
 
@@ -60,6 +72,7 @@ export const Adif: AdifComponent = ({ navigation }): JSX.Element => {
                     const content =
                         typeof fr.result == "string" ? fr.result : new TextDecoder("utf-8").decode(fr.result);
                     setImportRemaining(splitAdifInRecords(content));
+                    setImporting(true);
                 }
             };
 
@@ -69,7 +82,13 @@ export const Adif: AdifComponent = ({ navigation }): JSX.Element => {
 
     const handleErase = () => {
         resetStore();
-        alert("done!");
+        Swal.fire({
+            ...SwalTheme,
+            title: "Done!",
+            text: "All records have been erased!",
+            icon: "success",
+            confirmButtonText: "Ok",
+        });
     };
 
     return (
@@ -92,7 +111,7 @@ export const Adif: AdifComponent = ({ navigation }): JSX.Element => {
             {!["ios", "android"].includes(Platform.OS) && (
                 <Dropzone onAcceptedFiles={handleImport} style={styles.dropzone}>
                     <Typography style={styles.dropzoneText} variant="h2">
-                        Upload here
+                        Upload here by clicking or dropping a file
                     </Typography>
                 </Dropzone>
             )}
