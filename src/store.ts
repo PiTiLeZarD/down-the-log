@@ -14,6 +14,7 @@ export type Settings = {
     imperial: boolean;
     hamqth?: HamQTHSettingsType;
     google?: GoogleCredentials;
+    geocodeMapsCoKey?: string;
 };
 
 type DTLStoreProps = {

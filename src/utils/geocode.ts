@@ -1,7 +1,5 @@
 import axios from "axios";
 
-const API_KEY = "65a75c71db028165322267qlje2e6e7";
-
 export type GeocodeHit = {
     place_id: number;
     licence: string;
@@ -16,7 +14,7 @@ export type GeocodeHit = {
     importance: number;
 };
 
-export const geocode = async (address: string): Promise<GeocodeHit[]> => {
-    const response = await axios.get(`https://geocode.maps.co/search?q=${address}&api_key=${API_KEY}`);
+export const geocode = async (address: string, key: string): Promise<GeocodeHit[]> => {
+    const response = await axios.get(`https://geocode.maps.co/search?q=${address}&api_key=${key}`);
     return response.data;
 };

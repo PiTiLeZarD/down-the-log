@@ -87,7 +87,6 @@ export const Settings: SettingsComponent = ({ navigation }): JSX.Element => {
                 <Stack direction="row">
                     <Typography>Key:</Typography>
                     <Input
-                        password
                         value={settings.google != undefined ? settings.google.key : ""}
                         onChangeText={(v) =>
                             updateSetting("google", { ...(settings.google || { key: "", secret: "" }), key: v })
@@ -100,6 +99,18 @@ export const Settings: SettingsComponent = ({ navigation }): JSX.Element => {
                         onChangeText={(v) =>
                             updateSetting("google", { ...(settings.google || { key: "", secret: "" }), secret: v })
                         }
+                    />
+                </Stack>
+                <Typography>Geocode Maps:</Typography>
+                <Typography variant="subtitle">
+                    Get an api key on https://geocode.maps.co/ to add a button on the form that will allow you to
+                    convert anything you write in QTH to a gridsquare
+                </Typography>
+                <Stack direction="row">
+                    <Typography>Key:</Typography>
+                    <Input
+                        value={settings.geocodeMapsCoKey || ""}
+                        onChangeText={(v) => updateSetting("geocodeMapsCoKey", v)}
                     />
                 </Stack>
             </Stack>

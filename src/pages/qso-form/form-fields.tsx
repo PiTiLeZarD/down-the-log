@@ -51,6 +51,7 @@ export const FormFields: FormFieldsComponent = ({ navigation, qso }): JSX.Elemen
     const { styles } = useStyles(stylesheet);
     const { getValues } = useFormContext<QSO>();
     const deleteLog = useStore((state) => state.deleteLog);
+    const settings = useStore((state) => state.settings);
 
     const onDelete = () => {
         if (qso) deleteLog(qso);
@@ -125,10 +126,12 @@ export const FormFields: FormFieldsComponent = ({ navigation, qso }): JSX.Elemen
                 <Grid item xs={8}>
                     <FormField name="qth" label="QTH:" />
                 </Grid>
-                <Grid item xs={1}>
-                    <GeocodeButton />
-                </Grid>
-                <Grid item xs={3}>
+                {settings.geocodeMapsCoKey && (
+                    <Grid item xs={1}>
+                        <GeocodeButton />
+                    </Grid>
+                )}
+                <Grid item xs={settings.geocodeMapsCoKey ? 3 : 4}>
                     <LocatorField name="locator" label="Locator:" />
                 </Grid>
             </Grid>
