@@ -1,12 +1,16 @@
 import debounce from "debounce";
 import React, { useEffect } from "react";
-import { View, ViewStyle } from "react-native";
+import { Pressable, ViewStyle } from "react-native";
 import BigList from "react-native-big-list";
 import { createStyleSheet, useStyles } from "react-native-unistyles";
 import { QSO } from ".";
 import { useStore } from "../../store";
+import { Modal } from "../modal";
+import { Stack } from "../stack";
+import { Button } from "../theme/components/button";
 import { Typography } from "../theme/components/typography";
 import { QsoListItem } from "./qso-list-item";
+import { QsoMap } from "./qso-map";
 import { QsoRow } from "./qso-row";
 
 const qsos2sections = (qsos: QSO[]): QSO[][] =>
@@ -37,6 +41,34 @@ const stylesheet = createStyleSheet((theme) => ({
     },
 }));
 
+export type QsoListSectionHeaderProps = {
+    section: number;
+    sections: QSO[][];
+};
+
+export type QsoListSectionHeaderComponent = React.FC<QsoListSectionHeaderProps>;
+
+export const QsoListSectionHeader: QsoListSectionHeaderComponent = ({ section, sections }): JSX.Element => {
+    const [mapOpen, setmapOpen] = React.useState<boolean>(false);
+    const { styles } = useStyles(stylesheet);
+
+    return (
+        <Pressable onPress={() => setmapOpen(!mapOpen)}>
+            <Stack style={styles.sectionHeader}>
+                <Typography style={styles.sectionHeaderText}>
+                    {sections[section][0].date.toFormat("dd/MM/yyyy")} ({sections[section].length})
+                </Typography>
+                <Modal wide open={mapOpen} onClose={() => setmapOpen(false)}>
+                    <Stack gap="xl">
+                        <QsoMap qsos={sections[section]} width={640} height={640} />
+                        <Button text="Ok" colour="success" onPress={() => setmapOpen(false)} />
+                    </Stack>
+                </Modal>
+            </Stack>
+        </Pressable>
+    );
+};
+
 export type QsoListProps = {
     qsos: QSO[];
     onQsoPress: (qso: QSO) => void;
@@ -52,7 +84,6 @@ const applyFilters = (qsos: QSO[], filters: QsoListProps["filters"]) =>
 export const QsoList: QsoListComponent = ({ style, filters, qsos, onQsoPress }): JSX.Element => {
     const [sections, setSections] = React.useState<QSO[][]>(qsos2sections(applyFilters(qsos, filters)));
     const settings = useStore((state) => state.settings);
-    const { styles } = useStyles(stylesheet);
 
     useEffect(
         debounce(() => {
@@ -82,15 +113,7 @@ export const QsoList: QsoListComponent = ({ style, filters, qsos, onQsoPress }):
                     band="Band"
                 />
             )}
-            renderSectionHeader={(section) => (
-                <View>
-                    <View style={styles.sectionHeader}>
-                        <Typography style={styles.sectionHeaderText}>
-                            {sections[section][0].date.toFormat("dd/MM/yyyy")} ({sections[section].length})
-                        </Typography>
-                    </View>
-                </View>
-            )}
+            renderSectionHeader={(section) => <QsoListSectionHeader section={section} sections={sections} />}
             renderFooter={() => <></>}
             itemHeight={LINEHEIGHT}
             headerHeight={LINEHEIGHT}
