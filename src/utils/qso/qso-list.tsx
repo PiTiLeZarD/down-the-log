@@ -1,6 +1,6 @@
 import debounce from "debounce";
 import React, { useEffect } from "react";
-import { Pressable, ViewStyle } from "react-native";
+import { Pressable, View, ViewStyle } from "react-native";
 import BigList from "react-native-big-list";
 import { createStyleSheet, useStyles } from "react-native-unistyles";
 import { QSO } from ".";
@@ -50,14 +50,24 @@ export type QsoListSectionHeaderComponent = React.FC<QsoListSectionHeaderProps>;
 
 export const QsoListSectionHeader: QsoListSectionHeaderComponent = ({ section, sections }): JSX.Element => {
     const [mapOpen, setmapOpen] = React.useState<boolean>(false);
+    const settings = useStore((state) => state.settings);
     const { styles } = useStyles(stylesheet);
+    const text = `${sections[section][0].date.toFormat("dd/MM/yyyy")} (${sections[section].length})`;
+
+    if (!settings.google) {
+        return (
+            <View>
+                <View style={styles.sectionHeader}>
+                    <Typography style={styles.sectionHeaderText}>{text}</Typography>
+                </View>
+            </View>
+        );
+    }
 
     return (
         <Pressable onPress={() => setmapOpen(!mapOpen)}>
             <Stack style={styles.sectionHeader}>
-                <Typography style={styles.sectionHeaderText}>
-                    {sections[section][0].date.toFormat("dd/MM/yyyy")} ({sections[section].length})
-                </Typography>
+                <Typography style={styles.sectionHeaderText}>{text}</Typography>
                 <Modal wide open={mapOpen} onClose={() => setmapOpen(false)}>
                     <Stack gap="xl">
                         <QsoMap qsos={sections[section]} width={640} height={640} />
