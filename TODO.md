@@ -2,7 +2,6 @@
 
 This is the rough todolist I want to work on.
 
--   [ ] Manage errors from HamQTH
 -   [ ] ios errors galore
 -   [ ] adif import export
     -   [x] download qsos as adif
@@ -61,6 +60,7 @@ This is the rough todolist I want to work on.
 
 ## Done
 
+-   [x] Manage errors from HamQTH
 -   [x] web
     -   [x] fonts not loaded
     -   [x] icons not working

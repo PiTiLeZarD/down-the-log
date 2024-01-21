@@ -1,14 +1,17 @@
 import { StackScreenProps } from "@react-navigation/stack";
 import React from "react";
 import { Switch } from "react-native";
+import Swal from "sweetalert2";
 import { NavigationParamList } from "../../Navigation";
 import { useStore } from "../../store";
+import { HamQTHSettingsType } from "../../utils/hamqth";
 import { normalise } from "../../utils/locator";
 import { PageLayout } from "../../utils/page-layout";
 import { Stack } from "../../utils/stack";
 import { Button } from "../../utils/theme/components/button";
 import { Input } from "../../utils/theme/components/input";
 import { Typography } from "../../utils/theme/components/typography";
+import { SwalTheme } from "../../utils/theme/theme";
 
 export type SettingsProps = {} & StackScreenProps<NavigationParamList, "Settings">;
 
@@ -66,6 +69,26 @@ export const Settings: SettingsComponent = ({ navigation }): JSX.Element => {
                     when using their api)
                 </Typography>
                 <Typography>HamQTH:</Typography>
+                {settings.hamqth && settings.hamqth.sessionId && (
+                    <Button
+                        text="Refresh HamQTH Session"
+                        variant="outlined"
+                        onPress={() => {
+                            updateSetting("hamqth", {
+                                ...settings.hamqth,
+                                sessionId: undefined,
+                                sessionStart: undefined,
+                            } as HamQTHSettingsType);
+                            Swal.fire({
+                                ...SwalTheme,
+                                title: "HamQTH",
+                                text: "Session refreshed, a new one will be requested on next refresh",
+                                icon: "info",
+                                confirmButtonText: "Ok",
+                            });
+                        }}
+                    />
+                )}
                 <Stack direction="row">
                     <Typography>User:</Typography>
                     <Input

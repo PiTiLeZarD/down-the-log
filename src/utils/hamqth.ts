@@ -1,6 +1,10 @@
 import axios from "axios";
 import { DateTime } from "luxon";
+import Swal from "sweetalert2";
 import { latlong2Maidenhead, normalise } from "./locator";
+import { SwalTheme } from "./theme/theme";
+
+const ignoreErrors = ["Callsign not found"];
 
 export type HamQTHSettingsType = {
     user: string;
@@ -30,6 +34,8 @@ const fetchData = async (params: Record<string, string>) => {
     );
     const parser = new DOMParser();
     const doc = parser.parseFromString(response.data, "text/xml");
+    const error = pickXML(doc, "error");
+    if (error) throw new Error(error);
     return doc;
 };
 
@@ -48,32 +54,49 @@ export const isSessionValid = (hamqth: HamQTHSettingsType | undefined) =>
 export const newSessionId = (hamqth: HamQTHSettingsType | undefined, newSession: string) =>
     ({ ...(hamqth || {}), sessionId: newSession, sessionStart: DateTime.now() }) as HamQTHSettingsType;
 
+const swal = (error: Error) => {
+    if (!ignoreErrors.includes(error.message)) {
+        Swal.fire({
+            ...SwalTheme,
+            title: "HamQTH Error!",
+            text: error.message,
+            icon: "error",
+            confirmButtonText: "Ok",
+        });
+    }
+    return undefined;
+};
+
 export const fetchSessionId = async (user: string, password: string) =>
-    fetchData({ u: user, p: password }).then((doc) => pickXML(doc, "session_id"));
+    fetchData({ u: user, p: password })
+        .then((doc) => pickXML(doc, "session_id"))
+        .catch(swal);
 export const fetchCallsignData = async (sessionId: string | undefined, callsign: string) => {
-    if (!sessionId) throw new Error("Missing session ID");
-    return fetchData({ id: sessionId, callsign, prg: "down-the-log" }).then((doc) => {
-        if (pickXML(doc, "error")) return undefined;
-        return {
-            name: pickXML(doc, "nick") || pickXML(doc, "adr_name"),
-            qth: pickXML(doc, "qth"),
-            country: pickXML(doc, "country"),
-            itu: pickXML(doc, "itu"),
-            cq: pickXML(doc, "cq"),
-            grid: pickXML(doc, "grid")
-                ? normalise(pickXML(doc, "grid"))
-                : pickXML(doc, "latitude") && pickXML(doc, "longitude")
-                  ? latlong2Maidenhead({
-                        latitude: +(pickXML(doc, "latitude") as string),
-                        longitude: +(pickXML(doc, "longitude") as string),
-                    })
-                  : undefined,
-            email: pickXML(doc, "email"),
-            age: pickXML(doc, "birth_year")
-                ? DateTime.now().toObject().year - +(pickXML(doc, "birth_year") as string)
-                : undefined,
-            lic_year: pickXML(doc, "lic_year") ? +(pickXML(doc, "lic_year") as string) : undefined,
-            utc_offset: pickXML(doc, "utc_offset") ? +(pickXML(doc, "utc_offset") as string) : undefined,
-        } as HamQTHCallsignData;
-    });
+    if (!sessionId) return swal(new Error("Missing session ID"));
+    return fetchData({ id: sessionId, callsign, prg: "down-the-log" })
+        .then((doc) => {
+            if (pickXML(doc, "error")) return undefined;
+            return {
+                name: pickXML(doc, "nick") || pickXML(doc, "adr_name"),
+                qth: pickXML(doc, "qth"),
+                country: pickXML(doc, "country"),
+                itu: pickXML(doc, "itu"),
+                cq: pickXML(doc, "cq"),
+                grid: pickXML(doc, "grid")
+                    ? normalise(pickXML(doc, "grid"))
+                    : pickXML(doc, "latitude") && pickXML(doc, "longitude")
+                      ? latlong2Maidenhead({
+                            latitude: +(pickXML(doc, "latitude") as string),
+                            longitude: +(pickXML(doc, "longitude") as string),
+                        })
+                      : undefined,
+                email: pickXML(doc, "email"),
+                age: pickXML(doc, "birth_year")
+                    ? DateTime.now().toObject().year - +(pickXML(doc, "birth_year") as string)
+                    : undefined,
+                lic_year: pickXML(doc, "lic_year") ? +(pickXML(doc, "lic_year") as string) : undefined,
+                utc_offset: pickXML(doc, "utc_offset") ? +(pickXML(doc, "utc_offset") as string) : undefined,
+            } as HamQTHCallsignData;
+        })
+        .catch(swal);
 };
