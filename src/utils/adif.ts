@@ -157,21 +157,31 @@ export const adif2Record = (adif: string): QSORecord => {
     return record;
 };
 
-const header = (): string[] => [
-    "ADIF Export from down-the-log by VK4ALE",
-    "for further info visit: https://github.com/PiTiLeZarD/down-the-log",
-    "",
-    adifField("adif_ver", "3.1.4"),
-    adifField("created_timestamp", DateTime.utc().toFormat("yyyyMMdd HHmmss")),
-    adifField("programid", "down-the-log"),
-    adifField("programversion", "0.0.1"),
-    "<EOH>",
-    "",
-    "",
-];
+type Header = {
+    note?: string;
+    fields?: Record<string, string>;
+};
+const header = (): Header => ({
+    note: "ADIF Export from down-the-log by VK4ALE\nfor further info visit: https://github.com/PiTiLeZarD/down-the-log",
+    fields: {
+        adif_ver: "3.1.4",
+        created_timestamp: DateTime.utc().toFormat("yyyyMMdd HHmmss"),
+        programid: "down-the-log",
+        programversion: "0.0.1",
+    },
+});
+
+const headerToAdif = (header: Header) =>
+    [
+        header.note,
+        ...(header.fields ? Object.entries(header.fields).map(([k, v]) => adifField(k, v)) : [""]),
+        "<EOH>",
+        "",
+        "",
+    ].join("\n");
 
 export const qsos2Adif = (qsos: QSO[]): string =>
-    [...header(), ...qsos.map((q) => record2adif(qso2record(q)))].join("\n");
+    [headerToAdif(header()), ...qsos.map((q) => record2adif(qso2record(q)))].join("\n");
 
 export const adifLine2Qso = (adif: string, currentLocation?: string, myCallsign?: string): QSO | null => {
     const qso = record2qso(adif2Record(adif));
