@@ -48,9 +48,46 @@ const castAs: <T>(values: T[], input?: string) => T | undefined = (values, input
     return values.includes(cleanInput as any) ? (cleanInput as (typeof values)[0]) : undefined;
 };
 
+const sanitize = (v: string) =>
+    v.replace(/[<>&'"”]/g, (c?: string) => {
+        switch (c) {
+            case "<":
+                return "&lt;";
+            case ">":
+                return "&gt;";
+            case "&":
+                return "&amp;";
+            case "'":
+                return "&apos;";
+            case '"':
+            case "”":
+                return "&quot;";
+        }
+        return "";
+    });
+
+const unsanitize = (v: string) =>
+    v.replace(/([&][a-z]{2,4}[;])/g, (c?: string) => {
+        switch (c) {
+            case "&lt;":
+                return "<";
+            case "&gt;":
+                return ">";
+            case "&amp;":
+                return "&";
+            case "&apos;":
+                return "'";
+            case "&quot;":
+                return '"';
+        }
+        return "";
+    });
+
 const adifField = (label: string, value?: string | number): string =>
-    typeof value !== "undefined" && value !== null ? `<${label.toUpperCase()}:${("" + value).length}>${value}` : "";
-const parseField = (adif: string): string[] => {
+    typeof value !== "undefined" && value !== null
+        ? `<${label.toUpperCase()}:${sanitize(String(value)).length}>${sanitize(String(value))}`
+        : "";
+const parseAdifField = (adif: string): string[] => {
     let remaining = adif.trim();
     const match = remaining.match(/[<]([^:]+)[:]([0-9]+)([:]([^<]+))?[>]/);
     if (!match) {
@@ -63,8 +100,13 @@ const parseField = (adif: string): string[] => {
     remaining = remaining.slice(`<${tagName}:${tagLength}${tagType ? `:${tagType}` : ""}>`.length);
     const value = remaining.slice(0, +tagLength);
     remaining = remaining.slice(+tagLength).trim();
-    return [remaining, tagName.toLowerCase(), value];
+    return [remaining, tagName.toLowerCase(), unsanitize(value)];
 };
+
+const adxField = (label: string, value?: string | number): string =>
+    typeof value !== "undefined" && value !== null
+        ? `<${label.toUpperCase()}>${sanitize(String(value))}</${label.toUpperCase()}>`
+        : "";
 
 export const qso2record = (qso: QSO): QSORecord => {
     return {
@@ -145,7 +187,7 @@ export const adif2Record = (adif: string): QSORecord => {
     let remaining = adif.trim();
 
     while (remaining.length && remaining.toUpperCase() !== "<EOR>") {
-        const field = parseField(remaining);
+        const field = parseAdifField(remaining);
         if (field.length === 0) {
             remaining = "";
             continue;
@@ -156,6 +198,12 @@ export const adif2Record = (adif: string): QSORecord => {
     }
     return record;
 };
+
+export const record2adx = (record: QSORecord): string =>
+    `<RECORD>${Object.entries(record)
+        .filter(([k, v]) => v !== undefined)
+        .map(([k, v]) => adxField(k, v))
+        .join("")}</RECORD>`;
 
 type Header = {
     note?: string;
@@ -180,8 +228,18 @@ const headerToAdif = (header: Header) =>
         "",
     ].join("\n");
 
+const headerToAdx = (header: Header) =>
+    `<HEADER>${adxField("NOTE", header.note)}${Object.entries(header.fields || {})
+        .map(([k, v]) => adxField(k, v))
+        .join("")}</HEADER>`;
+
 export const qsos2Adif = (qsos: QSO[]): string =>
     [headerToAdif(header()), ...qsos.map((q) => record2adif(qso2record(q)))].join("\n");
+
+export const qsos2Adx = (qsos: QSO[]): string =>
+    `<?xml version="1.0" encoding="UTF-8"?><ADX>${headerToAdx(header())}<RECORDS>${qsos
+        .map((q) => record2adx(qso2record(q)))
+        .join("")}</RECORDS></ADX>`;
 
 export const adifLine2Qso = (adif: string, currentLocation?: string, myCallsign?: string): QSO | null => {
     const qso = record2qso(adif2Record(adif));
@@ -211,8 +269,8 @@ export const adifFileToRecordList = (adif: string): string[] => {
         .map((record) => record.join("\n"));
 };
 
-export const downloadQsos = (title: string, qsos: QSO[]) =>
+export const downloadQsos = (title: string, qsos: QSO[], type: "adif" | "adx" = "adif") =>
     Object.assign(document.createElement("a"), {
-        href: `data:text/plain, ${encodeURIComponent(qsos2Adif(qsos))}`,
+        href: `data:text/plain, ${encodeURIComponent(type === "adif" ? qsos2Adif(qsos) : qsos2Adx(qsos))}`,
         download: title,
     }).click();

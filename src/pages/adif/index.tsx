@@ -102,12 +102,20 @@ export const Adif: AdifComponent = ({ navigation }): JSX.Element => {
                     </Typography>
                 </Stack>
             )}
-            <Button
-                startIcon="download-outline"
-                text="Download"
-                variant="outlined"
-                onPress={() => downloadQsos("adif_export.adif", qsos)}
-            />
+            <Stack direction="row">
+                <Button
+                    startIcon="download-outline"
+                    text="Download (ADIF)"
+                    variant="outlined"
+                    onPress={() => downloadQsos("adif_export.adif", qsos)}
+                />
+                <Button
+                    startIcon="download-outline"
+                    text="Download (ADX)"
+                    variant="outlined"
+                    onPress={() => downloadQsos("adx_export.adx", qsos, "adx")}
+                />
+            </Stack>
             {!["ios", "android"].includes(Platform.OS) && (
                 <Dropzone onAcceptedFiles={handleImport} style={styles.dropzone}>
                     <Typography style={styles.dropzoneText} variant="h2">
