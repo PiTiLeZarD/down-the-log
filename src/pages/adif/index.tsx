@@ -5,7 +5,7 @@ import { createStyleSheet, useStyles } from "react-native-unistyles";
 import Swal from "sweetalert2";
 import { NavigationParamList } from "../../Navigation";
 import { useStore } from "../../store";
-import { adifLine2Qso, downloadQsos, splitAdifInRecords } from "../../utils/adif";
+import { adifFileToRecordList, adifLine2Qso, downloadQsos } from "../../utils/adif";
 import { Dropzone, FileWithPreview } from "../../utils/dropzone";
 import { PageLayout } from "../../utils/page-layout";
 import { findMatchingQso, useQsos } from "../../utils/qso";
@@ -71,7 +71,7 @@ export const Adif: AdifComponent = ({ navigation }): JSX.Element => {
                 if (fr.result) {
                     const content =
                         typeof fr.result == "string" ? fr.result : new TextDecoder("utf-8").decode(fr.result);
-                    setImportRemaining(splitAdifInRecords(content));
+                    setImportRemaining(adifFileToRecordList(content));
                     setImporting(true);
                 }
             };
