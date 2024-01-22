@@ -38,14 +38,14 @@ export const QsoMap: QsoMapComponent = ({ qso, qsos, width = "auto", height = 20
                 <Marker
                     key={l}
                     location={maidenhead2Latlong(l as string)}
-                    style={{ label: "A", ...(toDisplay.length === 1 ? {} : { size: "tiny" }) }}
+                    style={{ label: "B", ...(toDisplay.length === 1 ? {} : { size: "tiny" }) }}
                 />
             ))}
 
             {toDisplay.map((q) => (
                 <Path
                     key={q.id}
-                    style={toDisplay.length === 1 ? {} : { weight: 1 }}
+                    style={toDisplay.length === 1 ? { weight: 3 } : { weight: 1 }}
                     from={maidenhead2Latlong(q.myLocator as string)}
                     to={maidenhead2Latlong(q.locator as string)}
                 />
