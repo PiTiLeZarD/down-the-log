@@ -126,9 +126,14 @@ export const Adif: AdifComponent = ({ navigation }): JSX.Element => {
             </Stack>
             {!["ios", "android"].includes(Platform.OS) && (
                 <Dropzone onAcceptedFiles={handleImport} style={styles.dropzone}>
-                    <Typography style={styles.dropzoneText} variant="h2">
-                        Upload here by clicking or dropping a file
-                    </Typography>
+                    <Stack>
+                        <Typography style={styles.dropzoneText} variant="h2">
+                            Upload here by clicking or dropping a file
+                        </Typography>
+                        <Typography variant="subtitle" style={{ textAlign: "center" }}>
+                            ADIF/ADX supported
+                        </Typography>
+                    </Stack>
                 </Dropzone>
             )}
 
