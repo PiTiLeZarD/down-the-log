@@ -5,10 +5,10 @@ import { createStyleSheet, useStyles } from "react-native-unistyles";
 import Swal from "sweetalert2";
 import { NavigationParamList } from "../../Navigation";
 import { useStore } from "../../store";
-import { adifFileToRecordList, adifLine2Qso, downloadQsos } from "../../utils/adif";
+import { adifFileToRecordList, adxFileToRecordList, downloadQsos, record2qso } from "../../utils/adif";
 import { Dropzone, FileWithPreview } from "../../utils/dropzone";
 import { PageLayout } from "../../utils/page-layout";
-import { findMatchingQso, useQsos } from "../../utils/qso";
+import { QSO, findMatchingQso, qsoLocationFill, useQsos } from "../../utils/qso";
 import { Stack } from "../../utils/stack";
 import { Button } from "../../utils/theme/components/button";
 import { Typography } from "../../utils/theme/components/typography";
@@ -41,14 +41,18 @@ export const Adif: AdifComponent = ({ navigation }): JSX.Element => {
     const currentLocation = useStore((state) => state.currentLocation);
     const settings = useStore((state) => state.settings);
     const resetStore = useStore((state) => state.resetStore);
-    const [importRemaining, setImportRemaining] = React.useState<string[]>([]);
+    const [importRemaining, setImportRemaining] = React.useState<QSO[]>([]);
     const [importing, setImporting] = React.useState<boolean>(false);
     const qsos = useQsos();
     const log = useStore((state) => state.log);
 
     useEffect(() => {
         if (importRemaining.length) {
-            const toImport = adifLine2Qso(importRemaining[0], currentLocation, settings.myCallsign);
+            let toImport = importRemaining[0];
+            if (!toImport.myLocator) toImport.myLocator = currentLocation;
+            if (!toImport.myCallsign) toImport.myCallsign = settings.myCallsign;
+            toImport = qsoLocationFill(toImport);
+
             const newImportRemaining = importRemaining.slice(1);
             if (toImport) log(findMatchingQso(qsos, toImport) || toImport);
             setImportRemaining(newImportRemaining);
@@ -71,7 +75,11 @@ export const Adif: AdifComponent = ({ navigation }): JSX.Element => {
                 if (fr.result) {
                     const content =
                         typeof fr.result == "string" ? fr.result : new TextDecoder("utf-8").decode(fr.result);
-                    setImportRemaining(adifFileToRecordList(content));
+                    setImportRemaining(
+                        (file.name.endsWith("adx") ? adxFileToRecordList(content) : adifFileToRecordList(content)).map(
+                            (r) => record2qso(r),
+                        ),
+                    );
                     setImporting(true);
                 }
             };

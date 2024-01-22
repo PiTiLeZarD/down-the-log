@@ -3,7 +3,7 @@ import { Band, bands, freq2band } from "../data/bands";
 import { Continent, continents } from "../data/callsigns";
 import { Mode, modes } from "../data/modes";
 import { normalise } from "./locator";
-import { QSO, newQsoID, qsoLocationFill } from "./qso";
+import { QSO, newQsoID } from "./qso";
 
 const allFields = [
     "qso_date",
@@ -38,7 +38,7 @@ const allFields = [
 
 type RecordField = (typeof allFields)[number];
 
-type QSORecord = Record<RecordField, string | undefined>;
+export type QSORecord = Record<RecordField, string | undefined>;
 
 const int = (v?: string) => (v !== undefined ? +v : undefined);
 const string = (v?: number) => (v !== undefined ? String(v) : undefined);
@@ -107,6 +107,9 @@ const adxField = (label: string, value?: string | number): string =>
     typeof value !== "undefined" && value !== null
         ? `<${label.toUpperCase()}>${sanitize(String(value))}</${label.toUpperCase()}>`
         : "";
+const parseAdxField = (adx: ChildNode) => {
+    return [adx.nodeName.toLocaleLowerCase(), unsanitize(adx.textContent || "")];
+};
 
 export const qso2record = (qso: QSO): QSORecord => {
     return {
@@ -199,6 +202,15 @@ export const adif2Record = (adif: string): QSORecord => {
     return record;
 };
 
+export const adx2Record = (adx: Element): QSORecord => {
+    const record = {} as QSORecord;
+    Array.from(adx.childNodes).forEach((n) => {
+        const [tagName, value] = parseAdxField(n);
+        if (allFields.includes(tagName as any)) record[tagName as RecordField] = value;
+    });
+    return record;
+};
+
 export const record2adx = (record: QSORecord): string =>
     `<RECORD>${Object.entries(record)
         .filter(([k, v]) => v !== undefined)
@@ -241,16 +253,7 @@ export const qsos2Adx = (qsos: QSO[]): string =>
         .map((q) => record2adx(qso2record(q)))
         .join("")}</RECORDS></ADX>`;
 
-export const adifLine2Qso = (adif: string, currentLocation?: string, myCallsign?: string): QSO | null => {
-    const qso = record2qso(adif2Record(adif));
-
-    if (!qso.myLocator) qso.myLocator = currentLocation;
-    if (!qso.myCallsign) qso.myCallsign = myCallsign;
-
-    return qsoLocationFill(qso);
-};
-
-export const adifFileToRecordList = (adif: string): string[] => {
+export const adifFileToRecordList = (adif: string): QSORecord[] => {
     let lines = adif.replace(/(?:\\[r]|[\r]+)+/g, "").split("\n");
     if (!lines[0].startsWith("<")) {
         lines = lines.splice(lines.findIndex((v) => v.toUpperCase().startsWith("<EOH>")) + 1);
@@ -266,11 +269,17 @@ export const adifFileToRecordList = (adif: string): string[] => {
             return [...records, [...lastRecord, last], next.length ? [next] : []];
         }, [])
         .filter((record) => record.filter((l) => Boolean(l)).length > 0)
-        .map((record) => record.join("\n"));
+        .map((record) => adif2Record(record.join("\n")));
+};
+
+export const adxFileToRecordList = (adx: string): QSORecord[] => {
+    const parser = new DOMParser();
+    const doc = parser.parseFromString(adx, "text/xml");
+    return Array.from(doc.getElementsByTagName("RECORD")).map((n) => adx2Record(n));
 };
 
 export const downloadQsos = (title: string, qsos: QSO[], type: "adif" | "adx" = "adif") =>
     Object.assign(document.createElement("a"), {
-        href: `data:text/plain, ${encodeURIComponent(type === "adif" ? qsos2Adif(qsos) : qsos2Adx(qsos))}`,
+        href: `data:text/plain,${encodeURIComponent(type === "adif" ? qsos2Adif(qsos) : qsos2Adx(qsos))}`,
         download: title,
     }).click();

@@ -15,7 +15,6 @@ This is the rough todolist I want to work on.
     -   [x] add all the rest of the fields (check adif spec and rumlog)
     -   [ ] add https://docs.expo.dev/versions/latest/sdk/date-time-picker/ in the form to edit date/time
     -   [x] allow filling up itu/cq/dxcc and all that
--   [ ] implement ADX file format
 -   [x] Stats
     -   [x] qsos /continent /country /year,month
     -   [ ] heatmap of qso per day (github style)
@@ -60,6 +59,7 @@ This is the rough todolist I want to work on.
 
 ## Done
 
+-   [x] implement ADX file format
 -   [x] Manage errors from HamQTH
 -   [x] web
     -   [x] fonts not loaded
