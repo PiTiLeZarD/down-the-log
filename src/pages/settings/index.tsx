@@ -25,12 +25,12 @@ export const Settings: SettingsComponent = ({ navigation }): JSX.Element => {
     return (
         <PageLayout title="Settings" navigate={navigation.navigate}>
             <Stack>
-                <Typography>My Callsign:</Typography>
+                <Typography underline>My Callsign:</Typography>
                 <Input
                     value={settings.myCallsign != undefined ? settings.myCallsign : ""}
-                    onChangeText={(newCallsign) => updateSetting("myCallsign", newCallsign)}
+                    onChangeText={(newCallsign) => updateSetting("myCallsign", newCallsign.toUpperCase())}
                 />
-                <Typography>My Gridsquare:</Typography>
+                <Typography underline>My Gridsquare:</Typography>
                 <Stack direction="row" gap="xxl">
                     <Typography>Currently:</Typography>
                     {settings.myGridsquare && <Typography variant="em">Static:</Typography>}
@@ -48,17 +48,17 @@ export const Settings: SettingsComponent = ({ navigation }): JSX.Element => {
                         />
                     )}
                 </Stack>
-                <Typography>Show NCDXF/IARU Beacons:</Typography>
+                <Typography underline>Show NCDXF/IARU Beacons:</Typography>
                 <Switch
                     value={settings.showBeacons != undefined ? settings.showBeacons : false}
                     onValueChange={(v) => updateSetting("showBeacons", v)}
                 />
-                <Typography>Show Filters:</Typography>
+                <Typography underline>Show Filters:</Typography>
                 <Switch
                     value={settings.showFilters != undefined ? settings.showFilters : false}
                     onValueChange={(v) => updateSetting("showFilters", v)}
                 />
-                <Typography>Imperial distances:</Typography>
+                <Typography underline>Imperial distances:</Typography>
                 <Switch
                     value={settings.imperial != undefined ? settings.imperial : false}
                     onValueChange={(v) => updateSetting("imperial", v)}
@@ -68,7 +68,7 @@ export const Settings: SettingsComponent = ({ navigation }): JSX.Element => {
                     All data is stored locally in your browser and is never sent anywhere (except for hamqth or google
                     when using their api)
                 </Typography>
-                <Typography>HamQTH:</Typography>
+                <Typography underline>HamQTH:</Typography>
                 {settings.hamqth && settings.hamqth.sessionId && (
                     <Button
                         text="Refresh HamQTH Session"
@@ -106,7 +106,7 @@ export const Settings: SettingsComponent = ({ navigation }): JSX.Element => {
                         }
                     />
                 </Stack>
-                <Typography>Google Static Maps:</Typography>
+                <Typography underline>Google Static Maps:</Typography>
                 <Stack direction="row">
                     <Typography>Key:</Typography>
                     <Input
@@ -124,7 +124,7 @@ export const Settings: SettingsComponent = ({ navigation }): JSX.Element => {
                         }
                     />
                 </Stack>
-                <Typography>Geocode Maps:</Typography>
+                <Typography underline>Geocode Maps:</Typography>
                 <Typography variant="subtitle">
                     Get an api key on https://geocode.maps.co/ to add a button on the form that will allow you to
                     convert anything you write in QTH to a gridsquare
