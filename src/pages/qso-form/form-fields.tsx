@@ -1,6 +1,5 @@
 import { StackScreenProps } from "@react-navigation/stack";
 import React from "react";
-import { useFormContext } from "react-hook-form";
 import { Pressable, View } from "react-native";
 import { createStyleSheet, useStyles } from "react-native-unistyles";
 import { NavigationParamList } from "../../Navigation";
@@ -49,7 +48,6 @@ export type FormFieldsComponent = React.FC<FormFieldsProps>;
 export const FormFields: FormFieldsComponent = ({ navigation, qso }): JSX.Element => {
     const [openTimeLocModal, setOpenTimeLocModal] = React.useState<boolean>(false);
     const { styles } = useStyles(stylesheet);
-    const { getValues } = useFormContext<QSO>();
     const deleteLog = useStore((state) => state.deleteLog);
     const settings = useStore((state) => state.settings);
 
@@ -71,6 +69,18 @@ export const FormFields: FormFieldsComponent = ({ navigation, qso }): JSX.Elemen
                             <Typography variant="h6" style={{ flex: 1 }}>
                                 {qso.date.toFormat("dd/MM/yyyy")}
                             </Typography>
+                            <Stack direction="row" style={{ flexGrow: 1 }}>
+                                <Button
+                                    variant="chip"
+                                    colour={qso.eqsl_received ? "success" : qso.eqsl_sent ? "primary" : "grey"}
+                                    text="eQSL"
+                                />
+                                <Button
+                                    variant="chip"
+                                    colour={qso.lotw_received ? "success" : qso.lotw_sent ? "primary" : "grey"}
+                                    text="lotw"
+                                />
+                            </Stack>
                             <Typography variant="h6" style={{ flex: 1, textAlign: "right" }}>
                                 {qso.date.toFormat("HH:mm:ss")}
                             </Typography>
@@ -177,7 +187,7 @@ export const FormFields: FormFieldsComponent = ({ navigation, qso }): JSX.Elemen
             </Grid>
             <FormField role="textarea" name="note" label="Note:" />
             <View style={{ alignItems: "center" }}>
-                <QsoMap qso={getValues()} />
+                <QsoMap qso={qso} />
             </View>
             <Stack direction="row">
                 <Button variant="outlined" text="Delete" colour="secondary" onPress={() => onDelete()} />
