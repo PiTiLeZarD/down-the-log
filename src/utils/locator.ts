@@ -33,19 +33,22 @@ export const maidenhead2Latlong = (maidenhead: string): LatLng => {
         longitude: maidenhead.length == 6 ? 1 / 24 : 1,
     };
 
-    maidenhead.split("").map((char: string, i: number) => {
-        let pos = String(upper.indexOf(char.toUpperCase()));
-        if (pos === "-1") pos = char;
+    maidenhead
+        .substring(0, 6)
+        .split("")
+        .map((char: string, i: number) => {
+            let pos = String(upper.indexOf(char.toUpperCase()));
+            if (pos === "-1") pos = char;
 
-        const key = ["longitude", "latitude"][i % 2] as keyof LatLng;
-        const coef = [
-            (x: number, d: number): number => x * (20 / d) - 180 / d,
-            (x: number, d: number): number => x * (2 / d),
-            (x: number, d: number): number => (x * (2 / d)) / 24,
-        ][Math.trunc(i / 2)];
+            const key = ["longitude", "latitude"][i % 2] as keyof LatLng;
+            const coef = [
+                (x: number, d: number): number => x * (20 / d) - 180 / d,
+                (x: number, d: number): number => x * (2 / d),
+                (x: number, d: number): number => (x * (2 / d)) / 24,
+            ][Math.trunc(i / 2)];
 
-        latlng[key] += coef(parseFloat(pos), (i % 2) + 1);
-    });
+            latlng[key] += coef(parseFloat(pos), (i % 2) + 1);
+        });
 
     return latlng;
 };
