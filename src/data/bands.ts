@@ -1,4 +1,5 @@
 import { roundTo } from "../utils/math";
+import { Mode } from "./modes";
 
 export const bands = {
     "2.2km": [0.135, 0.138],
@@ -28,11 +29,34 @@ export const bands = {
     "4mm": [76000.0, 81000.0],
 };
 
+export const modeBandMap: Partial<Record<Mode, Partial<Record<Band, number>>>> = {
+    FT8: {
+        "160m": 1.84,
+        "80m": 3.573,
+        "60m": 5.357,
+        "40m": 7.074,
+        "30m": 10.136,
+        "20m": 14.074,
+        "17m": 18.1,
+        "15m": 21.074,
+        "12m": 24.915,
+        "10m": 28.074,
+        "6m": 50.313,
+        "4m": 70.1,
+        "2m": 144.174,
+    },
+};
+
 export type Band = keyof typeof bands;
 
-export const band2freq = (band?: Band): number | null =>
-    band ? roundTo((bands[band][0] + bands[band][1]) / 2, 3) : null;
-
+export const band2freq = (band?: Band, mode?: Mode): number | null => {
+    console.log({ band, mode });
+    if (!band) return null;
+    const mibBand = roundTo((bands[band][0] + bands[band][1]) / 2, 3);
+    if (!mode) return mibBand;
+    if (mode in modeBandMap && band in (modeBandMap[mode] || [])) return modeBandMap[mode]![band] || null;
+    return mibBand;
+};
 export const freq2band = (freq?: number): Band | null =>
     freq
         ? Object.entries(bands).reduce<Band | null>(

@@ -2,6 +2,7 @@ import React from "react";
 import { useFormContext } from "react-hook-form";
 import { useStyles } from "react-native-unistyles";
 import { Band, band2freq, bands, freq2band } from "../../data/bands";
+import { Mode } from "../../data/modes";
 import { Grid } from "../../utils/grid";
 import { Modal } from "../../utils/modal";
 import { QSO } from "../../utils/qso";
@@ -10,9 +11,9 @@ import { Button } from "../../utils/theme/components/button";
 import { Input } from "../../utils/theme/components/input";
 import { Typography } from "../../utils/theme/components/typography";
 
-const freqValue = (freq?: number, band?: Band) => {
+const freqValue = (freq?: number, band?: Band, mode?: Mode) => {
     if (freq != undefined) return freq * 1000;
-    if (band != undefined) return (band2freq(band) || 14.144) * 1000;
+    if (band != undefined) return (band2freq(band, mode) || 14.144) * 1000;
     return 14144;
 };
 
@@ -23,15 +24,16 @@ export type BandFreqInputComponent = React.FC<BandFreqInputProps>;
 export const BandFreqInput: BandFreqInputComponent = (): JSX.Element => {
     const { theme } = useStyles();
     const [open, setOpen] = React.useState<boolean>(false);
-    const { watch, setValue } = useFormContext<QSO>();
+    const { watch, setValue, getValues } = useFormContext<QSO>();
 
     const frequency = watch("frequency");
     const band = watch("band");
-    const [freqUserInput, setFreqUserInput] = React.useState<string>(String(freqValue(frequency, band)));
+    const { mode } = getValues();
+    const [freqUserInput, setFreqUserInput] = React.useState<string>(String(freqValue(frequency, band, mode)));
     const bandUserInput = freq2band(+freqUserInput / 1000);
 
     React.useEffect(() => {
-        setFreqUserInput(String(freqValue(frequency, band)));
+        setFreqUserInput(String(freqValue(frequency, band, mode)));
     }, [frequency]);
 
     React.useEffect(() => {
@@ -59,7 +61,7 @@ export const BandFreqInput: BandFreqInputComponent = (): JSX.Element => {
                                     variant={b == band ? "contained" : "outlined"}
                                     onPress={() => {
                                         setValue("band", b as Band);
-                                        setValue("frequency", band2freq(b as Band) || 14.144);
+                                        setValue("frequency", band2freq(b as Band, mode) || 14.144);
                                     }}
                                 />
                             </Grid>
