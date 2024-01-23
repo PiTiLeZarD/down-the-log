@@ -48,3 +48,5 @@ export const modes = [
 ] as const;
 
 export type Mode = (typeof modes)[number];
+
+export const isDigital = (mode?: Mode) => ["JT4", "JT6M", "JT9", "JT44", "JT65", "FT8", "WSPR"].includes(mode || "");

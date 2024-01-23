@@ -5,7 +5,6 @@ This is the rough todolist I want to work on.
 -   [ ] ios errors galore
 -   [ ] previous qsos displayed in the form somehow
 -   [ ] persist filters (delete filters when removing the bar as well)
--   [ ] Signal input should allow db for ft8
 -   [ ] adif import export
     -   [ ] Lossless ADIF (don't strip fields we don't use)
     -   [x] download qsos as adif
@@ -64,6 +63,7 @@ This is the rough todolist I want to work on.
 
 ## Done
 
+-   [x] Signal input should allow db for ft8
 -   [x] implement ADX file format
 -   [x] Manage errors from HamQTH
 -   [x] web
