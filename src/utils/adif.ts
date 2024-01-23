@@ -118,7 +118,7 @@ export const qso2record = (qso: QSO): QSORecord => {
         band: qso.band,
         freq: string(qso.frequency),
         mode: qso.mode,
-        tx_pwr: String(qso.power),
+        tx_pwr: string(qso.power),
         rst_sent: qso.rst_sent,
         rst_rcvd: qso.rst_received,
         call: qso.callsign,
