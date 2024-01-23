@@ -54,7 +54,15 @@ export const Adif: AdifComponent = ({ navigation }): JSX.Element => {
             toImport = qsoLocationFill(toImport);
 
             const newImportRemaining = importRemaining.slice(1);
-            if (toImport) log(findMatchingQso(qsos, toImport) || toImport);
+            if (toImport) {
+                const matching = findMatchingQso(qsos, toImport);
+                if (matching) {
+                    toImport.id = matching.id;
+                    log({ ...matching, ...toImport });
+                } else {
+                    log(toImport);
+                }
+            }
             setImportRemaining(newImportRemaining);
         } else if (importing) {
             Swal.fire({

@@ -109,5 +109,7 @@ export const qsoLocationFill = (qso: QSO, callsignDataProvided?: CsDataType) => 
 
 export const findMatchingQso = (qsos: QSO[], data: QSO): QSO | null =>
     qsos.filter(
-        (q) => q.callsign === data.callsign && Math.abs(q.date.diff(data.date).toObject().minutes || 100) < 10,
+        (q) =>
+            q.callsign === data.callsign &&
+            Math.abs(q.date.diff(data.date, ["minutes"]).toObject().minutes as number) < 10,
     )[0] || null;
