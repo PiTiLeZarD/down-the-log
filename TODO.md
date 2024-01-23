@@ -4,6 +4,7 @@ This is the rough todolist I want to work on.
 
 -   [ ] ios errors galore
 -   [ ] adif import export
+    -   [ ] Lossless ADIF (don't strip fields we don't use)
     -   [x] download qsos as adif
     -   [ ] ability to ask "download from last export"
     -   [x] upload adif file, merge with current qsos, find duplicates etc...
