@@ -29,7 +29,7 @@ export const QsoListItem: QsoListItemComponent = React.memo(
                     <Stack direction="row">
                         <Typography>{qso.country ? countries[qso.country]?.flag : ""}</Typography>
                         <Typography>{qso.callsign}</Typography>
-                        {qso.distance && (
+                        {qso.distance !== undefined && (
                             <Typography>
                                 ({imperial ? roundTo(qso.distance / 1.6, 2) : qso.distance}
                                 {imperial ? "mi" : "km"})
