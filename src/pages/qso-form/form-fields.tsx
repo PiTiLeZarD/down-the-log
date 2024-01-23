@@ -2,6 +2,7 @@ import { StackScreenProps } from "@react-navigation/stack";
 import React from "react";
 import { Pressable, View } from "react-native";
 import { createStyleSheet, useStyles } from "react-native-unistyles";
+import Swal from "sweetalert2";
 import { NavigationParamList } from "../../Navigation";
 import { continents } from "../../data/callsigns";
 import { modes } from "../../data/modes";
@@ -15,6 +16,7 @@ import { QsoMap } from "../../utils/qso/qso-map";
 import { Stack } from "../../utils/stack";
 import { Button } from "../../utils/theme/components/button";
 import { Typography } from "../../utils/theme/components/typography";
+import { SwalTheme } from "../../utils/theme/theme";
 import { BandFreqInput } from "./band-freq-input";
 import { ContinentWarning } from "./continent-warning";
 import { CountryWarning } from "./country-warning";
@@ -56,6 +58,16 @@ export const FormFields: FormFieldsComponent = ({ navigation, qso }): JSX.Elemen
         navigation.navigate("Home");
     };
 
+    const qslInfo = () => {
+        Swal.fire({
+            ...SwalTheme,
+            title: "eQSL/LoTW",
+            text: "If you've received a qsl, the button will light up green, if you've sent it, it'll be blue and grey otherwise",
+            icon: "info",
+            confirmButtonText: "Ok",
+        });
+    };
+
     return (
         <PageLayout
             title={<FormField name="callsign" style={styles.callsignInput} />}
@@ -74,11 +86,13 @@ export const FormFields: FormFieldsComponent = ({ navigation, qso }): JSX.Elemen
                                     variant="chip"
                                     colour={qso.eqsl_received ? "success" : qso.eqsl_sent ? "primary" : "grey"}
                                     text="eQSL"
+                                    onPress={qslInfo}
                                 />
                                 <Button
                                     variant="chip"
                                     colour={qso.lotw_received ? "success" : qso.lotw_sent ? "primary" : "grey"}
                                     text="lotw"
+                                    onPress={qslInfo}
                                 />
                             </Stack>
                             <Typography variant="h6" style={{ flex: 1, textAlign: "right" }}>
