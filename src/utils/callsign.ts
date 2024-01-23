@@ -1,7 +1,7 @@
 import { CallsignData, callsigns } from "../data/callsigns";
 import { countries } from "../data/countries";
 
-const callsignRegexp = /^(([0-9]{0,1}[^0-9]+)([0-9]{1,2})\/)?([0-9]{0,1}[^0-9]+)([0-9]{1,2})([^\/]+)\/{0,1}(.*)$/g;
+const callsignRegexp = /^(([0-9]{0,1}[^0-9]+)([0-9]{1,2})\/)?([0-9]{0,1}[^0-9]+)([0-9]{1,2})([^\/-]+)[\/-]{0,1}(.*)$/g;
 
 export type CsDataType = (CallsignData & { state?: string }) | undefined;
 export const getCallsignData = (callsign: string): CsDataType => {
@@ -32,6 +32,12 @@ export const parseCallsign = (callsign: string) => {
         delineation,
         suffix,
     };
+};
+
+export const baseCallsign = (callsign: string) => {
+    const parsed = parseCallsign(callsign);
+    if (!parsed) return undefined;
+    return `${parsed.prefix}${parsed.index}${parsed.delineation}`;
 };
 
 export const findCountry = (csdata: CsDataType) => (csdata?.iso3 ? countries[csdata?.iso3] : undefined);

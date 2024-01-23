@@ -52,7 +52,7 @@ export const QsoRow: QsoRowComponent = ({
     const cellStyle = header ? styles.header(lineHeight) : { lineHeight };
     return (
         <Pressable onPress={onPress}>
-            <Grid container style={(+position % 2 || header ? styles.rowHighlight : styles.row)(success)}>
+            <Grid container style={(+position % 2 === 0 || header ? styles.rowHighlight : styles.row)(success)}>
                 <Grid item style={styles.cell} xs={1}>
                     {cellContent(position, cellStyle)}
                 </Grid>

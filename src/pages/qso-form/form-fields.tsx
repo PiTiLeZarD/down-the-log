@@ -22,6 +22,7 @@ import { ContinentWarning } from "./continent-warning";
 import { CountryWarning } from "./country-warning";
 import { GeocodeButton } from "./geocode-button";
 import { LocatorField } from "./locator-field";
+import { PreviousQsos } from "./previous-qsos";
 import { Signal } from "./signal";
 
 const stylesheet = createStyleSheet((theme) => ({
@@ -203,6 +204,8 @@ export const FormFields: FormFieldsComponent = ({ navigation, qso }): JSX.Elemen
             <View style={{ alignItems: "center" }}>
                 <QsoMap qso={qso} />
             </View>
+            <PreviousQsos />
+
             <Stack direction="row">
                 <Button variant="outlined" text="Delete" colour="secondary" onPress={() => onDelete()} />
             </Stack>
