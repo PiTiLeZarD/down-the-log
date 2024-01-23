@@ -3,6 +3,9 @@
 This is the rough todolist I want to work on.
 
 -   [ ] ios errors galore
+-   [ ] previous qsos displayed in the form somehow
+-   [ ] persist filters (delete filters when removing the bar as well)
+-   [ ] Signal input should allow db for ft8
 -   [ ] adif import export
     -   [ ] Lossless ADIF (don't strip fields we don't use)
     -   [x] download qsos as adif
@@ -33,6 +36,7 @@ This is the rough todolist I want to work on.
     -   [ ] script the apk/dmg releases
         -   [ ] Create playstore dev account and release there
 -   [ ] contest mode (instead of Callsign > Form, have all relevant details on the bottom and log directly, ability to edit later)
+    -   [ ] Pick things that go in there (freq, sn reports, name, qth, things like these and build the form dynamically)
 -   [ ] band map, ability to link callsign/frequency on the band, use this to start qso's (also ability to write name/qth and other details so it's prefilled)
 -   [x] qso's map view (wide screen could have both displayed, phone could have a selector?)
     -   [x] https://github.com/react-native-maps/react-native-maps
