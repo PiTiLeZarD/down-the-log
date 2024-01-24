@@ -20,6 +20,7 @@ const stylesheet = createStyleSheet((theme) => ({
         paddingBottom: theme.margins.lg,
         paddingLeft: theme.margins.xxl,
         paddingRight: theme.margins.xxl,
+        overflow: "hidden",
     }),
 }));
 

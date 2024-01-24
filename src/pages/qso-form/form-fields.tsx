@@ -205,7 +205,6 @@ export const FormFields: FormFieldsComponent = ({ navigation, qso }): JSX.Elemen
                 <QsoMap qso={qso} />
             </View>
             <PreviousQsos />
-
             <Stack direction="row">
                 <Button variant="outlined" text="Delete" colour="secondary" onPress={() => onDelete()} />
             </Stack>

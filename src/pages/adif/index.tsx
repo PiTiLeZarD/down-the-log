@@ -6,11 +6,14 @@ import Swal from "sweetalert2";
 import { NavigationParamList } from "../../Navigation";
 import { useStore } from "../../store";
 import { adifFileToRecordList, adxFileToRecordList, downloadQsos, record2qso } from "../../utils/adif";
+import { unique } from "../../utils/arrays";
 import { Dropzone, FileWithPreview } from "../../utils/dropzone";
 import { PageLayout } from "../../utils/page-layout";
 import { QSO, findMatchingQso, qsoLocationFill, useQsos } from "../../utils/qso";
 import { Stack } from "../../utils/stack";
+import { Alert } from "../../utils/theme/components/alert";
 import { Button } from "../../utils/theme/components/button";
+import { Icon } from "../../utils/theme/components/icon";
 import { Typography } from "../../utils/theme/components/typography";
 import { SwalTheme } from "../../utils/theme/theme";
 
@@ -44,6 +47,12 @@ export const Adif: AdifComponent = ({ navigation }): JSX.Element => {
     const [importRemaining, setImportRemaining] = React.useState<QSO[]>([]);
     const [importing, setImporting] = React.useState<boolean>(false);
     const qsos = useQsos();
+    const honeypotFields = unique(
+        qsos
+            .map((q) => Object.keys(q.honeypot || {}))
+            .flat()
+            .filter((e) => !!e),
+    );
     const log = useStore((state) => state.log);
 
     useEffect(() => {
@@ -109,6 +118,12 @@ export const Adif: AdifComponent = ({ navigation }): JSX.Element => {
 
     return (
         <PageLayout title="Import/Export" navigate={navigation.navigate}>
+            <Alert severity="info">
+                <Typography variant="em">
+                    Import/Export is lossless, if this app doesn't handle an attribute, it'll keep it so you don't lose
+                    it on export
+                </Typography>
+            </Alert>
             {!!importRemaining.length && (
                 <Stack>
                     <Typography variant="h1">QSOs left to import: {importRemaining.length}</Typography>
@@ -143,6 +158,24 @@ export const Adif: AdifComponent = ({ navigation }): JSX.Element => {
                         </Typography>
                     </Stack>
                 </Dropzone>
+            )}
+
+            {honeypotFields.length > 0 && (
+                <Alert>
+                    <Stack>
+                        <Typography>A number of fields imported aren't handled by this application</Typography>
+                        <Typography>
+                            if they are important to you, see the about section of this app to reach me, I'll add them
+                            to my todolist
+                        </Typography>
+                        {honeypotFields.map((f) => (
+                            <Typography key={f} variant="subtitle">
+                                <Icon name="arrow-forward" />
+                                {f}
+                            </Typography>
+                        ))}
+                    </Stack>
+                </Alert>
             )}
 
             <Button colour="secondary" text="Erase data" onPress={handleErase} />

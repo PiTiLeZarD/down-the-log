@@ -5,6 +5,8 @@ import { Mode, modes } from "../data/modes";
 import { normalise } from "./locator";
 import { QSO, newQsoID } from "./qso";
 
+type Honeypot = Record<string, string>;
+
 const allFields = [
     "qso_date",
     "time_on",
@@ -32,13 +34,13 @@ const allFields = [
     "eqsl_qsl_rcvd",
     "eqsl_qsl_sent",
     "lotw_qsl_rcvd",
-    "lotw_qsl_send",
+    "lotw_qsl_sent",
     "comment",
 ] as const;
 
 type RecordField = (typeof allFields)[number];
 
-export type QSORecord = Record<RecordField, string | undefined>;
+export type QSORecord = Record<RecordField, string | undefined> & Record<"honeypot", Honeypot>;
 
 const int = (v?: string) => (v !== undefined ? +v : undefined);
 const string = (v?: number) => (v !== undefined ? String(v) : undefined);
@@ -139,8 +141,9 @@ export const qso2record = (qso: QSO): QSORecord => {
         eqsl_qsl_rcvd: qso.eqsl_received ? "Y" : "N",
         eqsl_qsl_sent: qso.eqsl_sent ? "Y" : "N",
         lotw_qsl_rcvd: qso.lotw_received ? "Y" : "N",
-        lotw_qsl_send: qso.lotw_sent ? "Y" : "N",
+        lotw_qsl_sent: qso.lotw_sent ? "Y" : "N",
         comment: qso.note,
+        honeypot: qso.honeypot || {},
     };
 };
 
@@ -175,17 +178,25 @@ export const record2qso = (record: QSORecord): QSO => ({
     eqsl_received: record.eqsl_qsl_rcvd === "Y",
     eqsl_sent: record.eqsl_qsl_sent === "Y",
     lotw_received: record.lotw_qsl_rcvd === "Y",
-    lotw_sent: record.lotw_qsl_send === "Y",
+    lotw_sent: record.lotw_qsl_sent === "Y",
+    honeypot: record.honeypot,
 });
 
 export const record2adif = (record: QSORecord): string =>
     Object.entries(record)
         .filter(([k, v]) => v !== undefined)
-        .map(([k, v]) => adifField(k, v))
+        .map(([k, v]) =>
+            k == "honeypot"
+                ? Object.entries(v as Honeypot).map(([hpk, hpv]) => adifField(hpk, hpv))
+                : adifField(k, v as string | undefined),
+        )
+        .flat()
         .join(" ") + "<EOR>";
 
 export const adif2Record = (adif: string): QSORecord => {
-    const record = {} as QSORecord;
+    const record = {
+        honeypot: {},
+    } as QSORecord;
     let tagName: string, value: string;
     let remaining = adif.trim();
 
@@ -198,15 +209,19 @@ export const adif2Record = (adif: string): QSORecord => {
 
         [remaining, tagName, value] = field;
         if (allFields.includes(tagName as any)) record[tagName as RecordField] = value;
+        else record.honeypot[tagName] = value;
     }
     return record;
 };
 
 export const adx2Record = (adx: Element): QSORecord => {
-    const record = {} as QSORecord;
+    const record = {
+        honeypot: {},
+    } as QSORecord;
     Array.from(adx.childNodes).forEach((n) => {
         const [tagName, value] = parseAdxField(n);
         if (allFields.includes(tagName as any)) record[tagName as RecordField] = value;
+        else record.honeypot[tagName] = value;
     });
     return record;
 };
@@ -214,12 +229,17 @@ export const adx2Record = (adx: Element): QSORecord => {
 export const record2adx = (record: QSORecord): string =>
     `<RECORD>${Object.entries(record)
         .filter(([k, v]) => v !== undefined)
-        .map(([k, v]) => adxField(k, v))
+        .map(([k, v]) =>
+            k == "honeypot"
+                ? Object.entries(v as Honeypot).map(([hpk, hpv]) => adxField(hpk, hpv))
+                : adxField(k, v as string | undefined),
+        )
+        .flat()
         .join("")}</RECORD>`;
 
 type Header = {
     note?: string;
-    fields?: Record<string, string>;
+    fields?: Honeypot;
 };
 const header = (): Header => ({
     note: "ADIF Export from down-the-log by VK4ALE\nfor further info visit: https://github.com/PiTiLeZarD/down-the-log",

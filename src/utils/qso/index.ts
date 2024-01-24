@@ -46,6 +46,7 @@ export type QSO = {
     eqsl_sent?: boolean;
     lotw_received?: boolean;
     lotw_sent?: boolean;
+    honeypot?: Record<string, string>;
 };
 
 export const newQsoID = () => uuid.v4() as string;
@@ -73,6 +74,7 @@ export const newQso = (
             myCallsign,
             rst_received: "59",
             rst_sent: "59",
+            honeypot: {},
             ...(qsos.length
                 ? { frequency: qsos[0].frequency, band: qsos[0].band, mode: qsos[0].mode, power: qsos[0].power }
                 : {}),
