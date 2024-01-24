@@ -2,6 +2,8 @@ import asyncstorage from "@react-native-async-storage/async-storage";
 import { DateTime } from "luxon";
 import { create } from "zustand";
 import { combine, createJSONStorage, devtools, persist } from "zustand/middleware";
+import { Band } from "./data/bands";
+import { Mode } from "./data/modes";
 import { QsoFilter } from "./pages/home/filters";
 import { GoogleCredentials } from "./utils/google-static-map/map";
 import { HamQTHSettingsType } from "./utils/hamqth";
@@ -16,6 +18,8 @@ export type Settings = {
     hamqth?: HamQTHSettingsType;
     google?: GoogleCredentials;
     geocodeMapsCoKey?: string;
+    favouriteModes: Mode[];
+    favouriteBands: Band[];
 };
 
 type DTLStoreProps = {
@@ -42,7 +46,14 @@ type DTLStoreActionsMutatorProps = (
 const InitialStore: DTLStoreProps = {
     qsos: [],
     filters: [],
-    settings: { myCallsign: "", showBeacons: false, imperial: false, showFilters: false },
+    settings: {
+        myCallsign: "",
+        showBeacons: false,
+        imperial: false,
+        showFilters: false,
+        favouriteBands: [],
+        favouriteModes: [],
+    },
     currentLocation: "",
 };
 

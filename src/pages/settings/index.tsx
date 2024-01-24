@@ -12,6 +12,7 @@ import { Button } from "../../utils/theme/components/button";
 import { Input } from "../../utils/theme/components/input";
 import { Typography } from "../../utils/theme/components/typography";
 import { SwalTheme } from "../../utils/theme/theme";
+import { PickFavourite } from "./pick-favourite";
 
 export type SettingsProps = {} & StackScreenProps<NavigationParamList, "Settings">;
 
@@ -67,6 +68,10 @@ export const Settings: SettingsComponent = ({ navigation }): JSX.Element => {
                     value={settings.imperial != undefined ? settings.imperial : false}
                     onValueChange={(v) => updateSetting("imperial", v)}
                 />
+                <Typography underline>Favourite Bands:</Typography>
+                <PickFavourite type="band" />
+                <Typography underline>Favourite Mode:</Typography>
+                <PickFavourite type="mode" />
                 <Typography variant="h3">API's</Typography>
                 <Typography variant="subtitle">
                     All data is stored locally in your browser and is never sent anywhere (except for hamqth or google
