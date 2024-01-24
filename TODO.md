@@ -3,7 +3,6 @@
 This is the rough todolist I want to work on.
 
 -   [ ] ios errors galore
--   [ ] persist filters (delete filters when removing the bar as well)
 -   [ ] adif import export
     -   [x] Lossless ADIF (don't strip fields we don't use)
     -   [x] download qsos as adif
@@ -62,6 +61,7 @@ This is the rough todolist I want to work on.
 
 ## Done
 
+-   [x] persist filters (delete filters when removing the bar as well)
 -   [x] previous qsos displayed in the form somehow
 -   [x] Signal input should allow db for ft8
 -   [x] implement ADX file format

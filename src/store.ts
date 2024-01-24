@@ -2,6 +2,7 @@ import asyncstorage from "@react-native-async-storage/async-storage";
 import { DateTime } from "luxon";
 import { create } from "zustand";
 import { combine, createJSONStorage, devtools, persist } from "zustand/middleware";
+import { QsoFilter } from "./pages/home/filters";
 import { GoogleCredentials } from "./utils/google-static-map/map";
 import { HamQTHSettingsType } from "./utils/hamqth";
 import { QSO } from "./utils/qso";
@@ -19,6 +20,7 @@ export type Settings = {
 
 type DTLStoreProps = {
     qsos: QSO[];
+    filters: QsoFilter[];
     settings: Settings;
     currentLocation: string;
 };
@@ -26,6 +28,7 @@ type DTLStoreProps = {
 type DTLStoreActionsProps = {
     log: (qso: QSO) => void;
     updateSetting: <T extends keyof Settings>(field: T, value: Settings[T]) => void;
+    updateFilters: (filters: QsoFilter[]) => void;
     deleteLog: (qso: QSO) => void;
     resetStore: () => void;
     setCurrentLocation: (location: string) => void;
@@ -38,6 +41,7 @@ type DTLStoreActionsMutatorProps = (
 
 const InitialStore: DTLStoreProps = {
     qsos: [],
+    filters: [],
     settings: { myCallsign: "", showBeacons: false, imperial: false, showFilters: false },
     currentLocation: "",
 };
@@ -45,6 +49,7 @@ const InitialStore: DTLStoreProps = {
 const StoreActions: DTLStoreActionsMutatorProps = (set) => ({
     log: (qso) => set((state) => ({ qsos: [...state.qsos.filter((q) => q.id != qso.id), qso] })),
     updateSetting: (field, value) => set((state) => ({ settings: { ...state.settings, [field]: value } })),
+    updateFilters: (filters) => set((state) => ({ filters })),
     deleteLog: (qso) => set((state) => ({ qsos: [...state.qsos.filter((q) => q.id != qso.id)] })),
     resetStore: () => set(() => ({ qsos: [] })),
     setCurrentLocation: (location) => set(() => ({ currentLocation: location })),

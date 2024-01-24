@@ -21,6 +21,7 @@ export const Settings: SettingsComponent = ({ navigation }): JSX.Element => {
     const settings = useStore((state) => state.settings);
     const currentLocation = useStore((state) => state.currentLocation);
     const updateSetting = useStore((state) => state.updateSetting);
+    const updateFilters = useStore((state) => state.updateFilters);
 
     return (
         <PageLayout title="Settings" navigate={navigation.navigate}>
@@ -56,7 +57,10 @@ export const Settings: SettingsComponent = ({ navigation }): JSX.Element => {
                 <Typography underline>Show Filters:</Typography>
                 <Switch
                     value={settings.showFilters != undefined ? settings.showFilters : false}
-                    onValueChange={(v) => updateSetting("showFilters", v)}
+                    onValueChange={(v) => {
+                        updateSetting("showFilters", v);
+                        if (!v) updateFilters([]);
+                    }}
                 />
                 <Typography underline>Imperial distances:</Typography>
                 <Switch

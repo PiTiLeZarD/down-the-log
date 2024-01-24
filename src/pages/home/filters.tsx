@@ -32,13 +32,13 @@ export const filterQsos = (qsos: QSO[], qsosFilters: QsoFilter[]) =>
     qsos.filter((q) => qsosFilters.reduce((acc, { name, values }) => acc && values.includes(filterMap[name](q)), true));
 
 export type FiltersProps = {
-    filters: QsoFilter[];
+    filters?: QsoFilter[];
     setFilters: (filters: QsoFilter[]) => void;
 };
 
 export type FiltersComponent = React.FC<FiltersProps>;
 
-export const Filters: FiltersComponent = ({ filters, setFilters }): JSX.Element => {
+export const Filters: FiltersComponent = ({ filters = [], setFilters }): JSX.Element => {
     const qsos = useQsos();
     const { height } = useWindowDimensions();
     const [modal, setModal] = React.useState<boolean>(false);
