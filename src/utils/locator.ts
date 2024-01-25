@@ -53,6 +53,39 @@ export const maidenhead2Latlong = (maidenhead: string): LatLng => {
     return latlng;
 };
 
+export const maidenhead2Corners = (maidenhead: string, precision: number = 4): LatLng[] => {
+    const gs = (i: number): number => upper.indexOf(maidenhead.charAt(i).toUpperCase());
+    const gi = (i: number): number => parseInt(maidenhead.charAt(i));
+
+    let lat: number = gs(1) * 10 - 90;
+    let long: number = gs(0) * 20 - 180;
+
+    if (precision > 2) {
+        lat += gi(3);
+        long += gi(2) * 2;
+    }
+
+    if (precision > 4)
+        return [
+            { latitude: lat + gs(5) / 24, longitude: long + gs(4) / 12 },
+            { latitude: lat + (gs(5) + 1) / 24, longitude: long + (gs(4) + 1) / 12 },
+        ];
+
+    const c = precision == 4 ? 1 : 10;
+    return [
+        { latitude: lat, longitude: long },
+        { latitude: lat + c, longitude: long + c * 2 },
+    ];
+};
+
+export const corners2Path = (topleft: LatLng, bottomRight: LatLng): LatLng[] => [
+    topleft,
+    { latitude: topleft.latitude, longitude: bottomRight.longitude },
+    bottomRight,
+    { latitude: bottomRight.latitude, longitude: topleft.longitude },
+    topleft,
+];
+
 export const distance = (l1: LatLng, l2: LatLng, imperial?: boolean): number => {
     const d_lat = rad(l2.latitude) - rad(l1.latitude);
     const d_long = rad(l2.longitude) - rad(l1.longitude);
