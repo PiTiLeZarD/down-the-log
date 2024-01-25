@@ -3,6 +3,7 @@ import { useFormContext } from "react-hook-form";
 import { useStyles } from "react-native-unistyles";
 import { Band, band2freq, bands, freq2band } from "../../data/bands";
 import { Mode } from "../../data/modes";
+import { useStore } from "../../store";
 import { Grid } from "../../utils/grid";
 import { Modal } from "../../utils/modal";
 import { QSO } from "../../utils/qso";
@@ -23,14 +24,21 @@ export type BandFreqInputComponent = React.FC<BandFreqInputProps>;
 
 export const BandFreqInput: BandFreqInputComponent = (): JSX.Element => {
     const { theme } = useStyles();
+    const [showAll, setShowAll] = React.useState<boolean>(false);
     const [open, setOpen] = React.useState<boolean>(false);
     const { watch, setValue, getValues } = useFormContext<QSO>();
+    const { favouriteBands } = useStore((state) => state.settings);
 
     const frequency = watch("frequency");
     const band = watch("band");
     const { mode } = getValues();
     const [freqUserInput, setFreqUserInput] = React.useState<string>(String(freqValue(frequency, band, mode)));
     const bandUserInput = freq2band(+freqUserInput / 1000);
+
+    const allBands =
+        showAll || favouriteBands.length === 0
+            ? Object.keys(bands)
+            : Object.keys(bands).filter((b) => favouriteBands.includes(b as Band));
 
     React.useEffect(() => {
         setFreqUserInput(String(freqValue(frequency, band, mode)));
@@ -51,8 +59,14 @@ export const BandFreqInput: BandFreqInputComponent = (): JSX.Element => {
             />
             <Modal wide open={open} onClose={() => setOpen(false)}>
                 <Stack gap="xxl">
+                    {favouriteBands.length > 0 && (
+                        <Button
+                            text={showAll ? "Only favourite bands" : "Show all bands"}
+                            onPress={() => setShowAll(!showAll)}
+                        />
+                    )}
                     <Grid container>
-                        {Object.keys(bands).map((b) => (
+                        {allBands.map((b) => (
                             <Grid key={b} item xs={2}>
                                 <Button
                                     style={{ padding: theme.margins.sm, margin: theme.margins.sm }}
