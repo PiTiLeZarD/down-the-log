@@ -26,7 +26,6 @@ This is the rough todolist I want to work on.
     -   [ ] adif to export/import it properly
     -   [ ] adif has WWFF/SOTA/POTA also SIG will have to be parsed on import to put in the right spot (if VKFF still uses SIG for WWFF, have a setting during export, or maybe a remapping of fields?)
 -   [ ] manage multiple rigs/antenna and use ADIF to store/retrieve it
--   [ ] DXCC for australia doesn't include me, let's find out why (need some map tooling)
 -   [ ] yarn release should use ghpages to create the demo, build the tauri app and release it, build ios/android apps
     -   [x] demo website on github
     -   [ ] look into automatic/programatic github release
@@ -55,6 +54,7 @@ This is the rough todolist I want to work on.
 
 ## Done
 
+-   [x] DXCC for australia doesn't include me, let's find out why (need some map tooling)
 -   [x] qso's map view (wide screen could have both displayed, phone could have a selector?)
     -   [x] https://github.com/react-native-maps/react-native-maps
     -   [x] work on the layout using the responsive grid
