@@ -38,6 +38,7 @@ This is the rough todolist I want to work on.
 -   [ ] hamclock modules (sunspot or sun data, propagaion, greyline, short/long path etc...)
 -   [ ] integrations
     -   [ ] qrz integration
+    -   [ ] qrzcq (https://www.qrzcq.com/docs/api/xml/)
     -   [x] hamQTH
     -   [ ] eqsl
     -   [ ] lotw ([this one sounds tough, gotta sign adif exports, let's see](https://lotw.arrl.org/lotw-help/developer-information/?lang=en))
