@@ -50,6 +50,7 @@ export type FormFieldsComponent = React.FC<FormFieldsProps>;
 
 export const FormFields: FormFieldsComponent = ({ navigation, qso }): JSX.Element => {
     const [openTimeLocModal, setOpenTimeLocModal] = React.useState<boolean>(false);
+    const [showAllModes, setShowAllModes] = React.useState<boolean>(false);
     const { styles } = useStyles(stylesheet);
     const deleteLog = useStore((state) => state.deleteLog);
     const settings = useStore((state) => state.settings);
@@ -165,14 +166,30 @@ export const FormFields: FormFieldsComponent = ({ navigation, qso }): JSX.Elemen
                     <Stack>
                         <BandFreqInput />
                         <Grid container>
-                            <Grid item xs={8}>
+                            <Grid item xs={settings.favouriteModes.length ? 7 : 8}>
                                 <FormField
                                     role="select"
                                     name="mode"
                                     label="Mode:"
-                                    options={Object.fromEntries(modes.map((mode) => [mode, mode]))}
+                                    options={Object.fromEntries(
+                                        (!showAllModes && settings.favouriteModes.length
+                                            ? settings.favouriteModes
+                                            : modes
+                                        ).map((mode) => [mode, mode]),
+                                    )}
                                 />
                             </Grid>
+                            {settings.favouriteModes.length > 0 && (
+                                <Grid item xs={1}>
+                                    <Stack>
+                                        <Typography>&nbsp;</Typography>
+                                        <Button
+                                            startIcon={showAllModes ? "star-outline" : "star"}
+                                            onPress={() => setShowAllModes(!showAllModes)}
+                                        />
+                                    </Stack>
+                                </Grid>
+                            )}
                             <Grid item xs={4}>
                                 <FormField name="power" label="Power:" />
                             </Grid>
