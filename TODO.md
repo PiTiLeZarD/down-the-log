@@ -35,12 +35,6 @@ This is the rough todolist I want to work on.
 -   [ ] contest mode (instead of Callsign > Form, have all relevant details on the bottom and log directly, ability to edit later)
     -   [ ] Pick things that go in there (freq, sn reports, name, qth, things like these and build the form dynamically)
 -   [ ] band map, ability to link callsign/frequency on the band, use this to start qso's (also ability to write name/qth and other details so it's prefilled)
--   [x] qso's map view (wide screen could have both displayed, phone could have a selector?)
-    -   [x] https://github.com/react-native-maps/react-native-maps
-    -   [x] work on the layout using the responsive grid
-    -   [x] find a way to use leaflet or other ways to have maps on react-native
-    -   [x] display qsos based on maidenhead
-    -   [ ] cluster qsos
 -   [ ] hamclock modules (sunspot or sun data, propagaion, greyline, short/long path etc...)
 -   [ ] integrations
     -   [ ] qrz integration
@@ -61,6 +55,11 @@ This is the rough todolist I want to work on.
 
 ## Done
 
+-   [x] qso's map view (wide screen could have both displayed, phone could have a selector?)
+    -   [x] https://github.com/react-native-maps/react-native-maps
+    -   [x] work on the layout using the responsive grid
+    -   [x] find a way to use leaflet or other ways to have maps on react-native
+    -   [x] display qsos based on maidenhead
 -   [x] persist filters (delete filters when removing the bar as well)
 -   [x] previous qsos displayed in the form somehow
 -   [x] Signal input should allow db for ft8
