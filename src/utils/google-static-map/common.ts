@@ -1,8 +1,6 @@
 import { LatLng } from "../locator";
 import { roundTo } from "../math";
 
-export const DELIMITER = "~|~";
-
 export type FeatureSize = "tiny" | "mid" | "small";
 export type FeatureColor =
     | "black"
@@ -25,7 +23,7 @@ export type FeatureMarkerStyle = {
 export type FeaturePathStyle = {
     weight: number;
     color: FeatureColor;
-    fillColor: FeatureColor;
+    fillcolor: FeatureColor;
     geodesic: boolean;
 };
 export type Feature = {
@@ -34,6 +32,6 @@ export type Feature = {
     data: string;
 };
 
-export type RenderFeature<T> = { renderFeature: (props: T) => Feature };
+export type RenderFeature<T> = { renderFeature: (props: T) => Feature | null };
 
 export const latLngToPosition = (latlng: LatLng) => `${roundTo(latlng.latitude, 6)},${roundTo(latlng.longitude, 6)}`;

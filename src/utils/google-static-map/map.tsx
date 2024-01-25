@@ -44,7 +44,8 @@ export const Map: MapComponent = ({ width = "auto", height, google, children }):
     const features = groupBy<Feature, string>(
         React.Children.toArray(children)
             .filter((f) => (React.isValidElement(f) ? "renderFeature" in (f as any).type : false))
-            .map((f: any) => f.type.renderFeature(f.props)),
+            .map((f: any) => f.type.renderFeature(f.props))
+            .filter((f) => f !== null),
         (o) =>
             o.style
                 ? `${o.type}=${encodeURIComponent(
@@ -64,7 +65,7 @@ export const Map: MapComponent = ({ width = "auto", height, google, children }):
         url = `${url}?&size=${actualWidth}x${Math.min(height, 640)}`;
         Object.keys(features).forEach(
             (e) =>
-                (url = `${url}&${e}${e.includes("=") ? "|" : "="}${encodeURIComponent(
+                (url = `${url}&${e}${e.includes("=") ? "%7c" : "="}${encodeURIComponent(
                     features[e].map((f) => f.data).join("|"),
                 )}`),
         );
