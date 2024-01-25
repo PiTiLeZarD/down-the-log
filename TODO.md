@@ -50,8 +50,8 @@ This is the rough todolist I want to work on.
 -   [ ] cluster?
 -   [ ] Settings
     -   [x] should be able to select our own callsign, maybe prompt at the start of the app
-    -   [ ] choose favorite bands
-    -   [ ] choose favorite modes
+    -   [x] choose favorite bands
+    -   [x] choose favorite modes
     -   [x] fix location vs use gps
     -   [ ] light/dark theme
     -   [ ] input callsign vs contest
