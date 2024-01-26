@@ -1,3 +1,6 @@
+// https://www.arrl.org/files/file/dxcclist.txt
+// https://www.qrz.com/atlas
+
 export const continents = ["NA", "SA", "EU", "AF", "OC", "AS", "AN"] as const;
 export type Continent = (typeof continents)[number];
 export type CallsignData = {
@@ -582,7 +585,7 @@ export const callsigns: CallsignData[] = [
     },
     {
         iso3: "DEU",
-        dxcc: "081",
+        dxcc: "230",
         regexp: /^(D[A-OQR]|DP(?![012])).*/,
         gs: "JO51gd",
         ctn: "EU",
@@ -1656,6 +1659,13 @@ export const callsigns: CallsignData[] = [
         dxcc: "291",
         regexp: /^4U.*/,
         gs: "FN30ar",
+        ctn: "NA",
+    },
+    {
+        iso3: "USA",
+        dxcc: "110",
+        regexp: /^[AKNW]H6.*/,
+        gs: "DN05hd",
         ctn: "NA",
     },
     {

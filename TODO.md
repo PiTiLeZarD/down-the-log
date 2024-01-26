@@ -2,7 +2,7 @@
 
 This is the rough todolist I want to work on.
 
--   [ ] ios errors galore
+-   [ ] Find a way to differeciate between south cook island and north cook island dxcc entities since they share the same callsigns (maybe separate the dxcc list from the callsigns)
 -   [ ] adif import export
     -   [x] Lossless ADIF (don't strip fields we don't use)
     -   [x] download qsos as adif
@@ -21,6 +21,7 @@ This is the rough todolist I want to work on.
     -   [x] qsos /continent /country /year,month
     -   [ ] heatmap of qso per day (github style)
     -   [x] qsos/band,mode
+-   [ ] ios errors galore
 -   [ ] Events (WWFF/POTA/SOTA/etc...)
     -   [ ] db with all parks, locations and polylines
     -   [ ] button a-la band/SN to set events id, add in QSOForm and possibly have an option to add it straight in the callsign input
