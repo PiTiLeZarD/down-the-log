@@ -41,7 +41,6 @@ export const Home: HomeComponent = ({ navigation }): JSX.Element => {
     const settings = useStore((state) => state.settings);
     const log = useStore((state) => state.log);
     const qsosFilters = useStore((state) => state.filters);
-    const setQsosFilters = useStore((state) => state.updateFilters);
 
     const handleAdd = (hamqthCSData?: HamQTHCallsignData) => {
         const qso = newQso(callsign, qsos, currentLocation, undefined, settings.myCallsign);
@@ -64,7 +63,7 @@ export const Home: HomeComponent = ({ navigation }): JSX.Element => {
                     </Alert>
                 )}
                 {settings.showBeacons && <Beacons />}
-                {settings.showFilters && <Filters filters={qsosFilters} setFilters={setQsosFilters} />}
+                {settings.showFilters && <Filters />}
                 <QsoList
                     style={{ height: 0 }}
                     qsos={filterQsos(qsos, qsosFilters)}

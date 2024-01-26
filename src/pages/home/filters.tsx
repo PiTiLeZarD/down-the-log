@@ -1,6 +1,7 @@
 import React from "react";
 import { View, useWindowDimensions } from "react-native";
 import { countries } from "../../data/countries";
+import { useStore } from "../../store";
 import { sortNumsAndAlpha, unique } from "../../utils/arrays";
 import { Modal } from "../../utils/modal";
 import { QSO, useQsos } from "../../utils/qso";
@@ -31,19 +32,18 @@ export type QsoFilter = { name: FilterName; values: unknown[] };
 export const filterQsos = (qsos: QSO[], qsosFilters: QsoFilter[]) =>
     qsos.filter((q) => qsosFilters.reduce((acc, { name, values }) => acc && values.includes(filterMap[name](q)), true));
 
-export type FiltersProps = {
-    filters?: QsoFilter[];
-    setFilters: (filters: QsoFilter[]) => void;
-};
+export type FiltersProps = {};
 
 export type FiltersComponent = React.FC<FiltersProps>;
 
-export const Filters: FiltersComponent = ({ filters = [], setFilters }): JSX.Element => {
+export const Filters: FiltersComponent = (): JSX.Element => {
     const qsos = useQsos();
     const { height } = useWindowDimensions();
     const [modal, setModal] = React.useState<boolean>(false);
     const [filter, setFilter] = React.useState<FilterName | undefined>(undefined);
     const [values, setValues] = React.useState<Array<unknown>>([]);
+    const filters = useStore((state) => state.filters);
+    const setFilters = useStore((state) => state.updateFilters);
 
     const itemsPerPage = Math.floor((height - 40 * 5) / 40);
 
