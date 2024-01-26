@@ -31,7 +31,7 @@ export const useGeneratedStyles = (columns: number = 12) => {
 
     React.useEffect(() => {
         setGridStyles(generateStyles(windowDimensions.width, columns));
-    }, [windowDimensions]);
+    }, [windowDimensions, columns]);
 
     return { gridStyles, screenSize: getScreenSize(windowDimensions.width), columns };
 };
