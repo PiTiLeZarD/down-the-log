@@ -1,7 +1,7 @@
 import { StackScreenProps } from "@react-navigation/stack";
 import React from "react";
 import { NavigationParamList } from "../../Navigation";
-import { Band, freq2band } from "../../data/bands";
+import { Band, bands, freq2band } from "../../data/bands";
 import { useStore } from "../../store";
 import { groupBy, sortNumsAndAlpha } from "../../utils/arrays";
 import { Grid } from "../../utils/grid";
@@ -38,7 +38,7 @@ export const Stats: StatsComponent = ({ navigation }): JSX.Element => {
                 .map((group) => Object.keys(group))
                 .flat(),
         ),
-    ];
+    ].sort((b1, b2) => Object.keys(bands).indexOf(b1) - Object.keys(bands).indexOf(b2));
     const columns = usedBands.length + 2;
 
     return (
