@@ -1,5 +1,6 @@
 import React from "react";
 import { View, useWindowDimensions } from "react-native";
+import { callsigns } from "../../data/callsigns";
 import { countries } from "../../data/countries";
 import { useStore } from "../../store";
 import { sortNumsAndAlpha, unique } from "../../utils/arrays";
@@ -11,13 +12,15 @@ import { PaginatedList } from "../../utils/theme/components/paginated-list";
 import { Typography } from "../../utils/theme/components/typography";
 
 export type FilterFunction = (qso: QSO) => string;
+const dxcc2countrymap = Object.fromEntries(callsigns.map((csd) => [+csd.dxcc, csd.iso3]));
+
 export const filterMap: Record<string, FilterFunction> = {
     year: (qso) => String(qso.date.toObject().year),
     band: (qso) => String(qso.band),
     mode: (qso) => String(qso.mode),
     cq: (qso) => String(qso.cqzone),
     itu: (qso) => String(qso.ituzone),
-    dxcc: (qso) => String(qso.dxcc),
+    dxcc: (qso) => `${qso.dxcc} (${qso.dxcc ? (countries[dxcc2countrymap[qso.dxcc]] || { name: "?" }).name : "?"})`,
     gridsquare: (qso) => qso.locator?.substring(0, 3) || "",
     continent: (qso) => qso.continent || "",
     country: (qso) => (qso.country ? countries[qso.country].name : ""),
