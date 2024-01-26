@@ -1,6 +1,8 @@
 import { StackScreenProps } from "@react-navigation/stack";
 import React from "react";
+import { useFormContext } from "react-hook-form";
 import { Pressable, View } from "react-native";
+import { Switch } from "react-native-gesture-handler";
 import { createStyleSheet, useStyles } from "react-native-unistyles";
 import Swal from "sweetalert2";
 import { NavigationParamList } from "../../Navigation";
@@ -54,6 +56,7 @@ export const FormFields: FormFieldsComponent = ({ navigation, qso }): JSX.Elemen
     const { styles } = useStyles(stylesheet);
     const deleteLog = useStore((state) => state.deleteLog);
     const settings = useStore((state) => state.settings);
+    const { setValue } = useFormContext<QSO>();
 
     const onDelete = () => {
         if (qso) deleteLog(qso);
@@ -130,6 +133,40 @@ export const FormFields: FormFieldsComponent = ({ navigation, qso }): JSX.Elemen
                     </Typography>
                     <FormField name="myLocator" label="My Gridsquare:" />
                     <FormField name="myCallsign" label="My Callsign:" />
+                    <Typography variant="h3" underline>
+                        QSL
+                    </Typography>
+                    <Grid container>
+                        <Grid item xs={4} />
+                        <Grid item xs={4}>
+                            <Typography>Sent</Typography>
+                        </Grid>
+                        <Grid item xs={4}>
+                            <Typography>Received</Typography>
+                        </Grid>
+                    </Grid>
+                    <Grid container>
+                        <Grid item xs={4}>
+                            LoTW
+                        </Grid>
+                        <Grid item xs={4}>
+                            <Switch value={qso.lotw_sent} onValueChange={(v) => setValue("lotw_sent", v)} />
+                        </Grid>
+                        <Grid item xs={4}>
+                            <Switch value={qso.lotw_received} onValueChange={(v) => setValue("lotw_received", v)} />
+                        </Grid>
+                    </Grid>
+                    <Grid container>
+                        <Grid item xs={4}>
+                            eQSL
+                        </Grid>
+                        <Grid item xs={4}>
+                            <Switch value={qso.eqsl_sent} onValueChange={(v) => setValue("eqsl_sent", v)} />
+                        </Grid>
+                        <Grid item xs={4}>
+                            <Switch value={qso.eqsl_received} onValueChange={(v) => setValue("eqsl_received", v)} />
+                        </Grid>
+                    </Grid>
                     <Button text="OK" colour="success" onPress={() => setOpenTimeLocModal(false)} />
                 </Stack>
             </Modal>
