@@ -7,6 +7,7 @@ import { Stack } from "../../utils/stack";
 import { Button } from "../../utils/theme/components/button";
 import { Input } from "../../utils/theme/components/input";
 import { Typography } from "../../utils/theme/components/typography";
+import { WwffInfo } from "./wwff-info";
 
 export type EventsProps = {};
 
@@ -49,9 +50,11 @@ export const Events: EventsComponent = (): JSX.Element => {
                         </Grid>
                         <Grid item xs={5}>
                             <Input value={qso.wwff} onChangeText={(v) => setValue("wwff", v)} />
+                            <WwffInfo parkRef={qso.wwff} />
                         </Grid>
                         <Grid item xs={5}>
                             <Input value={qso.myWwff} onChangeText={(v) => setValue("myWwff", v)} />
+                            <WwffInfo parkRef={qso.myWwff} />
                         </Grid>
                     </Grid>
                     <Grid container>

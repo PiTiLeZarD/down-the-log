@@ -7,3 +7,4 @@ dist
 src/data/world.json
 scripts/*.geojson
 scripts/*.json
+scripts/*.csv
