@@ -93,7 +93,7 @@ export const BandFreqInput: BandFreqInputComponent = (): JSX.Element => {
                         suffix="kHz"
                         onChangeText={(nfreq) => setFreqUserInput(nfreq)}
                     />
-                    <Button text="Close" onPress={() => setOpen(false)} />
+                    <Button colour="success" text="OK" onPress={() => setOpen(false)} />
                 </Stack>
             </Modal>
         </Stack>

@@ -138,6 +138,7 @@ export const Beacons: BeaconsComponent = (): JSX.Element => {
                             text={freq2band(f)}
                         />
                     ))}
+                    <Button colour="success" text="OK" onPress={() => setModalOpen(false)} />
                 </Stack>
             </Modal>
         </Stack>

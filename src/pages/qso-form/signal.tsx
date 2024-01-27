@@ -86,7 +86,7 @@ export const Signal: SignalComponent = ({ field }): JSX.Element => {
                             onChangeText={(newValue) => setValue(field, newValue)}
                         />
                     )}
-                    <Button text="Close" onPress={() => setOpen(false)} />
+                    <Button colour="success" text="OK" onPress={() => setOpen(false)} />
                 </Stack>
             </Modal>
         </>

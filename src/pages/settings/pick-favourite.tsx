@@ -51,7 +51,7 @@ export const PickFavourite: PickFavouriteComponent = ({ type }): JSX.Element => 
                             />
                         ))}
                     </PaginatedList>
-                    <Button text="Close" onPress={() => setOpen(false)} />
+                    <Button colour="success" text="OK" onPress={() => setOpen(false)} />
                 </Stack>
             </Modal>
         </Stack>
