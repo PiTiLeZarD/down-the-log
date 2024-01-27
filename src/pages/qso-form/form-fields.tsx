@@ -75,7 +75,16 @@ export const FormFields: FormFieldsComponent = ({ navigation, qso }): JSX.Elemen
 
     return (
         <PageLayout
-            title={<FormField name="callsign" style={styles.callsignInput} />}
+            title={
+                <Stack direction="row">
+                    <View style={{ flexGrow: 1 }}>
+                        <FormField name="callsign" style={styles.callsignInput} />
+                    </View>
+                    <View>
+                        <Button text="QRZ" variant="chip" url={`https://www.qrz.com/db/${qso.callsign}`} />
+                    </View>
+                </Stack>
+            }
             navigate={navigation.navigate}
             titleMargin={10}
         >
