@@ -39,11 +39,11 @@ export const Events: EventsComponent = (): JSX.Element => {
                             <Typography variant="em">POTA</Typography>
                         </Grid>
                         <Grid item xs={5}>
-                            <Input value={qso.pota} onChangeText={(v) => setValue("pota", v)} />
+                            <Input value={qso.pota} onChangeText={(v) => setValue("pota", v.toUpperCase())} />
                             <PotaInfo parkRef={qso.pota} />
                         </Grid>
                         <Grid item xs={5}>
-                            <Input value={qso.myPota} onChangeText={(v) => setValue("myPota", v)} />
+                            <Input value={qso.myPota} onChangeText={(v) => setValue("myPota", v.toUpperCase())} />
                             <PotaInfo parkRef={qso.myPota} />
                         </Grid>
                     </Grid>
@@ -52,11 +52,11 @@ export const Events: EventsComponent = (): JSX.Element => {
                             <Typography variant="em">WWFF</Typography>
                         </Grid>
                         <Grid item xs={5}>
-                            <Input value={qso.wwff} onChangeText={(v) => setValue("wwff", v)} />
+                            <Input value={qso.wwff} onChangeText={(v) => setValue("wwff", v.toUpperCase())} />
                             <WwffInfo parkRef={qso.wwff} />
                         </Grid>
                         <Grid item xs={5}>
-                            <Input value={qso.myWwff} onChangeText={(v) => setValue("myWwff", v)} />
+                            <Input value={qso.myWwff} onChangeText={(v) => setValue("myWwff", v.toUpperCase())} />
                             <WwffInfo parkRef={qso.myWwff} />
                         </Grid>
                     </Grid>
@@ -65,10 +65,10 @@ export const Events: EventsComponent = (): JSX.Element => {
                             <Typography variant="em">SOTA</Typography>
                         </Grid>
                         <Grid item xs={5}>
-                            <Input value={qso.sota} onChangeText={(v) => setValue("sota", v)} />
+                            <Input value={qso.sota} onChangeText={(v) => setValue("sota", v.toUpperCase())} />
                         </Grid>
                         <Grid item xs={5}>
-                            <Input value={qso.mySota} onChangeText={(v) => setValue("mySota", v)} />
+                            <Input value={qso.mySota} onChangeText={(v) => setValue("mySota", v.toUpperCase())} />
                         </Grid>
                     </Grid>
                     <Grid container>
@@ -76,10 +76,10 @@ export const Events: EventsComponent = (): JSX.Element => {
                             <Typography variant="em">IOTA</Typography>
                         </Grid>
                         <Grid item xs={5}>
-                            <Input value={qso.iota} onChangeText={(v) => setValue("iota", v)} />
+                            <Input value={qso.iota} onChangeText={(v) => setValue("iota", v.toUpperCase())} />
                         </Grid>
                         <Grid item xs={5}>
-                            <Input value={qso.myIota} onChangeText={(v) => setValue("myIota", v)} />
+                            <Input value={qso.myIota} onChangeText={(v) => setValue("myIota", v.toUpperCase())} />
                         </Grid>
                     </Grid>
                     <Grid container>
@@ -87,10 +87,10 @@ export const Events: EventsComponent = (): JSX.Element => {
                             <Typography variant="em">SIG</Typography>
                         </Grid>
                         <Grid item xs={5}>
-                            <Input value={qso.sig} onChangeText={(v) => setValue("sig", v)} />
+                            <Input value={qso.sig} onChangeText={(v) => setValue("sig", v.toUpperCase())} />
                         </Grid>
                         <Grid item xs={5}>
-                            <Input value={qso.mySig} onChangeText={(v) => setValue("mySig", v)} />
+                            <Input value={qso.mySig} onChangeText={(v) => setValue("mySig", v.toUpperCase())} />
                         </Grid>
                     </Grid>
                     <Button colour="success" text="OK" onPress={() => setOpen(false)} />
