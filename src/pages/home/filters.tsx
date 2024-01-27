@@ -5,35 +5,35 @@ import { countries } from "../../data/countries";
 import { useStore } from "../../store";
 import { sortNumsAndAlpha, unique } from "../../utils/arrays";
 import { Modal } from "../../utils/modal";
-import { QSO, useQsos } from "../../utils/qso";
+import { QSO, hasEvent, useQsos } from "../../utils/qso";
 import { Stack } from "../../utils/stack";
 import { Button } from "../../utils/theme/components/button";
 import { PaginatedList } from "../../utils/theme/components/paginated-list";
 import { Typography } from "../../utils/theme/components/typography";
 
-export type FilterFunction = (qso: QSO) => string;
+export type FilterFunction = (qso: QSO) => string[];
 const dxcc2countrymap = Object.fromEntries(callsigns.map((csd) => [+csd.dxcc, csd.iso3]));
 
 export const filterMap: Record<string, FilterFunction> = {
-    year: (qso) => String(qso.date.toObject().year),
-    band: (qso) => String(qso.band),
-    mode: (qso) => String(qso.mode),
-    cq: (qso) => String(qso.cqzone),
-    itu: (qso) => String(qso.ituzone),
-    dxcc: (qso) => `${qso.dxcc} (${qso.dxcc ? (countries[dxcc2countrymap[qso.dxcc]] || { name: "?" }).name : "?"})`,
-    gridsquare: (qso) => qso.locator?.substring(0, 3) || "",
-    continent: (qso) => qso.continent || "",
-    country: (qso) => (qso.country ? countries[qso.country].name : ""),
-    qsl: (qso) =>
-        `${qso.lotw_received ? "lotw" : ""}${qso.eqsl_received ? "eqsl" : ""}${
-            !qso.lotw_received && !qso.eqsl_received ? "none" : ""
-        }`,
+    year: (qso) => [String(qso.date.toObject().year)],
+    band: (qso) => [String(qso.band)],
+    mode: (qso) => [String(qso.mode)],
+    cq: (qso) => [String(qso.cqzone)],
+    itu: (qso) => [String(qso.ituzone)],
+    dxcc: (qso) => [`${qso.dxcc} (${qso.dxcc ? (countries[dxcc2countrymap[qso.dxcc]] || { name: "?" }).name : "?"})`],
+    has_event: (qso) => [hasEvent(qso) ? "Yes" : "No"],
+    gridsquare: (qso) => [qso.locator?.substring(0, 3) || ""],
+    continent: (qso) => [qso.continent || ""],
+    country: (qso) => [qso.country ? countries[qso.country].name : ""],
+    qsl: (qso) => [qso.lotw_received ? "lotw" : "", qso.eqsl_received ? "eqsl" : ""],
 };
 export type FilterName = keyof typeof filterMap;
 export type QsoFilter = { name: FilterName; values: unknown[] };
 
 export const filterQsos = (qsos: QSO[], qsosFilters: QsoFilter[]) =>
-    qsos.filter((q) => qsosFilters.reduce((acc, { name, values }) => acc && values.includes(filterMap[name](q)), true));
+    qsos.filter((q) =>
+        qsosFilters.reduce((acc, { name, values }) => acc && filterMap[name](q).some((f) => values.includes(f)), true),
+    );
 
 export type FiltersProps = {};
 
@@ -96,7 +96,7 @@ export const Filters: FiltersComponent = (): JSX.Element => {
                     )}
                     {filter && (
                         <PaginatedList itemsPerPage={itemsPerPage}>
-                            {unique(qsos.map((q) => filterMap[filter](q)))
+                            {unique(qsos.map((q) => filterMap[filter](q)).flat())
                                 .sort(sortNumsAndAlpha)
                                 .map((v) => (
                                     <Button

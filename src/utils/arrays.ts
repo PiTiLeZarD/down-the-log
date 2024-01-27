@@ -1,10 +1,12 @@
 import { isNumber } from "./math";
 
-export const groupBy = <T extends object, K extends string>(a: T[], f: (o: T) => K): Record<K, T[]> =>
+export const groupBy = <T extends object, K extends string>(a: T[], f: (o: T) => K | K[]): Record<K, T[]> =>
     a.reduce<Record<K, T[]>>(
         (groups, elt) => ({
             ...groups,
-            [f(elt)]: [...(groups[f(elt)] || []), elt],
+            ...((vs) => Object.fromEntries(vs.map((v) => [v, [...(groups[v] || []), elt]])))(
+                ((v) => (Array.isArray(v) ? v : [v]))(f(elt)),
+            ),
         }),
         {} as Record<K, T[]>,
     );

@@ -46,7 +46,7 @@ export const Stats: StatsComponent = ({ navigation }): JSX.Element => {
     const settings = useStore((state) => state.settings);
 
     const secondStatValues = applyFavourites(
-        unique(qsos.map((q) => filterMap[secondStat](q))),
+        unique(qsos.map((q) => filterMap[secondStat](q)).flat()),
         secondStat,
         settings,
         useFavourites,
