@@ -7,6 +7,7 @@ import { Stack } from "../../utils/stack";
 import { Button } from "../../utils/theme/components/button";
 import { Input } from "../../utils/theme/components/input";
 import { Typography } from "../../utils/theme/components/typography";
+import { IotaInfo } from "./iota-info";
 import { PotaInfo } from "./pota-info";
 import { WwffInfo } from "./wwff-info";
 
@@ -77,9 +78,11 @@ export const Events: EventsComponent = (): JSX.Element => {
                         </Grid>
                         <Grid item xs={5}>
                             <Input value={qso.iota} onChangeText={(v) => setValue("iota", v.toUpperCase())} />
+                            <IotaInfo parkRef={qso.iota} />
                         </Grid>
                         <Grid item xs={5}>
                             <Input value={qso.myIota} onChangeText={(v) => setValue("myIota", v.toUpperCase())} />
+                            <IotaInfo parkRef={qso.myIota} />
                         </Grid>
                     </Grid>
                     <Grid container>

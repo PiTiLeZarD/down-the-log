@@ -5119,6 +5119,13 @@ fast-xml-parser@^4.0.12:
   dependencies:
     strnum "^1.0.5"
 
+fast-xml-parser@^4.3.3:
+  version "4.3.3"
+  resolved "https://registry.yarnpkg.com/fast-xml-parser/-/fast-xml-parser-4.3.3.tgz#aeaf5778392329f17168c40c51bcbfec8ff965be"
+  integrity sha512-coV/D1MhrShMvU6D0I+VAK3umz6hUaxxhL0yp/9RjfiYUfAv14rDhGQL+PLForhMdr0wq3PiV07WtkkNjJjNHg==
+  dependencies:
+    strnum "^1.0.5"
+
 fastq@^1.6.0:
   version "1.15.0"
   resolved "https://registry.yarnpkg.com/fastq/-/fastq-1.15.0.tgz#d04d07c6a2a68fe4599fea8d2e103a937fae6b3a"

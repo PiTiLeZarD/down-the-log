@@ -8,3 +8,5 @@ src/data/world.json
 scripts/*.geojson
 scripts/*.json
 scripts/*.csv
+scripts/*.kmz
+scripts/*.kml
