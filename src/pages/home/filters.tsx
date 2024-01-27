@@ -32,7 +32,12 @@ export const filterMap: Record<string, FilterFunction> = {
     gridsquare: (qso) => [qso.locator?.substring(0, 3) || ""],
     continent: (qso) => [qso.continent || ""],
     country: (qso) => [qso.country ? countries[qso.country].name : ""],
-    qsl: (qso) => [qso.lotw_received ? "lotw" : "", qso.eqsl_received ? "eqsl" : ""],
+    qsl: (qso) => [
+        qso.lotw_received ? "LoTW received" : "LoTW not received",
+        qso.lotw_sent ? "LoTW sent" : "LoTW not sent",
+        qso.eqsl_received ? "eQSL received" : "eQSL not received",
+        qso.eqsl_sent ? "eQSL sent" : "eQSL not sent",
+    ],
 };
 export type FilterName = keyof typeof filterMap;
 export type QsoFilter = { name: FilterName; values: unknown[] };
