@@ -197,7 +197,7 @@ export const FormFields: FormFieldsComponent = ({ navigation, qso }): JSX.Elemen
                 </Grid>
             </Grid>
             <Grid container>
-                <Grid item xs={7}>
+                <Grid item xs={6} xl={7}>
                     <FormField name="qth" label="QTH:" />
                 </Grid>
                 {settings.geocodeMapsCoKey && (
@@ -208,7 +208,7 @@ export const FormFields: FormFieldsComponent = ({ navigation, qso }): JSX.Elemen
                 <Grid item xs={settings.geocodeMapsCoKey ? 3 : 4}>
                     <LocatorField name="locator" label="Locator:" />
                 </Grid>
-                <Grid item xs={1}>
+                <Grid item xs={2} xl={1}>
                     <Stack>
                         <Typography>&nbsp;</Typography>
                         <GmapsChip locator={qso.locator} />
