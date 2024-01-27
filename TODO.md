@@ -7,8 +7,8 @@ This is the rough todolist I want to work on.
 -   [ ] adif import export
     -   [x] Lossless ADIF (don't strip fields we don't use)
     -   [x] download qsos as adif
-    -   [ ] ability to ask "download from last export"
-    -   [ ] use filters for exporting (ability to untick this)
+    -   [x] ability to ask "download from last export"
+    -   [x] use filters for exporting (ability to untick this)
     -   [x] upload adif file, merge with current qsos, find duplicates etc...
     -   [x] improve adif page interface
     -   [ ] find a solution for mobile (download works, upload probably doesn't)

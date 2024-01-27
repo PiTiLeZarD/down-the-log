@@ -16,6 +16,7 @@ import { Button } from "../../utils/theme/components/button";
 import { Icon } from "../../utils/theme/components/icon";
 import { Typography } from "../../utils/theme/components/typography";
 import { SwalTheme } from "../../utils/theme/theme";
+import { Filters, filterQsos } from "../home/filters";
 
 const stylesheet = createStyleSheet((theme) => ({
     dropzone: {
@@ -44,6 +45,7 @@ export const Adif: AdifComponent = ({ navigation }): JSX.Element => {
     const currentLocation = useStore((state) => state.currentLocation);
     const settings = useStore((state) => state.settings);
     const resetStore = useStore((state) => state.resetStore);
+    const filters = useStore((state) => state.filters);
     const [importRemaining, setImportRemaining] = React.useState<QSO[]>([]);
     const [importing, setImporting] = React.useState<boolean>(false);
     const qsos = useQsos();
@@ -133,18 +135,19 @@ export const Adif: AdifComponent = ({ navigation }): JSX.Element => {
                     </Typography>
                 </Stack>
             )}
+            <Filters />
             <Stack direction="row">
                 <Button
                     startIcon="download-outline"
                     text="Download (ADIF)"
                     variant="outlined"
-                    onPress={() => downloadQsos("adif_export.adif", qsos)}
+                    onPress={() => downloadQsos("adif_export.adif", filterQsos(qsos, filters))}
                 />
                 <Button
                     startIcon="download-outline"
                     text="Download (ADX)"
                     variant="outlined"
-                    onPress={() => downloadQsos("adx_export.adx", qsos, "adx")}
+                    onPress={() => downloadQsos("adx_export.adx", filterQsos(qsos, filters), "adx")}
                 />
             </Stack>
             {!["ios", "android"].includes(Platform.OS) && (
