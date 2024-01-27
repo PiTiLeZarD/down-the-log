@@ -26,6 +26,7 @@ import { GeocodeButton } from "./geocode-button";
 import { GmapsChip } from "./gmaps-chip";
 import { LocatorField } from "./locator-field";
 import { PreviousQsos } from "./previous-qsos";
+import { QrzChip } from "./qrz-chip";
 import { Signal } from "./signal";
 
 const stylesheet = createStyleSheet((theme) => ({
@@ -82,7 +83,7 @@ export const FormFields: FormFieldsComponent = ({ navigation, qso }): JSX.Elemen
                         <FormField name="callsign" style={styles.callsignInput} />
                     </View>
                     <View>
-                        <Button text="QRZ" variant="chip" url={`https://www.qrz.com/db/${qso.callsign}`} />
+                        <QrzChip callsign={qso.callsign} />
                     </View>
                 </Stack>
             }
