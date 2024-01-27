@@ -29,8 +29,6 @@ parser.on("end", () => {
                         {
                             name: r.name,
                             locator: normalise(r.iaruLocator),
-                            // website: r.website,
-                            dxcc: r.dxccEnum,
                         },
                     ]),
             ),
