@@ -44,13 +44,7 @@ export const Stats: StatsComponent = ({ navigation }): JSX.Element => {
     const qsos = filterQsos(useQsos(), qsosFilters);
     const groups = groupQsos(qsos, firstStat, secondStat);
     const settings = useStore((state) => state.settings);
-    // const usedBands = [
-    //     ...new Set(
-    //         Object.values(groups)
-    //             .map((group) => Object.keys(group))
-    //             .flat(),
-    //     ),
-    // ].sort((b1, b2) => Object.keys(bands).indexOf(b1) - Object.keys(bands).indexOf(b2));
+
     const secondStatValues = applyFavourites(
         unique(qsos.map((q) => filterMap[secondStat](q))),
         secondStat,
