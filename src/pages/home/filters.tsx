@@ -16,7 +16,7 @@ const dxcc2countrymap = Object.fromEntries(callsigns.map((csd) => [+csd.dxcc, cs
 
 export const filterMap: Record<string, FilterFunction> = {
     year: (qso) => [String(qso.date.toObject().year)],
-    month: (qso) => [String(qso.date.toFormat("LLL"))],
+    month: (qso) => [String(qso.date.toObject().month)],
     day: (qso) => [String(qso.date.toObject().day)],
     band: (qso) => [String(qso.band)],
     mode: (qso) => [String(qso.mode)],
