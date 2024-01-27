@@ -22,6 +22,21 @@ export type Settings = {
     favouriteBands: Band[];
 };
 
+const defaultSettings: Settings = {
+    myCallsign: "",
+    showBeacons: false,
+    imperial: false,
+    showFilters: false,
+    favouriteBands: [],
+    favouriteModes: [],
+};
+
+export const fixSettings = (settings: Partial<Settings>): Settings =>
+    ({
+        ...settings,
+        ...Object.fromEntries(Object.entries(defaultSettings).filter(([k, v]) => !(k in settings))),
+    }) as Settings;
+
 type DTLStoreProps = {
     qsos: QSO[];
     filters: QsoFilter[];
@@ -46,14 +61,7 @@ type DTLStoreActionsMutatorProps = (
 const InitialStore: DTLStoreProps = {
     qsos: [],
     filters: [],
-    settings: {
-        myCallsign: "",
-        showBeacons: false,
-        imperial: false,
-        showFilters: false,
-        favouriteBands: [],
-        favouriteModes: [],
-    },
+    settings: defaultSettings,
     currentLocation: "",
 };
 
@@ -83,6 +91,8 @@ export const useStore = create<
                     q.date = DateTime.fromISO(q.date as unknown as string, { setZone: true });
                     return q;
                 });
+
+                storage.state.settings = fixSettings(storage.state.settings);
 
                 if (storage.state.settings.hamqth?.sessionStart) {
                     storage.state.settings.hamqth!.sessionStart = DateTime.fromISO(
