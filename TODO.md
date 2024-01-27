@@ -23,13 +23,6 @@ This is the rough todolist I want to work on.
     -   [ ] heatmap of qso per day (github style)
     -   [x] qsos/band,mode
 -   [ ] ios errors galore
--   [ ] Events (WWFF/POTA/SOTA/etc...)
-    -   [ ] db with all parks, locations and polylines
-    -   [x] button a-la band/SN to set events id, add in QSOForm and possibly have an option to add it straight in the callsign input
-    -   [x] adif to export/import it properly
-    -   [x] adif has WWFF/SOTA/POTA also SIG will have to be parsed on import to put in the right spot (if VKFF still uses SIG for WWFF, have a setting during export, or maybe a remapping of fields?)
-    -   [x] WWFF file: https://wwff.co/wwff-data/wwff_directory.csv
-    -   [ ] POTA file: https://pota.app/all_parks_ext.csv
 -   [ ] manage multiple rigs/antenna and use ADIF to store/retrieve it
 -   [ ] yarn release should use ghpages to create the demo, build the tauri app and release it, build ios/android apps
     -   [x] demo website on github
@@ -60,6 +53,12 @@ This is the rough todolist I want to work on.
 
 ## Done
 
+-   [x] Events (WWFF/POTA/SOTA/etc...)
+    -   [x] button a-la band/SN to set events id, add in QSOForm and possibly have an option to add it straight in the callsign input
+    -   [x] adif to export/import it properly
+    -   [x] adif has WWFF/SOTA/POTA also SIG will have to be parsed on import to put in the right spot (if VKFF still uses SIG for WWFF, have a setting during export, or maybe a remapping of fields?)
+    -   [x] WWFF file: https://wwff.co/wwff-data/wwff_directory.csv
+    -   [x] POTA file: https://pota.app/all_parks_ext.csv
 -   [x] DXCC for australia doesn't include me, let's find out why (need some map tooling)
 -   [x] qso's map view (wide screen could have both displayed, phone could have a selector?)
     -   [x] https://github.com/react-native-maps/react-native-maps
