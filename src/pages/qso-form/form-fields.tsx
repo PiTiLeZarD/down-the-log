@@ -23,6 +23,7 @@ import { BandFreqInput } from "./band-freq-input";
 import { ContinentWarning } from "./continent-warning";
 import { CountryWarning } from "./country-warning";
 import { GeocodeButton } from "./geocode-button";
+import { GmapsChip } from "./gmaps-chip";
 import { LocatorField } from "./locator-field";
 import { PreviousQsos } from "./previous-qsos";
 import { Signal } from "./signal";
@@ -195,7 +196,7 @@ export const FormFields: FormFieldsComponent = ({ navigation, qso }): JSX.Elemen
                 </Grid>
             </Grid>
             <Grid container>
-                <Grid item xs={8}>
+                <Grid item xs={7}>
                     <FormField name="qth" label="QTH:" />
                 </Grid>
                 {settings.geocodeMapsCoKey && (
@@ -205,6 +206,12 @@ export const FormFields: FormFieldsComponent = ({ navigation, qso }): JSX.Elemen
                 )}
                 <Grid item xs={settings.geocodeMapsCoKey ? 3 : 4}>
                     <LocatorField name="locator" label="Locator:" />
+                </Grid>
+                <Grid item xs={1}>
+                    <Stack>
+                        <Typography>&nbsp;</Typography>
+                        <GmapsChip locator={qso.locator} />
+                    </Stack>
                 </Grid>
             </Grid>
             <Grid container>
