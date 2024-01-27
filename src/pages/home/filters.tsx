@@ -16,6 +16,8 @@ const dxcc2countrymap = Object.fromEntries(callsigns.map((csd) => [+csd.dxcc, cs
 
 export const filterMap: Record<string, FilterFunction> = {
     year: (qso) => [String(qso.date.toObject().year)],
+    month: (qso) => [String(qso.date.toFormat("LLL"))],
+    day: (qso) => [String(qso.date.toObject().day)],
     band: (qso) => [String(qso.band)],
     mode: (qso) => [String(qso.mode)],
     cq: (qso) => [String(qso.cqzone)],
@@ -101,7 +103,11 @@ export const Filters: FiltersComponent = (): JSX.Element => {
                     )}
                     {filter && (
                         <PaginatedList itemsPerPage={itemsPerPage}>
-                            {unique(qsos.map((q) => filterMap[filter](q)).flat())
+                            {unique(
+                                filterQsos(qsos, filters)
+                                    .map((q) => filterMap[filter](q))
+                                    .flat(),
+                            )
                                 .sort(sortNumsAndAlpha)
                                 .map((v) => (
                                     <Button
