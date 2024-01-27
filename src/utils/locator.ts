@@ -10,8 +10,8 @@ export type LatLng = {
 };
 
 export const latlong2Maidenhead = (pos: LatLng): string => {
-    if (Math.abs(pos.longitude) >= 180 || Math.abs(pos.latitude) >= 90) {
-        throw new Error("Value error");
+    if (Math.abs(pos.longitude) > 180 || Math.abs(pos.latitude) > 90) {
+        throw new Error(`Value error lat:${pos.latitude} or long:${pos.longitude} are out of bounds`);
     }
 
     const longitude = pos.longitude + 180;
