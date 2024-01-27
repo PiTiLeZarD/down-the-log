@@ -1,9 +1,10 @@
 import React from "react";
 import { countries } from "../../data/countries";
-import { QSO } from "../../utils/qso";
+import { QSO, hasEvent } from "../../utils/qso";
 import { Stack } from "../../utils/stack";
 import { Typography } from "../../utils/theme/components/typography";
 import { roundTo } from "../math";
+import { Icon } from "../theme/components/icon";
 import { QsoListProps } from "./qso-list";
 import { QsoRow } from "./qso-row";
 
@@ -38,7 +39,16 @@ export const QsoListItem: QsoListItemComponent = React.memo(
                     </Stack>
                 }
                 name={qso.name || "N/A"}
-                band={`${qso.band || "N/A"} (${qso.mode || "N/A"})`}
+                band={
+                    hasEvent(qso) ? (
+                        <Stack direction="row">
+                            <Typography>{`${qso.band || "N/A"} (${qso.mode || "N/A"})`}</Typography>
+                            <Icon name="earth" />
+                        </Stack>
+                    ) : (
+                        `${qso.band || "N/A"} (${qso.mode || "N/A"})`
+                    )
+                }
                 onPress={() => onQsoPress(qso)}
             />
         );

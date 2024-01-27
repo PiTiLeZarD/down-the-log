@@ -22,12 +22,26 @@ import { SwalTheme } from "../../utils/theme/theme";
 import { BandFreqInput } from "./band-freq-input";
 import { ContinentWarning } from "./continent-warning";
 import { CountryWarning } from "./country-warning";
+import { Events } from "./events";
 import { GeocodeButton } from "./geocode-button";
 import { GmapsChip } from "./gmaps-chip";
 import { LocatorField } from "./locator-field";
 import { PreviousQsos } from "./previous-qsos";
 import { QrzChip } from "./qrz-chip";
 import { Signal } from "./signal";
+
+export type ButtonOffsetProps = {};
+
+export type ButtonOffsetComponent = React.FC<React.PropsWithChildren<ButtonOffsetProps>>;
+
+export const ButtonOffset: ButtonOffsetComponent = ({ children }): JSX.Element => {
+    return (
+        <Stack>
+            <Typography>&nbsp;</Typography>
+            {children}
+        </Stack>
+    );
+};
 
 const stylesheet = createStyleSheet((theme) => ({
     datetime: {
@@ -182,17 +196,22 @@ export const FormFields: FormFieldsComponent = ({ navigation, qso }): JSX.Elemen
                 </Stack>
             </Modal>
             <Grid container>
-                <Grid item xs={12} md={6} xxl={8}>
+                <Grid item xs={12} md={6} xxl={6}>
                     <FormField name="name" label="Name:" />
                 </Grid>
-                <Grid item xs={6} md={3} xxl={2} style={{ justifyContent: "center" }}>
+                <Grid item xs={4} md={2} xxl={2} style={{ justifyContent: "center" }}>
                     <View>
                         <Signal field="rst_received" />
                     </View>
                 </Grid>
-                <Grid item xs={6} md={3} xxl={2} style={{ justifyContent: "center" }}>
+                <Grid item xs={4} md={2} xxl={2} style={{ justifyContent: "center" }}>
                     <View>
                         <Signal field="rst_sent" />
+                    </View>
+                </Grid>
+                <Grid item xs={4} md={2} xxl={2} style={{ justifyContent: "center" }}>
+                    <View>
+                        <Events />
                     </View>
                 </Grid>
             </Grid>
@@ -209,10 +228,9 @@ export const FormFields: FormFieldsComponent = ({ navigation, qso }): JSX.Elemen
                     <LocatorField name="locator" label="Locator:" />
                 </Grid>
                 <Grid item xs={2} xl={1}>
-                    <Stack>
-                        <Typography>&nbsp;</Typography>
+                    <ButtonOffset>
                         <GmapsChip locator={qso.locator} />
-                    </Stack>
+                    </ButtonOffset>
                 </Grid>
             </Grid>
             <Grid container>
@@ -235,13 +253,12 @@ export const FormFields: FormFieldsComponent = ({ navigation, qso }): JSX.Elemen
                             </Grid>
                             {settings.favouriteModes.length > 0 && (
                                 <Grid item xs={1}>
-                                    <Stack>
-                                        <Typography>&nbsp;</Typography>
+                                    <ButtonOffset>
                                         <Button
                                             startIcon={showAllModes ? "star-outline" : "star"}
                                             onPress={() => setShowAllModes(!showAllModes)}
                                         />
-                                    </Stack>
+                                    </ButtonOffset>
                                 </Grid>
                             )}
                             <Grid item xs={4}>

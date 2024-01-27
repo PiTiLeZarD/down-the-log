@@ -36,6 +36,16 @@ const allFields = [
     "lotw_qsl_rcvd",
     "lotw_qsl_sent",
     "comment",
+    "pota_ref",
+    "my_pota_ref",
+    "wwff_ref",
+    "my_wwff_ref",
+    "sota_ref",
+    "my_sota_ref",
+    "iota",
+    "my_iota",
+    "sig",
+    "my_sig",
 ] as const;
 
 type RecordField = (typeof allFields)[number];
@@ -143,6 +153,16 @@ export const qso2record = (qso: QSO): QSORecord => {
         lotw_qsl_rcvd: qso.lotw_received ? "Y" : "N",
         lotw_qsl_sent: qso.lotw_sent ? "Y" : "N",
         comment: qso.note,
+        pota_ref: qso.pota,
+        my_pota_ref: qso.myPota,
+        wwff_ref: qso.wwff,
+        my_wwff_ref: qso.myWwff,
+        sota_ref: qso.sota,
+        my_sota_ref: qso.mySota,
+        sig: qso.sig,
+        my_sig: qso.mySig,
+        iota: qso.iota,
+        my_iota: qso.myIota,
         honeypot: qso.honeypot || {},
     };
 };
@@ -179,6 +199,16 @@ export const record2qso = (record: QSORecord): QSO => ({
     eqsl_sent: record.eqsl_qsl_sent === "Y",
     lotw_received: record.lotw_qsl_rcvd === "Y",
     lotw_sent: record.lotw_qsl_sent === "Y",
+    pota: record.pota_ref,
+    myPota: record.my_pota_ref,
+    wwff: record.wwff_ref,
+    myWwff: record.my_wwff_ref,
+    sota: record.sota_ref,
+    mySota: record.my_sota_ref,
+    sig: record.sig,
+    mySig: record.my_sig,
+    iota: record.iota,
+    myIota: record.my_iota,
     honeypot: record.honeypot,
 });
 

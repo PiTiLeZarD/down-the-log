@@ -46,8 +46,23 @@ export type QSO = {
     eqsl_sent?: boolean;
     lotw_received?: boolean;
     lotw_sent?: boolean;
+    pota?: string;
+    myPota?: string;
+    wwff?: string;
+    myWwff?: string;
+    sota?: string;
+    mySota?: string;
+    sig?: string;
+    mySig?: string;
+    iota?: string;
+    myIota?: string;
     honeypot?: Record<string, string>;
 };
+
+export const hasEvent = (qso: QSO): boolean =>
+    [qso.pota, qso.myPota, qso.wwff, qso.myWwff, qso.sota, qso.mySota, qso.sig, qso.mySig, qso.iota, qso.myIota].filter(
+        Boolean,
+    ).length > 0;
 
 export const newQsoID = () => uuid.v4() as string;
 
