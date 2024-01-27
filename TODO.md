@@ -28,7 +28,7 @@ This is the rough todolist I want to work on.
     -   [x] button a-la band/SN to set events id, add in QSOForm and possibly have an option to add it straight in the callsign input
     -   [x] adif to export/import it properly
     -   [x] adif has WWFF/SOTA/POTA also SIG will have to be parsed on import to put in the right spot (if VKFF still uses SIG for WWFF, have a setting during export, or maybe a remapping of fields?)
-    -   [ ] WWFF file: https://wwff.co/wwff-data/wwff_directory.csv
+    -   [x] WWFF file: https://wwff.co/wwff-data/wwff_directory.csv
     -   [ ] POTA file: https://pota.app/all_parks_ext.csv
 -   [ ] manage multiple rigs/antenna and use ADIF to store/retrieve it
 -   [ ] yarn release should use ghpages to create the demo, build the tauri app and release it, build ios/android apps
