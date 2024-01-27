@@ -1,5 +1,5 @@
 import React from "react";
-import { Pressable, PressableProps, Text, TextProps, TextStyle, ViewStyle } from "react-native";
+import { Linking, Pressable, PressableProps, Text, TextProps, TextStyle, ViewStyle } from "react-native";
 import { createStyleSheet, useStyles } from "react-native-unistyles";
 import { Stack } from "../../stack";
 import { ColourVariant } from "../theme";
@@ -56,6 +56,7 @@ export const ButtonText: ButtonTextComponent = ({
     ...otherProps
 }): JSX.Element => {
     const { styles } = useStyles(stylesheet);
+
     return (
         <Text
             style={mergeStyles<TextStyle>(
@@ -78,6 +79,7 @@ export type ButtonProps = Omit<PressableProps, "style"> & {
     endIcon?: IconName;
     variant?: ButtonVariants;
     colour?: ColourVariant;
+    url?: string;
 };
 
 export type ButtonComponent = React.FC<React.PropsWithChildren<ButtonProps>>;
@@ -88,16 +90,23 @@ export const Button: ButtonComponent = ({
     variant = "contained",
     colour = "primary",
     text,
+    url,
     startIcon,
     endIcon,
     children,
     ...otherProps
 }): JSX.Element => {
+    const handleLink = (url: string) => async () => {
+        const supported = await Linking.canOpenURL(url);
+        if (supported) await Linking.openURL(url);
+    };
+
     const { styles } = useStyles(stylesheet);
     return (
         <Pressable
             style={mergeStyles<ViewStyle>(styles.button, styles[`button_${variant}`](colour), style)}
             {...otherProps}
+            {...(url ? { onPress: handleLink(url) } : {})}
         >
             <Stack direction="row" style={{ justifyContent: "center" }}>
                 {startIcon && (
