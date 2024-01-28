@@ -120,7 +120,7 @@ const adxField = (label: string, value?: string | number): string =>
         ? `<${label.toUpperCase()}>${sanitize(String(value))}</${label.toUpperCase()}>`
         : "";
 const parseAdxField = (adx: ChildNode) => {
-    return [adx.nodeName.toLocaleLowerCase(), unsanitize(adx.textContent || "")];
+    return [adx.nodeName.toLocaleLowerCase(), unsanitize((adx.textContent || "").trim())];
 };
 
 export const qso2record = (qso: QSO): QSORecord => {
@@ -250,6 +250,7 @@ export const adx2Record = (adx: Element): QSORecord => {
     } as QSORecord;
     Array.from(adx.childNodes).forEach((n) => {
         const [tagName, value] = parseAdxField(n);
+        if (tagName === "#text") return;
         if (allFields.includes(tagName as any)) record[tagName as RecordField] = value;
         else record.honeypot[tagName] = value;
     });
