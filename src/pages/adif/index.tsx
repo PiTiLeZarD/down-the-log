@@ -1,5 +1,5 @@
 import { StackScreenProps } from "@react-navigation/stack";
-import React, { useEffect } from "react";
+import React from "react";
 import { Platform } from "react-native";
 import { createStyleSheet, useStyles } from "react-native-unistyles";
 import Swal from "sweetalert2";
@@ -47,8 +47,6 @@ export const Adif: AdifComponent = (): JSX.Element => {
     const settings = useSettings();
     const resetStore = useStore((state) => state.resetStore);
     const filters = useStore((state) => state.filters);
-    const [importRemaining, setImportRemaining] = React.useState<QSO[]>([]);
-    const [importing, setImporting] = React.useState<boolean>(false);
     const qsos = useQsos();
     const honeypotFields = unique(
         qsos
@@ -58,36 +56,6 @@ export const Adif: AdifComponent = (): JSX.Element => {
     );
     const log = useStore((state) => state.log);
 
-    useEffect(() => {
-        if (importRemaining.length) {
-            let toImport = importRemaining[0];
-            if (!toImport.myLocator) toImport.myLocator = currentLocation;
-            if (!toImport.myCallsign) toImport.myCallsign = settings.myCallsign;
-            toImport = qsoLocationFill(toImport);
-
-            const newImportRemaining = importRemaining.slice(1);
-            if (toImport) {
-                const matching = findMatchingQso(qsos, toImport);
-                if (matching) {
-                    toImport.id = matching.id;
-                    log({ ...matching, ...toImport });
-                } else {
-                    log(toImport);
-                }
-            }
-            setImportRemaining(newImportRemaining);
-        } else if (importing) {
-            Swal.fire({
-                ...SwalTheme,
-                title: "Done!",
-                text: "All records have been imported!",
-                icon: "success",
-                confirmButtonText: "Ok",
-            });
-            setImporting(false);
-        }
-    }, [importRemaining]);
-
     const handleImport = (files: FileWithPreview[]) => {
         files.map((file) => {
             const fr = new FileReader();
@@ -95,12 +63,31 @@ export const Adif: AdifComponent = (): JSX.Element => {
                 if (fr.result) {
                     const content =
                         typeof fr.result == "string" ? fr.result : new TextDecoder("utf-8").decode(fr.result);
-                    setImportRemaining(
-                        (file.name.endsWith("adx") ? adxFileToRecordList(content) : adifFileToRecordList(content)).map(
-                            (r) => record2qso(r),
-                        ),
-                    );
-                    setImporting(true);
+
+                    const toImport: QSO[] = (
+                        file.name.endsWith("adx") ? adxFileToRecordList(content) : adifFileToRecordList(content)
+                    )
+                        .map((r) => record2qso(r))
+                        .map((q) => {
+                            if (!q.myLocator) q.myLocator = currentLocation;
+                            if (!q.myCallsign) q.myCallsign = settings.myCallsign;
+                            return qsoLocationFill(q);
+                        })
+                        .map((q) => {
+                            const matching = findMatchingQso(qsos, q);
+                            if (matching) {
+                                q.id = matching.id;
+                            }
+                            return q;
+                        });
+                    log(toImport);
+                    Swal.fire({
+                        ...SwalTheme,
+                        title: "Done!",
+                        text: `All ${toImport.length} records have been imported!`,
+                        icon: "success",
+                        confirmButtonText: "Ok",
+                    });
                 }
             };
 
@@ -127,15 +114,6 @@ export const Adif: AdifComponent = (): JSX.Element => {
                     it on export
                 </Typography>
             </Alert>
-            {!!importRemaining.length && (
-                <Stack>
-                    <Typography variant="h1">QSOs left to import: {importRemaining.length}</Typography>
-                    <Typography variant="subtitle">
-                        It's slow because we're backfilling all missing data (zones (itu, cq, dxcc), country/state,
-                        prefex, etc...)
-                    </Typography>
-                </Stack>
-            )}
             <Filters />
             <Stack direction="row">
                 <Button
