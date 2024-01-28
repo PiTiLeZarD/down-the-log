@@ -175,7 +175,10 @@ export const qso2record = (qso: QSO): QSORecord => {
 
 export const record2qso = (record: QSORecord): QSO => ({
     id: newQsoID(),
-    date: DateTime.fromFormat(`${record.qso_date} ${record.time_on}`, "yyyyMMdd HHmmss"),
+    date: DateTime.fromFormat(
+        `${record.qso_date} ${record.time_on}`,
+        record.time_on?.length === 6 ? "yyyyMMdd HHmmss" : "yyyyMMdd HHmm",
+    ),
     callsign: record.call as string,
     prefix: record.pfx,
     dxcc: int(record.dxcc),
