@@ -103,7 +103,8 @@ const adifField = (label: string, value?: string | number): string =>
         : "";
 const parseAdifField = (adif: string): string[] => {
     let remaining = adif.trim();
-    const match = remaining.match(/[<]([^:]+)[:]([0-9]+)([:]([^<]+))?[>]/);
+    const regexp = /[<]([^:]+)[:]([0-9]+)([:]([^<]+))?[>]/;
+    const match = remaining.match(regexp);
     if (!match) {
         console.error("Error while parsing line");
         console.error(remaining);
@@ -113,7 +114,8 @@ const parseAdifField = (adif: string): string[] => {
 
     remaining = remaining.slice(`<${tagName}:${tagLength}${tagType ? `:${tagType}` : ""}>`.length);
     const value = remaining.slice(0, +tagLength);
-    remaining = remaining.slice(+tagLength).trim();
+    const nextIndex = remaining.search(regexp);
+    remaining = remaining.slice(nextIndex == -1 ? +tagLength : nextIndex).trim();
     return [remaining, tagName.toLowerCase(), unsanitize(value)];
 };
 
