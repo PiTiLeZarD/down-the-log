@@ -107,12 +107,12 @@ export const qsoLocationFill = (qso: QSO, callsignDataProvided?: CsDataType) => 
 
     return {
         ...qso,
-        state: callsignData?.state,
-        continent: callsignData?.ctn,
-        country: callsignData?.iso3,
+        state: qso.state || callsignData?.state,
+        continent: qso.continent || callsignData?.ctn,
+        country: qso.country || callsignData?.iso3,
         ...(qso.myLocator && qso.locator
             ? {
-                  distance: maidenDistance(qso.myLocator, qso.locator),
+                  distance: qso.distance || maidenDistance(qso.myLocator, qso.locator),
               }
             : {}),
         ...(qso.locator
@@ -121,7 +121,7 @@ export const qsoLocationFill = (qso: QSO, callsignDataProvided?: CsDataType) => 
                   ituzone: qso.ituzone || +findZone(ituzones, maidenhead2Latlong(qso.locator)),
                   cqzone: qso.cqzone || +findZone(cqzones, maidenhead2Latlong(qso.locator)),
               }
-            : { dxcc: callsignData ? +callsignData.dxcc : undefined }),
+            : { dxcc: qso.dxcc || (callsignData ? +callsignData.dxcc : undefined) }),
     };
 };
 
