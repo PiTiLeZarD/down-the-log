@@ -83,7 +83,7 @@ export const Import: ImportComponent = (): JSX.Element => {
         });
     };
 
-    const handleLotwImport = (files: FileWithPreview[]) => {
+    const handleQSLImport = (files: FileWithPreview[]) => {
         files.map((file) => {
             const fr = new FileReader();
             fr.onload = () => {
@@ -176,7 +176,7 @@ export const Import: ImportComponent = (): JSX.Element => {
                         get the Adif file.
                     </Typography>
 
-                    <Dropzone onAcceptedFiles={handleLotwImport} style={styles.dropzone}>
+                    <Dropzone onAcceptedFiles={handleQSLImport} style={styles.dropzone}>
                         <Stack>
                             <Typography style={styles.dropzoneText} variant="h2">
                                 LoTW/eQSL File upload
