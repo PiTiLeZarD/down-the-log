@@ -2,6 +2,7 @@
 
 This is the rough todolist I want to work on.
 
+-   [ ] import qsl sets a random date, find that date from the log
 -   [ ] Have a "Net" module, showing what's going on where and when
 -   [ ] Find a way to differeciate between south cook island and north cook island dxcc entities since they share the same callsigns (maybe separate the dxcc list from the callsigns)
 -   [ ] should make a visual indication that hamqth isn't available, it happens often

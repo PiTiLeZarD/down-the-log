@@ -42,7 +42,6 @@ export const Import: ImportComponent = (): JSX.Element => {
     const currentLocation = useStore((state) => state.currentLocation);
     const settings = useSettings();
 
-    // TODO suss out that date from the logs
     const fromDate = DateTime.fromFormat("20050201", "yyyyMMdd");
 
     const handleImport = (files: FileWithPreview[]) => {
