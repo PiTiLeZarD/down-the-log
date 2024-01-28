@@ -1,4 +1,4 @@
-import { StackScreenProps } from "@react-navigation/stack";
+import { NavigationProp, useNavigation } from "@react-navigation/native";
 import React from "react";
 import { useFormContext } from "react-hook-form";
 import { Pressable, View } from "react-native";
@@ -63,21 +63,22 @@ const stylesheet = createStyleSheet((theme) => ({
 
 export type FormFieldsProps = {
     qso: QSO;
-} & Pick<StackScreenProps<NavigationParamList, "QsoForm">, "navigation">;
+};
 
 export type FormFieldsComponent = React.FC<FormFieldsProps>;
 
-export const FormFields: FormFieldsComponent = ({ navigation, qso }): JSX.Element => {
+export const FormFields: FormFieldsComponent = ({ qso }): JSX.Element => {
     const [openTimeLocModal, setOpenTimeLocModal] = React.useState<boolean>(false);
     const [showAllModes, setShowAllModes] = React.useState<boolean>(false);
     const { styles } = useStyles(stylesheet);
     const deleteLog = useStore((state) => state.deleteLog);
     const settings = useSettings();
     const { setValue } = useFormContext<QSO>();
+    const { goBack } = useNavigation<NavigationProp<NavigationParamList>>();
 
     const onDelete = () => {
         if (qso) deleteLog(qso);
-        navigation.navigate("Home");
+        goBack();
     };
 
     const qslInfo = () => {

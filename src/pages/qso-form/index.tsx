@@ -11,7 +11,7 @@ export type QsoFormProps = {} & StackScreenProps<NavigationParamList, "QsoForm">
 
 export type QsoFormComponent = React.FC<QsoFormProps>;
 
-export const QsoForm: QsoFormComponent = ({ navigation, route }): JSX.Element => {
+export const QsoForm: QsoFormComponent = ({ route }): JSX.Element => {
     const { qsoId } = route.params;
     const qso = useQsos().find((q) => q.id == qsoId);
     const log = useStore((state) => state.log);
@@ -25,7 +25,7 @@ export const QsoForm: QsoFormComponent = ({ navigation, route }): JSX.Element =>
     if (!qso) return <></>;
     return (
         <FormProvider {...methods}>
-            <FormFields qso={qso} navigation={navigation} />
+            <FormFields qso={qso} />
         </FormProvider>
     );
 };
