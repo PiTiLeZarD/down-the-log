@@ -11,9 +11,9 @@ export type AboutProps = {} & StackScreenProps<NavigationParamList, "About">;
 
 export type AboutComponent = React.FC<AboutProps>;
 
-export const About: AboutComponent = ({ navigation }): JSX.Element => {
+export const About: AboutComponent = (): JSX.Element => {
     return (
-        <PageLayout title="About" navigate={navigation.navigate}>
+        <PageLayout title="About">
             <Stack gap="xxl">
                 <Stack direction="row" style={{ marginBottom: 25 }}>
                     <Typography>If you like what I'm doing, </Typography>

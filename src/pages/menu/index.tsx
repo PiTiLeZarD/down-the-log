@@ -11,7 +11,7 @@ export type MenuComponent = React.FC<MenuProps>;
 
 export const Menu: MenuComponent = ({ navigation }): JSX.Element => {
     return (
-        <PageLayout title="Menu" navigate={navigation.navigate}>
+        <PageLayout title="Menu">
             <Stack gap="xxl">
                 <Button startIcon="home" text="Home" onPress={() => navigation.navigate("Home")} />
                 <Button startIcon="stats-chart" text="Stats" onPress={() => navigation.navigate("Stats")} />

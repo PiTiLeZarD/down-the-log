@@ -1,8 +1,7 @@
-import { StackNavigationProp } from "@react-navigation/stack";
+import { useNavigation } from "@react-navigation/native";
 import React from "react";
 import { ScrollView, View } from "react-native";
 import { useStyles } from "react-native-unistyles";
-import { NavigationParamList } from "../Navigation";
 import { Grid } from "./grid";
 import { Stack } from "./stack";
 import { Button } from "./theme/components/button";
@@ -11,11 +10,12 @@ import { Typography } from "./theme/components/typography";
 export type PageLayoutProps = {
     title: React.ReactNode;
     titleMargin?: number;
-} & Pick<StackNavigationProp<NavigationParamList, any>, "navigate">;
+};
 
 export type PageLayoutComponent = React.FC<React.PropsWithChildren<PageLayoutProps>>;
 
-export const PageLayout: PageLayoutComponent = ({ title, titleMargin = 18, navigate, children }): JSX.Element => {
+export const PageLayout: PageLayoutComponent = ({ title, titleMargin = 18, children }): JSX.Element => {
+    const { goBack } = useNavigation();
     const { theme } = useStyles();
     return (
         <Grid container>
@@ -35,7 +35,7 @@ export const PageLayout: PageLayoutComponent = ({ title, titleMargin = 18, navig
                             )}
 
                             <View>
-                                <Button text="Back" startIcon="arrow-back" onPress={() => navigate("Home")} />
+                                <Button text="Back" startIcon="arrow-back" onPress={goBack} />
                             </View>
                         </Stack>
                         {children}

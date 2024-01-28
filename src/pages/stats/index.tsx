@@ -37,7 +37,7 @@ export type StatsProps = {} & StackScreenProps<NavigationParamList, "Stats">;
 
 export type StatsComponent = React.FC<StatsProps>;
 
-export const Stats: StatsComponent = ({ navigation }): JSX.Element => {
+export const Stats: StatsComponent = (): JSX.Element => {
     const [firstStat, setFirstStat] = React.useState<FilterName>("mode");
     const [secondStat, setSecondStat] = React.useState<FilterName>("band");
     const [useFavourites, setUseFavourites] = React.useState<boolean>(true);
@@ -55,7 +55,7 @@ export const Stats: StatsComponent = ({ navigation }): JSX.Element => {
     const columns = secondStatValues.length + 2;
 
     return (
-        <PageLayout title="Stats" navigate={navigation.navigate}>
+        <PageLayout title="Stats">
             <Stack>
                 <Filters />
                 <Stack direction="row">

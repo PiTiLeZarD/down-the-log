@@ -19,14 +19,14 @@ export type SettingsProps = {} & StackScreenProps<NavigationParamList, "Settings
 
 export type SettingsComponent = React.FC<SettingsProps>;
 
-export const Settings: SettingsComponent = ({ navigation }): JSX.Element => {
+export const Settings: SettingsComponent = (): JSX.Element => {
     const settings = useSettings();
     const currentLocation = useStore((state) => state.currentLocation);
     const updateSetting = useStore((state) => state.updateSetting);
     const updateFilters = useStore((state) => state.updateFilters);
 
     return (
-        <PageLayout title="Settings" navigate={navigation.navigate}>
+        <PageLayout title="Settings">
             <Stack>
                 <Typography underline>My Callsign:</Typography>
                 <Input

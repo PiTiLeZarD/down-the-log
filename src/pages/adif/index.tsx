@@ -41,7 +41,7 @@ export type AdifProps = {} & StackScreenProps<NavigationParamList, "Adif">;
 
 export type AdifComponent = React.FC<AdifProps>;
 
-export const Adif: AdifComponent = ({ navigation }): JSX.Element => {
+export const Adif: AdifComponent = (): JSX.Element => {
     const { styles } = useStyles(stylesheet);
     const currentLocation = useStore((state) => state.currentLocation);
     const settings = useSettings();
@@ -120,7 +120,7 @@ export const Adif: AdifComponent = ({ navigation }): JSX.Element => {
     };
 
     return (
-        <PageLayout title="Import/Export" navigate={navigation.navigate}>
+        <PageLayout title="Import/Export">
             <Alert severity="info">
                 <Typography variant="em">
                     Import/Export is lossless, if this app doesn't handle an attribute, it'll keep it so you don't lose

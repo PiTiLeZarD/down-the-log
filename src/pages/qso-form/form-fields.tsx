@@ -102,7 +102,6 @@ export const FormFields: FormFieldsComponent = ({ navigation, qso }): JSX.Elemen
                     </View>
                 </Stack>
             }
-            navigate={navigation.navigate}
             titleMargin={10}
         >
             <Pressable onPress={() => setOpenTimeLocModal(true)}>
