@@ -37,6 +37,7 @@ export const filterMap: Record<string, FilterFunction> = {
     myCallsign: (qso) => [qso.myCallsign || "N/A"],
     sig: (qso) => [qso.sig || "", qso.mySig || ""],
     has_event: (qso) => [hasEvent(qso) ? "Yes" : "No"],
+    has_note: (qso) => [qso.note ? "Yes" : "No"],
     gridsquare: (qso) => [qso.locator?.substring(0, 3) || ""],
     continent: (qso) => [qso.continent || ""],
     country: (qso) => [qso.country ? countries[qso.country].name : ""],
