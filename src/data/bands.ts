@@ -50,7 +50,6 @@ export const modeBandMap: Partial<Record<Mode, Partial<Record<Band, number>>>> =
 export type Band = keyof typeof bands;
 
 export const band2freq = (band?: Band, mode?: Mode): number | null => {
-    console.log({ band, mode });
     if (!band) return null;
     const mibBand = roundTo((bands[band][0] + bands[band][1]) / 2, 3);
     if (!mode) return mibBand;
