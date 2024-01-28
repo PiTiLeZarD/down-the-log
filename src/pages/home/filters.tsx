@@ -1,6 +1,8 @@
+import { NavigationProp, useNavigation } from "@react-navigation/native";
 import React from "react";
 import { View, useWindowDimensions } from "react-native";
 import Swal from "sweetalert2";
+import { NavigationParamList } from "../../Navigation";
 import { callsigns } from "../../data/callsigns";
 import { countries } from "../../data/countries";
 import { useStore } from "../../store";
@@ -96,6 +98,7 @@ export const Filters: FiltersComponent = ({ showTag }): JSX.Element => {
     const [values, setValues] = React.useState<Array<unknown>>([]);
     const log = useStore((state) => state.log);
     const setFilters = useStore((state) => state.updateFilters);
+    const { navigate } = useNavigation<NavigationProp<NavigationParamList>>();
 
     const itemsPerPage = Math.floor((height - 40 * 5) / 40);
 
@@ -196,6 +199,14 @@ export const Filters: FiltersComponent = ({ showTag }): JSX.Element => {
                     <Alert>
                         <Typography>This will update {qsos.length} QSOs</Typography>
                     </Alert>
+                    <Button
+                        text="You can backup first"
+                        colour="secondary"
+                        onPress={() => {
+                            setTagModal(false);
+                            navigate("Adif");
+                        }}
+                    />
                     <PaginatedList>
                         {tagFields.map((k) => (
                             <Stack key={k}>
