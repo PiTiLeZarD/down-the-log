@@ -25,7 +25,7 @@ export const QsoMap: QsoMapComponent = ({ qso, qsos, width = "auto", height = 20
 
     if (!google || !(google.key && google.secret)) return <></>;
 
-    const toDisplay = qso ? [qso] : (qsos as QSO[]);
+    const toDisplay = (qso ? [qso] : (qsos as QSO[])).filter((q) => q.locator && q.myLocator);
 
     if (!toDisplay.length) return <></>;
 
