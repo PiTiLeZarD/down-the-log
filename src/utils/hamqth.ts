@@ -4,7 +4,7 @@ import Swal from "sweetalert2";
 import { latlong2Maidenhead, normalise } from "./locator";
 import { SwalTheme } from "./theme/theme";
 
-const ignoreErrors = ["Callsign not found"];
+const ignoreErrors = ["Callsign not found", "timeout exceeded", "Network Error"];
 
 export type HamQTHSettingsType = {
     user: string;
