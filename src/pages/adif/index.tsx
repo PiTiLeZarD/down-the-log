@@ -1,6 +1,6 @@
 import { StackScreenProps } from "@react-navigation/stack";
 import React from "react";
-import { Platform } from "react-native";
+import { Platform, Pressable, View } from "react-native";
 import { createStyleSheet, useStyles } from "react-native-unistyles";
 import Swal from "sweetalert2";
 import { NavigationParamList } from "../../Navigation";
@@ -11,6 +11,7 @@ import { Dropzone, FileWithPreview } from "../../utils/dropzone";
 import { PageLayout } from "../../utils/page-layout";
 import { QSO, findMatchingQso, qsoLocationFill, useQsos } from "../../utils/qso";
 import { Stack } from "../../utils/stack";
+import { TabsLayout } from "../../utils/tabs-layout";
 import { Alert } from "../../utils/theme/components/alert";
 import { Button } from "../../utils/theme/components/button";
 import { Icon } from "../../utils/theme/components/icon";
@@ -23,9 +24,9 @@ const stylesheet = createStyleSheet((theme) => ({
     dropzone: {
         display: "flex",
         width: "100%",
-        height: 300,
+        height: 160,
         backgroundColor: theme.colours.primary[theme.shades.light],
-        borderRadius: 15,
+        borderRadius: theme.margins.xxl,
         borderColor: theme.colours.primary[theme.shades.darker],
         borderStyle: "solid",
         borderWidth: 3,
@@ -45,6 +46,7 @@ export const Adif: AdifComponent = (): JSX.Element => {
     const { styles } = useStyles(stylesheet);
     const currentLocation = useStore((state) => state.currentLocation);
     const settings = useSettings();
+    const [showHoneypotDetails, setShowHoneypotDetails] = React.useState<boolean>(false);
     const resetStore = useStore((state) => state.resetStore);
     const filters = useStore((state) => state.filters);
     const qsos = useQsos();
@@ -108,59 +110,81 @@ export const Adif: AdifComponent = (): JSX.Element => {
 
     return (
         <PageLayout title="Import/Export">
-            <Alert severity="info">
-                <Typography variant="em">
-                    Import/Export is lossless, if this app doesn't handle an attribute, it'll keep it so you don't lose
-                    it on export
-                </Typography>
-            </Alert>
-            <Filters />
-            <Stack direction="row">
-                <Button
-                    startIcon="download-outline"
-                    text="Download (ADIF)"
-                    variant="outlined"
-                    onPress={() => downloadQsos("adif_export.adif", filterQsos(qsos, filters))}
-                />
-                <Button
-                    startIcon="download-outline"
-                    text="Download (ADX)"
-                    variant="outlined"
-                    onPress={() => downloadQsos("adx_export.adx", filterQsos(qsos, filters), "adx")}
-                />
-            </Stack>
-            {!["ios", "android"].includes(Platform.OS) && (
-                <Dropzone onAcceptedFiles={handleImport} style={styles.dropzone}>
-                    <Stack>
-                        <Typography style={styles.dropzoneText} variant="h2">
-                            Upload here by clicking or dropping a file
-                        </Typography>
-                        <Typography variant="subtitle" style={{ textAlign: "center" }}>
-                            ADIF/ADX supported
-                        </Typography>
-                    </Stack>
-                </Dropzone>
-            )}
-
-            {honeypotFields.length > 0 && (
-                <Alert>
-                    <Stack>
-                        <Typography>A number of fields imported aren't handled by this application</Typography>
-                        <Typography>
-                            if they are important to you, see the about section of this app to reach me, I'll add them
-                            to my todolist
-                        </Typography>
-                        {honeypotFields.map((f) => (
-                            <Typography key={f} variant="subtitle">
-                                <Icon name="arrow-forward" />
-                                {f}
-                            </Typography>
-                        ))}
-                    </Stack>
+            <Stack>
+                <Alert severity="info">
+                    <Typography variant="em">
+                        Import/Export is lossless, if this app doesn't handle an attribute, it'll keep it so you don't
+                        lose it on export
+                    </Typography>
                 </Alert>
-            )}
+                {honeypotFields.length > 0 && (
+                    <Alert>
+                        <Stack>
+                            <Pressable onPress={() => setShowHoneypotDetails(!showHoneypotDetails)}>
+                                <Typography variant="em">
+                                    <Icon name={showHoneypotDetails ? "arrow-up" : "arrow-down"} /> A number of fields
+                                    imported aren't handled by this application
+                                </Typography>
+                            </Pressable>
+                            {showHoneypotDetails && (
+                                <>
+                                    <Typography>
+                                        if they are important to you, see the about section of this app to reach me,
+                                        I'll add them to my todolist
+                                    </Typography>
+                                    {honeypotFields.map((f) => (
+                                        <Typography key={f} variant="subtitle">
+                                            <Icon name="arrow-forward" />
+                                            {f}
+                                        </Typography>
+                                    ))}
+                                </>
+                            )}
+                        </Stack>
+                    </Alert>
+                )}
 
-            <Button colour="secondary" text="Erase data" onPress={handleErase} />
+                <TabsLayout tabs={["Export", "Import"]}>
+                    <View>
+                        <Filters />
+                        <Stack direction="row">
+                            <Button
+                                startIcon="download-outline"
+                                text="Download (ADIF)"
+                                variant="outlined"
+                                onPress={() => downloadQsos("adif_export.adif", filterQsos(qsos, filters))}
+                            />
+                            <Button
+                                startIcon="download-outline"
+                                text="Download (ADX)"
+                                variant="outlined"
+                                onPress={() => downloadQsos("adx_export.adx", filterQsos(qsos, filters), "adx")}
+                            />
+                        </Stack>
+                    </View>
+                    <View>
+                        {!["ios", "android"].includes(Platform.OS) && (
+                            <Dropzone onAcceptedFiles={handleImport} style={styles.dropzone}>
+                                <Stack>
+                                    <Typography style={styles.dropzoneText} variant="h2">
+                                        QSO File upload
+                                    </Typography>
+                                    <Typography variant="subtitle" style={{ textAlign: "center" }}>
+                                        Click or drop a file here
+                                    </Typography>
+                                    <Typography variant="subtitle" style={{ textAlign: "center" }}>
+                                        ADIF/ADX supported
+                                    </Typography>
+                                </Stack>
+                            </Dropzone>
+                        )}
+                    </View>
+                </TabsLayout>
+
+                <View>
+                    <Button colour="secondary" text="Erase all qsos" onPress={handleErase} />
+                </View>
+            </Stack>
         </PageLayout>
     );
 };

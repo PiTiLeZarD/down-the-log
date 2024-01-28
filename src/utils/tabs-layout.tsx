@@ -8,6 +8,18 @@ import { ColourVariant } from "./theme/theme";
 const stylesheet = createStyleSheet((theme) => ({
     mainContainer: {
         flexGrow: 1,
+        marginTop: theme.margins.xl,
+        marginBottom: theme.margins.xl,
+    },
+    tabsButtonsContainer: {
+        backgroundColor: theme.colours.grey[theme.shades.lighter],
+        borderColor: theme.colours.grey[theme.shades.dark],
+        borderWidth: 1,
+        borderStyle: "solid",
+        borderBottomWidth: 0,
+        borderTopLeftRadius: theme.margins.xl,
+        borderTopRightRadius: theme.margins.xl,
+        padding: theme.margins.lg,
     },
     tabsContainer: {
         flexGrow: 1,
@@ -15,6 +27,14 @@ const stylesheet = createStyleSheet((theme) => ({
     tabContentContainer: (shown: boolean) => ({
         display: shown ? "flex" : "none",
         flex: shown ? 1 : 0,
+        padding: theme.margins.lg,
+        borderColor: theme.colours.grey[theme.shades.dark],
+        borderWidth: 1,
+        borderStyle: "solid",
+        borderTopWidth: 0,
+        borderBottomLeftRadius: theme.margins.xl,
+        borderBottomRightRadius: theme.margins.xl,
+        backgroundColor: theme.colours.grey[theme.shades.lighter],
     }),
     tab: (variant: ColourVariant) => ({
         paddingTop: theme.margins.md,
@@ -45,7 +65,7 @@ export const TabsLayout: TabsLayoutComponent = ({
     const [current, setCurrent] = React.useState<number>(0);
 
     const tabsButtons = (
-        <Stack direction="row">
+        <Stack direction="row" style={styles.tabsButtonsContainer}>
             {tabs.map((tab, index) => (
                 <View style={styles.tab(variant)}>
                     <Button
@@ -60,7 +80,7 @@ export const TabsLayout: TabsLayoutComponent = ({
         </Stack>
     );
     return (
-        <Stack style={styles.mainContainer}>
+        <Stack style={styles.mainContainer} gap={0}>
             {position == "top" && tabsButtons}
             <View style={styles.tabsContainer}>
                 {React.Children.toArray(children).map((child, index) => (
