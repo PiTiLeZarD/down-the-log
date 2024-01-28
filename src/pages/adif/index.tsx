@@ -1,15 +1,12 @@
 import { StackScreenProps } from "@react-navigation/stack";
 import React from "react";
-import { Platform, Pressable, View } from "react-native";
-import { createStyleSheet, useStyles } from "react-native-unistyles";
+import { Pressable, View } from "react-native";
 import Swal from "sweetalert2";
 import { NavigationParamList } from "../../Navigation";
 import { useStore } from "../../store";
-import { adifFileToRecordList, adxFileToRecordList, downloadQsos, record2qso } from "../../utils/adif";
 import { unique } from "../../utils/arrays";
-import { Dropzone, FileWithPreview } from "../../utils/dropzone";
 import { PageLayout } from "../../utils/page-layout";
-import { QSO, findMatchingQso, qsoLocationFill, useQsos } from "../../utils/qso";
+import { useQsos } from "../../utils/qso";
 import { Stack } from "../../utils/stack";
 import { TabsLayout } from "../../utils/tabs-layout";
 import { Alert } from "../../utils/theme/components/alert";
@@ -17,38 +14,16 @@ import { Button } from "../../utils/theme/components/button";
 import { Icon } from "../../utils/theme/components/icon";
 import { Typography } from "../../utils/theme/components/typography";
 import { SwalTheme } from "../../utils/theme/theme";
-import { useSettings } from "../../utils/use-settings";
-import { Filters, filterQsos } from "../home/filters";
-
-const stylesheet = createStyleSheet((theme) => ({
-    dropzone: {
-        display: "flex",
-        width: "100%",
-        height: 160,
-        backgroundColor: theme.colours.primary[theme.shades.light],
-        borderRadius: theme.margins.xxl,
-        borderColor: theme.colours.primary[theme.shades.darker],
-        borderStyle: "solid",
-        borderWidth: 3,
-        justifyContent: "center",
-    },
-    dropzoneText: {
-        fontWeight: "bold",
-        textAlign: "center",
-    },
-}));
+import { Export } from "./export";
+import { Import } from "./import";
 
 export type AdifProps = {} & StackScreenProps<NavigationParamList, "Adif">;
 
 export type AdifComponent = React.FC<AdifProps>;
 
 export const Adif: AdifComponent = (): JSX.Element => {
-    const { styles } = useStyles(stylesheet);
-    const currentLocation = useStore((state) => state.currentLocation);
-    const settings = useSettings();
     const [showHoneypotDetails, setShowHoneypotDetails] = React.useState<boolean>(false);
     const resetStore = useStore((state) => state.resetStore);
-    const filters = useStore((state) => state.filters);
     const qsos = useQsos();
     const honeypotFields = unique(
         qsos
@@ -56,46 +31,6 @@ export const Adif: AdifComponent = (): JSX.Element => {
             .flat()
             .filter((e) => !!e),
     );
-    const log = useStore((state) => state.log);
-
-    const handleImport = (files: FileWithPreview[]) => {
-        files.map((file) => {
-            const fr = new FileReader();
-            fr.onload = () => {
-                if (fr.result) {
-                    const content =
-                        typeof fr.result == "string" ? fr.result : new TextDecoder("utf-8").decode(fr.result);
-
-                    const toImport: QSO[] = (
-                        file.name.endsWith("adx") ? adxFileToRecordList(content) : adifFileToRecordList(content)
-                    )
-                        .map((r) => record2qso(r))
-                        .map((q) => {
-                            if (!q.myLocator) q.myLocator = currentLocation;
-                            if (!q.myCallsign) q.myCallsign = settings.myCallsign;
-                            return qsoLocationFill(q);
-                        })
-                        .map((q) => {
-                            const matching = findMatchingQso(qsos, q);
-                            if (matching) {
-                                q.id = matching.id;
-                            }
-                            return q;
-                        });
-                    log(toImport);
-                    Swal.fire({
-                        ...SwalTheme,
-                        title: "Done!",
-                        text: `All ${toImport.length} records have been imported!`,
-                        icon: "success",
-                        confirmButtonText: "Ok",
-                    });
-                }
-            };
-
-            fr.readAsText(file);
-        });
-    };
 
     const handleErase = () => {
         resetStore();
@@ -145,40 +80,8 @@ export const Adif: AdifComponent = (): JSX.Element => {
                 )}
 
                 <TabsLayout tabs={["Export", "Import"]}>
-                    <View>
-                        <Filters />
-                        <Stack direction="row">
-                            <Button
-                                startIcon="download-outline"
-                                text="Download (ADIF)"
-                                variant="outlined"
-                                onPress={() => downloadQsos("adif_export.adif", filterQsos(qsos, filters))}
-                            />
-                            <Button
-                                startIcon="download-outline"
-                                text="Download (ADX)"
-                                variant="outlined"
-                                onPress={() => downloadQsos("adx_export.adx", filterQsos(qsos, filters), "adx")}
-                            />
-                        </Stack>
-                    </View>
-                    <View>
-                        {!["ios", "android"].includes(Platform.OS) && (
-                            <Dropzone onAcceptedFiles={handleImport} style={styles.dropzone}>
-                                <Stack>
-                                    <Typography style={styles.dropzoneText} variant="h2">
-                                        QSO File upload
-                                    </Typography>
-                                    <Typography variant="subtitle" style={{ textAlign: "center" }}>
-                                        Click or drop a file here
-                                    </Typography>
-                                    <Typography variant="subtitle" style={{ textAlign: "center" }}>
-                                        ADIF/ADX supported
-                                    </Typography>
-                                </Stack>
-                            </Dropzone>
-                        )}
-                    </View>
+                    <Export />
+                    <Import />
                 </TabsLayout>
 
                 <View>
