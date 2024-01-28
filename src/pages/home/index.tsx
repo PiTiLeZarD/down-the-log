@@ -9,6 +9,7 @@ import { newQso, useQsos } from "../../utils/qso";
 import { QsoList } from "../../utils/qso/qso-list";
 import { Alert } from "../../utils/theme/components/alert";
 import { Typography } from "../../utils/theme/components/typography";
+import { useSettings } from "../../utils/use-settings";
 import { Beacons } from "./beacons";
 import { CallsignInput } from "./callsign-input";
 import { Filters, filterQsos } from "./filters";
@@ -38,7 +39,7 @@ export const Home: HomeComponent = ({ navigation }): JSX.Element => {
     const qsos = useQsos();
     const { styles } = useStyles(stylesheet);
     const currentLocation = useStore((state) => state.currentLocation);
-    const settings = useStore((state) => state.settings);
+    const settings = useSettings();
     const log = useStore((state) => state.log);
     const qsosFilters = useStore((state) => state.filters);
 

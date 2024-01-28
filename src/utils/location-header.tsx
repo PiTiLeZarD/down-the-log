@@ -13,6 +13,7 @@ import { Stack } from "./stack";
 import { widthMatches } from "./theme/breakpoints";
 import { Button } from "./theme/components/button";
 import { Typography } from "./theme/components/typography";
+import { useSettings } from "./use-settings";
 
 const stylesheet = createStyleSheet((theme) => ({
     header: {
@@ -34,7 +35,7 @@ export type LocationHeaderComponent = React.FC<LocationHeaderProps>;
 
 export const LocationHeader: LocationHeaderComponent = ({ navigation }): JSX.Element => {
     const currentLocation = useStore((state) => state.currentLocation);
-    const settings = useStore((state) => state.settings);
+    const settings = useSettings();
     const { styles } = useStyles(stylesheet);
 
     return (

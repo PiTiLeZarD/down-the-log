@@ -10,6 +10,7 @@ import { widthMatches } from "../../utils/theme/breakpoints";
 import { Alert } from "../../utils/theme/components/alert";
 import { Button } from "../../utils/theme/components/button";
 import { Typography } from "../../utils/theme/components/typography";
+import { useSettings } from "../../utils/use-settings";
 
 const beaconsMap = {
     "4U1UN": "FN30ar",
@@ -59,7 +60,7 @@ export const Beacons: BeaconsComponent = (): JSX.Element => {
     const [modalOpen, setModalOpen] = React.useState<boolean>(false);
     const currentLocation = useStore((state) => state.currentLocation);
     const updateSetting = useStore((state) => state.updateSetting);
-    const settings = useStore((state) => state.settings);
+    const settings = useSettings();
     const [band, setBand] = React.useState<Band>("20m");
     const [beacon, setBeacon] = React.useState<Beacon>(Object.keys(beaconsMap)[0] as Beacon);
     const smallScreen = widthMatches(undefined, "md");

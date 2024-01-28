@@ -7,6 +7,7 @@ import { Modal } from "../../utils/modal";
 import { Stack } from "../../utils/stack";
 import { Button } from "../../utils/theme/components/button";
 import { PaginatedList } from "../../utils/theme/components/paginated-list";
+import { useSettings } from "../../utils/use-settings";
 
 export type PickFavouriteProps = {
     type: "mode" | "band";
@@ -16,7 +17,7 @@ export type PickFavouriteComponent = React.FC<PickFavouriteProps>;
 
 export const PickFavourite: PickFavouriteComponent = ({ type }): JSX.Element => {
     const [open, setOpen] = React.useState<boolean>(false);
-    const settings = useStore((state) => state.settings);
+    const settings = useSettings();
     const updateSetting = useStore((state) => state.updateSetting);
 
     const settingsKey = { mode: "favouriteModes", band: "favouriteBands" }[type] as keyof typeof settings;

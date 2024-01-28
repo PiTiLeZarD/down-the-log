@@ -21,6 +21,7 @@ import { Stack } from "../../utils/stack";
 import { Button } from "../../utils/theme/components/button";
 import { Input } from "../../utils/theme/components/input";
 import { Typography } from "../../utils/theme/components/typography";
+import { useSettings } from "../../utils/use-settings";
 
 const stylesheet = createStyleSheet((theme) => ({
     inputBox: {
@@ -48,7 +49,7 @@ export const CallsignInput: CallsignInputComponent = ({ value, handleAdd, onChan
     const [hamqthCSData, setHamqthCSData] = React.useState<HamQTHCallsignData | undefined>(undefined);
     const callsignData = useMemo(() => (value ? getCallsignData(value) : undefined), [value]);
     const currentLocation = useStore((state) => state.currentLocation);
-    const settings = useStore((state) => state.settings);
+    const settings = useSettings();
     const updateSetting = useStore((state) => state.updateSetting);
 
     useEffect(() => {

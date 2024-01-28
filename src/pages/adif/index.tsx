@@ -16,6 +16,7 @@ import { Button } from "../../utils/theme/components/button";
 import { Icon } from "../../utils/theme/components/icon";
 import { Typography } from "../../utils/theme/components/typography";
 import { SwalTheme } from "../../utils/theme/theme";
+import { useSettings } from "../../utils/use-settings";
 import { Filters, filterQsos } from "../home/filters";
 
 const stylesheet = createStyleSheet((theme) => ({
@@ -43,7 +44,7 @@ export type AdifComponent = React.FC<AdifProps>;
 export const Adif: AdifComponent = ({ navigation }): JSX.Element => {
     const { styles } = useStyles(stylesheet);
     const currentLocation = useStore((state) => state.currentLocation);
-    const settings = useStore((state) => state.settings);
+    const settings = useSettings();
     const resetStore = useStore((state) => state.resetStore);
     const filters = useStore((state) => state.filters);
     const [importRemaining, setImportRemaining] = React.useState<QSO[]>([]);

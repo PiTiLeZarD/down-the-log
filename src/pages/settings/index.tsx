@@ -12,6 +12,7 @@ import { Button } from "../../utils/theme/components/button";
 import { Input } from "../../utils/theme/components/input";
 import { Typography } from "../../utils/theme/components/typography";
 import { SwalTheme } from "../../utils/theme/theme";
+import { useSettings } from "../../utils/use-settings";
 import { PickFavourite } from "./pick-favourite";
 
 export type SettingsProps = {} & StackScreenProps<NavigationParamList, "Settings">;
@@ -19,7 +20,7 @@ export type SettingsProps = {} & StackScreenProps<NavigationParamList, "Settings
 export type SettingsComponent = React.FC<SettingsProps>;
 
 export const Settings: SettingsComponent = ({ navigation }): JSX.Element => {
-    const settings = useStore((state) => state.settings);
+    const settings = useSettings();
     const currentLocation = useStore((state) => state.currentLocation);
     const updateSetting = useStore((state) => state.updateSetting);
     const updateFilters = useStore((state) => state.updateFilters);

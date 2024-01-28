@@ -19,6 +19,7 @@ import { Stack } from "../../utils/stack";
 import { Button } from "../../utils/theme/components/button";
 import { Typography } from "../../utils/theme/components/typography";
 import { SwalTheme } from "../../utils/theme/theme";
+import { useSettings } from "../../utils/use-settings";
 import { BandFreqInput } from "./band-freq-input";
 import { ContinentWarning } from "./continent-warning";
 import { CountryWarning } from "./country-warning";
@@ -71,7 +72,7 @@ export const FormFields: FormFieldsComponent = ({ navigation, qso }): JSX.Elemen
     const [showAllModes, setShowAllModes] = React.useState<boolean>(false);
     const { styles } = useStyles(stylesheet);
     const deleteLog = useStore((state) => state.deleteLog);
-    const settings = useStore((state) => state.settings);
+    const settings = useSettings();
     const { setValue } = useFormContext<QSO>();
 
     const onDelete = () => {

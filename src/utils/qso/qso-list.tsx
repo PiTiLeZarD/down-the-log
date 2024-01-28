@@ -9,6 +9,7 @@ import { Modal } from "../modal";
 import { Stack } from "../stack";
 import { Button } from "../theme/components/button";
 import { Typography } from "../theme/components/typography";
+import { useSettings } from "../use-settings";
 import { QsoListItem } from "./qso-list-item";
 import { QsoMap } from "./qso-map";
 import { QsoRow } from "./qso-row";
@@ -50,7 +51,7 @@ export type QsoListSectionHeaderComponent = React.FC<QsoListSectionHeaderProps>;
 
 export const QsoListSectionHeader: QsoListSectionHeaderComponent = ({ section, sections }): JSX.Element => {
     const [mapOpen, setmapOpen] = React.useState<boolean>(false);
-    const settings = useStore((state) => state.settings);
+    const settings = useSettings();
     const { styles } = useStyles(stylesheet);
     const text = `${sections[section][0].date.toFormat("dd/MM/yyyy")} (${sections[section].length})`;
 

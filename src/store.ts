@@ -97,8 +97,6 @@ export const useStore = create<
                     return q;
                 });
 
-                storage.state.settings = fixSettings(storage.state.settings);
-
                 if (storage.state.settings.hamqth?.sessionStart) {
                     storage.state.settings.hamqth!.sessionStart = DateTime.fromISO(
                         storage.state.settings.hamqth?.sessionStart as unknown as string,

@@ -16,6 +16,7 @@ import { LocationHeader } from "./utils/location-header";
 import { latlong2Maidenhead } from "./utils/locator";
 import "./utils/theme";
 import { useLocation } from "./utils/use-location";
+import { useSettings } from "./utils/use-settings";
 
 SplashScreen.preventAutoHideAsync();
 
@@ -25,7 +26,7 @@ const App = (): JSX.Element => {
     });
 
     const setCurrentLocation = useStore((state) => state.setCurrentLocation);
-    const settings = useStore((state) => state.settings);
+    const settings = useSettings();
     const location = useLocation(settings.myGridsquare);
 
     React.useEffect(() => {

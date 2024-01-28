@@ -1,11 +1,11 @@
 import React from "react";
 import { useFormContext } from "react-hook-form";
 import { View } from "react-native";
-import { useStore } from "../../store";
 import { geocode } from "../../utils/geocode";
 import { latlong2Maidenhead } from "../../utils/locator";
 import { Button } from "../../utils/theme/components/button";
 import { Typography } from "../../utils/theme/components/typography";
+import { useSettings } from "../../utils/use-settings";
 
 export type GeocodeButtonProps = {};
 
@@ -14,7 +14,7 @@ export type GeocodeButtonComponent = React.FC<GeocodeButtonProps>;
 export const GeocodeButton: GeocodeButtonComponent = (): JSX.Element => {
     const { getValues, setValue } = useFormContext();
     const { qth } = getValues();
-    const settings = useStore((state) => state.settings);
+    const settings = useSettings();
     if (!settings.geocodeMapsCoKey) return <></>;
     return (
         <View>

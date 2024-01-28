@@ -10,6 +10,7 @@ import { QSO, useQsos } from "../../utils/qso";
 import { Stack } from "../../utils/stack";
 import { SelectInput } from "../../utils/theme/components/select-input";
 import { Typography } from "../../utils/theme/components/typography";
+import { useSettings } from "../../utils/use-settings";
 import { FilterName, Filters, filterMap, filterQsos } from "../home/filters";
 
 const groupQsos = (
@@ -43,7 +44,7 @@ export const Stats: StatsComponent = ({ navigation }): JSX.Element => {
     const qsosFilters = useStore((state) => state.filters);
     const qsos = filterQsos(useQsos(), qsosFilters);
     const groups = groupQsos(qsos, firstStat, secondStat);
-    const settings = useStore((state) => state.settings);
+    const settings = useSettings();
 
     const secondStatValues = applyFavourites(
         unique(qsos.map((q) => filterMap[secondStat](q)).flat()),
