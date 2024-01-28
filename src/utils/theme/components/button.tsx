@@ -21,11 +21,11 @@ const stylesheet = createStyleSheet((theme) => ({
     }),
     button_chip: (colour: ColourVariant) => ({
         backgroundColor: theme.colours[colour][theme.shades.light],
-        borderRadius: 15,
-        paddingTop: 3,
-        paddingBottom: 3,
-        paddingLeft: 8,
-        paddingRight: 8,
+        borderRadius: theme.margins.xxl,
+        paddingTop: theme.margins.sm,
+        paddingBottom: theme.margins.sm,
+        paddingLeft: theme.margins.lg,
+        paddingRight: theme.margins.lg,
     }),
     buttonText: {
         ...theme.components.buttonText,
