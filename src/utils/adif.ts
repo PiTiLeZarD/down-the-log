@@ -46,6 +46,8 @@ const allFields = [
     "my_iota",
     "sig",
     "my_sig",
+    "sig_info",
+    "my_sig_info",
 ] as const;
 
 type RecordField = (typeof allFields)[number];
@@ -159,10 +161,12 @@ export const qso2record = (qso: QSO): QSORecord => {
         my_wwff_ref: qso.myWwff,
         sota_ref: qso.sota,
         my_sota_ref: qso.mySota,
-        sig: qso.sig,
-        my_sig: qso.mySig,
         iota: qso.iota,
         my_iota: qso.myIota,
+        sig: qso.sig,
+        my_sig: qso.mySig,
+        sig_info: qso.sigInfo,
+        my_sig_info: qso.mySigInfo,
         honeypot: qso.honeypot || {},
     };
 };
@@ -205,10 +209,12 @@ export const record2qso = (record: QSORecord): QSO => ({
     myWwff: record.my_wwff_ref,
     sota: record.sota_ref,
     mySota: record.my_sota_ref,
-    sig: record.sig,
-    mySig: record.my_sig,
     iota: record.iota,
     myIota: record.my_iota,
+    sig: record.sig,
+    mySig: record.my_sig,
+    sigInfo: record.sig_info,
+    mySigInfo: record.my_sig_info,
     honeypot: record.honeypot,
 });
 

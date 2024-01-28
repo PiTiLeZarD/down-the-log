@@ -96,6 +96,17 @@ export const Events: EventsComponent = (): JSX.Element => {
                             <Input value={qso.mySig} onChangeText={(v) => setValue("mySig", v.toUpperCase())} />
                         </Grid>
                     </Grid>
+                    <Grid container>
+                        <Grid item xs={2}>
+                            <Typography variant="em">SIG Info</Typography>
+                        </Grid>
+                        <Grid item xs={5}>
+                            <Input value={qso.sigInfo} onChangeText={(v) => setValue("sigInfo", v.toUpperCase())} />
+                        </Grid>
+                        <Grid item xs={5}>
+                            <Input value={qso.mySigInfo} onChangeText={(v) => setValue("mySigInfo", v.toUpperCase())} />
+                        </Grid>
+                    </Grid>
                     <Button colour="success" text="OK" onPress={() => setOpen(false)} />
                 </Stack>
             </Modal>

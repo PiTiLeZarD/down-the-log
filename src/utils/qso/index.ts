@@ -51,10 +51,12 @@ export type QSO = {
     myWwff?: string;
     sota?: string;
     mySota?: string;
-    sig?: string;
-    mySig?: string;
     iota?: string;
     myIota?: string;
+    sig?: string;
+    mySig?: string;
+    sigInfo?: string;
+    mySigInfo?: string;
     honeypot?: Record<string, string>;
 };
 
