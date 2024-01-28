@@ -67,7 +67,7 @@ export const TabsLayout: TabsLayoutComponent = ({
     const tabsButtons = (
         <Stack direction="row" style={styles.tabsButtonsContainer}>
             {tabs.map((tab, index) => (
-                <View style={styles.tab(variant)}>
+                <View key={tab} style={styles.tab(variant)}>
                     <Button
                         variant={current == index ? "contained" : "outlined"}
                         text={tab}
