@@ -34,6 +34,7 @@ export const filterMap: Record<string, FilterFunction> = {
     wwff: (qso) => [qso.wwff || "", qso.myWwff || ""],
     sota: (qso) => [qso.sota || "", qso.mySota || ""],
     iota: (qso) => [qso.iota || "", qso.myIota || ""],
+    myCallsign: (qso) => [qso.myCallsign || "N/A"],
     sig: (qso) => [qso.sig || "", qso.mySig || ""],
     has_event: (qso) => [hasEvent(qso) ? "Yes" : "No"],
     gridsquare: (qso) => [qso.locator?.substring(0, 3) || ""],
