@@ -45,7 +45,7 @@ type DTLStoreProps = {
 };
 
 type DTLStoreActionsProps = {
-    log: (qso: QSO) => void;
+    log: (qso: QSO | QSO[]) => void;
     updateSetting: <T extends keyof Settings>(field: T, value: Settings[T]) => void;
     updateFilters: (filters: QsoFilter[]) => void;
     deleteLog: (qso: QSO) => void;
@@ -66,7 +66,12 @@ const InitialStore: DTLStoreProps = {
 };
 
 const StoreActions: DTLStoreActionsMutatorProps = (set) => ({
-    log: (qso) => set((state) => ({ qsos: [...state.qsos.filter((q) => q.id != qso.id), qso] })),
+    log: (qso) =>
+        set((state) =>
+            Array.isArray(qso)
+                ? { qsos: [...state.qsos.filter((q) => !qso.some((qq) => qq.id == q.id)), ...qso] }
+                : { qsos: [...state.qsos.filter((q) => q.id != qso.id), qso] },
+        ),
     updateSetting: (field, value) => set((state) => ({ settings: { ...state.settings, [field]: value } })),
     updateFilters: (filters) => set((state) => ({ filters })),
     deleteLog: (qso) => set((state) => ({ qsos: [...state.qsos.filter((q) => q.id != qso.id)] })),

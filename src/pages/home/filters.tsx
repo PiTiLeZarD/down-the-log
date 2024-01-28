@@ -1,15 +1,20 @@
 import React from "react";
 import { View, useWindowDimensions } from "react-native";
+import Swal from "sweetalert2";
 import { callsigns } from "../../data/callsigns";
 import { countries } from "../../data/countries";
 import { useStore } from "../../store";
 import { sortNumsAndAlpha, unique } from "../../utils/arrays";
+import { normalise } from "../../utils/locator";
 import { Modal } from "../../utils/modal";
 import { QSO, hasEvent, useQsos } from "../../utils/qso";
 import { Stack } from "../../utils/stack";
+import { Alert } from "../../utils/theme/components/alert";
 import { Button } from "../../utils/theme/components/button";
+import { Input } from "../../utils/theme/components/input";
 import { PaginatedList } from "../../utils/theme/components/paginated-list";
 import { Typography } from "../../utils/theme/components/typography";
+import { SwalTheme } from "../../utils/theme/theme";
 
 export type FilterFunction = (qso: QSO) => string[];
 const dxcc2countrymap = Object.fromEntries(callsigns.map((csd) => [+csd.dxcc, csd.iso3]));
@@ -47,17 +52,49 @@ export const filterQsos = (qsos: QSO[], qsosFilters: QsoFilter[]) =>
         qsosFilters.reduce((acc, { name, values }) => acc && filterMap[name](q).some((f) => values.includes(f)), true),
     );
 
-export type FiltersProps = {};
+export type FiltersProps = {
+    showTag?: boolean;
+};
+
+const tagFields = [
+    "frequency",
+    "band",
+    "mode",
+    "power",
+    "myQth",
+    "myLocator",
+    "myCallsign",
+    "eqsl_received",
+    "eqsl_sent",
+    "lotw_received",
+    "lotw_sent",
+    "myPota",
+    "myWwff",
+    "mySota",
+    "mySig",
+    "myIota",
+];
+const castValue = (k: string, v: string) => {
+    if (v === "") return undefined;
+    if (["eqsl_received", "eqsl_sent", "lotw_received", "lotw_sent"].includes(k))
+        return ["1", "Y", "YES"].includes(v.toUpperCase());
+    if (["power", "frequency"].includes(k)) return +v;
+    if (k === "locator") return normalise(v);
+    return v;
+};
 
 export type FiltersComponent = React.FC<FiltersProps>;
 
-export const Filters: FiltersComponent = (): JSX.Element => {
-    const qsos = useQsos();
+export const Filters: FiltersComponent = ({ showTag }): JSX.Element => {
+    const filters = useStore((state) => state.filters);
+    const qsos = filterQsos(useQsos(), filters);
     const { height } = useWindowDimensions();
     const [modal, setModal] = React.useState<boolean>(false);
+    const [tagModal, setTagModal] = React.useState<boolean>(false);
+    const [tagValues, setTagValues] = React.useState<Record<string, string>>({});
     const [filter, setFilter] = React.useState<FilterName | undefined>(undefined);
     const [values, setValues] = React.useState<Array<unknown>>([]);
-    const filters = useStore((state) => state.filters);
+    const log = useStore((state) => state.log);
     const setFilters = useStore((state) => state.updateFilters);
 
     const itemsPerPage = Math.floor((height - 40 * 5) / 40);
@@ -74,6 +111,20 @@ export const Filters: FiltersComponent = (): JSX.Element => {
         setModal(false);
         setFilter(undefined);
         setValues([]);
+    };
+
+    const handleUpdate = () => {
+        const castedValues = Object.fromEntries(Object.entries(tagValues).map(([k, v]) => [k, castValue(k, v)]));
+        log(qsos.map((q) => ({ ...q, ...castedValues })));
+        setTagValues({});
+        setTagModal(false);
+        Swal.fire({
+            ...SwalTheme,
+            title: "Done!",
+            text: `Updated ${qsos.length} QSOs`,
+            icon: "success",
+            confirmButtonText: "Ok",
+        });
     };
     return (
         <Stack direction="row">
@@ -92,7 +143,19 @@ export const Filters: FiltersComponent = (): JSX.Element => {
                 ))}
                 {filters.length === 0 && <Typography>None</Typography>}
             </Stack>
-            <Typography variant="subtitle">({filterQsos(qsos, filters).length})</Typography>
+            <Typography variant="subtitle">({qsos.length})</Typography>
+            {showTag && (
+                <View>
+                    <Button
+                        variant="outlined"
+                        text="Tag"
+                        onPress={() => {
+                            setTagValues({});
+                            setTagModal(true);
+                        }}
+                    />
+                </View>
+            )}
             <View>
                 <Button startIcon="add" onPress={() => setModal(true)} />
             </View>
@@ -108,11 +171,7 @@ export const Filters: FiltersComponent = (): JSX.Element => {
                     )}
                     {filter && (
                         <PaginatedList itemsPerPage={itemsPerPage}>
-                            {unique(
-                                filterQsos(qsos, filters)
-                                    .map((q) => filterMap[filter](q))
-                                    .flat(),
-                            )
+                            {unique(qsos.map((q) => filterMap[filter](q)).flat())
                                 .sort(sortNumsAndAlpha)
                                 .map((v) => (
                                     <Button
@@ -126,6 +185,36 @@ export const Filters: FiltersComponent = (): JSX.Element => {
                         </PaginatedList>
                     )}
                     <Button colour="success" text="OK" onPress={handleOk} />
+                </Stack>
+            </Modal>
+            <Modal open={tagModal} onClose={() => setTagModal(false)}>
+                <Stack>
+                    <Typography>
+                        With this, you can bulk update your QSOs. Make sure the filters match what you want, set which
+                        field you want to update and click update
+                    </Typography>
+                    <Alert>
+                        <Typography>This will update {qsos.length} QSOs</Typography>
+                    </Alert>
+                    <PaginatedList>
+                        {tagFields.map((k) => (
+                            <Stack key={k}>
+                                <Button
+                                    variant="outlined"
+                                    text={k}
+                                    onPress={() => setTagValues({ ...tagValues, [k]: "" })}
+                                />
+                                {k in tagValues && (
+                                    <Input
+                                        value={tagValues[k]}
+                                        onChangeText={(v) => setTagValues({ ...tagValues, [k]: v })}
+                                    />
+                                )}
+                            </Stack>
+                        ))}
+                    </PaginatedList>
+                    <Button colour="success" text="Update" onPress={handleUpdate} />
+                    <Button colour="grey" text="Cancel" onPress={() => setTagModal(false)} />
                 </Stack>
             </Modal>
         </Stack>

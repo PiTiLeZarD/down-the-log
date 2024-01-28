@@ -63,7 +63,7 @@ export const Home: HomeComponent = ({ navigation }): JSX.Element => {
                     </Alert>
                 )}
                 {settings.showBeacons && <Beacons />}
-                {settings.showFilters && <Filters />}
+                {settings.showFilters && <Filters showTag />}
                 <QsoList
                     style={{ height: 0 }}
                     qsos={filterQsos(qsos, qsosFilters)}
