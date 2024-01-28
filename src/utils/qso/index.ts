@@ -7,7 +7,7 @@ import dxcc from "../../data/dxcc.json";
 import ituzones from "../../data/ituzones.json";
 import { Mode } from "../../data/modes";
 import { useStore } from "../../store";
-import { CsDataType, getCallsignData, parseCallsign } from "../callsign";
+import { CsDataType, baseCallsign, getCallsignData, parseCallsign } from "../callsign";
 import { maidenDistance, maidenhead2Latlong } from "../locator";
 import { findZone } from "../polydec";
 
@@ -125,9 +125,9 @@ export const qsoLocationFill = (qso: QSO, callsignDataProvided?: CsDataType) => 
     };
 };
 
+const dt2mn = (dt1: DateTime, dt2: DateTime) => Math.abs(dt1.diff(dt2, ["minutes"]).toObject().minutes as number);
+
 export const findMatchingQso = (qsos: QSO[], data: QSO): QSO | null =>
-    qsos.filter(
-        (q) =>
-            q.callsign === data.callsign &&
-            Math.abs(q.date.diff(data.date, ["minutes"]).toObject().minutes as number) < 10,
-    )[0] || null;
+    qsos
+        .filter((q) => baseCallsign(q.callsign) === baseCallsign(data.callsign) && dt2mn(q.date, data.date) < 20)
+        .sort((qa, qb) => dt2mn(qa.date, data.date) - dt2mn(qb.date, data.date))[0] || null;
