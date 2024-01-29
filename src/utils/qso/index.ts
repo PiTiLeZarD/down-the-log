@@ -62,10 +62,12 @@ export type QSO = {
     honeypot?: Record<string, string>;
 };
 
-export const hasEvent = (qso: QSO): boolean =>
+export const allEvents = (qso: QSO) =>
     [qso.pota, qso.myPota, qso.wwff, qso.myWwff, qso.sota, qso.mySota, qso.sig, qso.mySig, qso.iota, qso.myIota].filter(
         Boolean,
-    ).length > 0;
+    );
+
+export const hasEvent = (qso: QSO): boolean => allEvents(qso).length > 0;
 
 export const newQsoID = () => uuid.v4() as string;
 

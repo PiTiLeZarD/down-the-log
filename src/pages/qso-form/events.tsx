@@ -2,8 +2,9 @@ import React from "react";
 import { useFormContext } from "react-hook-form";
 import { Grid } from "../../utils/grid";
 import { Modal } from "../../utils/modal";
-import { QSO, hasEvent } from "../../utils/qso";
+import { QSO, allEvents } from "../../utils/qso";
 import { Stack } from "../../utils/stack";
+import { Badge } from "../../utils/theme/components/badge";
 import { Button } from "../../utils/theme/components/button";
 import { Input } from "../../utils/theme/components/input";
 import { Typography } from "../../utils/theme/components/typography";
@@ -21,13 +22,15 @@ export const Events: EventsComponent = (): JSX.Element => {
     const qso = getValues();
     return (
         <>
-            <Button
-                startIcon="earth"
-                text="Events"
-                variant={hasEvent(qso) ? "contained" : "outlined"}
-                colour={hasEvent(qso) ? "secondary" : "primary"}
-                onPress={() => setOpen(true)}
-            />
+            <Badge count={allEvents(qso).length} colour="secondary">
+                <Button
+                    startIcon="earth"
+                    text="Events"
+                    variant="outlined"
+                    colour="primary"
+                    onPress={() => setOpen(true)}
+                />
+            </Badge>
             <Modal wide open={open} onClose={() => setOpen(false)}>
                 <Stack>
                     <Grid container>
