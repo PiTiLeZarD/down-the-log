@@ -1,10 +1,8 @@
 import React from "react";
 import { useFormContext } from "react-hook-form";
-import { View } from "react-native";
 import { geocode } from "../../utils/geocode";
 import { latlong2Maidenhead } from "../../utils/locator";
 import { Button } from "../../utils/theme/components/button";
-import { Typography } from "../../utils/theme/components/typography";
 import { useSettings } from "../../utils/use-settings";
 
 export type GeocodeButtonProps = {};
@@ -17,21 +15,15 @@ export const GeocodeButton: GeocodeButtonComponent = (): JSX.Element => {
     const settings = useSettings();
     if (!settings.geocodeMapsCoKey) return <></>;
     return (
-        <View>
-            <Typography>&nbsp;</Typography>
-            <Button
-                endIcon="arrow-forward"
-                onPress={() =>
-                    geocode(qth, settings.geocodeMapsCoKey as string).then((data) => {
-                        if (data.length) {
-                            setValue(
-                                "locator",
-                                latlong2Maidenhead({ latitude: +data[0].lat, longitude: +data[0].lon }),
-                            );
-                        }
-                    })
-                }
-            />
-        </View>
+        <Button
+            endIcon="arrow-forward"
+            onPress={() =>
+                geocode(qth, settings.geocodeMapsCoKey as string).then((data) => {
+                    if (data.length) {
+                        setValue("locator", latlong2Maidenhead({ latitude: +data[0].lat, longitude: +data[0].lon }));
+                    }
+                })
+            }
+        />
     );
 };

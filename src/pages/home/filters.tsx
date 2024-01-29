@@ -35,6 +35,8 @@ export const filterMap: Record<string, FilterFunction> = {
     sota: (qso) => [qso.sota || "", qso.mySota || ""],
     iota: (qso) => [qso.iota || "", qso.myIota || ""],
     myCallsign: (qso) => [qso.myCallsign || "N/A"],
+    myRig: (qso) => [qso.myRig || "N/A"],
+    myAntenna: (qso) => [qso.myAntenna || "N/A"],
     sig: (qso) => [qso.sig || "", qso.mySig || ""],
     has_event: (qso) => [hasEvent(qso) ? "Yes" : "No"],
     has_note: (qso) => [qso.note ? "Yes" : "No"],
@@ -76,7 +78,10 @@ const tagFields = [
     "myWwff",
     "mySota",
     "mySig",
+    "mySigInfo",
     "myIota",
+    "myRig",
+    "myAntenna",
 ];
 const castValue = (k: string, v: string) => {
     if (v === "") return undefined;

@@ -24,7 +24,6 @@ This is the rough todolist I want to work on.
     -   [ ] heatmap of qso per day (github style)
     -   [x] qsos/band,mode
 -   [ ] ios errors galore
--   [ ] manage multiple rigs/antenna and use ADIF to store/retrieve it
 -   [ ] yarn release should use ghpages to create the demo, build the tauri app and release it, build ios/android apps
     -   [x] demo website on github
     -   [ ] look into automatic/programatic github release
@@ -54,6 +53,7 @@ This is the rough todolist I want to work on.
 
 ## Done
 
+-   [x] manage multiple rigs/antenna and use ADIF to store/retrieve it
 -   [x] import qsl sets a random date, find that date from the log
 -   [x] Events (WWFF/POTA/SOTA/etc...)
     -   [x] button a-la band/SN to set events id, add in QSOForm and possibly have an option to add it straight in the callsign input

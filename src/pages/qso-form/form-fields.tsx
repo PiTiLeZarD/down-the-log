@@ -27,6 +27,7 @@ import { Events } from "./events";
 import { GeocodeButton } from "./geocode-button";
 import { GmapsChip } from "./gmaps-chip";
 import { LocatorField } from "./locator-field";
+import { MyStation } from "./my-station";
 import { PreviousQsos } from "./previous-qsos";
 import { QrzChip } from "./qrz-chip";
 import { Signal } from "./signal";
@@ -212,12 +213,14 @@ export const FormFields: FormFieldsComponent = ({ qso }): JSX.Element => {
                 </Grid>
             </Grid>
             <Grid container>
-                <Grid item xs={6} xl={7}>
+                <Grid item xs={6} xl={5}>
                     <FormField name="qth" label="QTH:" />
                 </Grid>
                 {settings.geocodeMapsCoKey && (
                     <Grid item xs={1}>
-                        <GeocodeButton />
+                        <ButtonOffset>
+                            <GeocodeButton />
+                        </ButtonOffset>
                     </Grid>
                 )}
                 <Grid item xs={settings.geocodeMapsCoKey ? 3 : 4}>
@@ -228,16 +231,10 @@ export const FormFields: FormFieldsComponent = ({ qso }): JSX.Element => {
                         <GmapsChip locator={qso.locator} />
                     </ButtonOffset>
                 </Grid>
-            </Grid>
-            <Grid container>
-                <Grid item xs={3}>
-                    <FormField name="myCallsign" label="My Callsign:" />
-                </Grid>
-                <Grid item xs={5}>
-                    <FormField name="myQth" label="My QTH:" />
-                </Grid>
-                <Grid item xs={4}>
-                    <FormField name="myLocator" label="My Gridsquare:" />
+                <Grid item xs={12} xl={2}>
+                    <ButtonOffset>
+                        <MyStation />
+                    </ButtonOffset>
                 </Grid>
             </Grid>
             <Grid container>

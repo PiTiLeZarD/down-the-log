@@ -57,6 +57,8 @@ export type QSO = {
     mySig?: string;
     sigInfo?: string;
     mySigInfo?: string;
+    myRig?: string;
+    myAntenna?: string;
     honeypot?: Record<string, string>;
 };
 
