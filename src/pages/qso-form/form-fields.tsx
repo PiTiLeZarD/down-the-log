@@ -155,12 +155,6 @@ export const FormFields: FormFieldsComponent = ({ qso }): JSX.Element => {
                     <FormField name="ituzone" label="ITUZone:" />
                     <FormField name="dxcc" label="DXCC:" />
                     <Typography variant="h3" underline>
-                        My Details
-                    </Typography>
-                    <FormField name="myLocator" label="My Gridsquare:" />
-                    <FormField name="myCallsign" label="My Callsign:" />
-                    <FormField name="myQth" label="My QTH:" />
-                    <Typography variant="h3" underline>
                         QSL
                     </Typography>
                     <Grid container>
@@ -227,12 +221,23 @@ export const FormFields: FormFieldsComponent = ({ qso }): JSX.Element => {
                     </Grid>
                 )}
                 <Grid item xs={settings.geocodeMapsCoKey ? 3 : 4}>
-                    <LocatorField name="locator" label="Locator:" />
+                    <LocatorField name="locator" label="Gridsquare:" />
                 </Grid>
                 <Grid item xs={2} xl={1}>
                     <ButtonOffset>
                         <GmapsChip locator={qso.locator} />
                     </ButtonOffset>
+                </Grid>
+            </Grid>
+            <Grid container>
+                <Grid item xs={3}>
+                    <FormField name="myCallsign" label="My Callsign:" />
+                </Grid>
+                <Grid item xs={5}>
+                    <FormField name="myQth" label="My QTH:" />
+                </Grid>
+                <Grid item xs={4}>
+                    <FormField name="myLocator" label="My Gridsquare:" />
                 </Grid>
             </Grid>
             <Grid container>
