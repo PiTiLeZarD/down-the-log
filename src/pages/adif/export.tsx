@@ -63,18 +63,20 @@ export const Export: ExportComponent = (): JSX.Element => {
                     onPress={handleQslDownload("eqsl")}
                 />
             </Stack>
-            <Button
-                variant="chip"
-                url="https://www.arrl.org/tqsl-download"
-                colour="grey"
-                text="Click here to download LoTW tqsl app"
-            />
-            <Button
-                variant="chip"
-                url="https://eqsl.cc/qslcard/EnterADIF.cfm"
-                colour="grey"
-                text="Click here to upload to eQSL"
-            />
+            <Stack direction="row">
+                <Button
+                    variant="chip"
+                    url="https://www.arrl.org/tqsl-download"
+                    colour="grey"
+                    text="Click here to download LoTW tqsl app"
+                />
+                <Button
+                    variant="chip"
+                    url="https://eqsl.cc/qslcard/EnterADIF.cfm"
+                    colour="grey"
+                    text="Click here to upload to eQSL"
+                />
+            </Stack>
         </Stack>
     );
 };
