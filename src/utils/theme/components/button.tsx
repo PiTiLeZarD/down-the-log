@@ -38,6 +38,7 @@ const stylesheet = createStyleSheet((theme) => ({
     }),
     buttonText_chip: (colour: ColourVariant) => ({
         color: theme.colours[colour][theme.shades.darker],
+        fontSize: theme.components.typography.fontSize - 4,
     }),
 }));
 
