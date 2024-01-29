@@ -35,11 +35,11 @@ This is the rough todolist I want to work on.
 -   [ ] band map, ability to link callsign/frequency on the band, use this to start qso's (also ability to write name/qth and other details so it's prefilled)
 -   [ ] hamclock modules (sunspot or sun data, propagaion, greyline, short/long path etc...)
 -   [ ] integrations
-    -   [ ] qrz integration
+    -   [x] qrz integration
     -   [ ] qrzcq (https://www.qrzcq.com/docs/api/xml/)
     -   [x] hamQTH
-    -   [ ] eqsl
-    -   [ ] lotw ([this one sounds tough, gotta sign adif exports, let's see](https://lotw.arrl.org/lotw-help/developer-information/?lang=en))
+    -   [x] eqsl
+    -   [x] lotw ([this one sounds tough, gotta sign adif exports, let's see](https://lotw.arrl.org/lotw-help/developer-information/?lang=en))
 -   [ ] cluster?
 -   [ ] Settings
     -   [x] should be able to select our own callsign, maybe prompt at the start of the app
