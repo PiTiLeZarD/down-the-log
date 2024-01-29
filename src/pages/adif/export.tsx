@@ -46,7 +46,9 @@ export const Export: ExportComponent = (): JSX.Element => {
             </Stack>
             <Typography variant="h3">QSL</Typography>
             <Typography>You can download all qsos that aren't marked as sent for either lotw or eqsl here</Typography>
-            <Alert severity="info">QSOs will be altered and marked as sent</Alert>
+            <Alert severity="info">
+                <Typography>QSOs will be altered and marked as sent</Typography>
+            </Alert>
             <Stack direction="row">
                 <Button
                     startIcon="download-outline"

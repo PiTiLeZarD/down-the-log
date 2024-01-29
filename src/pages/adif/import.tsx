@@ -42,7 +42,11 @@ export const Import: ImportComponent = (): JSX.Element => {
     const currentLocation = useStore((state) => state.currentLocation);
     const settings = useSettings();
 
-    const fromDate = DateTime.fromFormat("20050201", "yyyyMMdd");
+    const fromDate = (
+        qsos.reverse().find((q) => q.myCallsign === settings.myCallsign) || {
+            date: DateTime.local().minus({ month: 1 }),
+        }
+    ).date;
 
     const handleImport = (files: FileWithPreview[]) => {
         files.map((file) => {
@@ -162,19 +166,24 @@ export const Import: ImportComponent = (): JSX.Element => {
                         automatically update the records appropriately
                     </Typography>
                     <Typography>First login to either service, then:</Typography>
-                    <Stack direction="row">
-                        <Button text="Get from LoTW" url="https://lotw.arrl.org/lotwuser/qsos?qsoscmd=adif" />
-                        <Button
-                            text="Get from eQSL"
-                            url={`https://www.eQSL.cc/qslcard/DownloadInBox.cfm?RcvdSince=${fromDate.toFormat(
-                                "yyyyMMdd",
-                            )}`}
-                        />
+                    <Stack direction="row" style={{ alignItems: "flex-start" }}>
+                        <Stack style={{ flex: 1 }}>
+                            <Button text="Get from LoTW" url="https://lotw.arrl.org/lotwuser/qsos?qsoscmd=adif" />
+
+                            <Typography variant="subtitle">
+                                Leave all fields as is and put the date "{fromDate.toFormat("yyyy-MM-dd")}"
+                            </Typography>
+                        </Stack>
+                        <Stack style={{ flex: 1 }}>
+                            <Button
+                                text="Get from eQSL"
+                                url={`https://www.eQSL.cc/qslcard/DownloadInBox.cfm?RcvdSince=${fromDate.toFormat(
+                                    "yyyyMMdd",
+                                )}`}
+                            />
+                            <Typography variant="subtitle">Get the Adif file.</Typography>
+                        </Stack>
                     </Stack>
-                    <Typography variant="subtitle">
-                        For LoTW leave all fields as is and put the date "{fromDate.toFormat("yyyy-MM-dd")}". For eQSL
-                        get the Adif file.
-                    </Typography>
 
                     <Dropzone onAcceptedFiles={handleQSLImport} style={styles.dropzone}>
                         <Stack>
