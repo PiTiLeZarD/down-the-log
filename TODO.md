@@ -2,57 +2,65 @@
 
 This is the rough todolist I want to work on.
 
--   [ ] Have a "Net" module, showing what's going on where and when
+## Must have
+
 -   [ ] Find a way to differeciate between south cook island and north cook island dxcc entities since they share the same callsigns (maybe separate the dxcc list from the callsigns)
 -   [ ] should make a visual indication that hamqth isn't available, it happens often
--   [ ] adif import export
-    -   [x] Lossless ADIF (don't strip fields we don't use)
-    -   [x] download qsos as adif
-    -   [x] ability to ask "download from last export"
-    -   [x] use filters for exporting (ability to untick this)
-    -   [x] upload adif file, merge with current qsos, find duplicates etc...
-    -   [x] improve adif page interface
-    -   [ ] find a solution for mobile (download works, upload probably doesn't)
-    -   [ ] use gdrive as backup/restore
 -   [ ] Improve the QSO form page so it's nice usable and has all details fillable
     -   [x] S/N input to help fill tx/rx report up real quick
     -   [x] add all the rest of the fields (check adif spec and rumlog)
     -   [ ] add https://docs.expo.dev/versions/latest/sdk/date-time-picker/ in the form to edit date/time
     -   [x] allow filling up itu/cq/dxcc and all that
--   [x] Stats
-    -   [x] qsos /continent /country /year,month
-    -   [ ] heatmap of qso per day (github style)
-    -   [x] qsos/band,mode
--   [ ] ios errors galore
--   [ ] yarn release should use ghpages to create the demo, build the tauri app and release it, build ios/android apps
-    -   [x] demo website on github
-    -   [ ] look into automatic/programatic github release
-    -   [ ] script the apk/dmg releases
-        -   [ ] Create playstore dev account and release there
 -   [ ] contest mode (instead of Callsign > Form, have all relevant details on the bottom and log directly, ability to edit later)
     -   [ ] Pick things that go in there (freq, sn reports, name, qth, things like these and build the form dynamically)
--   [ ] band map, ability to link callsign/frequency on the band, use this to start qso's (also ability to write name/qth and other details so it's prefilled)
--   [ ] hamclock modules (sunspot or sun data, propagaion, greyline, short/long path etc...)
+-   [ ] light/dark theme
 -   [ ] integrations
     -   [x] qrz integration
     -   [ ] qrzcq (https://www.qrzcq.com/docs/api/xml/)
     -   [x] hamQTH
     -   [x] eqsl
     -   [x] lotw ([this one sounds tough, gotta sign adif exports, let's see](https://lotw.arrl.org/lotw-help/developer-information/?lang=en))
+
+## Good to have
+
+-   [ ] band map, ability to link callsign/frequency on the band, use this to start qso's (also ability to write name/qth and other details so it's prefilled)
+-   [ ] hamclock modules (sunspot or sun data, propagaion, greyline, short/long path etc...)
+-   [ ] yarn release should use ghpages to create the demo, build the tauri app and release it, build ios/android apps
+    -   [x] demo website on github
+    -   [ ] look into automatic/programatic github release
+    -   [ ] script the apk/dmg releases
+-   [ ] Have a "Net" module, showing what's going on where and when
+-   [ ] use gdrive as backup/restore
+-   [x] Stats
+    -   [x] qsos /continent /country /year,month
+    -   [ ] heatmap of qso per day (github style)
+    -   [x] qsos/band,mode
+    -   [ ] graphs?
 -   [ ] cluster?
--   [ ] Settings
+-   [ ] Look into the clublog dxcc db (https://dl2rum.de/RUMlogNG/docs/en/pages/Online_CLDX.html)
+-   [ ] Band plan (typical adif band spread or australian band plan with ability to switch, also display band usage from https://www.wia.org.au/members/bandplans/data/documents/Australian%20Band%20Plans%20200901.pdf or whichever by country)
+
+## Mobile apps journey
+
+-   [ ] find a solution for import/export on mobile (download works, upload probably doesn't)
+-   [ ] ios/android debug and shakedown
+-   [ ] open accounts on playstore and apple dev
+
+## Done
+
+-   [x] Settings
     -   [x] should be able to select our own callsign, maybe prompt at the start of the app
     -   [x] choose favorite bands
     -   [x] choose favorite modes
     -   [x] fix location vs use gps
-    -   [ ] light/dark theme
-    -   [ ] input callsign vs contest
     -   [x] choose grouping (date vs sesh vs contest vs...)
--   [ ] Look into the clublog dxcc db (https://dl2rum.de/RUMlogNG/docs/en/pages/Online_CLDX.html)
--   [ ] Band plan (typical adif band spread or australian band plan with ability to switch, also display band usage from https://www.wia.org.au/members/bandplans/data/documents/Australian%20Band%20Plans%20200901.pdf or whichever by country)
-
-## Done
-
+-   [x] adif import export
+    -   [x] Lossless ADIF (don't strip fields we don't use)
+    -   [x] download qsos as adif
+    -   [x] ability to ask "download from last export"
+    -   [x] use filters for exporting (ability to untick this)
+    -   [x] upload adif file, merge with current qsos, find duplicates etc...
+    -   [x] improve adif page interface
 -   [x] manage multiple rigs/antenna and use ADIF to store/retrieve it
 -   [x] import qsl sets a random date, find that date from the log
 -   [x] Events (WWFF/POTA/SOTA/etc...)
