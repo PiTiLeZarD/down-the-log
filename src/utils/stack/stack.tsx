@@ -17,11 +17,11 @@ const defaultColStyles = (): ViewStyle => ({ alignContent: "flex-start" });
 export const Stack: StackComponent = ({ style, gap = "xs", direction = "column", children }): JSX.Element => {
     return (
         <View
-            style={mergeStyles<ViewStyle>(
-                style,
-                { display: "flex", flexDirection: direction, gap: typeof gap === "number" ? 0 : spacing[gap] },
-                direction == "row" ? defaultRowStyles() : defaultColStyles(),
-            )}
+            style={mergeStyles<ViewStyle>(direction == "row" ? defaultRowStyles() : defaultColStyles(), style, {
+                display: "flex",
+                flexDirection: direction,
+                gap: typeof gap === "number" ? 0 : spacing[gap],
+            })}
         >
             {children}
         </View>
