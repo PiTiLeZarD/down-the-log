@@ -159,6 +159,7 @@ export const FormFields: FormFieldsComponent = ({ qso }): JSX.Element => {
                     </Typography>
                     <FormField name="myLocator" label="My Gridsquare:" />
                     <FormField name="myCallsign" label="My Callsign:" />
+                    <FormField name="myQth" label="My QTH:" />
                     <Typography variant="h3" underline>
                         QSL
                     </Typography>
