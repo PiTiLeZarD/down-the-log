@@ -2,7 +2,7 @@ import React from "react";
 import { useFormContext } from "react-hook-form";
 import { Grid } from "../../utils/grid";
 import { Modal } from "../../utils/modal";
-import { QSO } from "../../utils/qso";
+import { QSO, hasEvent } from "../../utils/qso";
 import { Stack } from "../../utils/stack";
 import { Button } from "../../utils/theme/components/button";
 import { Input } from "../../utils/theme/components/input";
@@ -21,7 +21,13 @@ export const Events: EventsComponent = (): JSX.Element => {
     const qso = getValues();
     return (
         <>
-            <Button startIcon="earth" text="Events" variant="outlined" onPress={() => setOpen(true)} />
+            <Button
+                startIcon="earth"
+                text="Events"
+                variant={hasEvent(qso) ? "contained" : "outlined"}
+                colour={hasEvent(qso) ? "secondary" : "primary"}
+                onPress={() => setOpen(true)}
+            />
             <Modal wide open={open} onClose={() => setOpen(false)}>
                 <Stack>
                     <Grid container>
