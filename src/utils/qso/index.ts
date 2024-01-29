@@ -92,7 +92,24 @@ export const newQso = (
             rst_sent: "59",
             honeypot: {},
             ...(qsos.length
-                ? { frequency: qsos[0].frequency, band: qsos[0].band, mode: qsos[0].mode, power: qsos[0].power }
+                ? Object.fromEntries(
+                      [
+                          "frequency",
+                          "band",
+                          "mode",
+                          "power",
+                          "myQth",
+                          "myPota",
+                          "myPota",
+                          "myWwff",
+                          "mySota",
+                          "mySig",
+                          "mySigInfo",
+                      ].map((f) => [
+                          f,
+                          qsos[0][f as keyof QSO] !== undefined ? String(qsos[0][f as keyof QSO]) : undefined,
+                      ]),
+                  )
                 : {}),
             ...(previousQsosWithCallsign.length
                 ? { name: previousQsosWithCallsign[0].name, qth: previousQsosWithCallsign[0].qth }
