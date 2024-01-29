@@ -9,7 +9,7 @@ import { Typography } from "./theme/components/typography";
 
 export type FormFieldProps = {
     name: keyof QSO;
-    label?: string;
+    label?: React.ReactNode;
     placeholder?: string;
     numberOfLines?: number;
     role?: "text" | "select" | "textarea" | "country";
@@ -34,7 +34,12 @@ export const FormField: FormFieldComponent = ({
 
     return (
         <Stack>
-            {label && <Typography aria-label={`Label for ${field.name}`}>{label}</Typography>}
+            {label &&
+                (typeof label === "string" ? (
+                    <Typography aria-label={`Label for ${field.name}`}>{label}</Typography>
+                ) : (
+                    label
+                ))}
 
             {(role === "text" || role === "textarea") && (
                 <Input

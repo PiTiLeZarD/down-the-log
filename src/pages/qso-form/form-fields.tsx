@@ -25,7 +25,6 @@ import { ContinentWarning } from "./continent-warning";
 import { CountryWarning } from "./country-warning";
 import { Events } from "./events";
 import { GeocodeButton } from "./geocode-button";
-import { GmapsChip } from "./gmaps-chip";
 import { LocatorField } from "./locator-field";
 import { MyStation } from "./my-station";
 import { PreviousQsos } from "./previous-qsos";
@@ -213,7 +212,7 @@ export const FormFields: FormFieldsComponent = ({ qso }): JSX.Element => {
                 </Grid>
             </Grid>
             <Grid container>
-                <Grid item xs={6} xl={5}>
+                <Grid item xs={7} xl={5}>
                     <FormField name="qth" label="QTH:" />
                 </Grid>
                 {settings.geocodeMapsCoKey && (
@@ -223,13 +222,8 @@ export const FormFields: FormFieldsComponent = ({ qso }): JSX.Element => {
                         </ButtonOffset>
                     </Grid>
                 )}
-                <Grid item xs={settings.geocodeMapsCoKey ? 3 : 4}>
+                <Grid item xs={settings.geocodeMapsCoKey ? 4 : 5}>
                     <LocatorField name="locator" label="Gridsquare:" />
-                </Grid>
-                <Grid item xs={2} xl={1}>
-                    <ButtonOffset>
-                        <GmapsChip locator={qso.locator} />
-                    </ButtonOffset>
                 </Grid>
                 <Grid item xs={12} xl={2}>
                     <ButtonOffset>
