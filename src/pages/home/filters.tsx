@@ -154,7 +154,7 @@ export const Filters: FiltersComponent = ({ showTag }): JSX.Element => {
                 {filters.length === 0 && <Typography>None</Typography>}
             </Stack>
             <Typography variant="subtitle">({qsos.length})</Typography>
-            {showTag && (
+            {showTag && qsos.length > 0 && (
                 <View>
                     <Button
                         variant="outlined"
