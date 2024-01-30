@@ -4,8 +4,17 @@ import colours from "./colours.json";
 export const colour = (name: string, shade: number) =>
     ((colours as Record<string, Record<string, string>>)[name] || {})[String(shade)] || "#FF0000";
 
+const reverseColour = (colour: Record<string, string>) =>
+    Object.fromEntries(
+        new Array(9).fill(null).map((_, i) => [String((i + 1) * 100), colour[String(1000 - (i + 1) * 100)]]),
+    );
+
 export const theme = {
     colours: {
+        // primary: reverseColour(colours.blue),
+        // secondary: reverseColour(colours.orange),
+        // grey: reverseColour(colours.gray),
+        // success: reverseColour(colours.green),
         primary: colours.blue,
         secondary: colours.orange,
         grey: colours.gray,
@@ -13,6 +22,7 @@ export const theme = {
     },
     components: {
         typography: {
+            color: "black",
             fontFamily: "Quicksand",
             fontWeight: "400",
             fontSize: PixelRatio.getFontScale() * 16,
