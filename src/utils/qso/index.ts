@@ -109,6 +109,8 @@ export const newQso = (
                           "mySota",
                           "mySig",
                           "mySigInfo",
+                          "myRig",
+                          "myAntenna",
                       ].map((f) => [
                           f,
                           qsos[0][f as keyof QSO] !== undefined ? String(qsos[0][f as keyof QSO]) : undefined,
