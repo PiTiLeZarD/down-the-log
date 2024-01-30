@@ -12,6 +12,7 @@ import { SelectInput } from "../../utils/theme/components/select-input";
 import { Typography } from "../../utils/theme/components/typography";
 import { useSettings } from "../../utils/use-settings";
 import { FilterName, Filters, filterMap, filterQsos } from "../home/filters";
+import { GridMap } from "./grid-map";
 
 const groupQsos = (
     qsos: QSO[],
@@ -121,6 +122,7 @@ export const Stats: StatsComponent = (): JSX.Element => {
                         <Typography>{qsos.length}</Typography>
                     </Grid>
                 </Grid>
+                <GridMap />
             </Stack>
         </PageLayout>
     );

@@ -63,11 +63,14 @@ export const Map: MapComponent = ({ width = "auto", height, google, children }):
     if (actualWidth) {
         url = `https://maps.googleapis.com/maps/api/staticmap`;
         url = `${url}?&size=${actualWidth}x${Math.min(height, 640)}`;
-        Object.keys(features).forEach(
-            (e) =>
-                (url = `${url}&${e}${e.includes("=") ? "%7c" : "="}${encodeURIComponent(
-                    features[e].map((f) => f.data).join("|"),
-                )}`),
+        Object.keys(features).forEach((e) =>
+            e.startsWith("path")
+                ? features[e].map(
+                      (f) => (url = `${url}&${e}${e.includes("=") ? "%7c" : "="}${encodeURIComponent(f.data)}`),
+                  )
+                : (url = `${url}&${e}${e.includes("=") ? "%7c" : "="}${encodeURIComponent(
+                      features[e].map((f) => f.data).join("|"),
+                  )}`),
         );
         url = `${url}&key=${google.key}`;
     }

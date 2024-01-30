@@ -53,6 +53,13 @@ export const maidenhead2Latlong = (maidenhead: string): LatLng => {
     return latlng;
 };
 
+export const fixLatLngForStaticMaps = (latlng: LatLng): LatLng =>
+    Math.abs(latlng.latitude) == 90
+        ? {
+              latitude: latlng.latitude > 0 ? 85 : -85,
+              longitude: latlng.longitude,
+          }
+        : latlng;
 export const maidenhead2Corners = (maidenhead: string, precision: number = 4): LatLng[] => {
     const gs = (i: number): number => upper.indexOf(maidenhead.charAt(i).toUpperCase());
     const gi = (i: number): number => parseInt(maidenhead.charAt(i));
