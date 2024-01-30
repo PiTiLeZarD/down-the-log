@@ -103,10 +103,10 @@ export const Import: ImportComponent = (): JSX.Element => {
                         .map((q) => {
                             const matching = findMatchingQso(qsos, q);
                             if (matching) {
-                                if ("APP_LoTW_OWNCALL" in (q.honeypot || {})) {
-                                    q.lotw_received = true;
+                                if ("app_lotw_owncall" in (q.honeypot || {})) {
+                                    matching.lotw_received = true;
                                 } else {
-                                    q.eqsl_received = true;
+                                    matching.eqsl_received = true;
                                 }
                             }
                             return [q, matching];
@@ -120,7 +120,7 @@ export const Import: ImportComponent = (): JSX.Element => {
                     Swal.fire({
                         ...SwalTheme,
                         title: "Done!",
-                        text: `All ${toImport.length} records have been imported! ${
+                        text: `${toImport.length} records have been matched! ${
                             toImport.length !== updates.length
                                 ? `(${updates.length - toImport.length} couldn't be matched, check the logs)`
                                 : ""
