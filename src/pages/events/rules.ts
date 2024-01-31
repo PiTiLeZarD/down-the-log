@@ -1,6 +1,8 @@
 import { DateTime } from "luxon";
+import iotaData from "../../data/iota.json";
 import potaData from "../../data/pota.json";
 import wwffData from "../../data/wwff.json";
+import { RecordMassageFn } from "../../utils/adif";
 import { groupBy, unique } from "../../utils/arrays";
 import { QSO } from "../../utils/qso";
 
@@ -18,7 +20,7 @@ export const wwff: EventRule = (qsos, reference) => {
 
 export const pota: EventRule = (qsos, reference) => {
     const activations = groupBy(
-        qsos.filter((q) => q.myWwff === reference),
+        qsos.filter((q) => q.myPota === reference),
         (q) => q.date.toFormat("yyyyMMdd"),
     );
     if (Object.keys(activations).length === 0) return "None";
@@ -29,6 +31,19 @@ export const pota: EventRule = (qsos, reference) => {
     )
         return "Activated";
     return "WIP";
+};
+
+export const sota: EventRule = (qsos, reference) => {
+    const countRef = qsos.filter((q) => q.mySota === reference).length;
+    if (countRef === 0) return "None";
+    if (countRef >= 4) return "Activated";
+    return "WIP";
+};
+
+export const iota: EventRule = (qsos, reference) => {
+    const countRef = qsos.filter((q) => q.myIota === reference).length;
+    if (countRef === 0) return "None";
+    return "Activated";
 };
 
 export const capitalise = (s: string) => s.charAt(0).toUpperCase() + s.slice(1);
@@ -42,8 +57,8 @@ export const allReferencesActivated = (qsos: QSO[], type: EventType): string[] =
 export const eventRuleMap: Record<EventType, EventRule> = {
     wwff,
     pota,
-    sota: () => "None",
-    iota: () => "None",
+    sota,
+    iota,
     sig: () => "None",
 };
 
@@ -51,15 +66,23 @@ export const eventDataMap: Record<EventType, Record<string, { name: string; loca
     wwff: wwffData,
     pota: potaData,
     sota: {},
-    iota: {},
+    iota: iotaData,
     sig: {},
 };
 
 export type EventNameFn = (qsos: QSO[]) => string;
 export const eventFileNameMap: Record<EventType, EventNameFn> = {
     wwff: (qsos) => `${qsos[0].myCallsign} @ ${qsos[0].myWwff} ${DateTime.local().toFormat("yyyyMMdd")}.adif`,
-    pota: (qsos) => `pota_${DateTime.local().toFormat("yyyyMMdd")}.adif`,
-    sota: (qsos) => `sota_${DateTime.local().toFormat("yyyyMMdd")}.adif`,
-    iota: (qsos) => `iota_${DateTime.local().toFormat("yyyyMMdd")}.adif`,
+    pota: (qsos) => `${qsos[0].myCallsign}@${qsos[0].myPota}_${DateTime.local().toFormat("yyyyMMdd")}.adif`,
+    sota: (qsos) => `${qsos[0].myCallsign}@${qsos[0].mySota}_${DateTime.local().toFormat("yyyyMMdd")}.adif`,
+    iota: (qsos) => `${qsos[0].myCallsign}@${qsos[0].myIota}_${DateTime.local().toFormat("yyyyMMdd")}.adif`,
     sig: (qsos) => `sig_${DateTime.local().toFormat("yyyyMMdd")}.adif`,
+};
+
+export const eventDataMassageMap: Record<EventType, RecordMassageFn> = {
+    wwff: (r) => r,
+    pota: (r) => r,
+    sota: (r) => r,
+    iota: (r) => r,
+    sig: (r) => r,
 };

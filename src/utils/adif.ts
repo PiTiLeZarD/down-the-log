@@ -5,7 +5,7 @@ import { Mode, modes } from "../data/modes";
 import { normalise } from "./locator";
 import { QSO, newQsoID } from "./qso";
 
-type Honeypot = Record<string, string>;
+export type Honeypot = Record<string, string>;
 
 const allFields = [
     "qso_date",
@@ -55,6 +55,7 @@ const allFields = [
 type RecordField = (typeof allFields)[number];
 
 export type QSORecord = Record<RecordField, string | undefined> & Record<"honeypot", Honeypot>;
+export type RecordMassageFn = (r: QSORecord) => QSORecord;
 
 const int = (v?: string) => (v !== undefined ? +v : undefined);
 const string = (v?: number) => (v !== undefined ? String(v) : undefined);
@@ -313,12 +314,12 @@ const headerToAdx = (header: Header) =>
         .map(([k, v]) => adxField(k, v))
         .join("")}</HEADER>`;
 
-export const qsos2Adif = (qsos: QSO[]): string =>
-    [headerToAdif(header()), ...qsos.map((q) => record2adif(qso2record(q)))].join("\n");
+export const qsos2Adif = (qsos: QSO[], massage: RecordMassageFn = (r) => r): string =>
+    [headerToAdif(header()), ...qsos.map((q) => record2adif(massage(qso2record(q))))].join("\n");
 
-export const qsos2Adx = (qsos: QSO[]): string =>
+export const qsos2Adx = (qsos: QSO[], massage: RecordMassageFn = (r) => r): string =>
     `<?xml version="1.0" encoding="UTF-8"?><ADX>${headerToAdx(header())}<RECORDS>${qsos
-        .map((q) => record2adx(qso2record(q)))
+        .map((q) => record2adx(massage(qso2record(q))))
         .join("")}</RECORDS></ADX>`;
 
 export const adifFileToRecordList = (adif: string): QSORecord[] => {
@@ -346,8 +347,10 @@ export const adxFileToRecordList = (adx: string): QSORecord[] => {
     return Array.from(doc.getElementsByTagName("RECORD")).map((n) => adx2Record(n));
 };
 
-export const downloadQsos = (title: string, qsos: QSO[], type: "adif" | "adx" = "adif") =>
+export const downloadQsos = (title: string, qsos: QSO[], type: "adif" | "adx" = "adif", massage?: RecordMassageFn) =>
     Object.assign(document.createElement("a"), {
-        href: `data:text/plain,${encodeURIComponent(type === "adif" ? qsos2Adif(qsos) : qsos2Adx(qsos))}`,
+        href: `data:text/plain,${encodeURIComponent(
+            type === "adif" ? qsos2Adif(qsos, massage) : qsos2Adx(qsos, massage),
+        )}`,
         download: title,
     }).click();

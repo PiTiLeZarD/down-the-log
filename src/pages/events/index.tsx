@@ -10,7 +10,7 @@ import { Button } from "../../utils/theme/components/button";
 import { PaginatedList } from "../../utils/theme/components/paginated-list";
 import { Typography } from "../../utils/theme/components/typography";
 import { Reference } from "./reference";
-import { EventType, allReferencesActivated, events } from "./rules";
+import { EventType, allReferencesActivated, eventDataMassageMap, events } from "./rules";
 
 export type EventsProps = {} & StackScreenProps<NavigationParamList, "Events">;
 
@@ -23,6 +23,8 @@ export const Events: EventsComponent = (): JSX.Element => {
         downloadQsos(
             `${event}_hunting.adif`,
             qsos.filter((q) => !!q[event]),
+            "adif",
+            eventDataMassageMap[event],
         );
 
     return (

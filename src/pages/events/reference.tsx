@@ -9,7 +9,14 @@ import { useQsos } from "../../utils/qso";
 import { Button } from "../../utils/theme/components/button";
 import { Typography } from "../../utils/theme/components/typography";
 import { GmapsChip } from "../qso-form/gmaps-chip";
-import { EventType, eventDataMap, eventFileNameMap, eventRuleMap, qsosForReference } from "./rules";
+import {
+    EventType,
+    eventDataMap,
+    eventDataMassageMap,
+    eventFileNameMap,
+    eventRuleMap,
+    qsosForReference,
+} from "./rules";
 
 export type ReferenceProps = {
     event: EventType;
@@ -26,7 +33,8 @@ export const Reference: ReferenceComponent = ({ reference, event }): JSX.Element
     const { navigate } = useNavigation<NavigationProp<NavigationParamList>>();
 
     const refQsos = qsosForReference(qsos, event, reference);
-    const handleDownload = () => downloadQsos(eventFileNameMap[event](refQsos), refQsos);
+    const handleDownload = () =>
+        downloadQsos(eventFileNameMap[event](refQsos), refQsos, "adif", eventDataMassageMap[event]);
     const handleRefPress = () => {
         updateFilters([{ name: event, values: [reference] }]);
         navigate("Home");
