@@ -27,6 +27,9 @@ export const Events: EventsComponent = (): JSX.Element => {
 
     return (
         <PageLayout title="Events">
+            <Typography variant="subtitle">
+                Everything is work in progress here, but you'll be able to handle any event and files here at some point
+            </Typography>
             <TabsLayout tabs={Array.from(events).map((t) => t.toUpperCase())}>
                 {Array.from(events).map((event) => (
                     <Stack key={event}>
