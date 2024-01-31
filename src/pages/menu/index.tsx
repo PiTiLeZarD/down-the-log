@@ -14,6 +14,7 @@ export const Menu: MenuComponent = ({ navigation }): JSX.Element => {
         <PageLayout title="Menu">
             <Stack gap="xxl">
                 <Button startIcon="home" text="Home" onPress={() => navigation.navigate("Home")} />
+                <Button startIcon="earth" text="Events" onPress={() => navigation.navigate("Events")} />
                 <Button startIcon="stats-chart" text="Stats" onPress={() => navigation.navigate("Stats")} />
                 <Button startIcon="settings" text="Settings" onPress={() => navigation.navigate("Settings")} />
                 <Button startIcon="archive" text="Import/Export" onPress={() => navigation.navigate("Adif")} />

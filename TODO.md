@@ -4,6 +4,15 @@ This is the rough todolist I want to work on.
 
 ## Must have
 
+-   [ ] Events
+    -   [ ] Local WWFF rules (VKFF requires 11 contacts)
+    -   [ ] Adif tweaks for different exports
+        -   [ ] WWFF: https://wwff.co/rules-faq/confirming-and-sending-log/
+        -   [ ] POTA: https://docs.pota.app/docs/activator_reference/ADIF_for_POTA_reference.html
+        -   [ ] IOTA: https://www.wia.org.au/members/wiadxawards/islandsofaustralia/ (data in there too)
+        -   [ ] SOTA: why is everything so cryptic with SOTA?
+    -   [ ] Finish up with Pota/Sota/Iota rules and data
+    -   [ ] Find a way to handle Sig properly
 -   [ ] Find a way to differeciate between south cook island and north cook island dxcc entities since they share the same callsigns (maybe separate the dxcc list from the callsigns)
 -   [ ] should make a visual indication that hamqth isn't available, it happens often
 -   [ ] Improve the QSO form page so it's nice usable and has all details fillable
