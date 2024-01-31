@@ -6,12 +6,8 @@ This is the rough todolist I want to work on.
 
 -   [ ] Events
     -   [ ] Local WWFF rules (VKFF requires 11 contacts)
-    -   [ ] Adif tweaks for different exports
-        -   [x] WWFF: https://wwff.co/rules-faq/confirming-and-sending-log/
-        -   [x] POTA: https://docs.pota.app/docs/activator_reference/ADIF_for_POTA_reference.html
-        -   [ ] IOTA: https://www.wia.org.au/members/wiadxawards/islandsofaustralia/ (data in there too)
-        -   [ ] SOTA: why is everything so cryptic with SOTA?
-    -   [ ] Finish up with Pota/Sota/Iota rules and data
+    -   [ ] Handle anything SOTA
+    -   [x] Finish up with Pota/Sota/Iota rules and data
     -   [ ] Find a way to handle Sig properly
 -   [ ] Add my_state
 -   [ ] Find a way to differeciate between south cook island and north cook island dxcc entities since they share the same callsigns (maybe separate the dxcc list from the callsigns)
