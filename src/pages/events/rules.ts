@@ -80,8 +80,28 @@ export const eventFileNameMap: Record<EventType, EventNameFn> = {
 };
 
 export const eventDataMassageMap: Record<EventType, RecordMassageFn> = {
-    wwff: (r) => r,
-    pota: (r) => r,
+    wwff: (r) => {
+        if (r.my_wwff_ref) {
+            r.my_sig = "WWFF";
+            r.my_sig_info = r.my_wwff_ref;
+        }
+        if (r.wwff_ref) {
+            r.sig = "WWFF";
+            r.sig_info = r.wwff_ref;
+        }
+        return r;
+    },
+    pota: (r) => {
+        if (r.my_pota_ref) {
+            r.my_sig = "POTA";
+            r.my_sig_info = r.my_pota_ref;
+        }
+        if (r.pota_ref) {
+            r.sig = "POTA";
+            r.sig_info = r.pota_ref;
+        }
+        return r;
+    },
     sota: (r) => r,
     iota: (r) => r,
     sig: (r) => r,

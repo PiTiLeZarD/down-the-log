@@ -7,8 +7,8 @@ This is the rough todolist I want to work on.
 -   [ ] Events
     -   [ ] Local WWFF rules (VKFF requires 11 contacts)
     -   [ ] Adif tweaks for different exports
-        -   [ ] WWFF: https://wwff.co/rules-faq/confirming-and-sending-log/
-        -   [ ] POTA: https://docs.pota.app/docs/activator_reference/ADIF_for_POTA_reference.html
+        -   [x] WWFF: https://wwff.co/rules-faq/confirming-and-sending-log/
+        -   [x] POTA: https://docs.pota.app/docs/activator_reference/ADIF_for_POTA_reference.html
         -   [ ] IOTA: https://www.wia.org.au/members/wiadxawards/islandsofaustralia/ (data in there too)
         -   [ ] SOTA: why is everything so cryptic with SOTA?
     -   [ ] Finish up with Pota/Sota/Iota rules and data
