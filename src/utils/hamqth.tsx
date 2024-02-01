@@ -1,8 +1,13 @@
 import axios from "axios";
+import debounce from "debounce";
 import { DateTime } from "luxon";
+import React, { useEffect } from "react";
 import Swal from "sweetalert2";
+import { useStore } from "../store";
+import { baseCallsign, parseCallsign } from "./callsign";
 import { latlong2Maidenhead, normalise } from "./locator";
 import { SwalTheme } from "./theme/theme";
+import { useSettings } from "./use-settings";
 
 const ignoreErrors = ["Callsign not found", "timeout exceeded", "Network Error"];
 
@@ -71,6 +76,7 @@ export const fetchSessionId = async (user: string, password: string) =>
     fetchData({ u: user, p: password })
         .then((doc) => pickXML(doc, "session_id"))
         .catch(swal);
+
 export const fetchCallsignData = async (sessionId: string | undefined, callsign: string) => {
     if (!sessionId) return swal(new Error("Missing session ID"));
     return fetchData({ id: sessionId, callsign, prg: "down-the-log" })
@@ -99,4 +105,41 @@ export const fetchCallsignData = async (sessionId: string | undefined, callsign:
             } as HamQTHCallsignData;
         })
         .catch(swal);
+};
+
+export const useHamqth = (callsign?: string) => {
+    const [hamqthCsData, setHamqthCsData] = React.useState<HamQTHCallsignData | undefined>(undefined);
+    const settings = useSettings();
+    const updateSetting = useStore((state) => state.updateSetting);
+
+    useEffect(() => {
+        if (settings.hamqth?.user && settings.hamqth.password) {
+            if (!isSessionValid(settings.hamqth)) {
+                console.info("Fetching new hamqth session");
+                fetchSessionId(settings.hamqth.user, settings.hamqth.password).then((sessionId) => {
+                    if (sessionId) {
+                        updateSetting("hamqth", newSessionId(settings.hamqth, sessionId));
+                    }
+                });
+            }
+        }
+    }, []);
+
+    useEffect(() => {
+        if (callsign) {
+            debounce(() => {
+                const parsedCallsign = parseCallsign(callsign);
+                const bcs = baseCallsign(callsign);
+                if (bcs) {
+                    if (callsign && (parsedCallsign?.delineation || "").length && isSessionValid(settings.hamqth)) {
+                        fetchCallsignData(settings.hamqth?.sessionId, bcs).then((data) => setHamqthCsData(data));
+                    } else {
+                        setHamqthCsData(undefined);
+                    }
+                }
+            }, 500);
+        }
+    }, [callsign]);
+
+    return hamqthCsData;
 };

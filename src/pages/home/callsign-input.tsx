@@ -1,20 +1,13 @@
-import debounce from "debounce";
 import { DateTime } from "luxon";
-import React, { useEffect, useMemo } from "react";
+import React, { useMemo } from "react";
 import { View } from "react-native";
 import { createStyleSheet, useStyles } from "react-native-unistyles";
 import cqzones from "../../data/cqzones.json";
 import ituzones from "../../data/ituzones.json";
 import { useStore } from "../../store";
-import { findCountry, getCallsignData, parseCallsign } from "../../utils/callsign";
+import { findCountry, getCallsignData } from "../../utils/callsign";
 import { Grid } from "../../utils/grid";
-import {
-    HamQTHCallsignData,
-    fetchCallsignData,
-    fetchSessionId,
-    isSessionValid,
-    newSessionId,
-} from "../../utils/hamqth";
+import { HamQTHCallsignData, useHamqth } from "../../utils/hamqth";
 import { maidenDistance, maidenhead2Latlong } from "../../utils/locator";
 import { findZone } from "../../utils/polydec";
 import { Stack } from "../../utils/stack";
@@ -46,36 +39,11 @@ export type CallsignInputComponent = React.FC<CallsignInputProps>;
 
 export const CallsignInput: CallsignInputComponent = ({ value, handleAdd, onChange }): JSX.Element => {
     const { styles } = useStyles(stylesheet);
-    const [hamqthCSData, setHamqthCSData] = React.useState<HamQTHCallsignData | undefined>(undefined);
     const callsignData = useMemo(() => (value ? getCallsignData(value) : undefined), [value]);
     const currentLocation = useStore((state) => state.currentLocation);
     const settings = useSettings();
-    const updateSetting = useStore((state) => state.updateSetting);
+    const hamqthCSData = useHamqth(value);
 
-    useEffect(() => {
-        if (settings.hamqth?.user && settings.hamqth.password) {
-            if (!isSessionValid(settings.hamqth)) {
-                console.info("Fetching new hamqth session");
-                fetchSessionId(settings.hamqth.user, settings.hamqth.password).then((sessionId) => {
-                    if (sessionId) {
-                        updateSetting("hamqth", newSessionId(settings.hamqth, sessionId));
-                    }
-                });
-            }
-        }
-    }, []);
-
-    useEffect(
-        debounce(() => {
-            const parsedCallsign = parseCallsign(value);
-            if (value && (parsedCallsign?.delineation || "").length && isSessionValid(settings.hamqth)) {
-                fetchCallsignData(settings.hamqth?.sessionId, value).then((data) => setHamqthCSData(data));
-            } else {
-                setHamqthCSData(undefined);
-            }
-        }, 500),
-        [value],
-    );
     const country = callsignData ? findCountry(callsignData) : null;
 
     return (
