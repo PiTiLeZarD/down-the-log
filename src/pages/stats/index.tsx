@@ -31,6 +31,8 @@ const applyFavourites = (values: string[], stat: FilterName, settings: Settings,
         mode: settings.favouriteModes,
     }[stat] as string[];
 
+    if (favourites.length === 0) return values;
+
     return values.filter((v) => favourites.includes(v));
 };
 
