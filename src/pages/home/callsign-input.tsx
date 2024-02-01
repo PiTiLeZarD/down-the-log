@@ -30,8 +30,8 @@ export type CallsignInputComponent = React.FC<CallsignInputProps>;
 
 export const CallsignInput: CallsignInputComponent = ({ handleAdd }): JSX.Element => {
     const { styles } = useStyles(stylesheet);
-    const { getValues, setValue } = useFormContext<QSO>();
-    const callsign = getValues("callsign");
+    const { watch, setValue } = useFormContext<QSO>();
+    const callsign = watch("callsign");
     const hamqthCSData = useHamqth(callsign);
 
     return (
