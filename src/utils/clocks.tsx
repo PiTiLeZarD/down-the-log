@@ -23,7 +23,7 @@ export const Clocks: ClocksComponent = (): JSX.Element => {
     React.useEffect(() => {
         const timer = setInterval(() => {
             setTime(DateTime.local());
-        }, 1000 * 60);
+        }, 1000);
         return () => {
             clearInterval(timer);
         };
