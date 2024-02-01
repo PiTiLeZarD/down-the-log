@@ -1,11 +1,12 @@
 import { StackScreenProps } from "@react-navigation/stack";
-import React from "react";
+import React, { useEffect } from "react";
+import { FormProvider, useForm } from "react-hook-form";
 import { View } from "react-native";
 import { createStyleSheet, useStyles } from "react-native-unistyles";
 import { NavigationParamList } from "../../Navigation";
 import { useStore } from "../../store";
 import { HamQTHCallsignData } from "../../utils/hamqth";
-import { newQso, useQsos } from "../../utils/qso";
+import { QSO, newQso, useQsos } from "../../utils/qso";
 import { QsoList } from "../../utils/qso/qso-list";
 import { Alert } from "../../utils/theme/components/alert";
 import { Typography } from "../../utils/theme/components/typography";
@@ -35,24 +36,31 @@ export type HomeProps = {} & StackScreenProps<NavigationParamList, "Home">;
 export type HomeComponent = React.FC<HomeProps>;
 
 export const Home: HomeComponent = ({ navigation }): JSX.Element => {
-    const [callsign, setCallsign] = React.useState<string>("");
+    const [qso, setQso] = React.useState<QSO | undefined>(undefined);
     const qsos = useQsos();
     const { styles } = useStyles(stylesheet);
     const currentLocation = useStore((state) => state.currentLocation);
     const settings = useSettings();
     const log = useStore((state) => state.log);
     const qsosFilters = useStore((state) => state.filters);
+    const methods = useForm<QSO>({ defaultValues: qso });
+
+    const callsign = methods.watch("callsign");
+    useEffect(() => {
+        setQso(newQso(callsign, qsos, currentLocation, undefined, settings.myCallsign));
+    }, [callsign]);
 
     const handleAdd = (hamqthCSData?: HamQTHCallsignData) => {
-        const qso = newQso(callsign, qsos, currentLocation, undefined, settings.myCallsign);
-        if (hamqthCSData) {
-            qso.name = hamqthCSData.name;
-            qso.qth = hamqthCSData.qth;
-            qso.locator = hamqthCSData.grid;
+        if (qso) {
+            if (hamqthCSData) {
+                qso.name = hamqthCSData.name;
+                qso.qth = hamqthCSData.qth;
+                qso.locator = hamqthCSData.grid;
+            }
+            log(qso);
+            methods.setValue("callsign", "");
+            navigation.navigate("QsoForm", { qsoId: qso.id });
         }
-        log(qso);
-        setCallsign("");
-        navigation.navigate("QsoForm", { qsoId: qso.id });
     };
 
     return (
@@ -73,7 +81,9 @@ export const Home: HomeComponent = ({ navigation }): JSX.Element => {
                 />
             </View>
             <View style={styles.inputs}>
-                <CallsignInput handleAdd={handleAdd} onChange={setCallsign} value={callsign} />
+                <FormProvider {...methods}>
+                    <CallsignInput handleAdd={handleAdd} />
+                </FormProvider>
             </View>
         </View>
     );

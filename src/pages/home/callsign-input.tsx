@@ -1,10 +1,12 @@
 import React from "react";
+import { useFormContext } from "react-hook-form";
 import { View } from "react-native";
 import { createStyleSheet, useStyles } from "react-native-unistyles";
+import { FormField } from "../../utils/form-field";
 import { HamQTHCallsignData, useHamqth } from "../../utils/hamqth";
+import { QSO } from "../../utils/qso";
 import { Stack } from "../../utils/stack";
 import { Button } from "../../utils/theme/components/button";
-import { Input } from "../../utils/theme/components/input";
 import { CallsignInputExtra } from "./callsign-input-extra";
 
 const stylesheet = createStyleSheet((theme) => ({
@@ -22,28 +24,28 @@ const stylesheet = createStyleSheet((theme) => ({
 
 export type CallsignInputProps = {
     handleAdd: (hamqthCSData?: HamQTHCallsignData) => void;
-    value: string;
-    onChange: (callsign: string) => void;
 };
 
 export type CallsignInputComponent = React.FC<CallsignInputProps>;
 
-export const CallsignInput: CallsignInputComponent = ({ value, handleAdd, onChange }): JSX.Element => {
+export const CallsignInput: CallsignInputComponent = ({ handleAdd }): JSX.Element => {
     const { styles } = useStyles(stylesheet);
-    const hamqthCSData = useHamqth(value);
+    const { getValues, setValue } = useFormContext<QSO>();
+    const callsign = getValues("callsign");
+    const hamqthCSData = useHamqth(callsign);
 
     return (
         <Stack style={styles.inputBox}>
-            <CallsignInputExtra value={value} hamqthCSData={hamqthCSData} />
+            <CallsignInputExtra value={callsign} hamqthCSData={hamqthCSData} />
             <Stack direction="row" gap="xxl">
                 <View style={{ flexGrow: 1 }}>
-                    <Input
+                    <FormField
+                        name="callsign"
                         style={styles.input}
-                        onChangeText={(text: string) => onChange(text.toUpperCase())}
-                        onKeyPress={(e) => {
-                            if ((e as any).keyCode === 13) handleAdd(hamqthCSData);
+                        onChangeText={(text: string) => setValue("callsign", text.toUpperCase())}
+                        onKeyPress={(e: any) => {
+                            if (e.keyCode === 13) handleAdd(hamqthCSData);
                         }}
-                        value={value}
                         placeholder="Callsign"
                     />
                 </View>
