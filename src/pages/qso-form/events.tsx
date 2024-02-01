@@ -1,5 +1,8 @@
 import React from "react";
 import { useFormContext } from "react-hook-form";
+import iotaData from "../../data/iota.json";
+import potaData from "../../data/pota.json";
+import wwffData from "../../data/wwff.json";
 import { Grid } from "../../utils/grid";
 import { Modal } from "../../utils/modal";
 import { QSO, allEvents } from "../../utils/qso";
@@ -8,9 +11,7 @@ import { Badge } from "../../utils/theme/components/badge";
 import { Button } from "../../utils/theme/components/button";
 import { Input } from "../../utils/theme/components/input";
 import { Typography } from "../../utils/theme/components/typography";
-import { IotaInfo } from "./iota-info";
-import { PotaInfo } from "./pota-info";
-import { WwffInfo } from "./wwff-info";
+import { ReferenceInfo } from "./reference-info";
 
 export type EventsProps = {};
 
@@ -50,11 +51,11 @@ export const Events: EventsComponent = (): JSX.Element => {
                         </Grid>
                         <Grid item xs={5}>
                             <Input value={qso.pota} onChangeText={(v) => setValue("pota", v.toUpperCase())} />
-                            <PotaInfo parkRef={qso.pota} />
+                            <ReferenceInfo reference={qso.pota} data={potaData} />
                         </Grid>
                         <Grid item xs={5}>
                             <Input value={qso.myPota} onChangeText={(v) => setValue("myPota", v.toUpperCase())} />
-                            <PotaInfo parkRef={qso.myPota} />
+                            <ReferenceInfo reference={qso.myPota} data={potaData} />
                         </Grid>
                     </Grid>
                     <Grid container>
@@ -63,11 +64,11 @@ export const Events: EventsComponent = (): JSX.Element => {
                         </Grid>
                         <Grid item xs={5}>
                             <Input value={qso.wwff} onChangeText={(v) => setValue("wwff", v.toUpperCase())} />
-                            <WwffInfo parkRef={qso.wwff} />
+                            <ReferenceInfo reference={qso.wwff} data={wwffData} />
                         </Grid>
                         <Grid item xs={5}>
                             <Input value={qso.myWwff} onChangeText={(v) => setValue("myWwff", v.toUpperCase())} />
-                            <WwffInfo parkRef={qso.myWwff} />
+                            <ReferenceInfo reference={qso.myWwff} data={wwffData} />
                         </Grid>
                     </Grid>
                     <Grid container>
@@ -87,11 +88,11 @@ export const Events: EventsComponent = (): JSX.Element => {
                         </Grid>
                         <Grid item xs={5}>
                             <Input value={qso.iota} onChangeText={(v) => setValue("iota", v.toUpperCase())} />
-                            <IotaInfo parkRef={qso.iota} />
+                            <ReferenceInfo reference={qso.iota} data={iotaData} />
                         </Grid>
                         <Grid item xs={5}>
                             <Input value={qso.myIota} onChangeText={(v) => setValue("myIota", v.toUpperCase())} />
-                            <IotaInfo parkRef={qso.myIota} />
+                            <ReferenceInfo reference={qso.myIota} data={iotaData} />
                         </Grid>
                     </Grid>
                     <Grid container>
