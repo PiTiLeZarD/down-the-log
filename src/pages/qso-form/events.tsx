@@ -1,8 +1,5 @@
 import React from "react";
 import { useFormContext } from "react-hook-form";
-import iotaData from "../../data/iota.json";
-import potaData from "../../data/pota.json";
-import wwffData from "../../data/wwff.json";
 import { Grid } from "../../utils/grid";
 import { Modal } from "../../utils/modal";
 import { QSO, allEvents } from "../../utils/qso";
@@ -11,7 +8,7 @@ import { Badge } from "../../utils/theme/components/badge";
 import { Button } from "../../utils/theme/components/button";
 import { Input } from "../../utils/theme/components/input";
 import { Typography } from "../../utils/theme/components/typography";
-import { ReferenceInfo } from "./reference-info";
+import { ReferenceInput } from "./reference-input";
 
 export type EventsProps = {};
 
@@ -50,12 +47,10 @@ export const Events: EventsComponent = (): JSX.Element => {
                             <Typography variant="em">POTA</Typography>
                         </Grid>
                         <Grid item xs={5}>
-                            <Input value={qso.pota} onChangeText={(v) => setValue("pota", v.toUpperCase())} />
-                            <ReferenceInfo reference={qso.pota} data={potaData} />
+                            <ReferenceInput event="pota" />
                         </Grid>
                         <Grid item xs={5}>
-                            <Input value={qso.myPota} onChangeText={(v) => setValue("myPota", v.toUpperCase())} />
-                            <ReferenceInfo reference={qso.myPota} data={potaData} />
+                            <ReferenceInput event="pota" mine />
                         </Grid>
                     </Grid>
                     <Grid container>
@@ -63,12 +58,10 @@ export const Events: EventsComponent = (): JSX.Element => {
                             <Typography variant="em">WWFF</Typography>
                         </Grid>
                         <Grid item xs={5}>
-                            <Input value={qso.wwff} onChangeText={(v) => setValue("wwff", v.toUpperCase())} />
-                            <ReferenceInfo reference={qso.wwff} data={wwffData} />
+                            <ReferenceInput event="wwff" />
                         </Grid>
                         <Grid item xs={5}>
-                            <Input value={qso.myWwff} onChangeText={(v) => setValue("myWwff", v.toUpperCase())} />
-                            <ReferenceInfo reference={qso.myWwff} data={wwffData} />
+                            <ReferenceInput event="wwff" mine />
                         </Grid>
                     </Grid>
                     <Grid container>
@@ -76,10 +69,10 @@ export const Events: EventsComponent = (): JSX.Element => {
                             <Typography variant="em">SOTA</Typography>
                         </Grid>
                         <Grid item xs={5}>
-                            <Input value={qso.sota} onChangeText={(v) => setValue("sota", v.toUpperCase())} />
+                            <ReferenceInput event="sota" />
                         </Grid>
                         <Grid item xs={5}>
-                            <Input value={qso.mySota} onChangeText={(v) => setValue("mySota", v.toUpperCase())} />
+                            <ReferenceInput event="sota" mine />
                         </Grid>
                     </Grid>
                     <Grid container>
@@ -87,12 +80,10 @@ export const Events: EventsComponent = (): JSX.Element => {
                             <Typography variant="em">IOTA</Typography>
                         </Grid>
                         <Grid item xs={5}>
-                            <Input value={qso.iota} onChangeText={(v) => setValue("iota", v.toUpperCase())} />
-                            <ReferenceInfo reference={qso.iota} data={iotaData} />
+                            <ReferenceInput event="iota" />
                         </Grid>
                         <Grid item xs={5}>
-                            <Input value={qso.myIota} onChangeText={(v) => setValue("myIota", v.toUpperCase())} />
-                            <ReferenceInfo reference={qso.myIota} data={iotaData} />
+                            <ReferenceInput event="iota" mine />
                         </Grid>
                     </Grid>
                     <Grid container>
