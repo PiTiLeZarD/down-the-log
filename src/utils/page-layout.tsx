@@ -19,8 +19,8 @@ export const PageLayout: PageLayoutComponent = ({ title, titleMargin = 18, child
     const { theme } = useStyles();
     return (
         <Grid container>
-            <Grid item xs={0} md={2} lg={3} />
-            <Grid item xs={12} md={8} lg={6}>
+            <Grid item xs={0} md={1} lg={2} xxl={3} />
+            <Grid item xs={12} md={10} lg={8} xxl={6}>
                 <ScrollView style={{ paddingLeft: theme.margins.lg, paddingRight: theme.margins.lg }}>
                     <Stack gap="xxl">
                         <Stack direction="row">
@@ -42,7 +42,7 @@ export const PageLayout: PageLayoutComponent = ({ title, titleMargin = 18, child
                     </Stack>
                 </ScrollView>
             </Grid>
-            <Grid item xs={0} md={2} lg={3} />
+            <Grid item xs={0} md={1} lg={2} xxl={3} />
         </Grid>
     );
 };
