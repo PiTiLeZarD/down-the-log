@@ -125,21 +125,20 @@ export const useHamqth = (callsign?: string) => {
         }
     }, []);
 
-    useEffect(() => {
-        if (callsign) {
-            debounce(() => {
+    useEffect(
+        debounce(() => {
+            if (callsign) {
                 const parsedCallsign = parseCallsign(callsign);
                 const bcs = baseCallsign(callsign);
-                if (bcs) {
-                    if (callsign && (parsedCallsign?.delineation || "").length && isSessionValid(settings.hamqth)) {
-                        fetchCallsignData(settings.hamqth?.sessionId, bcs).then((data) => setHamqthCsData(data));
-                    } else {
-                        setHamqthCsData(undefined);
-                    }
+                if (bcs && (parsedCallsign?.delineation || "").length && isSessionValid(settings.hamqth)) {
+                    fetchCallsignData(settings.hamqth?.sessionId, bcs).then((data) => setHamqthCsData(data));
+                } else {
+                    setHamqthCsData(undefined);
                 }
-            }, 500);
-        }
-    }, [callsign]);
+            }
+        }, 500),
+        [callsign],
+    );
 
     return hamqthCsData;
 };
