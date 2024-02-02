@@ -89,6 +89,30 @@ export const Settings: SettingsComponent = (): JSX.Element => {
                     label="Pick your input fields"
                     availableValues={["sig", "mode", "frequency", "name", "qth", "rst_received", "rst_sent"]}
                 />
+                <Typography underline>Fields to carry over a new QSO:</Typography>
+                <PickFavourite
+                    settingsKey="carryOver"
+                    label="Pick your fields"
+                    availableValues={[
+                        "frequency",
+                        "band",
+                        "mode",
+                        "power",
+                        "myQth",
+                        "myLocator",
+                        "myCallsign",
+                        "myPota",
+                        "myWwff",
+                        "mySota",
+                        "myIota",
+                        "mySig",
+                        "mySigInfo",
+                        "myRig",
+                        "myAntenna",
+                        "myState",
+                        "myCountry",
+                    ]}
+                />
                 <Typography variant="h3">API's</Typography>
                 <Typography variant="subtitle">
                     All data is stored locally in your browser and is never sent anywhere (except for hamqth or google

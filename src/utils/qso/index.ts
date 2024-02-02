@@ -79,6 +79,7 @@ export const newQso = (
     myLocator?: string,
     qsoLocator?: string,
     myCallsign?: string,
+    carryOver: (keyof QSO)[] = [],
 ): QSO => {
     const parsed = parseCallsign(callsign);
     const callsignData = getCallsignData(callsign);
@@ -99,23 +100,7 @@ export const newQso = (
             honeypot: {},
             ...(qsos.length
                 ? Object.fromEntries(
-                      [
-                          "frequency",
-                          "band",
-                          "mode",
-                          "power",
-                          "myCountry",
-                          "myState",
-                          "myQth",
-                          "myPota",
-                          "myPota",
-                          "myWwff",
-                          "mySota",
-                          "mySig",
-                          "mySigInfo",
-                          "myRig",
-                          "myAntenna",
-                      ].map((f) => [
+                      carryOver.map((f) => [
                           f,
                           qsos[0][f as keyof QSO] !== undefined ? String(qsos[0][f as keyof QSO]) : undefined,
                       ]),

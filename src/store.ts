@@ -21,6 +21,7 @@ export type Settings = {
     favouriteModes: Mode[];
     favouriteBands: Band[];
     inputBarConfig: (keyof QSO)[];
+    carryOver: (keyof QSO)[];
 };
 
 const defaultSettings: Settings = {
@@ -31,6 +32,24 @@ const defaultSettings: Settings = {
     favouriteBands: [],
     favouriteModes: [],
     inputBarConfig: [],
+    carryOver: [
+        "frequency",
+        "band",
+        "mode",
+        "power",
+        "myCountry",
+        "myState",
+        "myQth",
+        "myPota",
+        "myPota",
+        "myWwff",
+        "mySota",
+        "myIota",
+        "mySig",
+        "mySigInfo",
+        "myRig",
+        "myAntenna",
+    ],
 };
 
 export const fixSettings = (settings: Partial<Settings>): Settings =>

@@ -47,7 +47,7 @@ export const Home: HomeComponent = ({ navigation }): JSX.Element => {
 
     const callsign = methods.watch("callsign");
     useEffect(() => {
-        setQso(newQso(callsign, qsos, currentLocation, undefined, settings.myCallsign));
+        setQso(newQso(callsign, qsos, currentLocation, undefined, settings.myCallsign, settings.carryOver));
     }, [callsign]);
     useEffect(() => methods.reset(qso), [qso?.id]);
 
