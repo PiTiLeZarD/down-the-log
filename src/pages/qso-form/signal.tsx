@@ -17,16 +17,18 @@ export type SignalComponent = React.FC<SignalProps>;
 
 export const Signal: SignalComponent = ({ field }): JSX.Element => {
     const [open, setOpen] = React.useState<boolean>(false);
-    const { watch, setValue, getValues } = useFormContext<QSO>();
+    const { watch, setValue } = useFormContext<QSO>();
     const signal = watch(field);
-    const { mode } = getValues();
+    const mode = watch("mode");
+
+    const defaultValue = isDigital(mode) ? "-1" : "59";
 
     useEffect(() => {
-        if (signal == undefined) setValue(field, isDigital(mode) ? "-1" : "59");
+        if (signal == undefined) setValue(field, defaultValue);
     }, []);
 
     useEffect(() => {
-        setValue(field, isDigital(mode) ? "-1" : "59");
+        setValue(field, defaultValue);
     }, [mode]);
 
     const [readability, strength] = signal && !isDigital(mode) ? String(signal).split("") : [5, 9];
@@ -34,7 +36,7 @@ export const Signal: SignalComponent = ({ field }): JSX.Element => {
         <>
             <Button
                 startIcon={field.includes("received") ? "arrow-down" : "arrow-up"}
-                text={`${field.includes("received") ? "Rx" : "Tx"}: ${signal || (isDigital(mode) ? "-1" : "59")}${
+                text={`${field.includes("received") ? "Rx" : "Tx"}: ${signal || defaultValue}${
                     isDigital(mode) ? "dB" : ""
                 }`}
                 variant="outlined"
