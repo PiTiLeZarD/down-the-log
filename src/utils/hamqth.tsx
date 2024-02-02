@@ -1,7 +1,6 @@
 import axios from "axios";
-import debounce from "debounce";
 import { DateTime } from "luxon";
-import React, { useEffect } from "react";
+import React, { useEffect, useRef } from "react";
 import Swal from "sweetalert2";
 import { useStore } from "../store";
 import { baseCallsign, parseCallsign } from "./callsign";
@@ -108,9 +107,21 @@ export const fetchCallsignData = async (sessionId: string | undefined, callsign:
 };
 
 export const useHamqth = (callsign?: string) => {
+    const timeout = useRef<any>();
+    const [lastCallsign, setLastCallsign] = React.useState<string>(callsign || "");
     const [hamqthCsData, setHamqthCsData] = React.useState<HamQTHCallsignData | undefined>(undefined);
     const settings = useSettings();
     const updateSetting = useStore((state) => state.updateSetting);
+
+    const launch = () => {
+        if (lastCallsign) {
+            if (isSessionValid(settings.hamqth)) {
+                fetchCallsignData(settings.hamqth?.sessionId, lastCallsign).then((data) => setHamqthCsData(data));
+            } else {
+                setHamqthCsData(undefined);
+            }
+        }
+    };
 
     useEffect(() => {
         if (settings.hamqth?.user && settings.hamqth.password) {
@@ -125,20 +136,20 @@ export const useHamqth = (callsign?: string) => {
         }
     }, []);
 
-    useEffect(
-        debounce(() => {
+    useEffect(() => {
+        if (callsign != lastCallsign) {
+            if (timeout.current) clearTimeout(timeout.current);
             if (callsign) {
                 const parsedCallsign = parseCallsign(callsign);
                 const bcs = baseCallsign(callsign);
-                if (bcs && (parsedCallsign?.delineation || "").length && isSessionValid(settings.hamqth)) {
-                    fetchCallsignData(settings.hamqth?.sessionId, bcs).then((data) => setHamqthCsData(data));
-                } else {
-                    setHamqthCsData(undefined);
+
+                if (bcs && (parsedCallsign?.delineation || "").length) {
+                    setLastCallsign(bcs);
+                    timeout.current = setTimeout(launch, 500);
                 }
             }
-        }, 500),
-        [callsign],
-    );
+        }
+    }, [callsign]);
 
     return hamqthCsData;
 };
