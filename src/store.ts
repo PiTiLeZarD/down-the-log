@@ -14,6 +14,7 @@ export type Settings = {
     myCallsign: string;
     showBeacons: boolean;
     showFilters: boolean;
+    contestMode: boolean;
     imperial: boolean;
     hamqth?: HamQTHSettingsType;
     google?: GoogleCredentials;
@@ -29,6 +30,7 @@ const defaultSettings: Settings = {
     showBeacons: false,
     imperial: false,
     showFilters: false,
+    contestMode: false,
     favouriteBands: [],
     favouriteModes: [],
     inputBarConfig: [],

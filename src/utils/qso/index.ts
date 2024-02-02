@@ -18,6 +18,7 @@ export const useQsos = (): QSO[] => {
 
 export type QSO = {
     id: string;
+    position?: number;
     date: DateTime;
     callsign: string;
     distance?: number;

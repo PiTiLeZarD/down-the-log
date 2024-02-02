@@ -36,10 +36,9 @@ export type CallsignInputComponent = React.FC<CallsignInputProps>;
 export const CallsignInput: CallsignInputComponent = ({ handleAdd }): JSX.Element => {
     const { styles } = useStyles(stylesheet);
     const { watch, setValue } = useFormContext<QSO>();
-    const { inputBarConfig } = useSettings();
+    const { inputBarConfig, contestMode } = useSettings();
     const callsign = watch("callsign");
     const hamqthCSData = useHamqth(callsign);
-    console.log({ inputBarConfig });
 
     return (
         <Stack style={styles.inputBox}>
@@ -67,12 +66,14 @@ export const CallsignInput: CallsignInputComponent = ({ handleAdd }): JSX.Elemen
                 {inputBarConfig.includes("qth") && <FormField name="qth" style={styles.input} placeholder="QTH" />}
                 {inputBarConfig.includes("rst_received") && (
                     <View>
-                        <Signal field="rst_received" />
+                        {contestMode && <FormField name="rst_received" style={styles.input} placeholder="RST rcvd" />}
+                        {!contestMode && <Signal field="rst_received" />}
                     </View>
                 )}
                 {inputBarConfig.includes("rst_sent") && (
                     <View>
-                        <Signal field="rst_sent" />
+                        {contestMode && <FormField name="rst_sent" style={styles.input} placeholder="RST sent" />}
+                        {!contestMode && <Signal field="rst_sent" />}
                     </View>
                 )}
                 <View>

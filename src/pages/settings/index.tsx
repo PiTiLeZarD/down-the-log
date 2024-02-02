@@ -75,6 +75,11 @@ export const Settings: SettingsComponent = (): JSX.Element => {
                         value={settings.imperial != undefined ? settings.imperial : false}
                         onValueChange={(v) => updateSetting("imperial", v)}
                     />
+                    <Typography underline>Contest Mode:</Typography>
+                    <Switch
+                        value={settings.contestMode != undefined ? settings.contestMode : false}
+                        onValueChange={(v) => updateSetting("contestMode", v)}
+                    />
                 </Stack>
                 <Stack>
                     <Typography underline>Favourite Bands:</Typography>

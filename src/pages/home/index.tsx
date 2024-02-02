@@ -60,7 +60,7 @@ export const Home: HomeComponent = ({ navigation }): JSX.Element => {
             }
             log(qso);
             methods.setValue("callsign", "");
-            navigation.navigate("QsoForm", { qsoId: qso.id });
+            if (!settings.contestMode) navigation.navigate("QsoForm", { qsoId: qso.id });
         }
     };
 
