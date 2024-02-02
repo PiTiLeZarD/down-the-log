@@ -27,7 +27,7 @@ export const FormField: FormFieldComponent = ({
     options,
     ...otherProps
 }): JSX.Element => {
-    const { control } = useFormContext();
+    const { control } = useFormContext<QSO>();
     const { field } = useController({ name, control });
 
     const value = String(field.value || "");

@@ -18,11 +18,13 @@ const freqValue = (freq?: number, band?: Band, mode?: Mode) => {
     return 14144;
 };
 
-export type BandFreqInputProps = {};
+export type BandFreqInputProps = {
+    noLabel?: boolean;
+};
 
 export type BandFreqInputComponent = React.FC<BandFreqInputProps>;
 
-export const BandFreqInput: BandFreqInputComponent = (): JSX.Element => {
+export const BandFreqInput: BandFreqInputComponent = ({ noLabel = false }): JSX.Element => {
     const { theme } = useStyles();
     const [showAll, setShowAll] = React.useState<boolean>(false);
     const [open, setOpen] = React.useState<boolean>(false);
@@ -52,7 +54,7 @@ export const BandFreqInput: BandFreqInputComponent = (): JSX.Element => {
     }, [freqUserInput]);
     return (
         <Stack>
-            <Typography>Frequency:</Typography>
+            {!noLabel && <Typography>Frequency:</Typography>}
             <Button
                 text={`${frequency ? (+frequency).toFixed(3) : "N/A"} Mhz (${band || "N/A"})`}
                 onPress={() => setOpen(true)}

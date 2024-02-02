@@ -20,6 +20,7 @@ export type Settings = {
     geocodeMapsCoKey?: string;
     favouriteModes: Mode[];
     favouriteBands: Band[];
+    inputBarConfig: (keyof QSO)[];
 };
 
 const defaultSettings: Settings = {
@@ -29,6 +30,7 @@ const defaultSettings: Settings = {
     showFilters: false,
     favouriteBands: [],
     favouriteModes: [],
+    inputBarConfig: [],
 };
 
 export const fixSettings = (settings: Partial<Settings>): Settings =>

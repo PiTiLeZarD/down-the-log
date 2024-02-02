@@ -3,6 +3,8 @@ import React from "react";
 import { Switch } from "react-native";
 import Swal from "sweetalert2";
 import { NavigationParamList } from "../../Navigation";
+import { bands } from "../../data/bands";
+import { modes } from "../../data/modes";
 import { useStore } from "../../store";
 import { HamQTHSettingsType } from "../../utils/hamqth";
 import { normalise } from "../../utils/locator";
@@ -70,9 +72,23 @@ export const Settings: SettingsComponent = (): JSX.Element => {
                     onValueChange={(v) => updateSetting("imperial", v)}
                 />
                 <Typography underline>Favourite Bands:</Typography>
-                <PickFavourite type="band" />
+                <PickFavourite
+                    settingsKey="favouriteBands"
+                    label="Pick your favourite bands"
+                    availableValues={Object.keys(bands)}
+                />
                 <Typography underline>Favourite Mode:</Typography>
-                <PickFavourite type="mode" />
+                <PickFavourite
+                    settingsKey="favouriteModes"
+                    label="Pick your favourite modes"
+                    availableValues={Array.from(modes)}
+                />
+                <Typography underline>Customise Inputbar Fields:</Typography>
+                <PickFavourite
+                    settingsKey="inputBarConfig"
+                    label="Pick your input fields"
+                    availableValues={["sig", "mode", "frequency", "name", "qth", "rst_received", "rst_sent"]}
+                />
                 <Typography variant="h3">API's</Typography>
                 <Typography variant="subtitle">
                     All data is stored locally in your browser and is never sent anywhere (except for hamqth or google

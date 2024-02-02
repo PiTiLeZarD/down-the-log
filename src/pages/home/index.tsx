@@ -49,6 +49,7 @@ export const Home: HomeComponent = ({ navigation }): JSX.Element => {
     useEffect(() => {
         setQso(newQso(callsign, qsos, currentLocation, undefined, settings.myCallsign));
     }, [callsign]);
+    useEffect(() => methods.reset(qso), [qso?.id]);
 
     const handleAdd = (hamqthCSData?: HamQTHCallsignData) => {
         if (qso) {
