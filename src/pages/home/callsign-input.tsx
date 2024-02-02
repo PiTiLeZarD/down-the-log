@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { useFormContext } from "react-hook-form";
 import { View } from "react-native";
 import { createStyleSheet, useStyles } from "react-native-unistyles";
@@ -7,6 +7,7 @@ import { HamQTHCallsignData, useHamqth } from "../../utils/hamqth";
 import { QSO } from "../../utils/qso";
 import { Stack } from "../../utils/stack";
 import { Button } from "../../utils/theme/components/button";
+import { Input } from "../../utils/theme/components/input";
 import { useSettings } from "../../utils/use-settings";
 import { BandFreqInput } from "../qso-form/band-freq-input";
 import { Events } from "../qso-form/events";
@@ -34,11 +35,16 @@ export type CallsignInputProps = {
 export type CallsignInputComponent = React.FC<CallsignInputProps>;
 
 export const CallsignInput: CallsignInputComponent = ({ handleAdd }): JSX.Element => {
+    const [inputValue, setInputValue] = React.useState<string>("");
     const { styles } = useStyles(stylesheet);
     const { watch, setValue } = useFormContext<QSO>();
     const { inputBarConfig, contestMode } = useSettings();
     const callsign = watch("callsign");
     const hamqthCSData = useHamqth(callsign);
+
+    useEffect(() => {
+        setValue("callsign", inputValue);
+    }, [inputValue]);
 
     return (
         <Stack style={styles.inputBox}>
@@ -52,10 +58,10 @@ export const CallsignInput: CallsignInputComponent = ({ handleAdd }): JSX.Elemen
                 {inputBarConfig.includes("mode") && <ModeInput noLabel />}
                 {inputBarConfig.includes("frequency") && <BandFreqInput noLabel />}
                 <View style={{ flexGrow: 1 }}>
-                    <FormField
-                        name="callsign"
+                    <Input
+                        value={inputValue}
                         style={styles.input}
-                        onChangeText={(text: string) => setValue("callsign", text.toUpperCase())}
+                        onChangeText={(text: string) => setInputValue(text.toUpperCase())}
                         onKeyPress={(e: any) => {
                             if (e.keyCode === 13) handleAdd(hamqthCSData);
                         }}
