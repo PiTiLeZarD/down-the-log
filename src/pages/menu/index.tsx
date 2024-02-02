@@ -4,6 +4,7 @@ import { NavigationParamList } from "../../Navigation";
 import { PageLayout } from "../../utils/page-layout";
 import { Stack } from "../../utils/stack";
 import { Button } from "../../utils/theme/components/button";
+import { SolarData } from "./solar-data";
 
 export type MenuProps = {} & StackScreenProps<NavigationParamList, "Menu">;
 
@@ -19,6 +20,7 @@ export const Menu: MenuComponent = ({ navigation }): JSX.Element => {
                 <Button startIcon="settings" text="Settings" onPress={() => navigation.navigate("Settings")} />
                 <Button startIcon="archive" text="Import/Export" onPress={() => navigation.navigate("Adif")} />
                 <Button startIcon="information-circle" text="About" onPress={() => navigation.navigate("About")} />
+                <SolarData />
             </Stack>
         </PageLayout>
     );

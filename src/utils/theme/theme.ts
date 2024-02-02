@@ -9,6 +9,23 @@ const reverseColour = (colour: Record<string, string>) =>
         new Array(9).fill(null).map((_, i) => [String((i + 1) * 100), colour[String(1000 - (i + 1) * 100)]]),
     );
 
+const cToHex = (c: number) => c.toString(16).padStart(2, "0");
+export const rgbToHex = (r: number, g: number, b: number) => "#" + cToHex(r) + cToHex(g) + cToHex(b);
+export const hexToRgb = (hex: string) => {
+    const result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
+    return result
+        ? {
+              r: parseInt(result[1], 16),
+              g: parseInt(result[2], 16),
+              b: parseInt(result[3], 16),
+          }
+        : null;
+};
+export const hexToCssRgb = (hex: string) => {
+    const rgb = hexToRgb(hex);
+    return `rgb(${rgb?.r}, ${rgb?.g}, ${rgb?.b})`;
+};
+
 export const theme = {
     colours: {
         // primary: reverseColour(colours.blue),
