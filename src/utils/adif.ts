@@ -51,6 +51,8 @@ const allFields = [
     "my_sig_info",
     "my_rig",
     "my_antenna",
+    "my_country",
+    "my_state",
 ] as const;
 
 type RecordField = (typeof allFields)[number];
@@ -176,6 +178,8 @@ export const qso2record = (qso: QSO): QSORecord => {
         my_sig_info: qso.mySigInfo,
         my_rig: qso.myRig,
         my_antenna: qso.myAntenna,
+        my_country: qso.myCountry,
+        my_state: qso.myState,
         honeypot: qso.honeypot || {},
     };
 };
@@ -229,6 +233,8 @@ export const record2qso = (record: QSORecord): QSO => ({
     mySigInfo: record.my_sig_info,
     myRig: record.my_rig,
     myAntenna: record.my_antenna,
+    myCountry: record.my_country,
+    myState: record.my_state,
     honeypot: record.honeypot,
 });
 

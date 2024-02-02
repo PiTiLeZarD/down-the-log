@@ -18,6 +18,8 @@ export const MyStation: MyStationComponent = (): JSX.Element => {
                     <FormField name="myCallsign" label="My Callsign:" />
                     <FormField name="myQth" label="My QTH:" />
                     <FormField name="myLocator" label="My Gridsquare:" />
+                    <FormField role="country" name="myCountry" label="My Country:" />
+                    <FormField name="myState" label="My State:" />
                     <FormField name="myRig" label="My Rig:" />
                     <FormField name="myAntenna" label="My Antenna:" />
                     <Button colour="success" text="OK" onPress={() => setOpen(false)} />
