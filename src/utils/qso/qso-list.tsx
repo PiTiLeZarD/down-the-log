@@ -1,5 +1,4 @@
-import debounce from "debounce";
-import React, { useEffect } from "react";
+import React, { useEffect, useRef } from "react";
 import { Pressable, View, ViewStyle } from "react-native";
 import BigList from "react-native-big-list";
 import { createStyleSheet, useStyles } from "react-native-unistyles";
@@ -93,15 +92,16 @@ const applyFilters = (qsos: QSO[], filters: QsoListProps["filters"]) =>
     filters ? qsos.filter((qso) => filters.reduce((facc, f) => facc && f(qso), true)) : qsos;
 
 export const QsoList: QsoListComponent = ({ style, filters, qsos, onQsoPress }): JSX.Element => {
+    const timeout = useRef<any>();
     const [sections, setSections] = React.useState<QSO[][]>(qsos2sections(applyFilters(qsos, filters)));
     const settings = useStore((state) => state.settings);
 
-    useEffect(
-        debounce(() => {
-            setSections(qsos2sections(applyFilters(qsos, filters)));
-        }, 250),
-        [qsos, filters],
-    );
+    const launch = (q: QSO[], f: QsoListProps["filters"]) => setSections(qsos2sections(applyFilters(q, f)));
+
+    useEffect(() => {
+        if (timeout.current) clearTimeout(timeout.current);
+        timeout.current = setTimeout(() => launch(qsos, filters), 250);
+    }, [qsos, filters]);
 
     return (
         <BigList

@@ -46,9 +46,9 @@ export const Home: HomeComponent = ({ navigation }): JSX.Element => {
     const methods = useForm<QSO>({ defaultValues: qso });
 
     const callsign = methods.watch("callsign");
-    useEffect(() => {
-        setQso(newQso(callsign, qsos, currentLocation, undefined, settings.myCallsign, settings.carryOver));
-    }, [callsign]);
+    const resetQso = () =>
+        setQso(newQso("", qsos, currentLocation, undefined, settings.myCallsign, settings.carryOver));
+    useEffect(resetQso, []);
     useEffect(() => methods.reset(qso), [qso?.id]);
 
     const handleAdd = (hamqthCSData?: HamQTHCallsignData) => {
@@ -59,7 +59,7 @@ export const Home: HomeComponent = ({ navigation }): JSX.Element => {
                 qso.locator = hamqthCSData.grid;
             }
             log(qso);
-            methods.setValue("callsign", "");
+            resetQso();
             if (!settings.contestMode) navigation.navigate("QsoForm", { qsoId: qso.id });
         }
     };

@@ -43,7 +43,7 @@ export const CallsignInput: CallsignInputComponent = ({ handleAdd }): JSX.Elemen
     const hamqthCSData = useHamqth(callsign);
 
     useEffect(() => {
-        setValue("callsign", inputValue);
+        if (inputValue != "callsign") setValue("callsign", inputValue);
     }, [inputValue]);
 
     return (
