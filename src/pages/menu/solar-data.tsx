@@ -51,40 +51,22 @@ export const SolarData: SolarDataComponent = (): JSX.Element => {
         );
     }, []);
     const contentInset = { top: 20, bottom: 20 };
+    const solarValues = solarData ? solarData.map(({ sfi }) => sfi) : undefined;
+    const magneticValues = magneticData ? magneticData.map(({ kIndex }) => kIndex) : undefined;
 
     return (
         <Stack gap="xxl">
             <Typography variant="h2">Solar Data</Typography>
-            {solarData && (
+            {solarValues && (
                 <Stack style={{ flex: 1 }}>
-                    <Typography>Solar flux index (Currently: {solarData[solarData.length - 1].sfi})</Typography>
+                    <Typography>Solar flux index (Currently: {solarValues[solarValues.length - 1]})</Typography>
                     <View style={{ height: 150, flexDirection: "row" }}>
-                        <YAxis contentInset={contentInset} data={solarData.map(({ sfi }) => sfi)} numberOfTicks={3} />
+                        <YAxis contentInset={contentInset} data={solarValues} numberOfTicks={3} />
                         <BarChart
                             contentInset={contentInset}
                             style={{ height: 150, flexGrow: 1 }}
-                            data={solarData.map(({ sfi }) => sfi)}
-                            svg={{ fill: hexToCssRgb(theme.colours.primary[theme.shades.dark]) }}
-                        >
-                            <Grid />
-                        </BarChart>
-                    </View>
-                </Stack>
-            )}
-            {!solarData && <Typography>Looking for solar data...</Typography>}
-            {magneticData && (
-                <Stack style={{ flex: 1 }}>
-                    <Typography>K index (Currently: {magneticData[magneticData.length - 1].kIndex})</Typography>
-                    <View style={{ height: 150, flexDirection: "row" }}>
-                        <YAxis
-                            contentInset={contentInset}
-                            data={magneticData.map(({ kIndex }) => kIndex)}
+                            data={solarValues}
                             numberOfTicks={3}
-                        />
-                        <BarChart
-                            contentInset={contentInset}
-                            style={{ height: 150, flexGrow: 1 }}
-                            data={magneticData.map(({ kIndex }) => kIndex)}
                             svg={{ fill: hexToCssRgb(theme.colours.primary[theme.shades.dark]) }}
                         >
                             <Grid />
@@ -92,7 +74,25 @@ export const SolarData: SolarDataComponent = (): JSX.Element => {
                     </View>
                 </Stack>
             )}
-            {!magneticData && <Typography>Looking for magnetic data...</Typography>}
+            {!solarValues && <Typography>Looking for solar data...</Typography>}
+            {magneticValues && (
+                <Stack style={{ flex: 1 }}>
+                    <Typography>K index (Currently: {magneticValues[magneticValues.length - 1]})</Typography>
+                    <View style={{ height: 150, flexDirection: "row" }}>
+                        <YAxis contentInset={contentInset} data={magneticValues} numberOfTicks={3} />
+                        <BarChart
+                            contentInset={contentInset}
+                            style={{ height: 150, flexGrow: 1 }}
+                            data={magneticValues}
+                            numberOfTicks={3}
+                            svg={{ fill: hexToCssRgb(theme.colours.primary[theme.shades.dark]) }}
+                        >
+                            <Grid />
+                        </BarChart>
+                    </View>
+                </Stack>
+            )}
+            {!magneticValues && <Typography>Looking for magnetic data...</Typography>}
         </Stack>
     );
 };
