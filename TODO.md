@@ -17,8 +17,6 @@ This is the rough todolist I want to work on.
     -   [x] add all the rest of the fields (check adif spec and rumlog)
     -   [ ] add https://docs.expo.dev/versions/latest/sdk/date-time-picker/ in the form to edit date/time
     -   [x] allow filling up itu/cq/dxcc and all that
--   [ ] contest mode (instead of Callsign > Form, have all relevant details on the bottom and log directly, ability to edit later)
-    -   [ ] Pick things that go in there (freq, sn reports, name, qth, things like these and build the form dynamically)
 -   [ ] light/dark theme
 -   [ ] integrations
     -   [x] qrz integration
@@ -57,6 +55,8 @@ This is the rough todolist I want to work on.
 
 ## Done
 
+-   [x] contest mode (instead of Callsign > Form, have all relevant details on the bottom and log directly, ability to edit later)
+    -   [x] Pick things that go in there (freq, sn reports, name, qth, things like these and build the form dynamically)
 -   [x] Settings
     -   [x] should be able to select our own callsign, maybe prompt at the start of the app
     -   [x] choose favorite bands
