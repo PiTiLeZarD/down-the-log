@@ -5,7 +5,7 @@ import { View } from "react-native";
 import { createStyleSheet, useStyles } from "react-native-unistyles";
 import { NavigationParamList } from "../../Navigation";
 import { useStore } from "../../store";
-import { QSO, newQso, useQsos } from "../../utils/qso";
+import { QSO, newQso, qsoLocationFill, useQsos } from "../../utils/qso";
 import { QsoList } from "../../utils/qso/qso-list";
 import { Alert } from "../../utils/theme/components/alert";
 import { Typography } from "../../utils/theme/components/typography";
@@ -35,27 +35,24 @@ export type HomeProps = {} & StackScreenProps<NavigationParamList, "Home">;
 export type HomeComponent = React.FC<HomeProps>;
 
 export const Home: HomeComponent = ({ navigation }): JSX.Element => {
-    const [qso, setQso] = React.useState<QSO | undefined>(undefined);
     const qsos = useQsos();
     const { styles } = useStyles(stylesheet);
     const currentLocation = useStore((state) => state.currentLocation);
     const settings = useSettings();
     const log = useStore((state) => state.log);
     const qsosFilters = useStore((state) => state.filters);
-    const methods = useForm<QSO>({ defaultValues: qso });
+    const methods = useForm<QSO>({ defaultValues: {} });
 
     const callsign = methods.watch("callsign");
     const resetQso = () =>
-        setQso(newQso("", qsos, currentLocation, undefined, settings.myCallsign, settings.carryOver));
+        methods.reset(newQso("", qsos, currentLocation, undefined, settings.myCallsign, settings.carryOver));
     useEffect(resetQso, []);
-    useEffect(() => methods.reset(qso), [qso?.id]);
 
     const handleAdd = () => {
-        if (qso) {
-            log(qso);
-            resetQso();
-            if (!settings.contestMode) navigation.navigate("QsoForm", { qsoId: qso.id });
-        }
+        const qso: QSO = methods.getValues();
+        log(qsoLocationFill(qso));
+        if (!settings.contestMode) navigation.navigate("QsoForm", { qsoId: qso.id });
+        resetQso();
     };
 
     return (
