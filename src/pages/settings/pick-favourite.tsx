@@ -24,12 +24,12 @@ export const PickFavourite: PickFavouriteComponent = ({ label, settingsKey, avai
     const selectedValues = (settings[settingsKey] as Array<string>) || [];
 
     return (
-        <Stack direction="row">
+        <Stack direction="row" style={{ flexWrap: "wrap" }}>
             <View>
                 <Button text={label} onPress={() => setOpen(true)} />
             </View>
             {(values || []).map((v) => (
-                <Button key={v} variant="chip" colour="grey" text={v} />
+                <Button style={{ minWidth: 100 }} key={v} variant="chip" colour="grey" text={v} />
             ))}
             <Modal open={open} onClose={() => setOpen(false)}>
                 <Stack>
