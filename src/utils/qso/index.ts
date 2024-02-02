@@ -104,6 +104,8 @@ export const newQso = (
                           "band",
                           "mode",
                           "power",
+                          "myCountry",
+                          "myState",
                           "myQth",
                           "myPota",
                           "myPota",
