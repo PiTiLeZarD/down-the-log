@@ -3,7 +3,7 @@ import { useFormContext } from "react-hook-form";
 import { View } from "react-native";
 import { createStyleSheet, useStyles } from "react-native-unistyles";
 import { FormField } from "../../utils/form-field";
-import { HamQTHCallsignData, useHamqth } from "../../utils/hamqth";
+import { useHamqth } from "../../utils/hamqth";
 import { QSO } from "../../utils/qso";
 import { Stack } from "../../utils/stack";
 import { Button } from "../../utils/theme/components/button";
@@ -29,7 +29,7 @@ const stylesheet = createStyleSheet((theme) => ({
 }));
 
 export type CallsignInputProps = {
-    handleAdd: (hamqthCSData?: HamQTHCallsignData) => void;
+    handleAdd: () => void;
 };
 
 export type CallsignInputComponent = React.FC<CallsignInputProps>;
@@ -45,6 +45,14 @@ export const CallsignInput: CallsignInputComponent = ({ handleAdd }): JSX.Elemen
     useEffect(() => {
         if (inputValue != "callsign") setValue("callsign", inputValue);
     }, [inputValue]);
+
+    useEffect(() => {
+        if (hamqthCSData) {
+            setValue("name", hamqthCSData.name);
+            setValue("qth", hamqthCSData.qth);
+            setValue("locator", hamqthCSData.grid);
+        }
+    }, [hamqthCSData]);
 
     return (
         <Stack style={styles.inputBox}>
@@ -63,7 +71,7 @@ export const CallsignInput: CallsignInputComponent = ({ handleAdd }): JSX.Elemen
                         style={styles.input}
                         onChangeText={(text: string) => setInputValue(text.toUpperCase())}
                         onKeyPress={(e: any) => {
-                            if (e.keyCode === 13) handleAdd(hamqthCSData);
+                            if (e.keyCode === 13) handleAdd();
                         }}
                         placeholder="Callsign"
                     />
@@ -83,7 +91,7 @@ export const CallsignInput: CallsignInputComponent = ({ handleAdd }): JSX.Elemen
                     </View>
                 )}
                 <View>
-                    <Button onPress={() => handleAdd(hamqthCSData)} startIcon="add" />
+                    <Button onPress={() => handleAdd()} startIcon="add" />
                 </View>
             </Stack>
         </Stack>

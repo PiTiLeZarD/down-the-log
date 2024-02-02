@@ -108,15 +108,14 @@ export const fetchCallsignData = async (sessionId: string | undefined, callsign:
 
 export const useHamqth = (callsign?: string) => {
     const timeout = useRef<any>();
-    const [lastCallsign, setLastCallsign] = React.useState<string>(callsign || "");
     const [hamqthCsData, setHamqthCsData] = React.useState<HamQTHCallsignData | undefined>(undefined);
     const settings = useSettings();
     const updateSetting = useStore((state) => state.updateSetting);
 
-    const launch = () => {
-        if (lastCallsign) {
+    const launch = (cs: string) => {
+        if (cs) {
             if (isSessionValid(settings.hamqth)) {
-                fetchCallsignData(settings.hamqth?.sessionId, lastCallsign).then((data) => setHamqthCsData(data));
+                fetchCallsignData(settings.hamqth?.sessionId, cs).then((data) => setHamqthCsData(data));
             } else {
                 setHamqthCsData(undefined);
             }
@@ -137,16 +136,13 @@ export const useHamqth = (callsign?: string) => {
     }, []);
 
     useEffect(() => {
-        if (callsign != lastCallsign) {
-            if (timeout.current) clearTimeout(timeout.current);
-            if (callsign) {
-                const parsedCallsign = parseCallsign(callsign);
-                const bcs = baseCallsign(callsign);
+        if (timeout.current) clearTimeout(timeout.current);
+        if (callsign) {
+            const parsedCallsign = parseCallsign(callsign);
+            const bcs = baseCallsign(callsign);
 
-                if (bcs && (parsedCallsign?.delineation || "").length) {
-                    setLastCallsign(bcs);
-                    timeout.current = setTimeout(launch, 500);
-                }
+            if (bcs && (parsedCallsign?.delineation || "").length) {
+                timeout.current = setTimeout(() => launch(bcs), 500);
             }
         }
     }, [callsign]);

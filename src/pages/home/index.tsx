@@ -5,7 +5,6 @@ import { View } from "react-native";
 import { createStyleSheet, useStyles } from "react-native-unistyles";
 import { NavigationParamList } from "../../Navigation";
 import { useStore } from "../../store";
-import { HamQTHCallsignData } from "../../utils/hamqth";
 import { QSO, newQso, useQsos } from "../../utils/qso";
 import { QsoList } from "../../utils/qso/qso-list";
 import { Alert } from "../../utils/theme/components/alert";
@@ -51,13 +50,8 @@ export const Home: HomeComponent = ({ navigation }): JSX.Element => {
     useEffect(resetQso, []);
     useEffect(() => methods.reset(qso), [qso?.id]);
 
-    const handleAdd = (hamqthCSData?: HamQTHCallsignData) => {
+    const handleAdd = () => {
         if (qso) {
-            if (hamqthCSData) {
-                qso.name = hamqthCSData.name;
-                qso.qth = hamqthCSData.qth;
-                qso.locator = hamqthCSData.grid;
-            }
             log(qso);
             resetQso();
             if (!settings.contestMode) navigation.navigate("QsoForm", { qsoId: qso.id });
