@@ -7,7 +7,6 @@ import { createStyleSheet, useStyles } from "react-native-unistyles";
 import Swal from "sweetalert2";
 import { NavigationParamList } from "../../Navigation";
 import { continents } from "../../data/callsigns";
-import { modes } from "../../data/modes";
 import { useStore } from "../../store";
 import { FormField } from "../../utils/form-field";
 import { Grid } from "../../utils/grid";
@@ -21,28 +20,17 @@ import { Typography } from "../../utils/theme/components/typography";
 import { SwalTheme } from "../../utils/theme/theme";
 import { useSettings } from "../../utils/use-settings";
 import { BandFreqInput } from "./band-freq-input";
+import { ButtonOffset } from "./button-offset";
 import { ContinentWarning } from "./continent-warning";
 import { CountryWarning } from "./country-warning";
 import { Events } from "./events";
 import { GeocodeButton } from "./geocode-button";
 import { LocatorField } from "./locator-field";
+import { ModeInput } from "./mode-input";
 import { MyStation } from "./my-station";
 import { PreviousQsos } from "./previous-qsos";
 import { QrzChip } from "./qrz-chip";
 import { Signal } from "./signal";
-
-export type ButtonOffsetProps = {};
-
-export type ButtonOffsetComponent = React.FC<React.PropsWithChildren<ButtonOffsetProps>>;
-
-export const ButtonOffset: ButtonOffsetComponent = ({ children }): JSX.Element => {
-    return (
-        <Stack>
-            <Typography>&nbsp;</Typography>
-            {children}
-        </Stack>
-    );
-};
 
 const stylesheet = createStyleSheet((theme) => ({
     datetime: {
@@ -69,7 +57,6 @@ export type FormFieldsComponent = React.FC<FormFieldsProps>;
 
 export const FormFields: FormFieldsComponent = ({ qso }): JSX.Element => {
     const [openTimeLocModal, setOpenTimeLocModal] = React.useState<boolean>(false);
-    const [showAllModes, setShowAllModes] = React.useState<boolean>(false);
     const { styles } = useStyles(stylesheet);
     const deleteLog = useStore((state) => state.deleteLog);
     const settings = useSettings();
@@ -236,29 +223,9 @@ export const FormFields: FormFieldsComponent = ({ qso }): JSX.Element => {
                     <Stack>
                         <BandFreqInput />
                         <Grid container>
-                            <Grid item xs={settings.favouriteModes.length ? 7 : 8}>
-                                <FormField
-                                    role="select"
-                                    name="mode"
-                                    label="Mode:"
-                                    options={Object.fromEntries(
-                                        (!showAllModes && settings.favouriteModes.length
-                                            ? settings.favouriteModes
-                                            : modes
-                                        ).map((mode) => [mode, mode]),
-                                    )}
-                                />
+                            <Grid item xs={8}>
+                                <ModeInput />
                             </Grid>
-                            {settings.favouriteModes.length > 0 && (
-                                <Grid item xs={1}>
-                                    <ButtonOffset>
-                                        <Button
-                                            startIcon={showAllModes ? "star-outline" : "star"}
-                                            onPress={() => setShowAllModes(!showAllModes)}
-                                        />
-                                    </ButtonOffset>
-                                </Grid>
-                            )}
                             <Grid item xs={4}>
                                 <FormField name="power" label="Power:" />
                             </Grid>
