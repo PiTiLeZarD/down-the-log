@@ -9,7 +9,6 @@ This is the rough todolist I want to work on.
     -   [ ] Handle anything SOTA
     -   [x] Finish up with Pota/Sota/Iota rules and data
     -   [ ] Find a way to handle Sig properly
--   [ ] Add my_state
 -   [ ] Find a way to differeciate between south cook island and north cook island dxcc entities since they share the same callsigns (maybe separate the dxcc list from the callsigns)
 -   [ ] should make a visual indication that hamqth isn't available, it happens often
 -   [ ] Improve the QSO form page so it's nice usable and has all details fillable
@@ -55,6 +54,7 @@ This is the rough todolist I want to work on.
 
 ## Done
 
+-   [x] Add my_state, my_country
 -   [x] contest mode (instead of Callsign > Form, have all relevant details on the bottom and log directly, ability to edit later)
     -   [x] Pick things that go in there (freq, sn reports, name, qth, things like these and build the form dynamically)
 -   [x] Settings
