@@ -34,7 +34,7 @@ export const ModeInput: ModeInputComponent = ({ noLabel = false }): JSX.Element 
                     )}
                 />
             </View>
-            {noLabel ? star : <ButtonOffset>{star}</ButtonOffset>}
+            {settings.favouriteModes.length > 0 && (noLabel ? star : <ButtonOffset>{star}</ButtonOffset>)}
         </Stack>
     );
 };
