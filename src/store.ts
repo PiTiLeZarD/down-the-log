@@ -43,7 +43,6 @@ const defaultSettings: Settings = {
         "myState",
         "myQth",
         "myPota",
-        "myPota",
         "myWwff",
         "mySota",
         "myIota",
