@@ -82,9 +82,16 @@ export const SolarData: SolarDataComponent = (): JSX.Element => {
     const [solarData, setSolarData] = React.useState<DataType[]>();
     const [magneticData, setMagneticData] = React.useState<DataType[]>();
     const { theme } = useStyles();
-    useEffect(() => {
+
+    const updateCache = () => {
         useCache("solarData", fetchSolarData, 60 * 60 * 3).then((data) => setSolarData(deserialise(data)));
         useCache("magneticData", fetchMagneticData, 60 * 60 * 3).then((data) => setMagneticData(deserialise(data)));
+    };
+
+    useEffect(() => {
+        updateCache();
+        const ts = setInterval(updateCache, 10 * 60 * 1000);
+        return () => clearInterval(ts);
     }, []);
     const contentInset = { top: 20, bottom: 20 };
     const solarValues = solarData ? solarData.map(({ value }) => value) : undefined;
