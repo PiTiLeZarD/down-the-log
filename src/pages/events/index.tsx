@@ -34,8 +34,8 @@ export const Events: EventsComponent = (): JSX.Element => {
                         <Typography variant="h3">Hunting</Typography>
                         <Button startIcon="download" text="Hunting ADIF" onPress={handleDownloadHunting(event)} />
                         <Typography variant="h3">Activating</Typography>
-                        {Object.entries(getActivations(event, qsos)).map(([reference, activations]) => (
-                            <Reference event={event} reference={reference} activations={activations} />
+                        {Object.entries(getActivations(event, qsos)).map(([reference, activations], i) => (
+                            <Reference position={i} event={event} reference={reference} activations={activations} />
                         ))}
                     </Stack>
                 ))}

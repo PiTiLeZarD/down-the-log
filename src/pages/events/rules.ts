@@ -21,7 +21,7 @@ export const allReferencesActivated = (qsos: QSO[], event: EventType): Record<st
     );
 };
 
-const dtFormat = "yyyyMMdd";
+export const dtFormat = "yyyyMMdd";
 const groupByDate = (qsos: QSO[]): Record<string, QSO[]> =>
     Object.fromEntries(
         clusterByDate(qsos, (o) => o.date, 1000 * 60 * 30).map((group) => [group[0].date.toFormat(dtFormat), group]),

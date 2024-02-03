@@ -1,27 +1,32 @@
 import { NavigationProp, useNavigation } from "@react-navigation/native";
+import { DateTime } from "luxon";
 import React from "react";
 import { View } from "react-native";
+import { useStyles } from "react-native-unistyles";
 import { NavigationParamList } from "../../Navigation";
 import { useStore } from "../../store";
 import { downloadQsos } from "../../utils/adif";
 import { Grid } from "../../utils/grid";
-import { QSO, useQsos } from "../../utils/qso";
+import { QSO } from "../../utils/qso";
 import { Button } from "../../utils/theme/components/button";
 import { Icon } from "../../utils/theme/components/icon";
 import { Typography } from "../../utils/theme/components/typography";
 import { GmapsChip } from "../qso-form/gmaps-chip";
-import { EventActivation, EventType, eventDataMap, eventDataMassageMap, eventFileNameMap } from "./rules";
+import { EventActivation, EventType, dtFormat, eventDataMap, eventDataMassageMap, eventFileNameMap } from "./rules";
 
 export type ReferenceProps = {
+    position: number;
     event: EventType;
     reference: string;
     activations: Record<string, EventActivation>;
 };
 
+const distances = (qsos: QSO[]) => qsos.filter((q) => !!q.distance).map((q) => q.distance) as number[];
+
 export type ReferenceComponent = React.FC<ReferenceProps>;
 
-export const Reference: ReferenceComponent = ({ event, reference, activations }): JSX.Element => {
-    const qsos = useQsos();
+export const Reference: ReferenceComponent = ({ position, event, reference, activations }): JSX.Element => {
+    const { theme } = useStyles();
     const eventData = eventDataMap[event][reference];
     const updateFilters = useStore((state) => state.updateFilters);
     const { navigate } = useNavigation<NavigationProp<NavigationParamList>>();
@@ -34,7 +39,13 @@ export const Reference: ReferenceComponent = ({ event, reference, activations })
     };
 
     return (
-        <>
+        <View
+            style={{
+                padding: theme.margins.lg,
+                borderRadius: theme.margins.lg,
+                backgroundColor: position % 2 ? theme.colours.grey[300] : undefined,
+            }}
+        >
             <Grid container style={{ height: 32 }}>
                 <Grid item xs={2}>
                     <View>
@@ -42,7 +53,7 @@ export const Reference: ReferenceComponent = ({ event, reference, activations })
                     </View>
                 </Grid>
                 <Grid item xs={6}>
-                    <Typography>{eventData?.name}</Typography>
+                    <Typography variant="em">{eventData?.name}</Typography>
                 </Grid>
                 <Grid item xs={2}>
                     {eventData?.locator && (
@@ -64,16 +75,19 @@ export const Reference: ReferenceComponent = ({ event, reference, activations })
                         <Icon name="arrow-forward" />
                     </Grid>
                     <Grid item xs={2}>
-                        <Typography>{date}</Typography>
+                        <Typography>{DateTime.fromFormat(date, dtFormat).toFormat("dd/MM/yyyy")}</Typography>
                     </Grid>
                     <Grid item xs={2}>
                         <Typography>{status}</Typography>
                     </Grid>
                     <Grid item xs={6}>
-                        <Typography>Qsos: {qsos.length}</Typography>
+                        <Typography>
+                            Qsos: {qsos.length} P2P: {qsos.filter((q) => !!q[event]).length} min:
+                            {Math.min(...distances(qsos))}km max:{Math.max(...distances(qsos))}km
+                        </Typography>
                     </Grid>
                 </Grid>
             ))}
-        </>
+        </View>
     );
 };
