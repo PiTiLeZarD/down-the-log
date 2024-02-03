@@ -4,6 +4,8 @@ This is the rough todolist I want to work on.
 
 ## Must have
 
+-   [ ] adding a new QSO should reset the date
+-   [ ] add QRZ hamQTH links in the callsign input extra
 -   [ ] Events
     -   [ ] Local WWFF rules (VKFF requires 11 contacts)
     -   [ ] Handle anything SOTA
