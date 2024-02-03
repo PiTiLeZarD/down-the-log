@@ -9,6 +9,7 @@ import { useStore } from "../store";
 import { Clocks } from "./clocks";
 import { maidenhead2Latlong } from "./locator";
 import { findZone } from "./polydec";
+import { SolarData } from "./solar-data";
 import { Stack } from "./stack";
 import { widthMatches } from "./theme/breakpoints";
 import { Button } from "./theme/components/button";
@@ -62,14 +63,20 @@ export const LocationHeader: LocationHeaderComponent = ({ navigation }): JSX.Ele
                     </Typography>
                 </View>
                 <View style={widthMatches("md") ? {} : { display: "none" }}>
-                    <Clocks />
+                    <Stack direction="row">
+                        <SolarData />
+                        <Clocks />
+                    </Stack>
                 </View>
                 <View>
                     <Button onPress={() => navigation.navigate("Menu")} startIcon="menu" />
                 </View>
             </Stack>
             <View style={widthMatches(undefined, "md") ? {} : { display: "none" }}>
-                <Clocks />
+                <Stack>
+                    <SolarData />
+                    <Clocks />
+                </Stack>
             </View>
         </View>
     );
