@@ -14,10 +14,10 @@ const stylesheet = createStyleSheet((theme) => ({
         fontWeight: "bold",
     }),
     row: (success: boolean) => ({
-        backgroundColor: theme.colours[success ? "success" : "grey"][200],
+        backgroundColor: theme.colours[success ? "success" : "grey"][success ? 100 : 200],
     }),
     rowHighlight: (success: boolean) => ({
-        backgroundColor: theme.colours[success ? "success" : "grey"][300],
+        backgroundColor: theme.colours[success ? "success" : "grey"][success ? 200 : 300],
     }),
 }));
 
