@@ -8,6 +8,7 @@ export type NavigationParamList = {
     About: undefined;
     QsoForm: { qsoId: QSO["id"] };
     Adif: undefined;
+    Qsl: undefined;
     Events: undefined;
     Settings: undefined;
 };

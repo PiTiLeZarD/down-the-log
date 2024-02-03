@@ -6,6 +6,7 @@ import { SafeAreaProvider, SafeAreaView } from "react-native-safe-area-context";
 import { Navigation } from "./Navigation";
 import { About } from "./pages/about";
 import { Adif } from "./pages/adif";
+import { Qsl } from "./pages/adif/qsl";
 import { Events } from "./pages/events";
 import { Home } from "./pages/home";
 import { Menu } from "./pages/menu";
@@ -59,6 +60,7 @@ const App = (): JSX.Element => {
                         <Navigation.Screen name="QsoForm" component={QsoForm} />
                         <Navigation.Screen name="About" component={About} />
                         <Navigation.Screen name="Adif" component={Adif} />
+                        <Navigation.Screen name="Qsl" component={Qsl} />
                         <Navigation.Screen name="Events" component={Events} />
                         <Navigation.Screen name="Menu" component={Menu} />
                         <Navigation.Screen name="Settings" component={Settings} />
