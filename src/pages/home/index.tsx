@@ -1,4 +1,5 @@
 import { StackScreenProps } from "@react-navigation/stack";
+import { DateTime } from "luxon";
 import React, { useEffect } from "react";
 import { FormProvider, useForm } from "react-hook-form";
 import { View } from "react-native";
@@ -50,6 +51,7 @@ export const Home: HomeComponent = ({ navigation }): JSX.Element => {
 
     const handleAdd = () => {
         const qso: QSO = methods.getValues();
+        qso.date = DateTime.utc();
         log(qsoLocationFill(qso));
         if (!settings.contestMode) navigation.navigate("QsoForm", { qsoId: qso.id });
         resetQso();
