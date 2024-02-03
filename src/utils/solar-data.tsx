@@ -58,10 +58,10 @@ const fetchMagneticData = async () =>
 
 const coloursGradient = [
     colours.red[700],
-    colours.red[400],
+    colours.red[500],
     colours.orange[500],
-    colours.orange[200],
-    colours.green[200],
+    colours.orange[300],
+    colours.green[300],
     colours.green[600],
 ];
 const sfiCutoffs = [0, 50, 100, 150, 200, 250, 300];
