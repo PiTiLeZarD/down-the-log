@@ -14,7 +14,6 @@ export const useCache = async (key: string, fetchData: () => Promise<string>, sh
     const parsed = entry ? parseEntry(entry) : undefined;
     if (!entry || !isValidEntry(parsed as CacheEntry)) {
         const data = await fetchData();
-        console.log({ data });
         AsyncStorage.setItem(key, JSON.stringify({ data, shelflife, cachedAt: DateTime.local().toFormat(dtFormat) }));
         return data;
     }
