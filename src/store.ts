@@ -1,4 +1,4 @@
-import asyncstorage from "@react-native-async-storage/async-storage";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 import { DateTime } from "luxon";
 import { create } from "zustand";
 import { combine, createJSONStorage, devtools, persist } from "zustand/middleware";
@@ -111,7 +111,7 @@ export const useStore = create<
     devtools(
         persist(combine(InitialStore, StoreActions), {
             name: "dtl-storage",
-            storage: createJSONStorage(() => asyncstorage),
+            storage: createJSONStorage(() => AsyncStorage),
             deserialize: (s: string) => {
                 const storage: { state: UseStorePropsType; version: number } = JSON.parse(s);
 
