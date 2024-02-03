@@ -7,10 +7,9 @@ import { useQsos } from "../../utils/qso";
 import { Stack } from "../../utils/stack";
 import { TabsLayout } from "../../utils/tabs-layout";
 import { Button } from "../../utils/theme/components/button";
-import { PaginatedList } from "../../utils/theme/components/paginated-list";
 import { Typography } from "../../utils/theme/components/typography";
 import { Reference } from "./reference";
-import { EventType, allReferencesActivated, eventDataMassageMap, events } from "./rules";
+import { EventType, eventDataMassageMap, events, getActivations } from "./rules";
 
 export type EventsProps = {} & StackScreenProps<NavigationParamList, "Events">;
 
@@ -29,20 +28,15 @@ export const Events: EventsComponent = (): JSX.Element => {
 
     return (
         <PageLayout title="Events">
-            <Typography variant="subtitle">
-                Everything is work in progress here, but you'll be able to handle any event and files here at some point
-            </Typography>
             <TabsLayout tabs={Array.from(events).map((t) => t.toUpperCase())}>
                 {Array.from(events).map((event) => (
                     <Stack key={event}>
                         <Typography variant="h3">Hunting</Typography>
                         <Button startIcon="download" text="Hunting ADIF" onPress={handleDownloadHunting(event)} />
                         <Typography variant="h3">Activating</Typography>
-                        <PaginatedList>
-                            {allReferencesActivated(qsos, event).map((reference) => (
-                                <Reference key={reference} reference={reference} event={event} />
-                            ))}
-                        </PaginatedList>
+                        {Object.entries(getActivations(event, qsos)).map(([reference, activations]) => (
+                            <Reference event={event} reference={reference} activations={activations} />
+                        ))}
                     </Stack>
                 ))}
             </TabsLayout>

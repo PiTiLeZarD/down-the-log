@@ -3,64 +3,63 @@ import iotaData from "../../data/iota.json";
 import potaData from "../../data/pota.json";
 import wwffData from "../../data/wwff.json";
 import { RecordMassageFn } from "../../utils/adif";
-import { groupBy, unique } from "../../utils/arrays";
+import { clusterByDate, groupBy } from "../../utils/arrays";
 import { QSO } from "../../utils/qso";
 
+export const capitalise = (s: string) => s.charAt(0).toUpperCase() + s.slice(1);
 export const events = ["wwff", "pota", "sota", "iota", "sig"] as const;
 export type EventType = (typeof events)[number];
 export type EventStatus = "None" | "Activated" | "WIP";
-export type EventRule = (qsos: QSO[], reference: string) => EventStatus;
+export type EventActivation = { status: EventStatus; qsos: QSO[] };
+export type EventActivations = Record<string, Record<string, EventActivation>>;
 
-export const wwff: EventRule = (qsos, reference) => {
-    const countRef = qsos.filter((q) => q.myWwff === reference).length;
-    if (countRef === 0) return "None";
-    if (countRef >= 44) return "Activated";
-    return "WIP";
-};
-
-export const pota: EventRule = (qsos, reference) => {
-    const activations = groupBy(
-        qsos.filter((q) => q.myPota === reference),
-        (q) => q.date.toFormat("yyyyMMdd"),
+export const allReferencesActivated = (qsos: QSO[], event: EventType): Record<string, QSO[]> => {
+    const key = `my${capitalise(event)}` as keyof QSO;
+    return groupBy(
+        qsos.filter((q) => !!q[key]),
+        (q) => q[key] as string,
     );
-    if (Object.keys(activations).length === 0) return "None";
-    if (
-        Object.values(activations)
-            .map((qs) => qs.length)
-            .some((n) => n >= 10)
-    )
-        return "Activated";
-    return "WIP";
 };
 
-export const sota: EventRule = (qsos, reference) => {
-    const countRef = qsos.filter((q) => q.mySota === reference).length;
-    if (countRef === 0) return "None";
-    if (countRef >= 4) return "Activated";
-    return "WIP";
+const dtFormat = "yyyyMMdd";
+const groupByDate = (qsos: QSO[]): Record<string, QSO[]> =>
+    Object.fromEntries(
+        clusterByDate(qsos, (o) => o.date, 1000 * 60 * 30).map((group) => [group[0].date.toFormat(dtFormat), group]),
+    );
+const groupByUtcDay = (qsos: QSO[]): Record<string, QSO[]> => groupBy(qsos, (q) => q.date.toFormat(dtFormat));
+
+const grouping = {
+    wwff: groupByDate,
+    pota: groupByUtcDay,
+    sota: groupByDate,
+    iota: groupByDate,
+    sig: groupByDate,
 };
 
-export const iota: EventRule = (qsos, reference) => {
-    const countRef = qsos.filter((q) => q.myIota === reference).length;
-    if (countRef === 0) return "None";
-    return "Activated";
+export type EventRule = (qsos: QSO[]) => EventStatus;
+const rules: Record<EventType, EventRule> = {
+    wwff: (qsos: QSO[]) => (qsos.length >= 44 ? "Activated" : "WIP"),
+    pota: (qsos: QSO[]) => (qsos.length >= 10 ? "Activated" : "WIP"),
+    sota: (qsos: QSO[]) => (qsos.length >= 4 ? "Activated" : "WIP"),
+    iota: (qsos: QSO[]) => (qsos.length >= 10 ? "Activated" : "WIP"),
+    sig: (qsos: QSO[]) => (qsos.length >= 10 ? "Activated" : "WIP"),
 };
 
-export const capitalise = (s: string) => s.charAt(0).toUpperCase() + s.slice(1);
-
-export const qsosForReference = (qsos: QSO[], event: EventType, reference: string): QSO[] =>
-    qsos.filter((q) => reference === (q[`my${capitalise(event)}` as keyof QSO] as string));
-
-export const allReferencesActivated = (qsos: QSO[], type: EventType): string[] =>
-    unique(qsos.map((q) => q[`my${capitalise(type)}` as keyof QSO] as string).filter((r) => !!r && !!r.trim())).sort();
-
-export const eventRuleMap: Record<EventType, EventRule> = {
-    wwff,
-    pota,
-    sota,
-    iota,
-    sig: () => "None",
-};
+export const getActivations = (event: EventType, qsos: QSO[]): EventActivations =>
+    Object.fromEntries(
+        Object.entries(allReferencesActivated(qsos, event)).map(([ref, refQsos]) => [
+            ref,
+            Object.fromEntries(
+                Object.entries(grouping[event](refQsos)).map(([date, refDateQsos]) => [
+                    date,
+                    {
+                        status: rules[event](refDateQsos),
+                        qsos: refDateQsos,
+                    },
+                ]),
+            ),
+        ]),
+    );
 
 export const eventDataMap: Record<EventType, Record<string, { name: string; locator?: string }>> = {
     wwff: wwffData,
