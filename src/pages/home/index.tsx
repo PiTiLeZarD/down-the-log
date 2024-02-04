@@ -11,7 +11,6 @@ import { QsoList } from "../../utils/qso/qso-list";
 import { Alert } from "../../utils/theme/components/alert";
 import { Typography } from "../../utils/theme/components/typography";
 import { useSettings } from "../../utils/use-settings";
-import { getActivations } from "../events/rules";
 import { Beacons } from "./beacons";
 import { CallsignInput } from "./callsign-input";
 import { Filters, filterQsos } from "./filters";
@@ -38,12 +37,6 @@ export type HomeComponent = React.FC<HomeProps>;
 
 export const Home: HomeComponent = ({ navigation }): JSX.Element => {
     const qsos = useQsos();
-    console.log(
-        getActivations(
-            "wwff",
-            qsos.filter((q) => q.myPota === "VK-1034"),
-        ),
-    );
     const { styles } = useStyles(stylesheet);
     const currentLocation = useStore((state) => state.currentLocation);
     const settings = useSettings();
