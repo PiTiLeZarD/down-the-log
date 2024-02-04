@@ -4,14 +4,6 @@ This is the rough todolist I want to work on.
 
 ## Must have
 
--   [ ] Events
-    -   [x] Local WWFF rules (VKFF requires 11 contacts)
-    -   [ ] Handle anything SOTA
-    -   [x] Finish up with Pota/Sota/Iota rules and data
-    -   [ ] Find a way to handle Sig properly
-    -   [x] not too pretty atm
-    -   [x] wwff clusterbydate doesn't quite work
-    -   [x] add stats per activations
 -   [ ] Find a way to differeciate between south cook island and north cook island dxcc entities since they share the same callsigns (maybe separate the dxcc list from the callsigns)
 -   [ ] should make a visual indication that hamqth isn't available, it happens often
 -   [ ] Improve the QSO form page so it's nice usable and has all details fillable
@@ -57,6 +49,14 @@ This is the rough todolist I want to work on.
 
 ## Done
 
+-   [x] Events
+    -   [x] Local WWFF rules (VKFF requires 11 contacts)
+    -   [x] Handle anything SOTA
+    -   [x] Finish up with Pota/Sota/Iota rules and data
+    -   [x] Find a way to handle Sig properly (we'll come to this when needed)
+    -   [x] not too pretty atm
+    -   [x] wwff clusterbydate doesn't quite work
+    -   [x] add stats per activations
 -   [x] adding a new QSO should reset the date
 -   [x] Add my_state, my_country
 -   [x] contest mode (instead of Callsign > Form, have all relevant details on the bottom and log directly, ability to edit later)

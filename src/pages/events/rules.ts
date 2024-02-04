@@ -1,6 +1,7 @@
 import { DateTime } from "luxon";
 import iotaData from "../../data/iota.json";
 import potaData from "../../data/pota.json";
+import sotaData from "../../data/sota.json";
 import wwffData from "../../data/wwff.json";
 import { RecordMassageFn } from "../../utils/adif";
 import { clusterByDate, groupBy } from "../../utils/arrays";
@@ -73,7 +74,7 @@ export const getActivations = (event: EventType, qsos: QSO[], max?: number): Eve
 export const eventDataMap: Record<EventType, Record<string, { name: string; locator?: string }>> = {
     wwff: wwffData,
     pota: potaData,
-    sota: {},
+    sota: sotaData,
     iota: iotaData,
     sig: {},
 };
@@ -84,7 +85,7 @@ export const eventFileNameMap: Record<EventType, EventNameFn> = {
     pota: (qsos) => `${qsos[0].myCallsign}@${qsos[0].myPota}_${DateTime.local().toFormat("yyyyMMdd")}.adif`,
     sota: (qsos) => `${qsos[0].myCallsign}@${qsos[0].mySota}_${DateTime.local().toFormat("yyyyMMdd")}.adif`,
     iota: (qsos) => `${qsos[0].myCallsign}@${qsos[0].myIota}_${DateTime.local().toFormat("yyyyMMdd")}.adif`,
-    sig: (qsos) => `sig_${DateTime.local().toFormat("yyyyMMdd")}.adif`,
+    sig: () => `sig_${DateTime.local().toFormat("yyyyMMdd")}.adif`,
 };
 
 export const eventDataMassageMap: Record<EventType, RecordMassageFn> = {
