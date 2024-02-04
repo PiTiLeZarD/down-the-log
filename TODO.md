@@ -4,7 +4,6 @@ This is the rough todolist I want to work on.
 
 ## Must have
 
--   [ ] add QRZ hamQTH links in the callsign input extra
 -   [ ] Events
     -   [x] Local WWFF rules (VKFF requires 11 contacts)
     -   [ ] Handle anything SOTA
