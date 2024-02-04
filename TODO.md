@@ -6,13 +6,13 @@ This is the rough todolist I want to work on.
 
 -   [ ] add QRZ hamQTH links in the callsign input extra
 -   [ ] Events
-    -   [ ] Local WWFF rules (VKFF requires 11 contacts)
+    -   [x] Local WWFF rules (VKFF requires 11 contacts)
     -   [ ] Handle anything SOTA
     -   [x] Finish up with Pota/Sota/Iota rules and data
     -   [ ] Find a way to handle Sig properly
-    -   [ ] not too pretty atm
-    -   [ ] wwff clusterbydate doesn't quite work
-    -   [ ] add stats per activations
+    -   [x] not too pretty atm
+    -   [x] wwff clusterbydate doesn't quite work
+    -   [x] add stats per activations
 -   [ ] Find a way to differeciate between south cook island and north cook island dxcc entities since they share the same callsigns (maybe separate the dxcc list from the callsigns)
 -   [ ] should make a visual indication that hamqth isn't available, it happens often
 -   [ ] Improve the QSO form page so it's nice usable and has all details fillable

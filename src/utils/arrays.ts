@@ -28,7 +28,7 @@ export const clusterByDate: <T>(objects: T[], cb: (o: T) => DateTime, interval?:
         .sort((o1, o2) => cb(o1).toMillis() - cb(o2).toMillis())
         .reduce<(typeof objects)[]>((clusters, obj) => {
             const lastCluster = clusters[clusters.length - 1];
-            if (!lastCluster || cb(lastCluster[lastCluster.length - 1]).toMillis() - cb(obj).toMillis() > interval)
+            if (!lastCluster || cb(obj).toMillis() - cb(lastCluster[lastCluster.length - 1]).toMillis() > interval)
                 clusters.push([obj]);
             else lastCluster.push(obj);
             return clusters;

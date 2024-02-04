@@ -22,30 +22,30 @@ export const allReferencesActivated = (qsos: QSO[], event: EventType): Record<st
 };
 
 export const dtFormat = "yyyyMMdd";
-const groupByDate = (qsos: QSO[]): Record<string, QSO[]> =>
+const groupByActivation = (qsos: QSO[]): Record<string, QSO[]> =>
     Object.fromEntries(
         clusterByDate(qsos, (o) => o.date, 1000 * 60 * 30).map((group) => [group[0].date.toFormat(dtFormat), group]),
     );
 const groupByUtcDay = (qsos: QSO[]): Record<string, QSO[]> => groupBy(qsos, (q) => q.date.toFormat(dtFormat));
 
 const grouping = {
-    wwff: groupByDate,
+    wwff: groupByActivation,
     pota: groupByUtcDay,
-    sota: groupByDate,
-    iota: groupByDate,
-    sig: groupByDate,
+    sota: groupByActivation,
+    iota: groupByActivation,
+    sig: groupByActivation,
 };
 
-export type EventRule = (qsos: QSO[]) => EventStatus;
-const rules: Record<EventType, EventRule> = {
-    wwff: (qsos: QSO[]) => (qsos.length >= 44 ? "Activated" : "WIP"),
+export type EventRule = (qsos: QSO[], max?: number) => EventStatus;
+export const rules: Record<EventType, EventRule> = {
+    wwff: (qsos: QSO[], max = 44) => (qsos.length >= max ? "Activated" : "WIP"),
     pota: (qsos: QSO[]) => (qsos.length >= 10 ? "Activated" : "WIP"),
     sota: (qsos: QSO[]) => (qsos.length >= 4 ? "Activated" : "WIP"),
     iota: (qsos: QSO[]) => (qsos.length >= 10 ? "Activated" : "WIP"),
     sig: (qsos: QSO[]) => (qsos.length >= 10 ? "Activated" : "WIP"),
 };
 
-export const getActivations = (event: EventType, qsos: QSO[]): EventActivations =>
+export const getActivations = (event: EventType, qsos: QSO[], max?: number): EventActivations =>
     Object.fromEntries(
         Object.entries(allReferencesActivated(qsos, event)).map(([ref, refQsos]) => [
             ref,
@@ -53,7 +53,7 @@ export const getActivations = (event: EventType, qsos: QSO[]): EventActivations 
                 Object.entries(grouping[event](refQsos)).map(([date, refDateQsos]) => [
                     date,
                     {
-                        status: rules[event](refDateQsos),
+                        status: rules[event](refDateQsos, max),
                         qsos: refDateQsos,
                     },
                 ]),

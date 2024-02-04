@@ -12,10 +12,19 @@ import { Button } from "../../utils/theme/components/button";
 import { Icon } from "../../utils/theme/components/icon";
 import { Typography } from "../../utils/theme/components/typography";
 import { GmapsChip } from "../qso-form/gmaps-chip";
-import { EventActivation, EventType, dtFormat, eventDataMap, eventDataMassageMap, eventFileNameMap } from "./rules";
+import {
+    EventActivation,
+    EventType,
+    dtFormat,
+    eventDataMap,
+    eventDataMassageMap,
+    eventFileNameMap,
+    rules,
+} from "./rules";
 
 export type ReferenceProps = {
     position: number;
+    max?: number;
     event: EventType;
     reference: string;
     activations: Record<string, EventActivation>;
@@ -25,7 +34,7 @@ const distances = (qsos: QSO[]) => qsos.filter((q) => !!q.distance).map((q) => q
 
 export type ReferenceComponent = React.FC<ReferenceProps>;
 
-export const Reference: ReferenceComponent = ({ position, event, reference, activations }): JSX.Element => {
+export const Reference: ReferenceComponent = ({ position, max, event, reference, activations }): JSX.Element => {
     const { theme } = useStyles();
     const eventData = eventDataMap[event][reference];
     const updateFilters = useStore((state) => state.updateFilters);
@@ -49,13 +58,25 @@ export const Reference: ReferenceComponent = ({ position, event, reference, acti
             <Grid container style={{ height: 32 }}>
                 <Grid item xs={2}>
                     <View>
-                        <Button variant="chip" endIcon="arrow-forward" text={reference} onPress={handleRefPress} />
+                        <Button variant="chip" endIcon="search" text={reference} onPress={handleRefPress} />
                     </View>
                 </Grid>
-                <Grid item xs={6}>
+                <Grid item xs={event === "wwff" ? 5 : 7}>
                     <Typography variant="em">{eventData?.name}</Typography>
                 </Grid>
-                <Grid item xs={2}>
+                {event === "wwff" && (
+                    <Grid item xs={2}>
+                        <Typography>
+                            {rules["wwff"](
+                                Object.entries(activations)
+                                    .map(([, { qsos }]) => qsos)
+                                    .flat(),
+                                max,
+                            )}
+                        </Typography>
+                    </Grid>
+                )}
+                <Grid item xs={1}>
                     {eventData?.locator && (
                         <View>
                             <GmapsChip locator={eventData?.locator} zoom={10} />
@@ -83,7 +104,7 @@ export const Reference: ReferenceComponent = ({ position, event, reference, acti
                     <Grid item xs={6}>
                         <Typography>
                             Qsos: {qsos.length} P2P: {qsos.filter((q) => !!q[event]).length} min:
-                            {Math.min(...distances(qsos))}km max:{Math.max(...distances(qsos))}km
+                            {Math.min(...distances(qsos))}km max: {Math.max(...distances(qsos))}km
                         </Typography>
                     </Grid>
                 </Grid>
