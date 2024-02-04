@@ -22,17 +22,19 @@ export const allReferencesActivated = (qsos: QSO[], event: EventType): Record<st
 };
 
 export const dtFormat = "yyyyMMdd";
-const groupByActivation = (qsos: QSO[]): Record<string, QSO[]> =>
+export type EventGrouping = (qsos: QSO[]) => Record<string, QSO[]>;
+const groupByActivation: EventGrouping = (qsos) =>
     Object.fromEntries(
         clusterByDate(qsos, (o) => o.date, 1000 * 60 * 30).map((group) => [group[0].date.toFormat(dtFormat), group]),
     );
-const groupByUtcDay = (qsos: QSO[]): Record<string, QSO[]> => groupBy(qsos, (q) => q.date.toFormat(dtFormat));
+const groupByUtcDay: EventGrouping = (qsos) => groupBy(qsos, (q) => q.date.toFormat(dtFormat));
+const groupAllQsos: EventGrouping = (qsos) => ({ all: qsos });
 
 const grouping = {
     wwff: groupByActivation,
     pota: groupByUtcDay,
     sota: groupByActivation,
-    iota: groupByActivation,
+    iota: groupAllQsos,
     sig: groupByActivation,
 };
 
@@ -41,8 +43,8 @@ export const rules: Record<EventType, EventRule> = {
     wwff: (qsos: QSO[], max = 44) => (qsos.length >= max ? "Activated" : "WIP"),
     pota: (qsos: QSO[]) => (qsos.length >= 10 ? "Activated" : "WIP"),
     sota: (qsos: QSO[]) => (qsos.length >= 4 ? "Activated" : "WIP"),
-    iota: (qsos: QSO[]) => (qsos.length >= 10 ? "Activated" : "WIP"),
-    sig: (qsos: QSO[]) => (qsos.length >= 10 ? "Activated" : "WIP"),
+    iota: (qsos: QSO[]) => (qsos.length >= 0 ? "Activated" : "WIP"),
+    sig: (qsos: QSO[]) => (qsos.length >= 0 ? "Activated" : "WIP"),
 };
 
 export const getActivations = (event: EventType, qsos: QSO[], max?: number): EventActivations =>
