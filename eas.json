@@ -7,6 +7,10 @@
                 "simulator": true
             }
         },
+        "android-simulator": {
+            "developmentClient": true,
+            "distribution": "internal"
+        },
         "android-apk": {
             "developmentClient": true,
             "distribution": "internal",
