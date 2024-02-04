@@ -24,8 +24,15 @@ export const allReferencesActivated = (qsos: QSO[], event: EventType): Record<st
 export const dtFormat = "yyyyMMdd";
 export type EventGrouping = (qsos: QSO[]) => Record<string, QSO[]>;
 const groupByActivation: EventGrouping = (qsos) =>
-    Object.fromEntries(
-        clusterByDate(qsos, (o) => o.date, 1000 * 60 * 30).map((group) => [group[0].date.toFormat(dtFormat), group]),
+    clusterByDate(qsos, (o) => o.date, 1000 * 60 * 60 * 5).reduce(
+        (groups, qsos) => ({
+            ...groups,
+            [qsos[0].date.toFormat(dtFormat)]: [
+                ...(groups[qsos[0].date.toFormat(dtFormat) as keyof typeof groups] || []),
+                ...qsos,
+            ],
+        }),
+        {},
     );
 const groupByUtcDay: EventGrouping = (qsos) => groupBy(qsos, (q) => q.date.toFormat(dtFormat));
 const groupAllQsos: EventGrouping = (qsos) => ({ all: qsos });
