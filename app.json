@@ -32,7 +32,8 @@
         "ACCESS_COARSE_LOCATION",
         "ACCESS_FINE_LOCATION",
         "FOREGROUND_SERVICE"
-      ]
+      ],
+      "package": "com.pitilezard.downthelog"
     },
     "web": {
       "favicon": "./assets/favicon.png",
