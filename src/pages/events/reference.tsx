@@ -40,6 +40,9 @@ export const Reference: ReferenceComponent = ({ position, max, event, reference,
     const updateFilters = useStore((state) => state.updateFilters);
     const { navigate } = useNavigation<NavigationProp<NavigationParamList>>();
 
+    const allQsos = Object.entries(activations)
+        .map(([, { qsos }]) => qsos)
+        .flat();
     const handleDownload = (qsos: QSO[]) =>
         downloadQsos(eventFileNameMap[event](qsos), qsos, "adif", eventDataMassageMap[event]);
     const handleRefPress = () => {
@@ -66,14 +69,7 @@ export const Reference: ReferenceComponent = ({ position, max, event, reference,
                 </Grid>
                 {event === "wwff" && (
                     <Grid item xs={2}>
-                        <Typography>
-                            {rules["wwff"](
-                                Object.entries(activations)
-                                    .map(([, { qsos }]) => qsos)
-                                    .flat(),
-                                max,
-                            )}
-                        </Typography>
+                        <Typography>{rules["wwff"](allQsos, max)}</Typography>
                     </Grid>
                 )}
                 <Grid item xs={1}>
@@ -85,7 +81,13 @@ export const Reference: ReferenceComponent = ({ position, max, event, reference,
                 </Grid>
                 <Grid item xs={2}>
                     <View>
-                        <Button startIcon="download" variant="chip" colour="secondary" text="ADIF" />
+                        <Button
+                            startIcon="download"
+                            variant="chip"
+                            colour="secondary"
+                            text="ADIF"
+                            onPress={() => handleDownload(allQsos)}
+                        />
                     </View>
                 </Grid>
             </Grid>
