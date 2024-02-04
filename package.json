@@ -17,7 +17,7 @@
         "build:web": "yarn build -p web",
         "build:tauri": "tauri build",
         "eas:dev:ios": "eas build --profile ios-simulator --platform ios",
-        "eas:dev:android": "eas build:run --profile android-apk --platform android",
+        "eas:dev:android": "eas build --profile android-apk --platform android",
         "eas:run:ios": "eas build:run -p ios",
         "eas:start": "yarn start --dev-client",
         "types": "tsc --noEmit",
