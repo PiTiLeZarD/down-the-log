@@ -6,6 +6,7 @@ import wwffData from "../../data/wwff.json";
 import { RecordMassageFn } from "../../utils/adif";
 import { clusterByDate, groupBy } from "../../utils/arrays";
 import { QSO } from "../../utils/qso";
+import { ReferenceDatum } from "../qso-form/reference-info";
 
 export const capitalise = (s: string) => s.charAt(0).toUpperCase() + s.slice(1);
 export const events = ["wwff", "pota", "sota", "iota", "sig"] as const;
@@ -71,12 +72,12 @@ export const getActivations = (event: EventType, qsos: QSO[], max?: number): Eve
         ]),
     );
 
-export const eventDataMap: Record<EventType, Record<string, { name: string; locator?: string }>> = {
-    wwff: wwffData,
-    pota: potaData,
-    sota: sotaData,
-    iota: iotaData,
-    sig: {},
+export const eventDataMap: Record<EventType, Record<string, ReferenceDatum>> = {
+    wwff: wwffData as Record<string, ReferenceDatum>,
+    pota: potaData as Record<string, ReferenceDatum>,
+    sota: sotaData as Record<string, ReferenceDatum>,
+    iota: iotaData as Record<string, ReferenceDatum>,
+    sig: {} as Record<string, ReferenceDatum>,
 };
 
 export type EventNameFn = (qsos: QSO[]) => string;
