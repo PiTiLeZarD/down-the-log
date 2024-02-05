@@ -1,12 +1,13 @@
 import axios from "axios";
 import { DateTime } from "luxon";
-import React, { useEffect, useRef } from "react";
+import { useEffect } from "react";
 import Swal from "sweetalert2";
 import { useStore } from "../store";
 import { baseCallsign, parseCallsign } from "./callsign";
 import { latlong2Maidenhead, normalise } from "./locator";
 import { SwalTheme } from "./theme/theme";
 import { useSettings } from "./use-settings";
+import { useThrottle } from "./use-throttle";
 
 const ignoreErrors = ["Callsign not found", "timeout exceeded", "Network Error"];
 
@@ -107,20 +108,16 @@ export const fetchCallsignData = async (sessionId: string | undefined, callsign:
 };
 
 export const useHamqth = (callsign?: string) => {
-    const timeout = useRef<any>();
-    const [hamqthCsData, setHamqthCsData] = React.useState<HamQTHCallsignData | undefined>(undefined);
     const settings = useSettings();
     const updateSetting = useStore((state) => state.updateSetting);
 
     const launch = (cs: string) => {
-        if (cs) {
-            if (isSessionValid(settings.hamqth)) {
-                fetchCallsignData(settings.hamqth?.sessionId, cs).then((data) => setHamqthCsData(data));
-            } else {
-                setHamqthCsData(undefined);
-            }
+        if (cs && isSessionValid(settings.hamqth)) {
+            return fetchCallsignData(settings.hamqth?.sessionId, cs);
         }
+        return undefined;
     };
+    const throttled = useThrottle(launch, 500);
 
     useEffect(() => {
         if (settings.hamqth?.user && settings.hamqth.password) {
@@ -135,17 +132,14 @@ export const useHamqth = (callsign?: string) => {
         }
     }, []);
 
-    useEffect(() => {
-        if (timeout.current) clearTimeout(timeout.current);
-        if (callsign) {
-            const parsedCallsign = parseCallsign(callsign);
-            const bcs = baseCallsign(callsign);
+    if (callsign) {
+        const parsedCallsign = parseCallsign(callsign);
+        const bcs = baseCallsign(callsign);
 
-            if (bcs && (parsedCallsign?.delineation || "").length) {
-                timeout.current = setTimeout(() => launch(bcs), 500);
-            }
+        if (bcs && (parsedCallsign?.delineation || "").length) {
+            return throttled(callsign);
         }
-    }, [callsign]);
+    }
 
-    return hamqthCsData;
+    return undefined;
 };

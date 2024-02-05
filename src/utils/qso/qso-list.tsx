@@ -1,4 +1,4 @@
-import React, { useEffect, useRef } from "react";
+import React from "react";
 import { Pressable, View, ViewStyle } from "react-native";
 import BigList from "react-native-big-list";
 import { createStyleSheet, useStyles } from "react-native-unistyles";
@@ -9,6 +9,7 @@ import { Stack } from "../stack";
 import { Button } from "../theme/components/button";
 import { Typography } from "../theme/components/typography";
 import { useSettings } from "../use-settings";
+import { useThrottle } from "../use-throttle";
 import { QsoListItem } from "./qso-list-item";
 import { QsoMap } from "./qso-map";
 import { QsoRow } from "./qso-row";
@@ -92,16 +93,12 @@ const applyFilters = (qsos: QSO[], filters: QsoListProps["filters"]) =>
     filters ? qsos.filter((qso) => filters.reduce((facc, f) => facc && f(qso), true)) : qsos;
 
 export const QsoList: QsoListComponent = ({ style, filters, qsos, onQsoPress }): JSX.Element => {
-    const timeout = useRef<any>();
-    const [sections, setSections] = React.useState<QSO[][]>(qsos2sections(applyFilters(qsos, filters)));
+    const launch = (q: QSO[], f: QsoListProps["filters"]) => qsos2sections(applyFilters(q, f));
     const settings = useStore((state) => state.settings);
+    const throttled = useThrottle(launch, 250);
+    const sections = throttled(qsos, filters);
 
-    const launch = (q: QSO[], f: QsoListProps["filters"]) => setSections(qsos2sections(applyFilters(q, f)));
-
-    useEffect(() => {
-        if (timeout.current) clearTimeout(timeout.current);
-        timeout.current = setTimeout(() => launch(qsos, filters), 250);
-    }, [qsos, filters]);
+    if (!sections) return <></>;
 
     return (
         <BigList
