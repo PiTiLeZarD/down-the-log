@@ -3,7 +3,7 @@
 import { parse } from "csv-parse";
 import { DateTime } from "luxon";
 import { readFileSync, writeFileSync } from "node:fs";
-import { latlong2Maidenhead } from "../src/utils/locator";
+import { latlong2Maidenhead } from "../app/lib/utils/locator";
 
 const data = readFileSync("./scripts/summitslist.csv", "utf8").split("\n").splice(1).join("\n");
 const parser = parse();

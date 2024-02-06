@@ -1,6 +1,6 @@
 import { readFileSync, writeFileSync } from "node:fs";
-import { encode } from "../src/utils/polydec";
-import { Polygon } from "../src/utils/polygon";
+import { encode } from "../app/lib/utils/polydec";
+import { Polygon } from "../app/lib/utils/polygon";
 /**
  * Download countries geojson from here:
  * https://datahub.io/core/geo-countries#data
@@ -45,7 +45,7 @@ const countries = Object.fromEntries(
             ? (d.geometry.coordinates as Array<Polygon[]>).map((ps) => ps.map((p) => encode(p)))
             : [(d.geometry.coordinates as Polygon[]).map((p) => encode(p))]
         ).flat(),
-    ])
+    ]),
 );
 
 writeFileSync("./src/data/world.json", JSON.stringify(countries), "utf8");

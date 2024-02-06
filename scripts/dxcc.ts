@@ -3,8 +3,8 @@
  * https://github.com/amazingproducer/dxcc-world-map
  */
 import { writeFileSync } from "node:fs";
-import { encode } from "../src/utils/polydec";
-import { Polygon } from "../src/utils/polygon";
+import { encode } from "../app/lib/utils/polydec";
+import { Polygon } from "../app/lib/utils/polygon";
 
 import dxcc from "./dxcc.json";
 

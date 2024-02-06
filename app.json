@@ -42,7 +42,7 @@
             [
                 "expo-font",
                 {
-                    "fonts": ["./src/utils/theme/Quicksand-VariableFont_wght.ttf"]
+                    "fonts": ["./assets/Quicksand-VariableFont_wght.ttf"]
                 }
             ]
         ]

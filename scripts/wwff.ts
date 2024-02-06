@@ -2,7 +2,7 @@
 
 import { parse } from "csv-parse";
 import { readFileSync, writeFileSync } from "node:fs";
-import { normalise } from "../src/utils/locator";
+import { normalise } from "../app/lib/utils/locator";
 
 const data = readFileSync("./scripts/wwff_directory.csv", "utf8");
 const parser = parse();

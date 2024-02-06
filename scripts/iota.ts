@@ -6,7 +6,7 @@
  * */
 import { XMLParser } from "fast-xml-parser";
 import { readFileSync, writeFileSync } from "node:fs";
-import { latlong2Maidenhead } from "../src/utils/locator";
+import { latlong2Maidenhead } from "../app/lib/utils/locator";
 
 const data = readFileSync("./scripts/doc.kml", "utf8");
 const parser = new XMLParser();
