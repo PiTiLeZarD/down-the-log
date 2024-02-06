@@ -1,51 +1,50 @@
 {
-  "expo": {
-    "name": "down-the-log",
-    "slug": "down-the-log",
-    "version": "1.0.0",
-    "orientation": "portrait",
-    "icon": "./assets/icon.png",
-    "userInterfaceStyle": "light",
-    "splash": {
-      "image": "./assets/splash.png",
-      "resizeMode": "contain",
-      "backgroundColor": "#ffffff"
-    },
-    "assetBundlePatterns": [
-      "**/*"
-    ],
-    "ios": {
-      "supportsTablet": true,
-      "infoPlist": {
-        "NSLocationAlwaysAndWhenInUseUsageDescription": "This app will require your location in order to accurately set your QTH",
-        "NSLocationAlwaysUsageDescription": "This app will require your location in order to accurately set your QTH",
-        "NSLocationWhenInUseUsageDescription": "This app will require your location in order to accurately set your QTH"
-      },
-      "bundleIdentifier": "com.pitilezard.downthelog"
-    },
-    "android": {
-      "adaptiveIcon": {
-        "foregroundImage": "./assets/adaptive-icon.png",
-        "backgroundColor": "#ffffff"
-      },
-      "permissions": [
-        "ACCESS_COARSE_LOCATION",
-        "ACCESS_FINE_LOCATION",
-        "FOREGROUND_SERVICE"
-      ],
-      "package": "com.pitilezard.downthelog"
-    },
-    "web": {
-      "favicon": "./assets/favicon.png",
-      "bundler": "metro"
-    },
-    "extra": {
-      "eas": {
-        "projectId": "c0afc3d3-e170-4008-a71e-5ebb3eeaa3d6"
-      }
-    },
-    "plugins": [
-      "expo-font"
-    ]
-  }
+    "expo": {
+        "name": "down-the-log",
+        "slug": "down-the-log",
+        "version": "1.0.0",
+        "orientation": "portrait",
+        "icon": "./assets/icon.png",
+        "userInterfaceStyle": "light",
+        "splash": {
+            "image": "./assets/splash.png",
+            "resizeMode": "contain",
+            "backgroundColor": "#ffffff"
+        },
+        "assetBundlePatterns": ["**/*"],
+        "ios": {
+            "supportsTablet": true,
+            "infoPlist": {
+                "NSLocationAlwaysAndWhenInUseUsageDescription": "This app will require your location in order to accurately set your QTH",
+                "NSLocationAlwaysUsageDescription": "This app will require your location in order to accurately set your QTH",
+                "NSLocationWhenInUseUsageDescription": "This app will require your location in order to accurately set your QTH"
+            },
+            "bundleIdentifier": "com.pitilezard.downthelog"
+        },
+        "android": {
+            "adaptiveIcon": {
+                "foregroundImage": "./assets/adaptive-icon.png",
+                "backgroundColor": "#ffffff"
+            },
+            "permissions": ["ACCESS_COARSE_LOCATION", "ACCESS_FINE_LOCATION", "FOREGROUND_SERVICE"],
+            "package": "com.pitilezard.downthelog"
+        },
+        "web": {
+            "favicon": "./assets/favicon.png",
+            "bundler": "metro"
+        },
+        "extra": {
+            "eas": {
+                "projectId": "c0afc3d3-e170-4008-a71e-5ebb3eeaa3d6"
+            }
+        },
+        "plugins": [
+            [
+                "expo-font",
+                {
+                    "fonts": ["./src/utils/theme/Quicksand-VariableFont_wght.ttf"]
+                }
+            ]
+        ]
+    }
 }
