@@ -1,4 +1,4 @@
-// https://www.arrl.org/files/file/dxcclist.txt
+// https://www.arrl.org/files/file/DXCC/2020%20Current_Deleted.txt
 // https://www.qrz.com/atlas
 
 export const continents = ["NA", "SA", "EU", "AF", "OC", "AS", "AN"] as const;

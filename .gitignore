@@ -10,3 +10,4 @@ scripts/*.json
 scripts/*.csv
 scripts/*.kmz
 scripts/*.kml
+scripts/*.txt
