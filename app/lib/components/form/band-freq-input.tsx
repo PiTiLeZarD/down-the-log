@@ -15,7 +15,7 @@ import { Stack } from "../stack";
 const freqValue = (freq?: number, band?: Band, mode?: Mode) => {
     if (freq != undefined) return freq * 1000;
     if (band != undefined) return (band2freq(band, mode) || 14.144) * 1000;
-    return 14144;
+    return 14.144;
 };
 
 export type BandFreqInputProps = {
