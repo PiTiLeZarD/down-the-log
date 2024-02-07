@@ -19,6 +19,7 @@ export type HamQTHSettingsType = {
 };
 
 export type HamQTHCallsignData = {
+    callsign: string;
     name: string;
     qth: string;
     country: string;
@@ -83,6 +84,7 @@ export const fetchCallsignData = async (sessionId: string | undefined, callsign:
         .then((doc) => {
             if (pickXML(doc, "error")) return undefined;
             return {
+                callsign,
                 name: pickXML(doc, "nick") || pickXML(doc, "adr_name"),
                 qth: pickXML(doc, "qth"),
                 country: pickXML(doc, "country"),
@@ -137,7 +139,7 @@ export const useHamqth = (callsign?: string) => {
         const bcs = baseCallsign(callsign);
 
         if (bcs && (parsedCallsign?.delineation || "").length) {
-            return throttled(callsign);
+            return throttled(bcs);
         }
     }
 

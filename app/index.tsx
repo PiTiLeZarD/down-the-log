@@ -9,6 +9,7 @@ import { Filters, filterQsos } from "./lib/components/filters";
 import { CallsignInput } from "./lib/components/form/callsign-input";
 import { QSO, newQso, qsoLocationFill, useQsos } from "./lib/components/qso";
 import { QsoList } from "./lib/components/qso/qso-list";
+import { band2freq } from "./lib/data/bands";
 import { useStore } from "./lib/utils/store";
 import { Alert } from "./lib/utils/theme/components/alert";
 import { Typography } from "./lib/utils/theme/components/typography";
@@ -45,8 +46,13 @@ const Index: IndexComponent = (): JSX.Element => {
     const { navigate } = useRouter();
 
     const callsign = methods.watch("callsign");
-    const resetQso = () =>
-        methods.reset(newQso("", qsos, currentLocation, undefined, settings.myCallsign, settings.carryOver));
+    const resetQso = () => {
+        const qso = newQso("", qsos, currentLocation, undefined, settings.myCallsign, settings.carryOver);
+        if (!qso.band) qso.band = "20m";
+        if (!qso.frequency) qso.frequency = band2freq("20m");
+        if (!qso.mode) qso.mode = "SSB";
+        methods.reset(qso);
+    };
     useEffect(resetQso, []);
 
     const handleAdd = () => {

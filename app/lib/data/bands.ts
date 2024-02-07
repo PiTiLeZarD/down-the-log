@@ -49,11 +49,11 @@ export const modeBandMap: Partial<Record<Mode, Partial<Record<Band, number>>>> =
 
 export type Band = keyof typeof bands;
 
-export const band2freq = (band?: Band, mode?: Mode): number | null => {
-    if (!band) return null;
+export const band2freq = (band?: Band, mode?: Mode): number | undefined => {
+    if (!band) return undefined;
     const mibBand = roundTo((bands[band][0] + bands[band][1]) / 2, 3);
     if (!mode) return mibBand;
-    if (mode in modeBandMap && band in (modeBandMap[mode] || [])) return modeBandMap[mode]![band] || null;
+    if (mode in modeBandMap && band in (modeBandMap[mode] || [])) return modeBandMap[mode]![band] || undefined;
     return mibBand;
 };
 export const freq2band = (freq?: number): Band | null =>

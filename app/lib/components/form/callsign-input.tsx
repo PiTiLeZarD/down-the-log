@@ -2,6 +2,7 @@ import React, { useEffect } from "react";
 import { useFormContext } from "react-hook-form";
 import { View } from "react-native";
 import { createStyleSheet, useStyles } from "react-native-unistyles";
+import { baseCallsign } from "../../utils/callsign";
 import { useHamqth } from "../../utils/hamqth";
 import { Button } from "../../utils/theme/components/button";
 import { Input } from "../../utils/theme/components/input";
@@ -51,7 +52,7 @@ export const CallsignInput: CallsignInputComponent = ({ handleAdd }): JSX.Elemen
     }, [watch("id")]);
 
     useEffect(() => {
-        if (hamqthCSData) {
+        if (hamqthCSData && hamqthCSData.callsign == baseCallsign(inputValue)) {
             setValue("name", hamqthCSData.name);
             setValue("qth", hamqthCSData.qth);
             setValue("locator", hamqthCSData.grid);
