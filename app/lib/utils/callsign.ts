@@ -7,7 +7,7 @@ export type CsDataType = (CallsignData & { state?: string }) | undefined;
 export const getCallsignData = (callsign: string): CsDataType => {
     if (!callsign) return undefined;
 
-    const data: CsDataType = callsigns.find((cd) => cd.regexp.test(callsign));
+    const data: CsDataType = callsigns.find((cd) => cd.regexp.test(baseCallsign(callsign) || callsign));
     if (data?.states) {
         data.state = Object.entries(data.states).reduce<string | undefined>(
             (acc, [state, regexp]) => acc || (regexp.test(callsign) ? state : undefined),

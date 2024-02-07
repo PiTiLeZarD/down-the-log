@@ -6,6 +6,7 @@ export type Continent = (typeof continents)[number];
 export type CallsignData = {
     iso3: string;
     dxcc: string;
+    dxccAlt?: string[];
     regexp: RegExp;
     gs: string;
     ctn: Continent;
@@ -403,7 +404,8 @@ export const callsigns: CallsignData[] = [
     },
     {
         iso3: "COK",
-        dxcc: "191",
+        dxcc: "234",
+        dxccAlt: ["191"],
         regexp: /^E5.*/,
         gs: "AH94en",
         ctn: "OC",

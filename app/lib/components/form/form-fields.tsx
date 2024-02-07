@@ -5,8 +5,10 @@ import { Switch } from "react-native-gesture-handler";
 import { createStyleSheet, useStyles } from "react-native-unistyles";
 import Swal from "sweetalert2";
 import { continents } from "../../data/callsigns";
+import { getCallsignData } from "../../utils/callsign";
 import { Modal } from "../../utils/modal";
 import { useStore } from "../../utils/store";
+import { Alert } from "../../utils/theme/components/alert";
 import { Button } from "../../utils/theme/components/button";
 import { Typography } from "../../utils/theme/components/typography";
 import { SwalTheme } from "../../utils/theme/theme";
@@ -46,6 +48,17 @@ const stylesheet = createStyleSheet((theme) => ({
         borderBottomColor: theme.colours.primary[theme.shades.dark],
         borderStyle: "dashed",
     },
+    locsubtitle: (alert: boolean = false) => ({
+        flex: 1,
+        textAlign: "center",
+        borderRadius: theme.margins.md,
+        ...(alert
+            ? {
+                  backgroundColor: theme.colours.secondary[theme.shades.dark],
+                  color: "white",
+              }
+            : {}),
+    }),
 }));
 
 export type FormFieldsProps = {
@@ -61,6 +74,7 @@ export const FormFields: FormFieldsComponent = ({ qso }): JSX.Element => {
     const settings = useSettings();
     const { setValue } = useFormContext<QSO>();
     const goBack = useGoBack();
+    const csdata = getCallsignData(qso.callsign);
 
     const onDelete = () => {
         if (qso) deleteLog(qso);
@@ -120,16 +134,16 @@ export const FormFields: FormFieldsComponent = ({ qso }): JSX.Element => {
                 </Stack>
                 {qso && (
                     <Stack direction="row">
-                        <Typography variant="subtitle" style={{ flex: 1, textAlign: "center" }}>
+                        <Typography variant="subtitle" style={styles.locsubtitle()}>
                             CQ: {qso.cqzone}
                         </Typography>
-                        <Typography variant="subtitle" style={{ flex: 1, textAlign: "center" }}>
+                        <Typography variant="subtitle" style={styles.locsubtitle()}>
                             ITU: {qso.ituzone}
                         </Typography>
-                        <Typography variant="subtitle" style={{ flex: 1, textAlign: "center" }}>
+                        <Typography variant="subtitle" style={styles.locsubtitle(!!csdata?.dxccAlt)}>
                             DXCC: {qso.dxcc}
                         </Typography>
-                        <Typography variant="subtitle" style={{ flex: 1, textAlign: "center" }}>
+                        <Typography variant="subtitle" style={styles.locsubtitle()}>
                             QRB: {qso.distance}km
                         </Typography>
                     </Stack>
@@ -142,6 +156,14 @@ export const FormFields: FormFieldsComponent = ({ qso }): JSX.Element => {
                     <FormField name="cqzone" label="CQZone:" />
                     <FormField name="ituzone" label="ITUZone:" />
                     <FormField name="dxcc" label="DXCC:" />
+                    {csdata?.dxccAlt && (
+                        <Alert severity="info">
+                            <Typography>
+                                Alertnate DXCC:{" "}
+                                {[...csdata?.dxccAlt, csdata?.dxcc].filter((d) => +d !== qso.dxcc).join(", ")}
+                            </Typography>
+                        </Alert>
+                    )}
                     <Typography variant="h3" underline>
                         QSL
                     </Typography>

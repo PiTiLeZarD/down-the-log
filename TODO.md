@@ -4,15 +4,8 @@ This is the rough todolist I want to work on.
 
 ## Must have
 
--   [ ] Find a way to differeciate between south cook island and north cook island dxcc entities since they share the same callsigns (maybe separate the dxcc list from the callsigns)
 -   [ ] should make a visual indication that hamqth isn't available, it happens often
 -   [ ] light/dark theme
--   [ ] integrations
-    -   [x] qrz integration
-    -   [ ] qrzcq (https://www.qrzcq.com/docs/api/xml/)
-    -   [x] hamQTH
-    -   [x] eqsl
-    -   [x] lotw ([this one sounds tough, gotta sign adif exports, let's see](https://lotw.arrl.org/lotw-help/developer-information/?lang=en))
 
 ## Good to have
 
@@ -44,6 +37,12 @@ This is the rough todolist I want to work on.
 
 ## Done
 
+-   [x] integrations
+    -   [x] qrz integration
+    -   [x] hamQTH
+    -   [x] eqsl
+    -   [x] lotw ([this one sounds tough, gotta sign adif exports, let's see](https://lotw.arrl.org/lotw-help/developer-information/?lang=en))
+-   [x] Find a way to differeciate between south cook island and north cook island dxcc entities since they share the same callsigns (maybe separate the dxcc list from the callsigns)
 -   [x] Improve the QSO form page so it's nice usable and has all details fillable
     -   [x] S/N input to help fill tx/rx report up real quick
     -   [x] add all the rest of the fields (check adif spec and rumlog)
