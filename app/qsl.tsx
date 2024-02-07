@@ -10,6 +10,7 @@ import { QSO, findMatchingQso, useQsos } from "./lib/components/qso";
 import { Stack } from "./lib/components/stack";
 import { TabsLayout } from "./lib/components/tabs-layout";
 import { adifFileToRecordList, adxFileToRecordList, downloadQsos, record2qso } from "./lib/utils/adif";
+import { baseCallsign } from "./lib/utils/callsign";
 import { useStore } from "./lib/utils/store";
 import { Alert } from "./lib/utils/theme/components/alert";
 import { Button } from "./lib/utils/theme/components/button";
@@ -82,10 +83,18 @@ const Qsl: QslComponent = (): JSX.Element => {
                     });
 
                     if (toImport.length !== updates.length) {
-                        console.group("QSOs unmatched:");
+                        console.group("QSOs unmatched and possible matches:");
                         updates.forEach(([q, matching]) => {
-                            if (!matching)
-                                console.info(`Callsign: ${q?.callsign} Date: ${q?.date.toFormat("yyyy-MM-dd HHmm")}`);
+                            if (!matching) {
+                                console.info(`Callsign: ${q?.callsign} Date: ${q?.date.toFormat("yyyy-MM-dd HH:mm")}`);
+                                qsos.filter(
+                                    (qq) => baseCallsign(qq.callsign) === baseCallsign(q?.callsign || ""),
+                                ).forEach((qq) =>
+                                    console.info(
+                                        `-> ${qq.callsign} > ${qq.date.toFormat("yyyy-MM-dd HH:mm")} ( /qso?qsoId=${qq.id} )`,
+                                    ),
+                                );
+                            }
                         });
                         console.groupEnd;
                     }
