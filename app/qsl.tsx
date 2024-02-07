@@ -2,7 +2,6 @@ import { DateTime } from "luxon";
 import React from "react";
 import { View } from "react-native";
 import { useStyles } from "react-native-unistyles";
-import Swal from "sweetalert2";
 import { stylesheet } from "./lib/components/adif/import";
 import { Dropzone, FileWithPreview } from "./lib/components/dropzone";
 import { PageLayout } from "./lib/components/page-layout";
@@ -15,7 +14,7 @@ import { useStore } from "./lib/utils/store";
 import { Alert } from "./lib/utils/theme/components/alert";
 import { Button } from "./lib/utils/theme/components/button";
 import { Typography } from "./lib/utils/theme/components/typography";
-import { SwalTheme } from "./lib/utils/theme/theme";
+import { fireSwal } from "./lib/utils/theme/swal";
 import { useSettings } from "./lib/utils/use-settings";
 
 export type QslProps = {};
@@ -24,7 +23,7 @@ export type QslComponent = React.FC<QslProps>;
 
 const Qsl: QslComponent = (): JSX.Element => {
     const qsos = useQsos();
-    const { styles } = useStyles(stylesheet);
+    const { styles, theme } = useStyles(stylesheet);
     const log = useStore((state) => state.log);
     const today = DateTime.local().toFormat("yyyyMMdd");
     const settings = useSettings();
@@ -70,8 +69,8 @@ const Qsl: QslComponent = (): JSX.Element => {
                         .map(([q, matching]) => matching) as QSO[];
                     log(toImport);
 
-                    Swal.fire({
-                        ...SwalTheme,
+                    fireSwal({
+                        theme,
                         title: "Done!",
                         text: `${toImport.length} records have been matched! ${
                             toImport.length !== updates.length

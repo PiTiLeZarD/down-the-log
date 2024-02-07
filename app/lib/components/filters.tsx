@@ -1,7 +1,7 @@
 import { useRouter } from "expo-router";
 import React from "react";
 import { View, useWindowDimensions } from "react-native";
-import Swal from "sweetalert2";
+import { useStyles } from "react-native-unistyles";
 import { callsigns } from "../data/callsigns";
 import { countries } from "../data/countries";
 import { sortNumsAndAlpha, unique } from "../utils/arrays";
@@ -13,7 +13,7 @@ import { Button } from "../utils/theme/components/button";
 import { Input } from "../utils/theme/components/input";
 import { PaginatedList } from "../utils/theme/components/paginated-list";
 import { Typography } from "../utils/theme/components/typography";
-import { SwalTheme } from "../utils/theme/theme";
+import { fireSwal } from "../utils/theme/swal";
 import { QSO, hasEvent, useQsos } from "./qso";
 import { Stack } from "./stack";
 
@@ -96,6 +96,7 @@ const castValue = (k: string, v: string) => {
 export type FiltersComponent = React.FC<FiltersProps>;
 
 export const Filters: FiltersComponent = ({ showTag }): JSX.Element => {
+    const { theme } = useStyles();
     const filters = useStore((state) => state.filters);
     const qsos = filterQsos(useQsos(), filters);
     const { height } = useWindowDimensions();
@@ -129,8 +130,8 @@ export const Filters: FiltersComponent = ({ showTag }): JSX.Element => {
         log(qsos.map((q) => ({ ...q, ...castedValues })));
         setTagValues({});
         setTagModal(false);
-        Swal.fire({
-            ...SwalTheme,
+        fireSwal({
+            theme,
             title: "Done!",
             text: `Updated ${qsos.length} QSOs`,
             icon: "success",

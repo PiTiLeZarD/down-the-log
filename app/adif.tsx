@@ -1,6 +1,6 @@
 import React from "react";
 import { Pressable, View } from "react-native";
-import Swal from "sweetalert2";
+import { useStyles } from "react-native-unistyles";
 import { Export } from "./lib/components/adif/export";
 import { Import } from "./lib/components/adif/import";
 import { PageLayout } from "./lib/components/page-layout";
@@ -13,13 +13,14 @@ import { Alert } from "./lib/utils/theme/components/alert";
 import { Button } from "./lib/utils/theme/components/button";
 import { Icon } from "./lib/utils/theme/components/icon";
 import { Typography } from "./lib/utils/theme/components/typography";
-import { SwalTheme } from "./lib/utils/theme/theme";
+import { fireSwal } from "./lib/utils/theme/swal";
 
 export type AdifProps = {};
 
 export type AdifComponent = React.FC<AdifProps>;
 
 const Adif: AdifComponent = (): JSX.Element => {
+    const { theme } = useStyles();
     const [showHoneypotDetails, setShowHoneypotDetails] = React.useState<boolean>(false);
     const resetStore = useStore((state) => state.resetStore);
     const qsos = useQsos();
@@ -32,8 +33,8 @@ const Adif: AdifComponent = (): JSX.Element => {
 
     const handleErase = () => {
         resetStore();
-        Swal.fire({
-            ...SwalTheme,
+        fireSwal({
+            theme,
             title: "Done!",
             text: "All records have been erased!",
             icon: "success",

@@ -1,12 +1,10 @@
-import { DateTime } from "luxon";
 import React from "react";
 import { Platform, View } from "react-native";
 import { createStyleSheet, useStyles } from "react-native-unistyles";
-import Swal from "sweetalert2";
 import { adifFileToRecordList, adxFileToRecordList, record2qso } from "../../utils/adif";
 import { useStore } from "../../utils/store";
 import { Typography } from "../../utils/theme/components/typography";
-import { SwalTheme } from "../../utils/theme/theme";
+import { fireSwal } from "../../utils/theme/swal";
 import { useSettings } from "../../utils/use-settings";
 import { Dropzone, FileWithPreview } from "../dropzone";
 import { QSO, findMatchingQso, qsoLocationFill, useQsos } from "../qso";
@@ -35,17 +33,11 @@ export type ImportProps = {};
 export type ImportComponent = React.FC<ImportProps>;
 
 export const Import: ImportComponent = (): JSX.Element => {
+    const { theme, styles } = useStyles(stylesheet);
     const qsos = useQsos();
     const log = useStore((state) => state.log);
-    const { styles } = useStyles(stylesheet);
     const currentLocation = useStore((state) => state.currentLocation);
     const settings = useSettings();
-
-    const fromDate = (
-        qsos.reverse().find((q) => q.myCallsign === settings.myCallsign) || {
-            date: DateTime.local().minus({ month: 1 }),
-        }
-    ).date;
 
     const handleImport = (files: FileWithPreview[]) => {
         files.map((file) => {
@@ -72,8 +64,8 @@ export const Import: ImportComponent = (): JSX.Element => {
                             return q;
                         });
                     log(toImport);
-                    Swal.fire({
-                        ...SwalTheme,
+                    fireSwal({
+                        theme,
                         title: "Done!",
                         text: `All ${toImport.length} records have been imported!`,
                         icon: "success",

@@ -21,64 +21,61 @@ export const hexToRgb = (hex: string) => {
           }
         : null;
 };
+
 export const hexToCssRgb = (hex: string) => {
     const rgb = hexToRgb(hex);
     return `rgb(${rgb?.r}, ${rgb?.g}, ${rgb?.b})`;
 };
 
-export const theme = {
-    colours: {
-        // primary: reverseColour(colours.blue),
-        // secondary: reverseColour(colours.orange),
-        // grey: reverseColour(colours.gray),
-        // success: reverseColour(colours.green),
-        primary: colours.blue,
-        secondary: colours.orange,
-        grey: colours.gray,
-        success: colours.green,
-    },
-    components: {
-        typography: {
-            color: "black",
-            fontFamily: "Quicksand",
-            fontWeight: "400",
-            fontSize: PixelRatio.getFontScale() * 16,
+export const theme = (shade: "light" | "dark") =>
+    ({
+        colours: {
+            // primary: reverseColour(colours.blue),
+            // secondary: reverseColour(colours.orange),
+            // grey: reverseColour(colours.gray),
+            // success: reverseColour(colours.green),
+            primary: colours.blue,
+            secondary: colours.orange,
+            grey: colours.gray,
+            success: colours.green,
         },
-        button: {
-            flex: 1,
-            paddingTop: 8,
-            paddingBottom: 8,
-            paddingLeft: 16,
-            paddingRight: 16,
-            borderRadius: 4,
+        components: {
+            typography: {
+                color: "black",
+                fontFamily: "Quicksand",
+                fontWeight: "400",
+                fontSize: PixelRatio.getFontScale() * 16,
+            },
+            button: {
+                flex: 1,
+                paddingTop: 8,
+                paddingBottom: 8,
+                paddingLeft: 16,
+                paddingRight: 16,
+                borderRadius: 4,
+            },
+            buttonText: {
+                textAlign: "center",
+                textTransform: "uppercase",
+                fontWeight: "bold",
+            },
         },
-        buttonText: {
-            textAlign: "center",
-            textTransform: "uppercase",
-            fontWeight: "bold",
+        margins: {
+            xs: 1,
+            sm: 2,
+            md: 4,
+            lg: 8,
+            xl: 12,
+            xxl: 16,
         },
-    },
-    margins: {
-        xs: 1,
-        sm: 2,
-        md: 4,
-        lg: 8,
-        xl: 12,
-        xxl: 16,
-    },
-    shades: {
-        lighter: 100,
-        light: 300,
-        main: 500,
-        dark: 700,
-        darker: 900,
-    },
-} as const;
+        shades: {
+            lighter: 100,
+            light: 300,
+            main: 500,
+            dark: 700,
+            darker: 900,
+        },
+    }) as const;
 
-export const SwalTheme = {
-    confirmButtonColor: theme.colours.primary[theme.shades.dark],
-    denyButtonColor: theme.colours.secondary[theme.shades.dark],
-    cancelButtonColor: theme.colours.grey[theme.shades.dark],
-};
-
-export type ColourVariant = keyof typeof theme.colours;
+export type ThemeType = ReturnType<typeof theme>;
+export type ColourVariant = keyof ThemeType["colours"];

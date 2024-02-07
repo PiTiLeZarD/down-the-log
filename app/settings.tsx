@@ -1,6 +1,6 @@
 import React from "react";
 import { Switch } from "react-native";
-import Swal from "sweetalert2";
+import { useStyles } from "react-native-unistyles";
 import { PageLayout } from "./lib/components/page-layout";
 import { PickFavourite } from "./lib/components/pick-favourite";
 import { Stack } from "./lib/components/stack";
@@ -13,7 +13,7 @@ import { useStore } from "./lib/utils/store";
 import { Button } from "./lib/utils/theme/components/button";
 import { Input } from "./lib/utils/theme/components/input";
 import { Typography } from "./lib/utils/theme/components/typography";
-import { SwalTheme } from "./lib/utils/theme/theme";
+import { fireSwal } from "./lib/utils/theme/swal";
 import { useSettings } from "./lib/utils/use-settings";
 
 export type SettingsProps = {};
@@ -21,6 +21,7 @@ export type SettingsProps = {};
 export type SettingsComponent = React.FC<SettingsProps>;
 
 const Settings: SettingsComponent = (): JSX.Element => {
+    const { theme } = useStyles();
     const settings = useSettings();
     const currentLocation = useStore((state) => state.currentLocation);
     const updateSetting = useStore((state) => state.updateSetting);
@@ -145,8 +146,8 @@ const Settings: SettingsComponent = (): JSX.Element => {
                                     sessionId: undefined,
                                     sessionStart: undefined,
                                 } as HamQTHSettingsType);
-                                Swal.fire({
-                                    ...SwalTheme,
+                                fireSwal({
+                                    theme,
                                     title: "HamQTH",
                                     text: "Session refreshed, a new one will be requested on next refresh",
                                     icon: "info",

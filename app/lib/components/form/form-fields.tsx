@@ -3,7 +3,6 @@ import { useFormContext } from "react-hook-form";
 import { Pressable, View } from "react-native";
 import { Switch } from "react-native-gesture-handler";
 import { createStyleSheet, useStyles } from "react-native-unistyles";
-import Swal from "sweetalert2";
 import { continents } from "../../data/callsigns";
 import { getCallsignData } from "../../utils/callsign";
 import { Modal } from "../../utils/modal";
@@ -11,7 +10,7 @@ import { useStore } from "../../utils/store";
 import { Alert } from "../../utils/theme/components/alert";
 import { Button } from "../../utils/theme/components/button";
 import { Typography } from "../../utils/theme/components/typography";
-import { SwalTheme } from "../../utils/theme/theme";
+import { fireSwal } from "../../utils/theme/swal";
 import { useGoBack } from "../../utils/use-go-back";
 import { useSettings } from "../../utils/use-settings";
 import { ButtonOffset } from "../button-offset";
@@ -68,8 +67,8 @@ export type FormFieldsProps = {
 export type FormFieldsComponent = React.FC<FormFieldsProps>;
 
 export const FormFields: FormFieldsComponent = ({ qso }): JSX.Element => {
+    const { styles, theme } = useStyles(stylesheet);
     const [openTimeLocModal, setOpenTimeLocModal] = React.useState<boolean>(false);
-    const { styles } = useStyles(stylesheet);
     const deleteLog = useStore((state) => state.deleteLog);
     const settings = useSettings();
     const { setValue } = useFormContext<QSO>();
@@ -82,8 +81,8 @@ export const FormFields: FormFieldsComponent = ({ qso }): JSX.Element => {
     };
 
     const qslInfo = () => {
-        Swal.fire({
-            ...SwalTheme,
+        fireSwal({
+            theme,
             title: "eQSL/LoTW",
             text: "If you've received a qsl, the button will light up green, if you've sent it, it'll be blue and grey otherwise",
             icon: "info",
