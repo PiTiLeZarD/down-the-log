@@ -96,7 +96,7 @@ export const FormFields: FormFieldsComponent = ({ qso }): JSX.Element => {
                     {qso && (
                         <Stack direction="row">
                             <Typography variant="h6" style={{ flex: 1 }}>
-                                {qso.date.toFormat("dd/MM/yyyy")}
+                                {qso.date.toFormat(settings.datemonth ? "MM-dd-yyyy" : "dd/MM/yyyy")}
                             </Typography>
                             <Stack direction="row" style={{ flexGrow: 1 }}>
                                 <Button
@@ -137,6 +137,8 @@ export const FormFields: FormFieldsComponent = ({ qso }): JSX.Element => {
             </Pressable>
             <Modal open={openTimeLocModal} onClose={() => setOpenTimeLocModal(false)}>
                 <Stack>
+                    <FormField role="date" name="date" label="Date:" />
+                    <FormField role="time" name="date" label="Time:" />
                     <FormField name="cqzone" label="CQZone:" />
                     <FormField name="ituzone" label="ITUZone:" />
                     <FormField name="dxcc" label="DXCC:" />
@@ -154,7 +156,7 @@ export const FormFields: FormFieldsComponent = ({ qso }): JSX.Element => {
                     </Grid>
                     <Grid container>
                         <Grid item xs={4}>
-                            LoTW
+                            <Typography>LoTW</Typography>
                         </Grid>
                         <Grid item xs={4}>
                             <Switch value={qso.lotw_sent} onValueChange={(v) => setValue("lotw_sent", v)} />
@@ -165,7 +167,7 @@ export const FormFields: FormFieldsComponent = ({ qso }): JSX.Element => {
                     </Grid>
                     <Grid container>
                         <Grid item xs={4}>
-                            eQSL
+                            <Typography>eQSL</Typography>
                         </Grid>
                         <Grid item xs={4}>
                             <Switch value={qso.eqsl_sent} onValueChange={(v) => setValue("eqsl_sent", v)} />

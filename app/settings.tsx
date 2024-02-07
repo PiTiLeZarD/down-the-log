@@ -68,10 +68,15 @@ const Settings: SettingsComponent = (): JSX.Element => {
                             if (!v) updateFilters([]);
                         }}
                     />
-                    <Typography underline>Imperial distances:</Typography>
+                    <Typography underline>Imperial distances (miles):</Typography>
                     <Switch
                         value={settings.imperial != undefined ? settings.imperial : false}
                         onValueChange={(v) => updateSetting("imperial", v)}
+                    />
+                    <Typography underline>Date format ({settings.datemonth ? "MM-dd-yyyy" : "dd/MM/yyyy"}):</Typography>
+                    <Switch
+                        value={settings.datemonth != undefined ? settings.datemonth : false}
+                        onValueChange={(v) => updateSetting("datemonth", v)}
                     />
                     <Typography underline>Contest Mode:</Typography>
                     <Switch

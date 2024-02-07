@@ -1,9 +1,11 @@
-import React from "react";
+import { DateTime } from "luxon";
+import React, { useEffect } from "react";
 import { useController, useFormContext } from "react-hook-form";
 import { countries } from "../../data/countries";
 import { Input } from "../../utils/theme/components/input";
 import { SelectInput } from "../../utils/theme/components/select-input";
 import { Typography } from "../../utils/theme/components/typography";
+import { useSettings } from "../../utils/use-settings";
 import { QSO } from "../qso";
 import { Stack } from "../stack";
 
@@ -12,7 +14,7 @@ export type FormFieldProps = {
     label?: React.ReactNode;
     placeholder?: string;
     numberOfLines?: number;
-    role?: "text" | "select" | "textarea" | "country";
+    role?: "text" | "select" | "textarea" | "country" | "date" | "time";
     options?: Record<string, string>;
 } & Record<string, unknown>;
 
@@ -27,10 +29,29 @@ export const FormField: FormFieldComponent = ({
     options,
     ...otherProps
 }): JSX.Element => {
-    const { control } = useFormContext<QSO>();
+    const { control, setValue } = useFormContext<QSO>();
     const { field } = useController({ name, control });
-
     const value = String(field.value || "");
+
+    const settings = useSettings();
+    const dtFormat = role === "date" ? (settings.datemonth ? "MM-dd-yyyy" : "dd/MM/yyyy") : "HH:mm:ss";
+    const dtValue = ["date", "time"].includes(role) ? (field.value as DateTime).toFormat(dtFormat) : undefined;
+    const [userInput, setUserInput] = React.useState<string>(dtValue || "");
+    useEffect(() => {
+        const dt = DateTime.fromFormat(userInput, dtFormat);
+        if (dt.isValid) {
+            const prev = field.value as DateTime;
+            const values = dt.toObject();
+            setValue(
+                name,
+                prev.set(
+                    role === "date"
+                        ? { day: values.day, month: values.month, year: values.year }
+                        : { hour: values.hour, minute: values.minute, second: values.second },
+                ),
+            );
+        }
+    }, [userInput]);
 
     return (
         <Stack>
@@ -49,6 +70,17 @@ export const FormField: FormFieldComponent = ({
                     multiline={role === "textarea"}
                     numberOfLines={numberOfLines}
                     aria-label={role === "text" ? "input" : "textarea"}
+                    {...(label ? { "aria-labelledby": `label${field.name}` } : {})}
+                    {...otherProps}
+                />
+            )}
+
+            {(role === "date" || role === "time") && (
+                <Input
+                    value={userInput}
+                    onChangeText={(t) => setUserInput(t)}
+                    placeholder={placeholder}
+                    aria-label={`${role} input`}
                     {...(label ? { "aria-labelledby": `label${field.name}` } : {})}
                     {...otherProps}
                 />

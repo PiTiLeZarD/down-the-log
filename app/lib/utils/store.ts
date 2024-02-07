@@ -16,6 +16,7 @@ export type Settings = {
     showFilters: boolean;
     contestMode: boolean;
     imperial: boolean;
+    datemonth: boolean;
     hamqth?: HamQTHSettingsType;
     google?: GoogleCredentials;
     geocodeMapsCoKey?: string;
@@ -29,6 +30,7 @@ const defaultSettings: Settings = {
     myCallsign: "",
     showBeacons: false,
     imperial: false,
+    datemonth: false,
     showFilters: false,
     contestMode: false,
     favouriteBands: [],

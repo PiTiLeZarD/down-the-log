@@ -6,11 +6,6 @@ This is the rough todolist I want to work on.
 
 -   [ ] Find a way to differeciate between south cook island and north cook island dxcc entities since they share the same callsigns (maybe separate the dxcc list from the callsigns)
 -   [ ] should make a visual indication that hamqth isn't available, it happens often
--   [ ] Improve the QSO form page so it's nice usable and has all details fillable
-    -   [x] S/N input to help fill tx/rx report up real quick
-    -   [x] add all the rest of the fields (check adif spec and rumlog)
-    -   [ ] add https://docs.expo.dev/versions/latest/sdk/date-time-picker/ in the form to edit date/time
-    -   [x] allow filling up itu/cq/dxcc and all that
 -   [ ] light/dark theme
 -   [ ] integrations
     -   [x] qrz integration
@@ -49,6 +44,11 @@ This is the rough todolist I want to work on.
 
 ## Done
 
+-   [x] Improve the QSO form page so it's nice usable and has all details fillable
+    -   [x] S/N input to help fill tx/rx report up real quick
+    -   [x] add all the rest of the fields (check adif spec and rumlog)
+    -   [x] edit date/time (will improve this in the future)
+    -   [x] allow filling up itu/cq/dxcc and all that
 -   [x] Events
     -   [x] Local WWFF rules (VKFF requires 11 contacts)
     -   [x] Handle anything SOTA

@@ -48,12 +48,12 @@ export type QsoListSectionHeaderProps = {
 };
 
 export type QsoListSectionHeaderComponent = React.FC<QsoListSectionHeaderProps>;
-
+``;
 export const QsoListSectionHeader: QsoListSectionHeaderComponent = ({ section, sections }): JSX.Element => {
     const [mapOpen, setmapOpen] = React.useState<boolean>(false);
     const settings = useSettings();
     const { styles } = useStyles(stylesheet);
-    const text = `${sections[section][0].date.toFormat("dd/MM/yyyy")} (${sections[section].length})`;
+    const text = `${sections[section][0].date.toFormat(settings.datemonth ? "MM-dd-yyyy" : "dd/MM/yyyy")} (${sections[section].length})`;
 
     if (!settings.google) {
         return (
@@ -93,8 +93,8 @@ const applyFilters = (qsos: QSO[], filters: QsoListProps["filters"]) =>
     filters ? qsos.filter((qso) => filters.reduce((facc, f) => facc && f(qso), true)) : qsos;
 
 export const QsoList: QsoListComponent = ({ style, filters, qsos, onQsoPress }): JSX.Element => {
-    const launch = (q: QSO[], f: QsoListProps["filters"]) => qsos2sections(applyFilters(q, f));
     const settings = useStore((state) => state.settings);
+    const launch = (q: QSO[], f: QsoListProps["filters"]) => qsos2sections(applyFilters(q, f));
     const throttled = useThrottle(launch, 250);
     const sections = throttled(qsos, filters);
 
