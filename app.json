@@ -31,12 +31,16 @@
         },
         "web": {
             "favicon": "./assets/favicon.png",
-            "bundler": "metro"
+            "bundler": "metro",
+            "output": "single"
         },
         "extra": {
             "eas": {
                 "projectId": "c0afc3d3-e170-4008-a71e-5ebb3eeaa3d6"
             }
+        },
+        "experiments": {
+            "baseUrl": "/down-the-log"
         },
         "plugins": [
             [

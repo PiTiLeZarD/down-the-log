@@ -10,8 +10,8 @@
         "start:ios": "yarn start --ios",
         "start:web": "yarn start --web",
         "start:tauri": "tauri dev",
-        "build": "expo export",
-        "build:all": "yarn build",
+        "build": "expo export --output-dir ./down-the-log",
+        "build:all": "yarn build -c",
         "build:android": "yarn build -p android",
         "build:ios": "yarn build -p ios",
         "build:web": "yarn build -p web",
@@ -22,9 +22,9 @@
         "eas:run:ios": "eas build:run -p ios",
         "eas:start": "yarn start --dev-client",
         "types": "tsc --noEmit",
-        "clean": "rm -Rf dist",
-        "prepages": "yarn clean && yarn build:web && sed -i -e 's/bundles/down-the-log\\/bundles/g' ./dist/index.html && sed -i -e 's/assets/down-the-log\\/assets/g' ./dist/bundles/*.js",
-        "pages": "gh-pages -b ghpages -d dist"
+        "clean": "rm -Rf down-the-log",
+        "prepages": "yarn clean && yarn build:web",
+        "pages": "gh-pages -t -b ghpages -d down-the-log"
     },
     "dependencies": {
         "@babel/plugin-proposal-export-namespace-from": "^7.18.9",

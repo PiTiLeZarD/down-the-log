@@ -1,6 +1,7 @@
 node_modules
 .expo
 dist
+down-the-log
 .DS_Store
 
 # ignore world data for now
