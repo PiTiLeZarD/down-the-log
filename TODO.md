@@ -4,6 +4,7 @@ This is the rough todolist I want to work on.
 
 ## Must have
 
+-   [ ] ragchew mode (starts a timer on a qso, still possible to edit end time on a non ragchew mode)
 -   [ ] should make a visual indication that hamqth isn't available, it happens often
 -   [ ] light/dark theme
 
@@ -19,6 +20,7 @@ This is the rough todolist I want to work on.
     -   [ ] look into automatic/programatic github release
     -   [ ] script the apk/dmg releases
 -   [ ] Have a "Net" module, showing what's going on where and when
+    -   [ ] also plan on grouping qsos in the same net, or having a way to make it visually clear that they all belong to the same thing
 -   [ ] use gdrive as backup/restore
 -   [x] Stats
     -   [x] qsos /continent /country /year,month
