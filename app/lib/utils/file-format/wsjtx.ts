@@ -7,9 +7,9 @@ import { Honeypot, QSORecord, RecordMassageFn, allFields, qso2record } from "./c
 
 export const record2wsjtx = (record: QSORecord): string =>
     [
-        DateTime.fromFormat(record.qso_date as string, "yyyyMMdd").toFormat("yyyy-mm-dd"),
+        DateTime.fromFormat(record.qso_date as string, "yyyyMMdd").toFormat("yyyy-MM-dd"),
         DateTime.fromFormat(record.time_on as string, "HHmmss").toFormat("HH:mm:ss"),
-        DateTime.fromFormat(record.qso_date as string, "yyyyMMdd").toFormat("yyyy-mm-dd"),
+        DateTime.fromFormat(record.qso_date as string, "yyyyMMdd").toFormat("yyyy-MM-dd"),
         DateTime.fromFormat(record.time_on as string, "HHmmss").toFormat("HH:mm:ss"),
         record.call,
         normalise(record.gridsquare)?.substring(0, 4),
@@ -41,10 +41,9 @@ export const wsjtx2Record = (wsjtx: string): QSORecord => {
         _,
     ] = wsjtx.split(",");
     const parsed = parseCallsign(call);
-
     return {
         ...Object.fromEntries(Array.from(allFields).map((f) => [f, undefined])),
-        qso_date: DateTime.fromFormat(qso_date, "yyyy-mm-dd").toFormat("yyyyMMdd"),
+        qso_date: DateTime.fromFormat(qso_date, "yyyy-MM-dd").toFormat("yyyyMMdd"),
         time_on: DateTime.fromFormat(time_on, "HH:mm:ss").toFormat("HHmmss"),
         call,
         pfx: parsed?.prefix,
