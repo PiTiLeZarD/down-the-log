@@ -249,6 +249,24 @@ export const record2adif = (record: QSORecord): string =>
         .flat()
         .join(" ") + "<EOR>";
 
+export const record2wsjtx = (record: QSORecord): string =>
+    [
+        DateTime.fromFormat(record.qso_date as string, "yyyyMMdd").toFormat("yyyy-mm-dd"),
+        DateTime.fromFormat(record.time_on as string, "HHmmss").toFormat("HH:mm:ss"),
+        DateTime.fromFormat(record.qso_date as string, "yyyyMMdd").toFormat("yyyy-mm-dd"),
+        DateTime.fromFormat(record.time_on as string, "HHmmss").toFormat("HH:mm:ss"),
+        record.call,
+        normalise(record.gridsquare)?.substring(0, 4),
+        record.freq,
+        record.mode,
+        record.rst_sent,
+        record.rst_rcvd,
+        record.tx_pwr,
+        record.comment,
+        record.name,
+        "",
+    ].join(",");
+
 export const adif2Record = (adif: string): QSORecord => {
     const record = {
         honeypot: {},
@@ -330,6 +348,9 @@ export const qsos2Adx = (qsos: QSO[], massage: RecordMassageFn = (r) => r): stri
         .map((q) => record2adx(massage(qso2record(q))))
         .join("")}</RECORDS></ADX>`;
 
+export const qsos2Wsjtx = (qsos: QSO[], massage: RecordMassageFn = (r) => r): string =>
+    qsos.map((q) => record2wsjtx(massage(qso2record(q)))).join("\n");
+
 export const adifFileToRecordList = (adif: string): QSORecord[] => {
     let lines = adif.replace(/(?:\\[r]|[\r]+)+/g, "").split("\n");
     if (!lines[0].startsWith("<")) {
@@ -355,10 +376,15 @@ export const adxFileToRecordList = (adx: string): QSORecord[] => {
     return Array.from(doc.getElementsByTagName("RECORD")).map((n) => adx2Record(n));
 };
 
-export const downloadQsos = (title: string, qsos: QSO[], type: "adif" | "adx" = "adif", massage?: RecordMassageFn) =>
+export const downloadQsos = (
+    title: string,
+    qsos: QSO[],
+    type: "adif" | "adx" | "wsjtx" = "adif",
+    massage?: RecordMassageFn,
+) =>
     Object.assign(document.createElement("a"), {
         href: `data:text/plain,${encodeURIComponent(
-            type === "adif" ? qsos2Adif(qsos, massage) : qsos2Adx(qsos, massage),
+            { adif: qsos2Adif, adx: qsos2Adx, wsjtx: qsos2Wsjtx }[type](qsos, massage),
         )}`,
         download: title,
     }).click();
