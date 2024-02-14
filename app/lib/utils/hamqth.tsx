@@ -71,7 +71,7 @@ const swal = (theme: ThemeType, error: Error) => {
 export const fetchSessionId = async (user: string, password: string) =>
     fetchData({ u: user, p: password }).then((doc) => pickXML(doc, "session_id"));
 
-export const fetchCallsignData = async (sessionId: string | undefined, callsign: string) =>
+export const fetchCallsignData = async (sessionId: string, callsign: string) =>
     fetchData({ id: sessionId, callsign, prg: "down-the-log" }).then((doc) => {
         if (pickXML(doc, "error")) return undefined;
         return {
@@ -105,7 +105,7 @@ export const useHamqth = (callsign?: string) => {
 
     const launch = (cs: string) => {
         if (cs && isSessionValid(settings.hamqth)) {
-            return fetchCallsignData(settings.hamqth?.sessionId, cs).catch((e) => swal(theme, e));
+            return fetchCallsignData(settings.hamqth?.sessionId as string, cs).catch((e) => swal(theme, e));
         }
         return undefined;
     };
