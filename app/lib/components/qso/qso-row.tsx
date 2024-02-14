@@ -16,13 +16,13 @@ const stylesheet = createStyleSheet((theme) => ({
     row: (success: boolean) => ({
         backgroundColor:
             theme.colours[success ? "success" : "grey"][
-                UnistylesRuntime.colorScheme === "light" ? (success ? 100 : 200) : success ? 900 : 800
+                UnistylesRuntime.themeName === "light" ? (success ? 100 : 200) : success ? 900 : 800
             ],
     }),
     rowHighlight: (success: boolean) => ({
         backgroundColor:
             theme.colours[success ? "success" : "grey"][
-                UnistylesRuntime.colorScheme === "light" ? (success ? 200 : 300) : success ? 800 : 700
+                UnistylesRuntime.themeName === "light" ? (success ? 200 : 300) : success ? 800 : 700
             ],
     }),
 }));

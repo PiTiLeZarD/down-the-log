@@ -12,7 +12,7 @@ const stylesheet = createStyleSheet((theme) => ({
         marginBottom: theme.margins.xl,
     },
     tabsButtonsContainer: {
-        backgroundColor: theme.colours.grey[theme.shades.lighter],
+        backgroundColor: theme.colours.grey[theme.shades.light],
         borderColor: theme.colours.grey[theme.shades.dark],
         borderWidth: 1,
         borderStyle: "solid",
@@ -34,11 +34,11 @@ const stylesheet = createStyleSheet((theme) => ({
         borderTopWidth: 0,
         borderBottomLeftRadius: theme.margins.xl,
         borderBottomRightRadius: theme.margins.xl,
-        backgroundColor: theme.colours.grey[theme.shades.lighter],
+        backgroundColor: theme.colours.grey[theme.shades.light],
     }),
     tab: (variant: ColourVariant) => ({
         paddingTop: theme.margins.md,
-        backgroundColor: theme.colours[variant][theme.shades.lighter],
+        backgroundColor: theme.colours[variant][theme.shades.light],
         flex: 1,
         alignItems: "center",
     }),

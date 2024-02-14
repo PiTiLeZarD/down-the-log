@@ -1,6 +1,6 @@
 import React from "react";
 import { Switch } from "react-native";
-import { useStyles } from "react-native-unistyles";
+import { UnistylesRuntime, useStyles } from "react-native-unistyles";
 import { PageLayout } from "./lib/components/page-layout";
 import { PickFavourite } from "./lib/components/pick-favourite";
 import { Stack } from "./lib/components/stack";
@@ -56,6 +56,16 @@ const Settings: SettingsComponent = (): JSX.Element => {
                     </Stack>
                 </Stack>
                 <Stack>
+                    <Typography>Theme</Typography>
+                    <Stack direction="row">
+                        <Switch
+                            value={UnistylesRuntime.themeName === "dark"}
+                            onValueChange={(v) => {
+                                UnistylesRuntime.setTheme(v ? "dark" : "light");
+                            }}
+                        />
+                        <Typography>{UnistylesRuntime.themeName}</Typography>
+                    </Stack>
                     <Typography underline>Show NCDXF/IARU Beacons:</Typography>
                     <Switch
                         value={settings.showBeacons != undefined ? settings.showBeacons : false}
