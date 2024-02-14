@@ -8,8 +8,8 @@ import { PageLayout } from "./lib/components/page-layout";
 import { QSO, findMatchingQso, useQsos } from "./lib/components/qso";
 import { Stack } from "./lib/components/stack";
 import { TabsLayout } from "./lib/components/tabs-layout";
-import { adifFileToRecordList, adxFileToRecordList, downloadQsos, record2qso } from "./lib/utils/adif";
 import { baseCallsign } from "./lib/utils/callsign";
+import { downloadQsos, getImportFunctionFromFilename, record2qso } from "./lib/utils/file-format";
 import { useStore } from "./lib/utils/store";
 import { Alert } from "./lib/utils/theme/components/alert";
 import { Button } from "./lib/utils/theme/components/button";
@@ -47,9 +47,7 @@ const Qsl: QslComponent = (): JSX.Element => {
                     const content =
                         typeof fr.result == "string" ? fr.result : new TextDecoder("utf-8").decode(fr.result);
 
-                    const updates = (
-                        file.name.endsWith("adx") ? adxFileToRecordList(content) : adifFileToRecordList(content)
-                    )
+                    const updates = getImportFunctionFromFilename(file.name)(content)
                         .map((r) => record2qso(r))
                         .filter((q) => !!q.callsign)
                         .map((q) => {

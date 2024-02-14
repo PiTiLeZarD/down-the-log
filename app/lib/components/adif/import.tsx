@@ -1,7 +1,7 @@
 import React from "react";
 import { Platform, View } from "react-native";
 import { createStyleSheet, useStyles } from "react-native-unistyles";
-import { adifFileToRecordList, adxFileToRecordList, record2qso } from "../../utils/adif";
+import { getImportFunctionFromFilename, record2qso } from "../../utils/file-format";
 import { useStore } from "../../utils/store";
 import { Typography } from "../../utils/theme/components/typography";
 import { fireSwal } from "../../utils/theme/swal";
@@ -47,9 +47,7 @@ export const Import: ImportComponent = (): JSX.Element => {
                     const content =
                         typeof fr.result == "string" ? fr.result : new TextDecoder("utf-8").decode(fr.result);
 
-                    const toImport: QSO[] = (
-                        file.name.endsWith("adx") ? adxFileToRecordList(content) : adifFileToRecordList(content)
-                    )
+                    const toImport: QSO[] = getImportFunctionFromFilename(file.name)(content)
                         .map((r) => record2qso(r))
                         .map((q) => {
                             if (!q.myLocator) q.myLocator = currentLocation;
@@ -91,7 +89,7 @@ export const Import: ImportComponent = (): JSX.Element => {
                                 Click or drop a file here
                             </Typography>
                             <Typography variant="subtitle" style={{ textAlign: "center" }}>
-                                ADIF/ADX supported
+                                ADIF/ADX/WSJTX supported
                             </Typography>
                         </Stack>
                     </Dropzone>

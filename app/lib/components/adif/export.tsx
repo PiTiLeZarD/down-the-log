@@ -1,6 +1,6 @@
 import { DateTime } from "luxon";
 import React from "react";
-import { downloadQsos } from "../../utils/adif";
+import { downloadQsos } from "../../utils/file-format";
 import { useStore } from "../../utils/store";
 import { Button } from "../../utils/theme/components/button";
 import { Filters, filterQsos } from "../filters";

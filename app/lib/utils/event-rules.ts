@@ -5,8 +5,8 @@ import iotaData from "../data/iota.json";
 import potaData from "../data/pota.json";
 import sotaData from "../data/sota.json";
 import wwffData from "../data/wwff.json";
-import { RecordMassageFn } from "./adif";
 import { clusterByDate, groupBy } from "./arrays";
+import { RecordMassageFn } from "./file-format";
 
 export const capitalise = (s: string) => s.charAt(0).toUpperCase() + s.slice(1);
 export const events = ["wwff", "pota", "sota", "iota", "sig"] as const;

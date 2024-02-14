@@ -3,7 +3,6 @@ import { DateTime } from "luxon";
 import React from "react";
 import { View } from "react-native";
 import { useStyles } from "react-native-unistyles";
-import { downloadQsos } from "../utils/adif";
 import {
     EventActivation,
     EventType,
@@ -13,6 +12,7 @@ import {
     eventFileNameMap,
     rules,
 } from "../utils/event-rules";
+import { downloadQsos } from "../utils/file-format";
 import { useStore } from "../utils/store";
 import { Button } from "../utils/theme/components/button";
 import { Icon } from "../utils/theme/components/icon";
