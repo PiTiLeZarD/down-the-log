@@ -11,6 +11,7 @@ const stylesheet = createStyleSheet((theme) => ({
         borderRadius: theme.margins.md,
         padding: theme.margins.lg,
         backgroundColor: "inherit",
+        color: theme.text.main,
     },
 }));
 

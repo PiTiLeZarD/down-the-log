@@ -54,7 +54,7 @@ const stylesheet = createStyleSheet((theme) => ({
         ...(alert
             ? {
                   backgroundColor: theme.colours.secondary[theme.shades.dark],
-                  color: "white",
+                  color: theme.background,
               }
             : {}),
     }),

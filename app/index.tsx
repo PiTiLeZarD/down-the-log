@@ -27,7 +27,8 @@ const stylesheet = createStyleSheet((theme) => ({
     },
     inputs: {
         width: "100%",
-        backgroundColor: "white",
+        backgroundColor: theme.background,
+        color: theme.text.contrast,
     },
 }));
 

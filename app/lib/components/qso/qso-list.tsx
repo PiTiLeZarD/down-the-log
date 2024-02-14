@@ -6,6 +6,7 @@ import { QSO } from ".";
 import { Modal } from "../../utils/modal";
 import { useStore } from "../../utils/store";
 import { Button } from "../../utils/theme/components/button";
+import { mergeStyles } from "../../utils/theme/components/styles";
 import { Typography } from "../../utils/theme/components/typography";
 import { useSettings } from "../../utils/use-settings";
 import { useThrottle } from "../../utils/use-throttle";
@@ -27,6 +28,9 @@ const qsos2sections = (qsos: QSO[]): QSO[][] =>
 const LINEHEIGHT = 28;
 
 const stylesheet = createStyleSheet((theme) => ({
+    biglist: {
+        backgroundColor: theme.background,
+    },
     sectionHeader: {
         flex: 1,
         display: "flex",
@@ -93,6 +97,7 @@ const applyFilters = (qsos: QSO[], filters: QsoListProps["filters"]) =>
     filters ? qsos.filter((qso) => filters.reduce((facc, f) => facc && f(qso), true)) : qsos;
 
 export const QsoList: QsoListComponent = ({ style, filters, qsos, onQsoPress }): JSX.Element => {
+    const { styles } = useStyles(stylesheet);
     const settings = useStore((state) => state.settings);
     const launch = (q: QSO[], f: QsoListProps["filters"]) => qsos2sections(applyFilters(q, f));
     const throttled = useThrottle(launch, 250);
@@ -102,7 +107,7 @@ export const QsoList: QsoListComponent = ({ style, filters, qsos, onQsoPress }):
 
     return (
         <BigList
-            style={style}
+            style={mergeStyles<ViewStyle>(styles.biglist, style)}
             placeholder
             stickySectionHeadersEnabled={false}
             sections={sections}

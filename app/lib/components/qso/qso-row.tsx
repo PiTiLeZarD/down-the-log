@@ -1,6 +1,6 @@
 import React from "react";
 import { Pressable, TextStyle } from "react-native";
-import { createStyleSheet, useStyles } from "react-native-unistyles";
+import { UnistylesRuntime, createStyleSheet, useStyles } from "react-native-unistyles";
 import { Typography } from "../../utils/theme/components/typography";
 import { Grid } from "../grid";
 
@@ -14,10 +14,16 @@ const stylesheet = createStyleSheet((theme) => ({
         fontWeight: "bold",
     }),
     row: (success: boolean) => ({
-        backgroundColor: theme.colours[success ? "success" : "grey"][success ? 100 : 200],
+        backgroundColor:
+            theme.colours[success ? "success" : "grey"][
+                UnistylesRuntime.colorScheme === "light" ? (success ? 100 : 200) : success ? 900 : 800
+            ],
     }),
     rowHighlight: (success: boolean) => ({
-        backgroundColor: theme.colours[success ? "success" : "grey"][success ? 200 : 300],
+        backgroundColor:
+            theme.colours[success ? "success" : "grey"][
+                UnistylesRuntime.colorScheme === "light" ? (success ? 200 : 300) : success ? 800 : 700
+            ],
     }),
 }));
 

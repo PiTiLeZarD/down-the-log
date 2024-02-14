@@ -25,7 +25,7 @@ const stylesheet = createStyleSheet((theme) => ({
         padding: theme.margins.md,
     },
     input: {
-        backgroundColor: "white",
+        backgroundColor: theme.background,
     },
 }));
 

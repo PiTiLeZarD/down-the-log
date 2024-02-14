@@ -1,13 +1,16 @@
 import { PixelRatio } from "react-native";
 import colours from "./colours.json";
 
-export const colour = (name: string, shade: number) =>
-    ((colours as Record<string, Record<string, string>>)[name] || {})[String(shade)] || "#FF0000";
+export type Colour = Record<"100" | "200" | "300" | "400" | "500" | "600" | "700" | "800" | "900", string>;
+export type Colours = Record<
+    "gray" | "red" | "orange" | "yellow" | "green" | "teal" | "blue" | "indigo" | "purple" | "pink",
+    Colour
+>;
+export type Shade = "lighter" | "light" | "main" | "dark" | "darker";
+export type ColourVariant = "primary" | "secondary" | "grey" | "success";
 
-const reverseColour = (colour: Record<string, string>) =>
-    Object.fromEntries(
-        new Array(9).fill(null).map((_, i) => [String((i + 1) * 100), colour[String(1000 - (i + 1) * 100)]]),
-    );
+export const colour = (name: keyof Colours, shade: keyof Colour) =>
+    ((colours as Colours)[name] || {})[shade] || "#FF0000";
 
 const cToHex = (c: number) => c.toString(16).padStart(2, "0");
 export const rgbToHex = (r: number, g: number, b: number) => "#" + cToHex(r) + cToHex(g) + cToHex(b);
@@ -30,18 +33,13 @@ export const hexToCssRgb = (hex: string) => {
 export const theme = (shade: "light" | "dark") =>
     ({
         colours: {
-            // primary: reverseColour(colours.blue),
-            // secondary: reverseColour(colours.orange),
-            // grey: reverseColour(colours.gray),
-            // success: reverseColour(colours.green),
             primary: colours.blue,
             secondary: colours.orange,
             grey: colours.gray,
             success: colours.green,
-        },
+        } as Record<ColourVariant, Colour>,
         components: {
             typography: {
-                color: "black",
                 fontFamily: "Quicksand",
                 fontWeight: "400",
                 fontSize: PixelRatio.getFontScale() * 16,
@@ -60,6 +58,11 @@ export const theme = (shade: "light" | "dark") =>
                 fontWeight: "bold",
             },
         },
+        background: shade == "light" ? colours.gray[100] : colours.gray[900],
+        text: {
+            main: shade == "light" ? colours.gray[900] : colours.gray[100],
+            contrast: shade == "light" ? colours.gray[100] : colours.gray[900],
+        },
         margins: {
             xs: 1,
             sm: 2,
@@ -68,14 +71,21 @@ export const theme = (shade: "light" | "dark") =>
             xl: 12,
             xxl: 16,
         },
-        shades: {
-            lighter: 100,
-            light: 300,
-            main: 500,
-            dark: 700,
-            darker: 900,
-        },
+        shades: (shade === "light"
+            ? {
+                  lighter: "100",
+                  light: "300",
+                  main: "500",
+                  dark: "700",
+                  darker: "900",
+              }
+            : {
+                  lighter: "900",
+                  light: "700",
+                  main: "500",
+                  dark: "300",
+                  darker: "100",
+              }) as Record<Shade, keyof Colour>,
     }) as const;
 
 export type ThemeType = ReturnType<typeof theme>;
-export type ColourVariant = keyof ThemeType["colours"];

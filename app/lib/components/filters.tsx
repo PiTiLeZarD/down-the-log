@@ -1,7 +1,7 @@
 import { useRouter } from "expo-router";
 import React from "react";
 import { View, useWindowDimensions } from "react-native";
-import { useStyles } from "react-native-unistyles";
+import { createStyleSheet, useStyles } from "react-native-unistyles";
 import { callsigns } from "../data/callsigns";
 import { countries } from "../data/countries";
 import { sortNumsAndAlpha, unique } from "../utils/arrays";
@@ -16,6 +16,12 @@ import { Typography } from "../utils/theme/components/typography";
 import { fireSwal } from "../utils/theme/swal";
 import { QSO, hasEvent, useQsos } from "./qso";
 import { Stack } from "./stack";
+
+const stylesheet = createStyleSheet((theme) => ({
+    container: {
+        backgroundColor: theme.background,
+    },
+}));
 
 export type FilterFunction = (qso: QSO) => string[];
 const dxcc2countrymap = Object.fromEntries(callsigns.map((csd) => [+csd.dxcc, csd.iso3]));
@@ -96,6 +102,7 @@ const castValue = (k: string, v: string) => {
 export type FiltersComponent = React.FC<FiltersProps>;
 
 export const Filters: FiltersComponent = ({ showTag }): JSX.Element => {
+    const { styles } = useStyles(stylesheet);
     const { theme } = useStyles();
     const filters = useStore((state) => state.filters);
     const qsos = filterQsos(useQsos(), filters);
@@ -139,7 +146,7 @@ export const Filters: FiltersComponent = ({ showTag }): JSX.Element => {
         });
     };
     return (
-        <Stack direction="row">
+        <Stack direction="row" style={styles.container}>
             <Stack direction="row" style={{ flexGrow: 1 }}>
                 <Typography variant="em">Filters:</Typography>
                 {filters.map(({ name, values }) => (
