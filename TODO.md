@@ -9,7 +9,6 @@ This is the rough todolist I want to work on.
 -   [ ] there's issues to what is prefilled while making a bunch of qsos.
 -   [ ] shouldn't be able to click on the date header if the google maps api isn't filled (or maybe put something else instead?)
 -   [ ] should make a visual indication that hamqth isn't available, it happens often
--   [ ] light/dark theme
 
 ## Good to have
 
@@ -42,6 +41,7 @@ This is the rough todolist I want to work on.
 
 ## Done
 
+-   [x] light/dark theme
 -   [x] integrations
     -   [x] qrz integration
     -   [x] hamQTH
