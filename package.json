@@ -2,7 +2,7 @@
     "name": "down-the-log",
     "version": "0.0.1",
     "main": "expo-router/entry",
-    "homepage": "https://pitilezard.github.io/down-the-log",
+    "homepage": "/down-the-log",
     "scripts": {
         "start": "expo start -c --port 19000",
         "start:all": "yarn start",
