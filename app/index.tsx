@@ -7,9 +7,8 @@ import { createStyleSheet, useStyles } from "react-native-unistyles";
 import { Beacons } from "./lib/components/beacons";
 import { Filters, filterQsos } from "./lib/components/filters";
 import { CallsignInput } from "./lib/components/form/callsign-input";
-import { QSO, newQso, qsoLocationFill, useQsos } from "./lib/components/qso";
+import { QSO, carryOver, createQso, extrapolate, prefillMyStation, useQsos } from "./lib/components/qso";
 import { QsoList } from "./lib/components/qso/qso-list";
-import { band2freq } from "./lib/data/bands";
 import { useStore } from "./lib/utils/store";
 import { Alert } from "./lib/utils/theme/components/alert";
 import { Typography } from "./lib/utils/theme/components/typography";
@@ -47,21 +46,19 @@ const Index: IndexComponent = (): JSX.Element => {
     const { navigate } = useRouter();
 
     const callsign = methods.watch("callsign");
-    const resetQso = () => {
-        const qso = newQso("", qsos, currentLocation, undefined, settings.myCallsign, settings.carryOver);
-        if (!qso.band) qso.band = "20m";
-        if (!qso.frequency) qso.frequency = band2freq("20m");
-        if (!qso.mode) qso.mode = "SSB";
+    const resetQso = (previousQso?: QSO) => {
+        let qso = prefillMyStation(createQso(""), { myCallsign: settings.myCallsign, myLocator: currentLocation });
+        if (previousQso || qsos.length) qso = carryOver(qso, previousQso || qsos[0], settings.carryOver);
         methods.reset(qso);
     };
     useEffect(resetQso, []);
 
     const handleAdd = () => {
-        const qso: QSO = methods.getValues();
+        const qso: QSO = extrapolate(methods.getValues(), qsos, settings.carryOver);
         qso.date = DateTime.utc();
-        log(qsoLocationFill(qso));
+        log(qso);
         if (!settings.contestMode) navigate(`/qso?qsoId=${qso.id}`);
-        resetQso();
+        resetQso(qso);
     };
 
     return (

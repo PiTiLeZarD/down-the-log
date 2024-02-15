@@ -7,7 +7,7 @@ import { Typography } from "../../utils/theme/components/typography";
 import { fireSwal } from "../../utils/theme/swal";
 import { useSettings } from "../../utils/use-settings";
 import { Dropzone, FileWithPreview } from "../dropzone";
-import { QSO, findMatchingQso, qsoLocationFill, useQsos } from "../qso";
+import { QSO, findMatchingQso, prefillLocation, prefillMyStation, useQsos } from "../qso";
 import { Stack } from "../stack";
 
 export const stylesheet = createStyleSheet((theme) => ({
@@ -49,11 +49,11 @@ export const Import: ImportComponent = (): JSX.Element => {
 
                     const toImport: QSO[] = getImportFunctionFromFilename(file.name)(content)
                         .map((r) => record2qso(r))
-                        .map((q) => {
-                            if (!q.myLocator) q.myLocator = currentLocation;
-                            if (!q.myCallsign) q.myCallsign = settings.myCallsign;
-                            return qsoLocationFill(q);
-                        })
+                        .map((q) =>
+                            prefillLocation(
+                                prefillMyStation(q, { myCallsign: settings.myCallsign, myLocator: currentLocation }),
+                            ),
+                        )
                         .map((q) => {
                             const matching = findMatchingQso(qsos, q);
                             if (matching) {

@@ -1,12 +1,12 @@
 import { DateTime } from "luxon";
 import uuid from "react-native-uuid";
-import { Band } from "../../data/bands";
+import { Band, band2freq, freq2band } from "../../data/bands";
 import { Continent } from "../../data/callsigns";
 import cqzones from "../../data/cqzones.json";
 import dxcc from "../../data/dxcc.json";
 import ituzones from "../../data/ituzones.json";
-import { Mode } from "../../data/modes";
-import { CsDataType, baseCallsign, getCallsignData, parseCallsign } from "../../utils/callsign";
+import { Mode, isDigital } from "../../data/modes";
+import { baseCallsign, getCallsignData, parseCallsign } from "../../utils/callsign";
 import { maidenDistance, maidenhead2Latlong } from "../../utils/locator";
 import { findZone } from "../../utils/polydec";
 import { useStore } from "../../utils/store";
@@ -74,68 +74,105 @@ export const hasEvent = (qso: QSO): boolean => allEvents(qso).length > 0;
 
 export const newQsoID = () => uuid.v4() as string;
 
-export const newQso = (
-    callsign: string,
-    qsos: QSO[],
-    myLocator?: string,
-    qsoLocator?: string,
-    myCallsign?: string,
-    carryOver: (keyof QSO)[] = [],
-): QSO => {
-    const parsed = parseCallsign(callsign);
-    const callsignData = getCallsignData(callsign);
-    const previousQsosWithCallsign = qsos.filter((q) => q.callsign === callsign);
-    const locator = qsoLocator || callsignData?.gs;
+export const createQso = (callsign: string): QSO => ({
+    id: newQsoID(),
+    date: DateTime.utc(),
+    callsign,
+    honeypot: {},
+});
 
-    return qsoLocationFill(
-        {
-            callsign,
-            id: newQsoID(),
-            date: DateTime.utc(),
-            prefix: parsed && `${parsed.prefix}${parsed.index}`,
-            locator,
-            myLocator,
-            myCallsign,
-            rst_received: "59",
-            rst_sent: "59",
-            honeypot: {},
-            ...(qsos.length
-                ? Object.fromEntries(
-                      carryOver.map((f) => [
-                          f,
-                          qsos[0][f as keyof QSO] !== undefined ? String(qsos[0][f as keyof QSO]) : undefined,
-                      ]),
-                  )
-                : {}),
-            ...(previousQsosWithCallsign.length
-                ? { name: previousQsosWithCallsign[0].name, qth: previousQsosWithCallsign[0].qth }
-                : {}),
-        },
-        callsignData,
-    );
-};
+export const carryOver = (qso: QSO, previousQSO: QSO, carryOver: (keyof QSO)[] = []): QSO => ({
+    ...qso,
+    ...Object.fromEntries(
+        carryOver
+            .map((f) => [
+                f,
+                previousQSO[f as keyof QSO] !== undefined ? String(previousQSO[f as keyof QSO]) : undefined,
+            ])
+            .filter(([k, v]) => v !== undefined),
+    ),
+});
 
-export const qsoLocationFill = (qso: QSO, callsignDataProvided?: CsDataType) => {
-    const callsignData = callsignDataProvided || getCallsignData(qso.callsign);
+export const prefillSameCallsign = (qso: QSO, previousQSO: QSO): QSO => ({
+    ...qso,
+    ...Object.fromEntries(
+        (["name", "qth", "country", "continent", "state", "dxcc", "cqzone", "ituzone", "locator"] as (keyof QSO)[])
+            .map((f) => (previousQSO[f] ? [f, previousQSO[f]] : [f, undefined]))
+            .filter(([k, v]) => !!v),
+    ),
+});
 
+export const prefillMyStation = (
+    qso: QSO,
+    myStation: Partial<{
+        myQth: string;
+        myLocator: string;
+        myCallsign: string;
+        myRig: string;
+        myAntenna: string;
+        myState: string;
+        myCountry: string;
+    }>,
+): QSO => ({
+    ...qso,
+    myQth: qso.myQth || myStation.myQth,
+    myLocator: qso.myLocator || myStation.myLocator,
+    myCallsign: qso.myCallsign || myStation.myCallsign,
+    myRig: qso.myRig || myStation.myRig,
+    myAntenna: qso.myAntenna || myStation.myAntenna,
+    myState: qso.myState || myStation.myState,
+    myCountry: qso.myCountry || myStation.myCountry,
+});
+
+export const prefillOperating = (
+    qso: QSO,
+    operating: Partial<{
+        frequency: number;
+        mode: Mode;
+        band: Band;
+    }>,
+): QSO => ({
+    ...qso,
+    frequency: qso.frequency || operating.frequency || band2freq(operating.band),
+    mode: qso.mode || operating.mode,
+    band: qso.band || operating.band || freq2band(operating.frequency) || "20m",
+    rst_received: qso.rst_received || isDigital(operating.mode) ? "-1" : "59",
+    rst_sent: qso.rst_sent || isDigital(operating.mode) ? "-1" : "59",
+});
+
+export const prefillLocation = (qso: QSO) => {
+    const parsed = parseCallsign(qso.callsign);
+    const callsignData = getCallsignData(qso.callsign);
+    const locator = qso.locator || callsignData?.gs;
     return {
         ...qso,
+        locator: qso.locator || locator,
+        prefix: qso.prefix || (parsed && `${parsed.prefix}${parsed.index}`),
         state: qso.state || callsignData?.state,
         continent: qso.continent || callsignData?.ctn,
         country: qso.country || callsignData?.iso3,
-        ...(qso.myLocator && qso.locator
+        ...(qso.myLocator && locator
             ? {
-                  distance: qso.distance || maidenDistance(qso.myLocator, qso.locator),
+                  distance: qso.distance || maidenDistance(qso.myLocator, locator),
               }
             : {}),
-        ...(qso.locator
+        ...(locator
             ? {
-                  dxcc: qso.dxcc || +(callsignData?.dxcc || findZone(dxcc, maidenhead2Latlong(qso.locator))),
-                  ituzone: qso.ituzone || +findZone(ituzones, maidenhead2Latlong(qso.locator)),
-                  cqzone: qso.cqzone || +findZone(cqzones, maidenhead2Latlong(qso.locator)),
+                  dxcc: qso.dxcc || +(callsignData?.dxcc || findZone(dxcc, maidenhead2Latlong(locator))),
+                  ituzone: qso.ituzone || +findZone(ituzones, maidenhead2Latlong(locator)),
+                  cqzone: qso.cqzone || +findZone(cqzones, maidenhead2Latlong(locator)),
               }
             : { dxcc: qso.dxcc || (callsignData ? +callsignData.dxcc : undefined) }),
     };
+};
+
+export const extrapolate = (qso: QSO, qsos: QSO[], carryOverFields: (keyof QSO)[]): QSO => {
+    if (qsos.length) qso = carryOver(qso, qsos[0], carryOverFields);
+
+    const lastQsoWithCallsign = qsos.filter((q) => baseCallsign(q.callsign) === baseCallsign(qso.callsign));
+    if (lastQsoWithCallsign.length) qso = prefillSameCallsign(qso, lastQsoWithCallsign[0]);
+
+    return prefillLocation(qso);
 };
 
 const dt2mn = (dt1: DateTime, dt2: DateTime) => Math.abs(dt1.diff(dt2, ["minutes"]).toObject().minutes as number);
