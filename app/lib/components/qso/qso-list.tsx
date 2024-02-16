@@ -59,7 +59,7 @@ export const QsoListSectionHeader: QsoListSectionHeaderComponent = ({ section, s
     const { styles } = useStyles(stylesheet);
     const text = `${sections[section][0].date.toFormat(settings.datemonth ? "MM-dd-yyyy" : "dd/MM/yyyy")} (${sections[section].length})`;
 
-    if (!settings.google) {
+    if (!settings.google || !settings.google.key || !settings.google.secret) {
         return (
             <View>
                 <View style={styles.sectionHeader}>
