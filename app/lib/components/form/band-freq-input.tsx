@@ -15,7 +15,7 @@ import { Stack } from "../stack";
 const freqValue = (freq?: number, band?: Band, mode?: Mode) => {
     if (freq != undefined) return freq * 1000;
     if (band != undefined) return (band2freq(band, mode) || 14.144) * 1000;
-    return 14.144;
+    return 14144;
 };
 
 export type BandFreqInputProps = {
@@ -77,7 +77,7 @@ export const BandFreqInput: BandFreqInputComponent = ({ noLabel = false }): JSX.
                                     variant={b == band ? "contained" : "outlined"}
                                     onPress={() => {
                                         setValue("band", b as Band);
-                                        setValue("frequency", band2freq(b as Band, mode) || 14.144);
+                                        setValue("frequency", band2freq(b as Band, mode) || 14144);
                                     }}
                                 />
                             </Grid>
