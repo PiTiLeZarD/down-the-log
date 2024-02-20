@@ -1,4 +1,5 @@
-import { DateTime } from "luxon";
+import humanize from "humanize-duration";
+import { DateTime, Interval } from "luxon";
 import uuid from "react-native-uuid";
 import { Band, band2freq, freq2band } from "../../data/bands";
 import { Continent } from "../../data/callsigns";
@@ -20,6 +21,7 @@ export type QSO = {
     id: string;
     position?: number;
     date: DateTime;
+    dateOff?: DateTime;
     callsign: string;
     distance?: number;
     country?: string;
@@ -64,6 +66,11 @@ export type QSO = {
     myCountry?: string;
     honeypot?: Record<string, string>;
 };
+
+export const duration = (qso: QSO): string =>
+    qso.dateOff
+        ? humanize(Interval.fromDateTimes(qso.date, qso.dateOff).toDuration().valueOf(), { largest: 2, round: true })
+        : "";
 
 export const allEvents = (qso: QSO) =>
     [qso.pota, qso.myPota, qso.wwff, qso.myWwff, qso.sota, qso.mySota, qso.sig, qso.mySig, qso.iota, qso.myIota].filter(

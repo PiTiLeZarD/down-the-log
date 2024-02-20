@@ -35,7 +35,8 @@ export const FormField: FormFieldComponent = ({
 
     const settings = useSettings();
     const dtFormat = role === "date" ? (settings.datemonth ? "MM-dd-yyyy" : "dd/MM/yyyy") : "HH:mm:ss";
-    const dtValue = ["date", "time"].includes(role) ? (field.value as DateTime).toFormat(dtFormat) : undefined;
+    const dtValue =
+        ["date", "time"].includes(role) && value != "" ? (field.value as DateTime).toFormat(dtFormat) : undefined;
     const [userInput, setUserInput] = React.useState<string>(dtValue || "");
     useEffect(() => {
         const dt = DateTime.fromFormat(userInput, dtFormat);

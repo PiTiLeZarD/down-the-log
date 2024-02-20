@@ -21,7 +21,7 @@ import { Grid } from "../grid";
 import { PageLayout } from "../page-layout";
 import { PreviousQsos } from "../previous-qsos";
 import { QrzChip } from "../qrz-chip";
-import { QSO } from "../qso";
+import { QSO, duration } from "../qso";
 import { QsoMap } from "../qso/qso-map";
 import { Stack } from "../stack";
 import { BandFreqInput } from "./band-freq-input";
@@ -125,9 +125,12 @@ export const FormFields: FormFieldsComponent = ({ qso }): JSX.Element => {
                                     onPress={qslInfo}
                                 />
                             </Stack>
-                            <Typography variant="h6" style={{ flex: 1, textAlign: "right" }}>
-                                {qso.date.toFormat("HH:mm:ss")}
-                            </Typography>
+                            <Stack direction="row" style={{ flex: 1, justifyContent: "flex-end" }}>
+                                <Typography variant="h6">
+                                    {qso.dateOff ? qso.date.toFormat("HH:mm") : qso.date.toFormat("HH:mm:ss")}
+                                </Typography>
+                                {qso.dateOff && <Typography variant="subtitle">({duration(qso)})</Typography>}
+                            </Stack>
                         </Stack>
                     )}
                 </Stack>
@@ -152,6 +155,15 @@ export const FormFields: FormFieldsComponent = ({ qso }): JSX.Element => {
                 <Stack>
                     <FormField role="date" name="date" label="Date:" />
                     <FormField role="time" name="date" label="Time:" />
+                    {!qso.dateOff && (
+                        <Button text="Set end qso as start" onPress={() => setValue("dateOff", qso.date)} />
+                    )}
+                    {qso.dateOff && (
+                        <>
+                            <FormField role="date" name="dateOff" label="End Date:" />
+                            <FormField role="time" name="dateOff" label="End Time:" />
+                        </>
+                    )}
                     <FormField name="cqzone" label="CQZone:" />
                     <FormField name="ituzone" label="ITUZone:" />
                     <FormField name="dxcc" label="DXCC:" />

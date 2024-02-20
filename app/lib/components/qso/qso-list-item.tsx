@@ -19,39 +19,37 @@ export type QsoListItemProps = {
 export type QsoListItemComponent = React.FC<QsoListItemProps>;
 
 export const QsoListItem: QsoListItemComponent = React.memo(
-    ({ item: qso, index, lineHeight, onQsoPress, imperial }): JSX.Element => {
-        return (
-            <QsoRow
-                lineHeight={lineHeight}
-                success={qso.lotw_received || qso.eqsl_received}
-                position={String((qso.position || index) + 1)}
-                time={qso.date.toFormat("HH:mm")}
-                callsign={
+    ({ item: qso, index, lineHeight, onQsoPress, imperial }): JSX.Element => (
+        <QsoRow
+            lineHeight={lineHeight}
+            success={qso.lotw_received || qso.eqsl_received}
+            position={String((qso.position || index) + 1)}
+            time={qso.date.toFormat("HH:mm")}
+            callsign={
+                <Stack direction="row">
+                    <Typography>{qso.country ? countries[qso.country]?.flag : ""}</Typography>
+                    <Typography>{qso.callsign}</Typography>
+                    {qso.distance !== undefined && (
+                        <Typography>
+                            ({imperial ? roundTo(qso.distance / 1.6, 2) : qso.distance}
+                            {imperial ? "mi" : "km"})
+                        </Typography>
+                    )}
+                </Stack>
+            }
+            name={qso.name || "N/A"}
+            band={
+                hasEvent(qso) ? (
                     <Stack direction="row">
-                        <Typography>{qso.country ? countries[qso.country]?.flag : ""}</Typography>
-                        <Typography>{qso.callsign}</Typography>
-                        {qso.distance !== undefined && (
-                            <Typography>
-                                ({imperial ? roundTo(qso.distance / 1.6, 2) : qso.distance}
-                                {imperial ? "mi" : "km"})
-                            </Typography>
-                        )}
+                        <Typography>{`${qso.band || "N/A"} (${qso.mode || "N/A"})`}</Typography>
+                        <Icon name="earth" />
                     </Stack>
-                }
-                name={qso.name || "N/A"}
-                band={
-                    hasEvent(qso) ? (
-                        <Stack direction="row">
-                            <Typography>{`${qso.band || "N/A"} (${qso.mode || "N/A"})`}</Typography>
-                            <Icon name="earth" />
-                        </Stack>
-                    ) : (
-                        `${qso.band || "N/A"} (${qso.mode || "N/A"})`
-                    )
-                }
-                onPress={() => onQsoPress(qso)}
-            />
-        );
-    },
+                ) : (
+                    `${qso.band || "N/A"} (${qso.mode || "N/A"})`
+                )
+            }
+            onPress={() => onQsoPress(qso)}
+        />
+    ),
     (prevProps, nextProps) => nextProps.item.id === prevProps.item.id,
 );
