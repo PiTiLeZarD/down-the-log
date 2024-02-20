@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { useFormContext } from "react-hook-form";
 import { EventType, capitalise, eventDataMap } from "../../utils/event-rules";
 import { Input } from "../../utils/theme/components/input";
@@ -19,20 +19,30 @@ export const ReferenceInput: ReferenceInputComponent = ({ event, mine = false })
     const key = (mine ? `my${capitalise(event)}` : event) as keyof QSO;
     const value = qso[key] as string;
 
-    if (["wwff", "pota"].includes(event)) {
-        const otherEvent = event === "wwff" ? "pota" : "wwff";
-        const otherKey = (mine ? `my${capitalise(otherEvent)}` : otherEvent) as keyof QSO;
-        const otherValue = qso[otherKey] as string;
+    useEffect(() => {
+        if (value in eventDataMap[event]) {
+            const { name, locator } = eventDataMap[event][value];
+            const qthKey = (mine ? `myQth` : "qth") as keyof QSO;
+            const locatorKey = (mine ? `myLocator` : "locator") as keyof QSO;
+            if (qso[qthKey] != name) setValue(qthKey, name);
+            if (qso[locatorKey] != locator) setValue(locatorKey, locator);
+        }
 
-        if (!value && otherValue && otherValue in eventDataMap[otherEvent]) {
-            const newRef = Object.entries(eventDataMap[event]).find(
-                ([ref, { name }]) => name.toLowerCase() === eventDataMap[otherEvent][otherValue].name.toLowerCase(),
-            );
-            if (newRef) {
-                setValue(key, newRef[0]);
+        if (["wwff", "pota"].includes(event)) {
+            const otherEvent = event === "wwff" ? "pota" : "wwff";
+            const otherKey = (mine ? `my${capitalise(otherEvent)}` : otherEvent) as keyof QSO;
+            const otherValue = qso[otherKey] as string;
+
+            if (!value && otherValue && otherValue in eventDataMap[otherEvent]) {
+                const newRef = Object.entries(eventDataMap[event]).find(
+                    ([ref, { name }]) => name.toLowerCase() === eventDataMap[otherEvent][otherValue].name.toLowerCase(),
+                );
+                if (newRef) {
+                    setValue(key, newRef[0]);
+                }
             }
         }
-    }
+    }, [value]);
 
     return (
         <Stack>
