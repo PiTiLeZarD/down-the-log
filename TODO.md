@@ -5,6 +5,7 @@ This is the rough todolist I want to work on.
 ## Must have
 
 -   [ ] ragchew mode (starts a timer on a qso, still possible to edit end time on a non ragchew mode)
+-   [ ] if matched, the event should also set qth/grid or myqth/mygrid
 -   [ ] issue with the url, redirecting outside of the demo site for the index page
 -   [ ] there's issues to what is prefilled while making a bunch of qsos.
 -   [ ] should make a visual indication that hamqth isn't available, it happens often
