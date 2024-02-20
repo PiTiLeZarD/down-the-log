@@ -7,7 +7,7 @@ import { useHamqth } from "../../utils/hamqth";
 import { Button } from "../../utils/theme/components/button";
 import { Input } from "../../utils/theme/components/input";
 import { useSettings } from "../../utils/use-settings";
-import { QSO } from "../qso";
+import { QSO, useQsos } from "../qso";
 import { Stack } from "../stack";
 import { BandFreqInput } from "./band-freq-input";
 import { CallsignInputExtra } from "./callsign-input-extra";
@@ -36,12 +36,26 @@ export type CallsignInputProps = {
 export type CallsignInputComponent = React.FC<CallsignInputProps>;
 
 export const CallsignInput: CallsignInputComponent = ({ handleAdd }): JSX.Element => {
+    const qsos = useQsos();
     const [inputValue, setInputValue] = React.useState<string>("");
     const { styles } = useStyles(stylesheet);
     const { watch, setValue } = useFormContext<QSO>();
     const { inputBarConfig, contestMode } = useSettings();
+
     const callsign = watch("callsign");
-    const hamqthCSData = useHamqth(callsign);
+    const previousQso = qsos.filter((q) => baseCallsign(q.callsign) === baseCallsign(callsign));
+    let hamqthCSData = useHamqth(callsign);
+    if ((previousQso || []).length) {
+        hamqthCSData = {
+            callsign,
+            qth: previousQso[0].qth,
+            name: previousQso[0].name,
+            country: previousQso[0].country,
+            itu: previousQso[0].ituzone,
+            cq: previousQso[0].cqzone,
+            grid: previousQso[0].locator,
+        } as any;
+    }
 
     useEffect(() => {
         if (inputValue != callsign) setValue("callsign", inputValue);

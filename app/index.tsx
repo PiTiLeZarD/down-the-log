@@ -45,13 +45,15 @@ const Index: IndexComponent = (): JSX.Element => {
     const methods = useForm<QSO>({ defaultValues: {} });
     const { navigate } = useRouter();
 
+    const lastQso = qsos.length ? qsos[0] : undefined;
+
     const callsign = methods.watch("callsign");
     const resetQso = (previousQso?: QSO) => {
         let qso = prefillMyStation(createQso(""), { myCallsign: settings.myCallsign, myLocator: currentLocation });
-        if (previousQso || qsos.length) qso = carryOver(qso, previousQso || qsos[0], settings.carryOver);
+        if (previousQso || lastQso) qso = carryOver(qso, previousQso || (lastQso as QSO), settings.carryOver);
         methods.reset(qso);
     };
-    useEffect(resetQso, []);
+    useEffect(resetQso, [lastQso]);
 
     const handleAdd = () => {
         const qso: QSO = extrapolate(methods.getValues(), qsos, settings.carryOver);

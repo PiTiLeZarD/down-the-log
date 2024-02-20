@@ -14,7 +14,7 @@ import { Stack } from "../stack";
 
 export type CallsignInputExtraProps = {
     value?: string;
-    hamqthCSData?: HamQTHCallsignData;
+    hamqthCSData?: Partial<HamQTHCallsignData>;
 };
 
 export type CallsignInputExtraComponent = React.FC<CallsignInputExtraProps>;
@@ -52,18 +52,21 @@ export const CallsignInputExtra: CallsignInputExtraComponent = ({ value, hamqthC
                 {hamqthCSData && (
                     <Stack>
                         <Typography>{hamqthCSData.name}</Typography>
-                        <Typography variant="subtitle">
-                            Local time:{" "}
-                            {DateTime.utc()
-                                .setZone(
-                                    `UTC${
-                                        hamqthCSData.utc_offset > 0
-                                            ? `+${hamqthCSData.utc_offset}`
-                                            : hamqthCSData.utc_offset
-                                    }`,
-                                )
-                                .toFormat("HH:mm")}
-                        </Typography>
+                        {hamqthCSData.utc_offset && (
+                            <Typography variant="subtitle">
+                                Local time:{" "}
+                                {DateTime.utc()
+                                    .setZone(
+                                        `UTC${
+                                            hamqthCSData.utc_offset > 0
+                                                ? `+${hamqthCSData.utc_offset}`
+                                                : hamqthCSData.utc_offset
+                                        }`,
+                                    )
+                                    .toFormat("HH:mm")}
+                            </Typography>
+                        )}
+
                         {hamqthCSData.age && <Typography variant="subtitle">{hamqthCSData.age}yo</Typography>}
                     </Stack>
                 )}
