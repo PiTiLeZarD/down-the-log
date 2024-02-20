@@ -5,6 +5,7 @@ import { useQsos } from "./lib/components/qso";
 import { Reference } from "./lib/components/reference";
 import { Stack } from "./lib/components/stack";
 import { TabsLayout } from "./lib/components/tabs-layout";
+import { unique } from "./lib/utils/arrays";
 import { EventType, eventDataMassageMap, events, getActivations } from "./lib/utils/event-rules";
 import { downloadQsos } from "./lib/utils/file-format";
 import { Button } from "./lib/utils/theme/components/button";
@@ -19,6 +20,7 @@ const Events: EventsComponent = (): JSX.Element => {
     const qsos = useQsos();
     const [wwffLocal, setWwffLocal] = React.useState<boolean>(false);
     const getMax = (event: EventType) => (event === "wwff" && wwffLocal ? 10 : undefined);
+
     const handleDownloadHunting = (event: EventType) => () =>
         downloadQsos(
             `${event}_hunting.adif`,
@@ -41,7 +43,11 @@ const Events: EventsComponent = (): JSX.Element => {
                             </Stack>
                         )}
                         <Typography variant="h3">Hunting</Typography>
-                        <Button startIcon="download" text="Hunting ADIF" onPress={handleDownloadHunting(event)} />
+                        <Button
+                            startIcon="download"
+                            text={`Hunting ADIF (${unique(qsos.filter((q) => !!q[event]).map((q) => q[event])).length})`}
+                            onPress={handleDownloadHunting(event)}
+                        />
                         <Typography variant="h3">Activating</Typography>
                         <PaginatedList itemsPerPage={6}>
                             {Object.entries(getActivations(event, qsos, getMax(event))).map(
