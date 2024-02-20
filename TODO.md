@@ -6,7 +6,6 @@ This is the rough todolist I want to work on.
 
 -   [ ] ragchew mode (starts a timer on a qso, still possible to edit end time on a non ragchew mode)
 -   [ ] issue with the url, redirecting outside of the demo site for the index page
--   [ ] there's issues to what is prefilled while making a bunch of qsos.
 -   [ ] should make a visual indication that hamqth isn't available, it happens often
 
 ## Good to have
@@ -40,6 +39,7 @@ This is the rough todolist I want to work on.
 
 ## Done
 
+-   [x] there's issues to what is prefilled while making a bunch of qsos.
 -   [x] if matched, the event should also set qth/grid or myqth/mygrid
 -   [x] shouldn't be able to click on the date header if the google maps api isn't filled (or maybe put something else instead?)
 -   [x] Chile callsign unrecognised (CE8EIO) Thai either (HS60RAST)
