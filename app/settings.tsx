@@ -79,6 +79,15 @@ const Settings: SettingsComponent = (): JSX.Element => {
                             if (!v) updateFilters([]);
                         }}
                     />
+                    <Typography underline>Ragchew max time:</Typography>
+                    <Input
+                        value={String(settings.timeoffThreshold)}
+                        onChangeText={(nv) => updateSetting("timeoffThreshold", +nv)}
+                    />
+                    <Typography variant="subtitle">
+                        This is the amount of time the QSO timer will be available, you can still set timeOff date
+                        manually after that.
+                    </Typography>
                     <Typography underline>Imperial distances (miles):</Typography>
                     <Switch
                         value={settings.imperial != undefined ? settings.imperial : false}

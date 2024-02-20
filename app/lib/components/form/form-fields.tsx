@@ -1,4 +1,5 @@
-import React from "react";
+import { DateTime } from "luxon";
+import React, { useEffect, useRef } from "react";
 import { useFormContext } from "react-hook-form";
 import { Pressable, View } from "react-native";
 import { Switch } from "react-native-gesture-handler";
@@ -21,7 +22,7 @@ import { Grid } from "../grid";
 import { PageLayout } from "../page-layout";
 import { PreviousQsos } from "../previous-qsos";
 import { QrzChip } from "../qrz-chip";
-import { QSO, duration } from "../qso";
+import { QSO, duration, useQsos } from "../qso";
 import { QsoMap } from "../qso/qso-map";
 import { Stack } from "../stack";
 import { BandFreqInput } from "./band-freq-input";
@@ -67,6 +68,9 @@ export type FormFieldsProps = {
 export type FormFieldsComponent = React.FC<FormFieldsProps>;
 
 export const FormFields: FormFieldsComponent = ({ qso }): JSX.Element => {
+    const isLastQso = useQsos()[0].id === qso.id;
+    const timer = useRef<ReturnType<typeof setInterval>>();
+    const [now, setNow] = React.useState<DateTime>(DateTime.utc());
     const { styles, theme } = useStyles(stylesheet);
     const [openTimeLocModal, setOpenTimeLocModal] = React.useState<boolean>(false);
     const deleteLog = useStore((state) => state.deleteLog);
@@ -79,6 +83,22 @@ export const FormFields: FormFieldsComponent = ({ qso }): JSX.Element => {
         if (qso) deleteLog(qso);
         goBack();
     };
+
+    useEffect(() => {
+        if (
+            isLastQso &&
+            !qso.dateOff &&
+            (DateTime.utc().diff(qso.date, ["minutes"]).toObject().minutes || 0) < settings.timeoffThreshold
+        ) {
+            timer.current = setInterval(() => setNow(DateTime.utc()), 1000);
+        }
+        return () => {
+            if (timer.current) {
+                clearInterval(timer.current);
+                timer.current = undefined;
+            }
+        };
+    }, [isLastQso, qso, settings.timeoffThreshold]);
 
     const qslInfo = () => {
         fireSwal({
@@ -125,11 +145,29 @@ export const FormFields: FormFieldsComponent = ({ qso }): JSX.Element => {
                                     onPress={qslInfo}
                                 />
                             </Stack>
-                            <Stack direction="row" style={{ flex: 1, justifyContent: "flex-end" }}>
-                                <Typography variant="h6">
-                                    {qso.dateOff ? qso.date.toFormat("HH:mm") : qso.date.toFormat("HH:mm:ss")}
-                                </Typography>
-                                {qso.dateOff && <Typography variant="subtitle">({duration(qso)})</Typography>}
+                            <Stack direction="row" style={{ justifyContent: "flex-end", flex: 1 }}>
+                                {timer.current && (
+                                    <View>
+                                        <Button
+                                            variant="chip"
+                                            colour="secondary"
+                                            text={duration(qso, now)}
+                                            onPress={() => {
+                                                setValue("dateOff", now);
+                                                clearInterval(timer.current);
+                                                timer.current = undefined;
+                                            }}
+                                        />
+                                    </View>
+                                )}
+                                {!timer.current && (
+                                    <>
+                                        <Typography variant="h6">
+                                            {qso.dateOff ? qso.date.toFormat("HH:mm") : qso.date.toFormat("HH:mm:ss")}
+                                        </Typography>
+                                        {qso.dateOff && <Typography variant="subtitle">({duration(qso)})</Typography>}
+                                    </>
+                                )}
                             </Stack>
                         </Stack>
                     )}
@@ -162,6 +200,7 @@ export const FormFields: FormFieldsComponent = ({ qso }): JSX.Element => {
                         <>
                             <FormField role="date" name="dateOff" label="End Date:" />
                             <FormField role="time" name="dateOff" label="End Time:" />
+                            <Button text="Remove end" onPress={() => setValue("dateOff", undefined)} />
                         </>
                     )}
                     <FormField name="cqzone" label="CQZone:" />

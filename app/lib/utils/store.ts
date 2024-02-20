@@ -16,6 +16,7 @@ export type Settings = {
     showFilters: boolean;
     contestMode: boolean;
     imperial: boolean;
+    timeoffThreshold: number;
     datemonth: boolean;
     hamqth?: HamQTHSettingsType;
     google?: GoogleCredentials;
@@ -31,6 +32,7 @@ const defaultSettings: Settings = {
     showBeacons: false,
     imperial: false,
     datemonth: false,
+    timeoffThreshold: 10,
     showFilters: false,
     contestMode: false,
     favouriteBands: [],
@@ -118,6 +120,7 @@ export const useStore = create<
 
                 storage.state.qsos = storage.state.qsos.map((q: QSO) => {
                     q.date = DateTime.fromISO(q.date as unknown as string, { setZone: true });
+                    if (q.dateOff) q.dateOff = DateTime.fromISO(q.dateOff as unknown as string, { setZone: true });
                     return q;
                 });
 
