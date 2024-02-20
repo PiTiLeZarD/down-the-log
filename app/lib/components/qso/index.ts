@@ -67,9 +67,31 @@ export type QSO = {
     honeypot?: Record<string, string>;
 };
 
-export const duration = (qso: QSO): string =>
-    qso.dateOff
-        ? humanize(Interval.fromDateTimes(qso.date, qso.dateOff).toDuration().valueOf(), { largest: 2, round: true })
+export const duration = (qso: QSO, dateOff?: DateTime): string =>
+    qso.dateOff || dateOff
+        ? humanize(
+              Interval.fromDateTimes(qso.date, (qso.dateOff || dateOff) as DateTime)
+                  .toDuration()
+                  .valueOf(),
+              {
+                  largest: 2,
+                  round: true,
+                  language: "shortEn",
+                  // @ts-ignore
+                  languages: {
+                      shortEn: {
+                          y: () => "y",
+                          mo: () => "mo",
+                          w: () => "w",
+                          d: () => "d",
+                          h: () => "h",
+                          m: () => "min",
+                          s: () => "s",
+                          ms: () => "ms",
+                      },
+                  },
+              },
+          )
         : "";
 
 export const allEvents = (qso: QSO) =>
