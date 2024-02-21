@@ -4,7 +4,6 @@ This is the rough todolist I want to work on.
 
 ## Must have
 
--   [ ] issue with the url, redirecting outside of the demo site for the index page
 -   [ ] should make a visual indication that hamqth isn't available, it happens often
 
 ## Good to have
@@ -38,6 +37,7 @@ This is the rough todolist I want to work on.
 
 ## Done
 
+-   [x] issue with the url, redirecting outside of the demo site for the index page
 -   [x] ragchew mode (starts a timer on a qso, still possible to edit end time on a non ragchew mode)
 -   [x] there's issues to what is prefilled while making a bunch of qsos.
 -   [x] if matched, the event should also set qth/grid or myqth/mygrid
