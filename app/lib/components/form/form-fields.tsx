@@ -65,6 +65,8 @@ export type FormFieldsProps = {
     qso: QSO;
 };
 
+const diffTimeInMinutes = (qso: QSO, dt: DateTime) => dt.diff(qso.date, ["minutes"]).toObject().minutes || 0;
+
 export type FormFieldsComponent = React.FC<FormFieldsProps>;
 
 export const FormFields: FormFieldsComponent = ({ qso }): JSX.Element => {
@@ -84,20 +86,25 @@ export const FormFields: FormFieldsComponent = ({ qso }): JSX.Element => {
         goBack();
     };
 
-    useEffect(() => {
-        if (
-            isLastQso &&
-            !qso.dateOff &&
-            (DateTime.utc().diff(qso.date, ["minutes"]).toObject().minutes || 0) < settings.timeoffThreshold
-        ) {
-            timer.current = setInterval(() => setNow(DateTime.utc()), 1000);
+    const clearTimer = () => {
+        if (timer.current) {
+            clearInterval(timer.current);
+            timer.current = undefined;
         }
-        return () => {
-            if (timer.current) {
-                clearInterval(timer.current);
-                timer.current = undefined;
-            }
-        };
+    };
+    const tick = () => {
+        if (diffTimeInMinutes(qso, now) < settings.timeoffThreshold) {
+            setNow(DateTime.utc());
+        } else {
+            clearTimer();
+        }
+    };
+
+    useEffect(() => {
+        if (isLastQso && !qso.dateOff && diffTimeInMinutes(qso, now) < settings.timeoffThreshold) {
+            timer.current = setInterval(tick, 1000);
+        }
+        return clearTimer;
     }, [isLastQso, qso, settings.timeoffThreshold]);
 
     const qslInfo = () => {
@@ -154,8 +161,7 @@ export const FormFields: FormFieldsComponent = ({ qso }): JSX.Element => {
                                             text={duration(qso, now)}
                                             onPress={() => {
                                                 setValue("dateOff", now);
-                                                clearInterval(timer.current);
-                                                timer.current = undefined;
+                                                clearTimer();
                                             }}
                                         />
                                     </View>
