@@ -108,8 +108,8 @@ export const unsanitize = (v: string) =>
 export const qso2record = (qso: QSO): QSORecord => ({
     qso_date: qso.date && qso.date.toFormat("yyyyMMdd"),
     time_on: qso.date && qso.date.toFormat("HHmmss"),
-    qso_date_off: (qso.dateOff || qso.date) && (qso.dateOff || qso.date).toFormat("yyyyMMdd"),
-    time_off: (qso.dateOff || qso.date) && (qso.dateOff || qso.date).toFormat("HHmmss"),
+    qso_date_off: qso.dateOff && qso.dateOff.toFormat("yyyyMMdd"),
+    time_off: qso.dateOff && qso.dateOff.toFormat("HHmmss"),
     band: qso.band,
     freq: string(qso.frequency),
     mode: qso.mode,
@@ -163,7 +163,7 @@ export const record2qso = (record: QSORecord): QSO => ({
         record.time_on?.length === 6 ? "yyyyMMdd HHmmss" : "yyyyMMdd HHmm",
     ),
     dateOff:
-        record.qso_date_off && record.time_off
+        record.qso_date_off && record.time_off && record.time_off != record.time_on
             ? DateTime.fromFormat(
                   `${record.qso_date_off} ${record.time_off}`,
                   record.time_off?.length === 6 ? "yyyyMMdd HHmmss" : "yyyyMMdd HHmm",
