@@ -33,6 +33,7 @@ export type QsoRowProps = {
     lineHeight?: number;
     position: string;
     time: React.ReactNode;
+    duration?: React.ReactNode;
     band: React.ReactNode;
     callsign: React.ReactNode;
     name: React.ReactNode;
@@ -48,6 +49,7 @@ export const QsoRow: QsoRowComponent = ({
     lineHeight = 20,
     position,
     time,
+    duration,
     band,
     callsign,
     name,
@@ -62,8 +64,11 @@ export const QsoRow: QsoRowComponent = ({
                 <Grid item style={styles.cell} xs={1}>
                     {cellContent(position, cellStyle)}
                 </Grid>
-                <Grid item style={styles.cell} xs={2}>
+                <Grid item style={styles.cell} xs={2} md={1}>
                     {cellContent(time, cellStyle)}
+                </Grid>
+                <Grid item style={styles.cell} xs={-1} lg={1}>
+                    {cellContent(duration, cellStyle)}
                 </Grid>
                 <Grid item style={styles.cell} xs={7} md={5}>
                     {cellContent(callsign, cellStyle)}

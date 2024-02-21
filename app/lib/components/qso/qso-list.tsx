@@ -121,6 +121,7 @@ export const QsoList: QsoListComponent = ({ style, filters, qsos, onQsoPress }):
                     lineHeight={LINEHEIGHT}
                     position="ID"
                     time="Time"
+                    duration="Duration"
                     callsign="Callsign"
                     name="Name"
                     band="Band"

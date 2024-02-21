@@ -1,5 +1,5 @@
 import React from "react";
-import { QSO, hasEvent } from ".";
+import { QSO, duration, hasEvent } from ".";
 import { countries } from "../../data/countries";
 import { roundTo } from "../../utils/math";
 import { Icon } from "../../utils/theme/components/icon";
@@ -23,8 +23,9 @@ export const QsoListItem: QsoListItemComponent = React.memo(
         <QsoRow
             lineHeight={lineHeight}
             success={qso.lotw_received || qso.eqsl_received}
-            position={String((qso.position || index) + 1)}
+            position={String((qso.position === undefined ? index : qso.position) + 1)}
             time={qso.date.toFormat("HH:mm")}
+            duration={duration(qso)}
             callsign={
                 <Stack direction="row">
                     <Typography>{qso.country ? countries[qso.country]?.flag : ""}</Typography>
@@ -41,15 +42,16 @@ export const QsoListItem: QsoListItemComponent = React.memo(
             band={
                 hasEvent(qso) ? (
                     <Stack direction="row">
-                        <Typography>{`${qso.band || "N/A"} (${qso.mode || "N/A"})`}</Typography>
+                        <Typography>{[qso.band, qso.mode].filter((e) => !!e).join("/")}</Typography>
                         <Icon name="earth" />
                     </Stack>
                 ) : (
-                    `${qso.band || "N/A"} (${qso.mode || "N/A"})`
+                    [qso.band, qso.mode].filter((e) => !!e).join("/")
                 )
             }
             onPress={() => onQsoPress(qso)}
         />
     ),
-    (prevProps, nextProps) => nextProps.item.id === prevProps.item.id,
+    (prevProps, nextProps) =>
+        nextProps.item.id === prevProps.item.id && nextProps.item.position === prevProps.item.position,
 );
