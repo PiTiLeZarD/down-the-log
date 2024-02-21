@@ -45,6 +45,8 @@ export const wsjtx2Record = (wsjtx: string): QSORecord => {
         ...Object.fromEntries(Array.from(allFields).map((f) => [f, undefined])),
         qso_date: DateTime.fromFormat(qso_date, "yyyy-MM-dd").toFormat("yyyyMMdd"),
         time_on: DateTime.fromFormat(time_on, "HH:mm:ss").toFormat("HHmmss"),
+        qso_date_off: DateTime.fromFormat(qso_date_off, "yyyy-MM-dd").toFormat("yyyyMMdd"),
+        time_off: DateTime.fromFormat(time_off, "HH:mm:ss").toFormat("HHmmss"),
         call,
         pfx: parsed?.prefix,
         gridsquare: normalise(grid),
