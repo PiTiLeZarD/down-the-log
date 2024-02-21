@@ -9,8 +9,8 @@ export const record2wsjtx = (record: QSORecord): string =>
     [
         DateTime.fromFormat(record.qso_date as string, "yyyyMMdd").toFormat("yyyy-MM-dd"),
         DateTime.fromFormat(record.time_on as string, "HHmmss").toFormat("HH:mm:ss"),
-        DateTime.fromFormat(record.qso_date as string, "yyyyMMdd").toFormat("yyyy-MM-dd"),
-        DateTime.fromFormat(record.time_on as string, "HHmmss").toFormat("HH:mm:ss"),
+        DateTime.fromFormat((record.qso_date_off || record.qso_date) as string, "yyyyMMdd").toFormat("yyyy-MM-dd"),
+        DateTime.fromFormat((record.time_off || record.qso_date) as string, "HHmmss").toFormat("HH:mm:ss"),
         record.call,
         normalise(record.gridsquare)?.substring(0, 4),
         record.freq,
