@@ -7,7 +7,15 @@ import { createStyleSheet, useStyles } from "react-native-unistyles";
 import { Beacons } from "./lib/components/beacons";
 import { Filters, filterQsos } from "./lib/components/filters";
 import { CallsignInput } from "./lib/components/form/callsign-input";
-import { QSO, carryOver, createQso, extrapolate, prefillMyStation, useQsos } from "./lib/components/qso";
+import {
+    QSO,
+    carryOver,
+    createQso,
+    extrapolate,
+    prefillMyStation,
+    prefillOperating,
+    useQsos,
+} from "./lib/components/qso";
 import { QsoList } from "./lib/components/qso/qso-list";
 import { useStore } from "./lib/utils/store";
 import { Alert } from "./lib/utils/theme/components/alert";
@@ -51,7 +59,7 @@ const Index: IndexComponent = (): JSX.Element => {
     const resetQso = (previousQso?: QSO) => {
         let qso = prefillMyStation(createQso(""), { myCallsign: settings.myCallsign, myLocator: currentLocation });
         if (previousQso || lastQso) qso = carryOver(qso, previousQso || (lastQso as QSO), settings.carryOver);
-        methods.reset(qso);
+        methods.reset(prefillOperating(qso, { mode: "SSB", band: "20m" }));
     };
     useEffect(resetQso, [lastQso]);
 
