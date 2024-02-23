@@ -5,6 +5,7 @@ This is the rough todolist I want to work on.
 ## Must have
 
 -   [ ] should make a visual indication that hamqth isn't available, it happens often
+-   [ ] parksandpeaks integration (https://parksnpeaks.org/api/)
 
 ## Good to have
 
