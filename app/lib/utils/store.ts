@@ -8,12 +8,14 @@ import { QSO } from "../components/qso";
 import { Band } from "../data/bands";
 import { Mode } from "../data/modes";
 import { HamQTHSettingsType } from "./hamqth";
+import { Spot } from "./spots";
 
 export type Settings = {
     myGridsquare?: string;
     myCallsign: string;
     showBeacons: boolean;
     showFilters: boolean;
+    showSpots: boolean;
     contestMode: boolean;
     imperial: boolean;
     timeoffThreshold: number;
@@ -34,6 +36,7 @@ const defaultSettings: Settings = {
     datemonth: false,
     timeoffThreshold: 10,
     showFilters: false,
+    showSpots: false,
     contestMode: false,
     favouriteBands: [],
     favouriteModes: [],
@@ -65,6 +68,7 @@ export const fixSettings = (settings: Partial<Settings>): Settings =>
 
 type DTLStoreProps = {
     qsos: QSO[];
+    spots?: Spot[];
     filters: QsoFilter[];
     settings: Settings;
     currentLocation: string;
@@ -72,6 +76,7 @@ type DTLStoreProps = {
 
 type DTLStoreActionsProps = {
     log: (qso: QSO | QSO[]) => void;
+    updateSpots: (spots: Spot[]) => void;
     updateSetting: <T extends keyof Settings>(field: T, value: Settings[T]) => void;
     updateFilters: (filters: QsoFilter[]) => void;
     deleteLog: (qso: QSO) => void;
@@ -98,6 +103,10 @@ const StoreActions: DTLStoreActionsMutatorProps = (set) => ({
                 ? { qsos: [...state.qsos.filter((q) => !qso.some((qq) => qq.id == q.id)), ...qso] }
                 : { qsos: [...state.qsos.filter((q) => q.id != qso.id), qso] },
         ),
+    updateSpots: (spots) =>
+        set((state) => ({
+            spots: [...(state.spots?.filter((s) => !spots.some((ss) => ss.callsign === s.callsign)) || []), ...spots],
+        })),
     updateSetting: (field, value) => set((state) => ({ settings: { ...state.settings, [field]: value } })),
     updateFilters: (filters) => set((state) => ({ filters })),
     deleteLog: (qso) => set((state) => ({ qsos: [...state.qsos.filter((q) => q.id != qso.id)] })),

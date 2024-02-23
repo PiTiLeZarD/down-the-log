@@ -20,6 +20,7 @@ import { Stack } from "./stack";
 const stylesheet = createStyleSheet((theme) => ({
     container: {
         backgroundColor: theme.background,
+        padding: theme.margins.md,
     },
 }));
 

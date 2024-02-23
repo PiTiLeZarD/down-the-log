@@ -17,6 +17,7 @@ import {
     useQsos,
 } from "./lib/components/qso";
 import { QsoList } from "./lib/components/qso/qso-list";
+import { Spots } from "./lib/components/spots";
 import { useStore } from "./lib/utils/store";
 import { Alert } from "./lib/utils/theme/components/alert";
 import { Typography } from "./lib/utils/theme/components/typography";
@@ -87,6 +88,7 @@ const Index: IndexComponent = (): JSX.Element => {
                     filters={callsign ? [(q) => q.callsign.includes(callsign)] : undefined}
                     onQsoPress={(qso) => navigate(`/qso?qsoId=${qso.id}`)}
                 />
+                {settings.showSpots && <Spots />}
             </View>
             <View style={styles.inputs}>
                 <FormProvider {...methods}>

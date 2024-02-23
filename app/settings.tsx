@@ -79,6 +79,14 @@ const Settings: SettingsComponent = (): JSX.Element => {
                             if (!v) updateFilters([]);
                         }}
                     />
+                    <Typography underline>Show Spots:</Typography>
+                    <Switch
+                        value={settings.showSpots != undefined ? settings.showSpots : false}
+                        onValueChange={(v) => updateSetting("showSpots", v)}
+                    />
+                    <Typography variant="subtitle">
+                        Spots will show only if you configure spots sources in APIs
+                    </Typography>
                     <Typography underline>Ragchew max time:</Typography>
                     <Input
                         value={String(settings.timeoffThreshold)}
