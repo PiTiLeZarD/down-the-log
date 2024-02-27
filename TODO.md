@@ -5,10 +5,13 @@ This is the rough todolist I want to work on.
 ## Must have
 
 -   [ ] should make a visual indication that hamqth isn't available, it happens often
--   [ ] parksandpeaks integration (https://parksnpeaks.org/api/)
+-   [ ] Some pages scroll under the black background
+-   [ ] dropdowns are always white and even when the text is white
+-   [ ] events odd/even are hard to read on dark mode
 
 ## Good to have
 
+-   [ ] parksandpeaks integration (https://parksnpeaks.org/api/) CORS issue, I've contacted them, let's see
 -   [ ] band map, ability to link callsign/frequency on the band, use this to start qso's (also ability to write name/qth and other details so it's prefilled)
 -   [ ] hamclock modules (sunspot or sun data, propagaion, greyline, short/long path etc...)
     -   [x] data ranges: https://3fs.net.au/making-sense-of-solar-indices/
