@@ -160,6 +160,11 @@ export const SolarData: SolarDataComponent = (): JSX.Element => {
                         </Stack>
                     )}
                     {!magneticValues && <Typography>Looking for magnetic data...</Typography>}
+                    <Button
+                        url="https://prop.kc2g.com/renders/current/mufd-normal-now.svg"
+                        text="MUF map"
+                        variant="outlined"
+                    />
                     <Button colour="success" text="OK" onPress={() => setModal(false)} />
                 </Stack>
             </Modal>
