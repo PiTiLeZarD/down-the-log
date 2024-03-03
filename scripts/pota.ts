@@ -19,7 +19,7 @@ parser.on("readable", () => {
 });
 parser.on("end", () => {
     writeFileSync(
-        "./src/data/pota.json",
+        "./app/lib/data/pota.json",
         JSON.stringify(
             Object.fromEntries(
                 records

@@ -13,7 +13,7 @@ const parser = new XMLParser();
 const doc = parser.parse(data);
 
 writeFileSync(
-    "./src/data/iota.json",
+    "./app/lib/data/iota.json",
     JSON.stringify(
         Object.fromEntries(
             doc.kml.Document.Folder.Folder.map((o: any) =>

@@ -37,4 +37,4 @@ const dxccData = Object.fromEntries(
     ]),
 );
 
-writeFileSync("./src/data/dxcc.json", JSON.stringify(dxccData), "utf8");
+writeFileSync("./app/lib/data/dxcc.json", JSON.stringify(dxccData), "utf8");

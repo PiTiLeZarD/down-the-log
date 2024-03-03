@@ -19,7 +19,7 @@ parser.on("readable", () => {
 });
 parser.on("end", () => {
     writeFileSync(
-        "./src/data/wwff.json",
+        "./app/lib/data/wwff.json",
         JSON.stringify(
             Object.fromEntries(
                 records

@@ -48,4 +48,4 @@ const countries = Object.fromEntries(
     ]),
 );
 
-writeFileSync("./src/data/world.json", JSON.stringify(countries), "utf8");
+writeFileSync("./app/lib/data/world.json", JSON.stringify(countries), "utf8");

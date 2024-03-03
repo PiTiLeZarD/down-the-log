@@ -16,6 +16,6 @@ const data = readFileSync("./scripts/dxcclist.txt", "utf8")
     }));
 
 writeFileSync(
-    "./src/data/dxccnames.json",
+    "./app/lib/data/dxccnames.json",
     JSON.stringify(Object.fromEntries(data.map(({ dxcc, name }) => [String(dxcc).padStart(3, "0"), name]))),
 );
