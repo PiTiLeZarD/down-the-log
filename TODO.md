@@ -8,6 +8,7 @@ This is the rough todolist I want to work on.
 -   [ ] Some pages scroll under the black background
 -   [ ] dropdowns are always white and even when the text is white
 -   [ ] events odd/even are hard to read on dark mode
+-   [ ] use https://services.swpc.noaa.gov/text/daily-solar-indices.txt for SFI (and try to plot more in the modal)
 
 ## Good to have
 
