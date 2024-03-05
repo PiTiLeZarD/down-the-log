@@ -1,6 +1,6 @@
 import React from "react";
 import { Pressable, TextStyle } from "react-native";
-import { UnistylesRuntime, createStyleSheet, useStyles } from "react-native-unistyles";
+import { createStyleSheet, useStyles } from "react-native-unistyles";
 import { Typography } from "../../utils/theme/components/typography";
 import { Grid } from "../grid";
 
@@ -13,17 +13,8 @@ const stylesheet = createStyleSheet((theme) => ({
         lineHeight,
         fontWeight: "bold",
     }),
-    row: (success: boolean) => ({
-        backgroundColor:
-            theme.colours[success ? "success" : "grey"][
-                UnistylesRuntime.themeName === "light" ? (success ? 100 : 200) : success ? 900 : 800
-            ],
-    }),
-    rowHighlight: (success: boolean) => ({
-        backgroundColor:
-            theme.colours[success ? "success" : "grey"][
-                UnistylesRuntime.themeName === "light" ? (success ? 200 : 300) : success ? 800 : 700
-            ],
+    row: (highlight: boolean, success: boolean) => ({
+        backgroundColor: theme.colours[success ? "success" : "grey"][theme.rowShade(highlight)],
     }),
 }));
 
@@ -60,7 +51,7 @@ export const QsoRow: QsoRowComponent = ({
     const cellStyle = header ? styles.header(lineHeight) : { lineHeight };
     return (
         <Pressable onPress={onPress}>
-            <Grid container style={(+position % 2 === 0 || header ? styles.rowHighlight : styles.row)(success)}>
+            <Grid container style={styles.row(+position % 2 === 0 || header, success)}>
                 <Grid item style={styles.cell} xs={1}>
                     {cellContent(position, cellStyle)}
                 </Grid>

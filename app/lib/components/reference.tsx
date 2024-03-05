@@ -54,7 +54,7 @@ export const Reference: ReferenceComponent = ({ position, max, event, reference,
             style={{
                 padding: theme.margins.lg,
                 borderRadius: theme.margins.lg,
-                backgroundColor: position % 2 ? theme.colours.grey[300] : undefined,
+                backgroundColor: theme.colours.grey[theme.rowShade(!!(position % 2))],
             }}
         >
             <Grid container style={{ height: 32 }}>

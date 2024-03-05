@@ -86,6 +86,7 @@ export const theme = (shade: "light" | "dark") =>
                   dark: "300",
                   darker: "100",
               }) as Record<Shade, keyof Colour>,
+        rowShade: shade === "light" ? (odd: boolean) => (odd ? "100" : "200") : (odd: boolean) => (odd ? "900" : "800"),
     }) as const;
 
 export type ThemeType = ReturnType<typeof theme>;
