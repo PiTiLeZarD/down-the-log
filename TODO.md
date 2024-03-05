@@ -5,7 +5,6 @@ This is the rough todolist I want to work on.
 ## Must have
 
 -   [ ] should make a visual indication that hamqth isn't available, it happens often
--   [ ] dropdowns are always white and even when the text is white
 
 ## Good to have
 
@@ -39,6 +38,7 @@ This is the rough todolist I want to work on.
 
 ## Done
 
+-   [x] dropdowns are always white and even when the text is white
 -   [x] use https://services.swpc.noaa.gov/text/daily-solar-indices.txt for SFI (and try to plot more in the modal)
 -   [x] Some pages scroll under the black background
 -   [x] events odd/even are hard to read on dark mode

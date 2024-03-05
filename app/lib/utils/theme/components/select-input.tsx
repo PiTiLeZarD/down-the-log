@@ -10,7 +10,7 @@ const stylesheet = createStyleSheet((theme) => ({
         borderColor: theme.colours.primary[theme.shades.light],
         borderRadius: theme.margins.md,
         padding: theme.margins.lg,
-        backgroundColor: "inherit",
+        backgroundColor: theme.background,
         color: theme.text.main,
     },
 }));
