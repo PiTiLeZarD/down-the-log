@@ -18,31 +18,33 @@ export const PageLayout: PageLayoutComponent = ({ title, titleMargin = 18, child
     const goBack = useGoBack();
     const { theme } = useStyles();
     return (
-        <Grid container>
-            <Grid item xs={0} md={1} lg={2} xxl={3} />
-            <Grid item xs={12} md={10} lg={8} xxl={6}>
-                <ScrollView style={{ paddingLeft: theme.margins.lg, paddingRight: theme.margins.lg }}>
-                    <Stack gap="xxl">
-                        <Stack direction="row">
-                            {typeof title === "string" ? (
-                                <Typography variant="h1" style={{ flexGrow: 1 }}>
-                                    {title}
-                                </Typography>
-                            ) : (
-                                <View style={{ flexGrow: 1, marginTop: titleMargin, marginBottom: titleMargin }}>
-                                    {title}
-                                </View>
-                            )}
+        <ScrollView>
+            <Grid container>
+                <Grid item xs={0} md={1} lg={2} xxl={3} />
+                <Grid item xs={12} md={10} lg={8} xxl={6}>
+                    <ScrollView style={{ paddingLeft: theme.margins.lg, paddingRight: theme.margins.lg }}>
+                        <Stack gap="xxl">
+                            <Stack direction="row">
+                                {typeof title === "string" ? (
+                                    <Typography variant="h1" style={{ flexGrow: 1 }}>
+                                        {title}
+                                    </Typography>
+                                ) : (
+                                    <View style={{ flexGrow: 1, marginTop: titleMargin, marginBottom: titleMargin }}>
+                                        {title}
+                                    </View>
+                                )}
 
-                            <View>
-                                <Button text="Back" startIcon="arrow-back" onPress={goBack} />
-                            </View>
+                                <View>
+                                    <Button text="Back" startIcon="arrow-back" onPress={goBack} />
+                                </View>
+                            </Stack>
+                            {children}
                         </Stack>
-                        {children}
-                    </Stack>
-                </ScrollView>
+                    </ScrollView>
+                </Grid>
+                <Grid item xs={0} md={1} lg={2} xxl={3} />
             </Grid>
-            <Grid item xs={0} md={1} lg={2} xxl={3} />
-        </Grid>
+        </ScrollView>
     );
 };
