@@ -26,22 +26,26 @@ const deserialise = (data: string) =>
 
 const ssn = (sfi: number) => 1.14 * sfi - 73.21;
 
+const sirx =
+    /^(\d{4} \d{2} \d{2})\s+(\d+)\s+(\d+)\s+(\d+)\s+(\d+)\s+([-]?\d+)\s+([*]|([A-Z]\d+[.]\d+))\s+(\d+)\s+(\d+)\s+(\d+)\s+(\d+)\s+(\d+)\s+(\d+)\s+(\d+)/;
+
 const fetchSolarData = async () =>
     axios
-        .get(
-            `https://lasp.colorado.edu/lisird/latis/dap/penticton_radio_flux.json?time,observed_flux&time%3E=${DateTime.local()
-                .minus({ days: 16 })
-                .toFormat("yyyy-MM-dd")}T00:00:00Z&time%3C=${DateTime.local().toFormat(
-                "yyyy-MM-dd",
-            )}T23:59:59Z&formatTime(yyyy-MM-dd%27T%27HH:mm:ss)`,
-        )
+        .get(`https://services.swpc.noaa.gov/text/daily-solar-indices.txt`)
         .then(({ data }) =>
-            data.penticton_radio_flux.samples.map(
-                ({ time, observed_flux }: { time: string; observed_flux: number }) => ({
-                    date: DateTime.fromISO(time),
-                    value: observed_flux,
-                }),
-            ),
+            data
+                .split("\n")
+                .filter((l: string) => !l.startsWith(":") && !l.startsWith("#"))
+                .map((l: string) => {
+                    const d = l.match(sirx);
+                    if (d) {
+                        return {
+                            date: DateTime.fromFormat(d[1], "yyyy MM dd"),
+                            value: +d[2],
+                        };
+                    }
+                })
+                .filter((e: any) => !!e),
         )
         .then(serialise);
 

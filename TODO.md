@@ -6,7 +6,6 @@ This is the rough todolist I want to work on.
 
 -   [ ] should make a visual indication that hamqth isn't available, it happens often
 -   [ ] dropdowns are always white and even when the text is white
--   [ ] use https://services.swpc.noaa.gov/text/daily-solar-indices.txt for SFI (and try to plot more in the modal)
 
 ## Good to have
 
@@ -40,6 +39,7 @@ This is the rough todolist I want to work on.
 
 ## Done
 
+-   [x] use https://services.swpc.noaa.gov/text/daily-solar-indices.txt for SFI (and try to plot more in the modal)
 -   [x] Some pages scroll under the black background
 -   [x] events odd/even are hard to read on dark mode
 -   [x] issue with the url, redirecting outside of the demo site for the index page
