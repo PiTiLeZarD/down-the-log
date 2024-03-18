@@ -1,4 +1,3 @@
-import { DateTime } from "luxon";
 import { QSO } from "../components/qso";
 import { ReferenceDatum } from "../components/reference-info";
 import iotaData from "../data/iota.json";
@@ -82,11 +81,11 @@ export const eventDataMap: Record<EventType, Record<string, ReferenceDatum>> = {
 
 export type EventNameFn = (qsos: QSO[]) => string;
 export const eventFileNameMap: Record<EventType, EventNameFn> = {
-    wwff: (qsos) => `${qsos[0].myCallsign} @ ${qsos[0].myWwff} ${DateTime.local().toFormat("yyyyMMdd")}.adif`,
-    pota: (qsos) => `${qsos[0].myCallsign}@${qsos[0].myPota}-${DateTime.local().toFormat("yyyyMMdd")}.adi`,
-    sota: (qsos) => `${qsos[0].myCallsign}@${qsos[0].mySota}_${DateTime.local().toFormat("yyyyMMdd")}.adif`,
-    iota: (qsos) => `${qsos[0].myCallsign}@${qsos[0].myIota}_${DateTime.local().toFormat("yyyyMMdd")}.adif`,
-    sig: () => `sig_${DateTime.local().toFormat("yyyyMMdd")}.adif`,
+    wwff: (qsos) => `${qsos[0].myCallsign} @ ${qsos[0].myWwff} ${qsos[0].date.toFormat("yyyyMMdd")}.adif`,
+    pota: (qsos) => `${qsos[0].myCallsign}@${qsos[0].myPota}-${qsos[0].date.toFormat("yyyyMMdd")}.adi`,
+    sota: (qsos) => `${qsos[0].myCallsign}@${qsos[0].mySota}_${qsos[0].date.toFormat("yyyyMMdd")}.adif`,
+    iota: (qsos) => `${qsos[0].myCallsign}@${qsos[0].myIota}_${qsos[0].date.toFormat("yyyyMMdd")}.adif`,
+    sig: (qsos) => `sig_${qsos[0].date.toFormat("yyyyMMdd")}.adif`,
 };
 
 export const eventDataMassageMap: Record<EventType, RecordMassageFn> = {
