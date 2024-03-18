@@ -83,7 +83,7 @@ export const eventDataMap: Record<EventType, Record<string, ReferenceDatum>> = {
 export type EventNameFn = (qsos: QSO[]) => string;
 export const eventFileNameMap: Record<EventType, EventNameFn> = {
     wwff: (qsos) => `${qsos[0].myCallsign} @ ${qsos[0].myWwff} ${DateTime.local().toFormat("yyyyMMdd")}.adif`,
-    pota: (qsos) => `${qsos[0].myCallsign}@${qsos[0].myPota}_${DateTime.local().toFormat("yyyyMMdd")}.adif`,
+    pota: (qsos) => `${qsos[0].myCallsign}@${qsos[0].myPota}-${DateTime.local().toFormat("yyyyMMdd")}.adi`,
     sota: (qsos) => `${qsos[0].myCallsign}@${qsos[0].mySota}_${DateTime.local().toFormat("yyyyMMdd")}.adif`,
     iota: (qsos) => `${qsos[0].myCallsign}@${qsos[0].myIota}_${DateTime.local().toFormat("yyyyMMdd")}.adif`,
     sig: () => `sig_${DateTime.local().toFormat("yyyyMMdd")}.adif`,
