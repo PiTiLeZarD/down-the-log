@@ -79,20 +79,21 @@ export const Reference: ReferenceComponent = ({ position, max, event, reference,
                     )}
                 </Grid>
                 <Grid item xs={2}>
-                    <View>
-                        <Button
-                            startIcon="download"
-                            variant="chip"
-                            colour="secondary"
-                            text="ADIF"
-                            onPress={() => handleDownload(allQsos)}
-                        />
-                    </View>
+                    {!["pota"].includes(event) && (
+                        <View>
+                            <Button
+                                startIcon="download"
+                                variant="chip"
+                                colour="secondary"
+                                text="ADIF"
+                                onPress={() => handleDownload(allQsos)}
+                            />
+                        </View>
+                    )}
                 </Grid>
             </Grid>
             {Object.entries(activations).map(([date, { status, qsos }]) => (
                 <Grid container key={date}>
-                    <Grid item xs={1} />
                     <Grid item xs={1}>
                         <Icon name="arrow-forward" />
                     </Grid>
@@ -102,12 +103,27 @@ export const Reference: ReferenceComponent = ({ position, max, event, reference,
                     <Grid item xs={2}>
                         <Typography>{status}</Typography>
                     </Grid>
-                    <Grid item xs={6}>
+                    <Grid item xs={["pota"].includes(event) ? 6 : 7}>
                         <Typography>
                             Qsos: {qsos.length} P2P: {qsos.filter((q) => !!q[event]).length} min:
                             {Math.min(...distances(qsos))}km max: {Math.max(...distances(qsos))}km
                         </Typography>
                     </Grid>
+                    {["pota"].includes(event) && (
+                        <Grid item xs={1}>
+                            <View>
+                                {status === "Activated" && (
+                                    <Button
+                                        startIcon="download"
+                                        variant="chip"
+                                        colour="secondary"
+                                        onPress={() => handleDownload(qsos)}
+                                    />
+                                )}
+                                {status !== "Activated" && <Button startIcon="close" variant="chip" colour="grey" />}
+                            </View>
+                        </Grid>
+                    )}
                 </Grid>
             ))}
         </View>
