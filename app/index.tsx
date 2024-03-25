@@ -62,6 +62,9 @@ const Index: IndexComponent = (): JSX.Element => {
         methods.reset(prefillOperating(qso, { mode: "SSB", band: "20m" }));
     };
     useEffect(resetQso, [lastQso]);
+    useEffect(() => {
+        if (callsign === "") resetQso();
+    }, [callsign]);
 
     const handleAdd = () => {
         const qso: QSO = extrapolate(methods.getValues(), qsos, settings.carryOver);
