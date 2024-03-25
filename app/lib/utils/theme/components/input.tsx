@@ -1,5 +1,13 @@
 import React, { useEffect } from "react";
-import { Pressable, TextInput, TextInputProps, TextStyle, View } from "react-native";
+import {
+    NativeSyntheticEvent,
+    Pressable,
+    TextInput,
+    TextInputChangeEventData,
+    TextInputProps,
+    TextStyle,
+    View,
+} from "react-native";
 import { createStyleSheet, useStyles } from "react-native-unistyles";
 import { Stack } from "../../../components/stack";
 import { Icon } from "./icon";
@@ -38,6 +46,7 @@ export type InputProps = TextInputProps & {
     numeric?: boolean;
     password?: boolean;
     textStyle?: TextStyle;
+    transformValue?: (v: string) => string;
     prefix?: React.ReactNode;
     suffix?: React.ReactNode;
 };
@@ -49,11 +58,13 @@ export const Input: InputComponent = ({
     textStyle,
     prefix,
     suffix,
+    transformValue = (v) => v,
     numeric = false,
     password = false,
     ...otherProps
 }): JSX.Element => {
     const [secure, setSecure] = React.useState<boolean>(password);
+    const [value, setValue] = React.useState<string>(otherProps.value || "");
     useEffect(() => setSecure(password), [password]);
 
     if (password)
@@ -63,6 +74,25 @@ export const Input: InputComponent = ({
             </Pressable>
         );
 
+    useEffect(() => {
+        const mv = transformValue(otherProps.value || "");
+        if (otherProps.value && mv !== value) {
+            setValue(mv);
+        }
+    }, [otherProps.value]);
+
+    const handleChange = (ev: NativeSyntheticEvent<TextInputChangeEventData>) => {
+        const elt = ev.target as any as HTMLInputElement;
+        const caret = elt.selectionStart;
+        const newValue = transformValue(elt.value);
+        setValue(newValue);
+        (otherProps.onChangeText || ((v: string) => {}))(newValue);
+        (otherProps.onChange || ((ev: any) => {}))(ev);
+        requestAnimationFrame(() => {
+            elt.selectionStart = caret;
+            elt.selectionEnd = caret;
+        });
+    };
     const { styles } = useStyles(stylesheet);
 
     return (
@@ -87,6 +117,9 @@ export const Input: InputComponent = ({
                     ? { keyboardType: "numeric", type: "number", pattern: "[0-9]*", inputmode: "numeric" }
                     : {})}
                 {...otherProps}
+                value={value}
+                onChangeText={() => {}}
+                onChange={handleChange}
             />
             {suffix &&
                 (typeof suffix == "string" ? (

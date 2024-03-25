@@ -37,7 +37,6 @@ export type CallsignInputComponent = React.FC<CallsignInputProps>;
 
 export const CallsignInput: CallsignInputComponent = ({ handleAdd }): JSX.Element => {
     const qsos = useQsos();
-    const [inputValue, setInputValue] = React.useState<string>("");
     const { styles } = useStyles(stylesheet);
     const { watch, setValue } = useFormContext<QSO>();
     const { inputBarConfig, contestMode } = useSettings();
@@ -58,15 +57,7 @@ export const CallsignInput: CallsignInputComponent = ({ handleAdd }): JSX.Elemen
     }
 
     useEffect(() => {
-        if (inputValue != callsign) setValue("callsign", inputValue);
-    }, [inputValue]);
-
-    useEffect(() => {
-        setInputValue("");
-    }, [watch("id")]);
-
-    useEffect(() => {
-        if (hamqthCSData && hamqthCSData.callsign == baseCallsign(inputValue)) {
+        if (hamqthCSData && hamqthCSData.callsign == baseCallsign(callsign)) {
             setValue("name", hamqthCSData.name);
             setValue("qth", hamqthCSData.qth);
             setValue("locator", hamqthCSData.grid);
@@ -86,9 +77,10 @@ export const CallsignInput: CallsignInputComponent = ({ handleAdd }): JSX.Elemen
                 {inputBarConfig.includes("frequency") && <BandFreqInput noLabel />}
                 <View style={{ flexGrow: 1 }}>
                     <Input
-                        value={inputValue}
+                        value={callsign}
                         style={styles.input}
-                        onChangeText={(text: string) => setInputValue(text.toUpperCase())}
+                        transformValue={(v) => v.toUpperCase()}
+                        onChangeText={(v) => setValue("callsign", v)}
                         onKeyPress={(e: any) => {
                             if (e.keyCode === 13) handleAdd();
                         }}

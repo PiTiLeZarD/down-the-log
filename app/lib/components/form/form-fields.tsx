@@ -122,7 +122,11 @@ export const FormFields: FormFieldsComponent = ({ qso }): JSX.Element => {
             title={
                 <Stack direction="row">
                     <View style={{ flexGrow: 1 }}>
-                        <FormField name="callsign" style={styles.callsignInput} />
+                        <FormField
+                            name="callsign"
+                            style={styles.callsignInput}
+                            transformValue={(v: string) => v.toUpperCase()}
+                        />
                     </View>
                     <View>
                         <QrzChip callsign={qso.callsign} />
