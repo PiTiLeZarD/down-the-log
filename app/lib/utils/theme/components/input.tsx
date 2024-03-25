@@ -86,8 +86,10 @@ export const Input: InputComponent = ({
         const caret = elt.selectionStart;
         const newValue = transformValue(elt.value);
         setValue(newValue);
-        (otherProps.onChangeText || ((v: string) => {}))(newValue);
-        (otherProps.onChange || ((ev: any) => {}))(ev);
+        setTimeout(() => {
+            (otherProps.onChangeText || ((v: string) => {}))(newValue);
+            (otherProps.onChange || ((ev: any) => {}))(ev);
+        }, 50);
         requestAnimationFrame(() => {
             elt.selectionStart = caret;
             elt.selectionEnd = caret;
