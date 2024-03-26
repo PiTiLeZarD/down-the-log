@@ -146,13 +146,13 @@ export const FormFields: FormFieldsComponent = ({ qso }): JSX.Element => {
                             <Stack direction="row" style={{ flexGrow: 1 }}>
                                 <Button
                                     variant="chip"
-                                    colour={qso.eqsl_received ? "success" : qso.eqsl_sent ? "primary" : "grey"}
+                                    colour={qso.eqsl_received ? "success" : qso.eqsl_sent ? "success" : "grey"}
                                     text="eQSL"
                                     onPress={qslInfo}
                                 />
                                 <Button
                                     variant="chip"
-                                    colour={qso.lotw_received ? "success" : qso.lotw_sent ? "primary" : "grey"}
+                                    colour={qso.lotw_received ? "success" : qso.lotw_sent ? "success" : "grey"}
                                     text="lotw"
                                     onPress={qslInfo}
                                 />
