@@ -25,6 +25,8 @@ const stylesheet = createStyleSheet((theme) => ({
 
 export type FilterFunction = (qso: QSO, i: number, a: QSO[]) => string[];
 const dxcc2countrymap = Object.fromEntries(callsigns.map((csd) => [+csd.dxcc, csd.iso3]));
+export const dxcc2label = (dxcc?: number) =>
+    `${dxcc} (${dxcc ? (countries[dxcc2countrymap[dxcc]] || { name: "?" }).name : "?"})`;
 
 export const filterMap: Record<string, FilterFunction> = {
     year: (qso) => [String(qso.date.toObject().year)],
@@ -34,7 +36,7 @@ export const filterMap: Record<string, FilterFunction> = {
     mode: (qso) => [String(qso.mode)],
     cq: (qso) => [String(qso.cqzone)],
     itu: (qso) => [String(qso.ituzone)],
-    dxcc: (qso) => [`${qso.dxcc} (${qso.dxcc ? (countries[dxcc2countrymap[qso.dxcc]] || { name: "?" }).name : "?"})`],
+    dxcc: (qso) => [dxcc2label(qso.dxcc)],
     pota: (qso) => [qso.pota || "", qso.myPota || ""],
     wwff: (qso) => [qso.wwff || "", qso.myWwff || ""],
     sota: (qso) => [qso.sota || "", qso.mySota || ""],

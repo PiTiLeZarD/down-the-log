@@ -6,7 +6,7 @@ import { unique } from "../utils/arrays";
 import { useStore } from "../utils/store";
 import { Button } from "../utils/theme/components/button";
 import { Typography } from "../utils/theme/components/typography";
-import { filterQsos } from "./filters";
+import { dxcc2label, filterQsos } from "./filters";
 import { useQsos } from "./qso";
 import { Stack } from "./stack";
 
@@ -41,6 +41,7 @@ export const DxccStats: DxccStatsComponent = ({ dxcc }): JSX.Element => {
                     updateFilters([
                         { name: "band", values: [band] },
                         { name: "mode", values: [mode] },
+                        { name: "dxcc", values: [dxcc2label(dxcc)] },
                     ]);
                     navigate("/");
                 }}
