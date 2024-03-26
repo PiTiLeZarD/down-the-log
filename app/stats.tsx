@@ -12,7 +12,7 @@ import { SelectInput } from "./lib/utils/theme/components/select-input";
 import { Typography } from "./lib/utils/theme/components/typography";
 import { useSettings } from "./lib/utils/use-settings";
 
-const groupQsos = (
+export const groupQsos = (
     qsos: QSO[],
     first: FilterName,
     second: FilterName = "band",
@@ -48,7 +48,7 @@ const Stats: StatsComponent = (): JSX.Element => {
     const settings = useSettings();
 
     const secondStatValues = applyFavourites(
-        unique(qsos.map((q) => filterMap[secondStat](q)).flat()),
+        unique(qsos.map((q, i, a) => filterMap[secondStat](q, i, a)).flat()),
         secondStat,
         settings,
         useFavourites,

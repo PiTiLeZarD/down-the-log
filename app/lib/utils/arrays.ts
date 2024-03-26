@@ -1,7 +1,10 @@
 import { DateTime } from "luxon";
 import { isNumber } from "./math";
 
-export const groupBy = <T extends object, K extends string>(a: T[], f: (o: T) => K | K[]): Record<K, T[]> =>
+export const groupBy = <T extends object, K extends string>(
+    a: T[],
+    f: (o: T, i: number, a: T[]) => K | K[],
+): Record<K, T[]> =>
     a.reduce<Record<K, T[]>>(
         (groups, elt) => ({
             ...groups,

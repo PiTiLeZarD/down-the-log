@@ -17,6 +17,7 @@ import { useSettings } from "../../utils/use-settings";
 import { ButtonOffset } from "../button-offset";
 import { ContinentWarning } from "../continent-warning";
 import { CountryWarning } from "../country-warning";
+import { DxccStats } from "../dxcc-stats";
 import { GeocodeButton } from "../geocode-button";
 import { Grid } from "../grid";
 import { PageLayout } from "../page-layout";
@@ -313,6 +314,7 @@ export const FormFields: FormFieldsComponent = ({ qso }): JSX.Element => {
                                 <FormField name="power" label="Power:" />
                             </Grid>
                         </Grid>
+                        <FormField role="textarea" name="note" label="Note:" numberOfLines={7} />
                     </Stack>
                 </Grid>
                 <Grid item xs={12} md={6}>
@@ -333,10 +335,11 @@ export const FormFields: FormFieldsComponent = ({ qso }): JSX.Element => {
                                 <ContinentWarning />
                             </Grid>
                         </Grid>
+                        {qso.dxcc && <DxccStats dxcc={qso.dxcc} />}
                     </Stack>
                 </Grid>
             </Grid>
-            <FormField role="textarea" name="note" label="Note:" />
+
             <View style={{ alignItems: "center" }}>
                 <QsoMap qso={qso} />
             </View>
