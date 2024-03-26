@@ -206,7 +206,14 @@ export const extrapolate = (qso: QSO, qsos: QSO[], carryOverFields: (keyof QSO)[
 
 const dt2mn = (dt1: DateTime, dt2: DateTime) => Math.abs(dt1.diff(dt2, ["minutes"]).toObject().minutes as number);
 
+export const findMatchingQsos = (qsos: QSO[], data: QSO, threshold: number = 20): QSO[] =>
+    qsos.filter(
+        (q) =>
+            baseCallsign(q.callsign) === baseCallsign(data.callsign) &&
+            q.mode === data.mode &&
+            q.frequency === data.frequency &&
+            dt2mn(q.date, data.date) < threshold,
+    );
+
 export const findMatchingQso = (qsos: QSO[], data: QSO): QSO | null =>
-    qsos
-        .filter((q) => baseCallsign(q.callsign) === baseCallsign(data.callsign) && dt2mn(q.date, data.date) < 20)
-        .sort((qa, qb) => dt2mn(qa.date, data.date) - dt2mn(qb.date, data.date))[0] || null;
+    findMatchingQsos(qsos, data).sort((qa, qb) => dt2mn(qa.date, data.date) - dt2mn(qb.date, data.date))[0] || null;
