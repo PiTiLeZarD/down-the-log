@@ -22,6 +22,12 @@ export const downloadQsos = (
 export const getImportFunctionFromFilename = (filename: string): ((c: string) => QSORecord[]) => {
     if (filename === "wsjtx.log") return wsjtxFileToRecordList;
     if (filename.endsWith("adx")) return adxFileToRecordList;
-    if (filename.endsWith("adif")) return adifFileToRecordList;
+    if (
+        filename.endsWith("adif") ||
+        filename.endsWith("adi") ||
+        filename.endsWith("adi.txt") ||
+        filename.endsWith("adif.txt")
+    )
+        return adifFileToRecordList;
     return () => [];
 };
