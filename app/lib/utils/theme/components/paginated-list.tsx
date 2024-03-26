@@ -17,15 +17,18 @@ export const PaginatedList: PaginatedListComponent = ({ itemsPerPage = 10, child
     useEffect(() => setPage(0), [elements.length]);
 
     if (elements.length < itemsPerPage) return <>{children}</>;
+
+    const showBack = page > 0;
+    const showForward = page < elements.length / itemsPerPage - 1;
     return (
         <Stack>
             {elements.slice(page * itemsPerPage, (page + 1) * itemsPerPage)}
             <Stack direction="row">
                 <View>
                     <Button
-                        colour={page > 0 ? "primary" : "grey"}
+                        colour={showBack ? "primary" : "grey"}
                         startIcon="arrow-back"
-                        onPress={() => setPage(page - 1)}
+                        onPress={!showBack ? () => {} : () => setPage(page - 1)}
                     />
                 </View>
                 <Typography style={{ flexGrow: 1, textAlign: "center" }}>
@@ -33,9 +36,9 @@ export const PaginatedList: PaginatedListComponent = ({ itemsPerPage = 10, child
                 </Typography>
                 <View>
                     <Button
-                        colour={page < elements.length / itemsPerPage - 1 ? "primary" : "grey"}
+                        colour={showForward ? "primary" : "grey"}
                         startIcon="arrow-forward"
-                        onPress={() => setPage(page + 1)}
+                        onPress={!showForward ? () => {} : () => setPage(page + 1)}
                     />
                 </View>
             </Stack>
