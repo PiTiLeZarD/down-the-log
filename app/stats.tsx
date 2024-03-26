@@ -6,6 +6,7 @@ import { GridMap } from "./lib/components/grid-map";
 import { PageLayout } from "./lib/components/page-layout";
 import { QSO, useQsos } from "./lib/components/qso";
 import { Stack } from "./lib/components/stack";
+import { sortBands } from "./lib/data/bands";
 import { groupBy, sortNumsAndAlpha, unique } from "./lib/utils/arrays";
 import { Settings, useStore } from "./lib/utils/store";
 import { SelectInput } from "./lib/utils/theme/components/select-input";
@@ -21,7 +22,7 @@ export const groupQsos = (
         Object.entries(groupBy(qsos, filterMap[first])).map(([k, qs]) => [k, groupBy(qs, filterMap[second])]),
     );
 
-const applyFavourites = (values: string[], stat: FilterName, settings: Settings, useFavourites: boolean) => {
+export const applyFavourites = (values: string[], stat: FilterName, settings: Settings, useFavourites: boolean) => {
     if (!useFavourites || !["band", "mode"].includes(stat)) return values;
 
     const favourites = {
@@ -52,7 +53,8 @@ const Stats: StatsComponent = (): JSX.Element => {
         secondStat,
         settings,
         useFavourites,
-    );
+    ).sort(secondStat === "band" ? sortBands : sortNumsAndAlpha);
+
     const columns = secondStatValues.length + 2;
 
     return (
@@ -89,7 +91,7 @@ const Stats: StatsComponent = (): JSX.Element => {
                     </Grid>
                 </Grid>
                 {applyFavourites(Object.keys(groups), firstStat, settings, useFavourites)
-                    .sort(sortNumsAndAlpha)
+                    .sort(firstStat === "band" ? sortBands : sortNumsAndAlpha)
                     .map((group) => (
                         <Grid container key={group}>
                             <Grid item columns={columns} xs={1}>

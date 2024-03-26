@@ -63,3 +63,6 @@ export const freq2band = (freq?: number): Band | null =>
               null,
           )
         : null;
+
+export const sortBands = (b1: string | Band, b2: string | Band) =>
+    Object.keys(bands).indexOf(b1 as Band) - Object.keys(bands).indexOf(b2 as Band);

@@ -2,6 +2,7 @@ import { useRouter } from "expo-router";
 import React from "react";
 import { View } from "react-native";
 import { groupQsos } from "../../stats";
+import { sortBands } from "../data/bands";
 import { unique } from "../utils/arrays";
 import { useStore } from "../utils/store";
 import { Button } from "../utils/theme/components/button";
@@ -59,18 +60,20 @@ export const DxccStats: DxccStatsComponent = ({ dxcc }): JSX.Element => {
                     </Typography>
                 ))}
             </Stack>
-            {Object.keys(groups).map((band) => (
-                <Stack key={band}>
-                    <Stack direction="row">
-                        <Typography style={{ flex: 1, textAlign: "center" }}>{band}</Typography>
-                        {modes.map((mode) => (
-                            <View key={`${band}_${mode}`} style={{ flex: 1 }}>
-                                {chipValue(band, mode)}
-                            </View>
-                        ))}
+            {Object.keys(groups)
+                .sort(sortBands)
+                .map((band) => (
+                    <Stack key={band}>
+                        <Stack direction="row">
+                            <Typography style={{ flex: 1, textAlign: "center" }}>{band}</Typography>
+                            {modes.map((mode) => (
+                                <View key={`${band}_${mode}`} style={{ flex: 1 }}>
+                                    {chipValue(band, mode)}
+                                </View>
+                            ))}
+                        </Stack>
                     </Stack>
-                </Stack>
-            ))}
+                ))}
         </Stack>
     );
 };
