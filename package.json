@@ -24,7 +24,11 @@
         "types": "tsc --noEmit",
         "clean": "rm -Rf down-the-log",
         "prepages": "yarn clean && yarn build:web",
-        "pages": "gh-pages -t -b ghpages -d down-the-log"
+        "pages": "gh-pages -t -b ghpages -d down-the-log",
+        "refreshpota": "wget -O scripts/all_parks_ext.csv https://pota.app/all_parks_ext.csv && ts-node scripts/pota.ts",
+        "refreshsota": "wget -O scripts/summitslist.csv https://storage.sota.org.uk/summitslist.csv && ts-node scripts/sota.ts",
+        "refreshwwff": "wget -O scripts/wwff_directory.csv https://wwff.co/wwff-data/wwff_directory.csv && ts-node scripts/wwff.ts",
+        "refreshdata": "yarn refreshpota && yarn refreshsota && yarn refreshwwff"
     },
     "dependencies": {
         "@babel/plugin-proposal-export-namespace-from": "^7.18.9",
