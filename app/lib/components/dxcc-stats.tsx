@@ -35,8 +35,8 @@ export const DxccStats: DxccStatsComponent = ({ dxcc }): JSX.Element => {
         return (
             <Button
                 variant="chip"
-                colour={confirmed ? "secondary" : "primary"}
-                text={confirmed ? "C" : "W"}
+                colour={confirmed ? "primary" : "grey"}
+                text={qs.length}
                 onPress={() => {
                     updateFilters([
                         { name: "band", values: [band] },
