@@ -14,7 +14,7 @@ import { Input } from "../utils/theme/components/input";
 import { PaginatedList } from "../utils/theme/components/paginated-list";
 import { Typography } from "../utils/theme/components/typography";
 import { fireSwal } from "../utils/theme/swal";
-import { QSO, hasEvent, useQsos } from "./qso";
+import { QSO, findMatchingQsos, hasEvent, useQsos } from "./qso";
 import { Stack } from "./stack";
 
 const stylesheet = createStyleSheet((theme) => ({
@@ -23,7 +23,7 @@ const stylesheet = createStyleSheet((theme) => ({
     },
 }));
 
-export type FilterFunction = (qso: QSO) => string[];
+export type FilterFunction = (qso: QSO, i: number, a: QSO[]) => string[];
 const dxcc2countrymap = Object.fromEntries(callsigns.map((csd) => [+csd.dxcc, csd.iso3]));
 
 export const filterMap: Record<string, FilterFunction> = {
@@ -46,6 +46,9 @@ export const filterMap: Record<string, FilterFunction> = {
     has_event: (qso) => [hasEvent(qso) ? "Yes" : "No"],
     has_note: (qso) => [qso.note ? "Yes" : "No"],
     has_duration: (qso) => [qso.dateOff ? "Yes" : "No"],
+    has_duplicates: (qso, i, a) => [
+        findMatchingQsos(a, qso, 2).filter((q) => q.id !== qso.id).length > 0 ? "Yes" : "No",
+    ],
     gridsquare: (qso) => [qso.locator?.substring(0, 3) || ""],
     continent: (qso) => [qso.continent || ""],
     country: (qso) => [qso.country ? countries[qso.country].name : ""],
@@ -60,8 +63,11 @@ export type FilterName = keyof typeof filterMap;
 export type QsoFilter = { name: FilterName; values: unknown[] };
 
 export const filterQsos = (qsos: QSO[], qsosFilters: QsoFilter[]) =>
-    qsos.filter((q) =>
-        qsosFilters.reduce((acc, { name, values }) => acc && filterMap[name](q).some((f) => values.includes(f)), true),
+    qsos.filter((q, i, a) =>
+        qsosFilters.reduce(
+            (acc, { name, values }) => acc && filterMap[name](q, i, a).some((f) => values.includes(f)),
+            true,
+        ),
     );
 
 export type FiltersProps = {
@@ -191,7 +197,7 @@ export const Filters: FiltersComponent = ({ showTag }): JSX.Element => {
                     )}
                     {filter && (
                         <PaginatedList itemsPerPage={itemsPerPage}>
-                            {unique(qsos.map((q) => filterMap[filter](q)).flat())
+                            {unique(qsos.map((q, i, a) => filterMap[filter](q, i, a)).flat())
                                 .sort(sortNumsAndAlpha)
                                 .map((v) => (
                                     <Button

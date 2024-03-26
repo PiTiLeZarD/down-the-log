@@ -38,6 +38,7 @@ This is the rough todolist I want to work on.
 
 ## Done
 
+-   [x] find duplicates
 -   [x] dropdowns are always white and even when the text is white
 -   [x] use https://services.swpc.noaa.gov/text/daily-solar-indices.txt for SFI (and try to plot more in the modal)
 -   [x] Some pages scroll under the black background
