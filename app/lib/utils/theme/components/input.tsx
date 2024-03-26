@@ -77,7 +77,7 @@ export const Input: InputComponent = ({
 
     useEffect(() => {
         const mv = transformValue(otherProps.value || "");
-        if (otherProps.value && mv !== value) {
+        if (mv !== value) {
             setValue(mv);
         }
     }, [otherProps.value]);
