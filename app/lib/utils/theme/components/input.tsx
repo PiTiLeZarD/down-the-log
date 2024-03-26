@@ -10,6 +10,7 @@ import {
 } from "react-native";
 import { createStyleSheet, useStyles } from "react-native-unistyles";
 import { Stack } from "../../../components/stack";
+import { useThrottle } from "../../use-throttle";
 import { Icon } from "./icon";
 import { Styles, mergeStyles } from "./styles";
 import { Typography } from "./typography";
@@ -81,15 +82,18 @@ export const Input: InputComponent = ({
         }
     }, [otherProps.value]);
 
+    const launch = (ev: NativeSyntheticEvent<TextInputChangeEventData>, value: string) => {
+        (otherProps.onChangeText || ((v: string) => {}))(value);
+        (otherProps.onChange || ((ev: any) => {}))(ev);
+    };
+    const throttled = useThrottle(launch, 50);
+
     const handleChange = (ev: NativeSyntheticEvent<TextInputChangeEventData>) => {
         const elt = ev.target as any as HTMLInputElement;
         const caret = elt.selectionStart;
         const newValue = transformValue(elt.value);
         setValue(newValue);
-        setTimeout(() => {
-            (otherProps.onChangeText || ((v: string) => {}))(newValue);
-            (otherProps.onChange || ((ev: any) => {}))(ev);
-        }, 50);
+        throttled(ev, newValue);
         requestAnimationFrame(() => {
             elt.selectionStart = caret;
             elt.selectionEnd = caret;
