@@ -48,6 +48,15 @@ const Qsl: QslComponent = (): JSX.Element => {
                         typeof fr.result == "string" ? fr.result : new TextDecoder("utf-8").decode(fr.result);
 
                     const updates = getImportFunctionFromFilename(file.name)(content)
+                        .filter(
+                            (r, i, a) =>
+                                a.findIndex(
+                                    (rr) =>
+                                        baseCallsign(rr.call || "") === baseCallsign(r.call || "") &&
+                                        rr.qso_date === r.qso_date &&
+                                        rr.time_on === r.time_on,
+                                ) === i,
+                        )
                         .map((r) => record2qso(r))
                         .filter((q) => !!q.callsign)
                         .map((q) => {
@@ -55,7 +64,8 @@ const Qsl: QslComponent = (): JSX.Element => {
                             if (matching) {
                                 if ("app_lotw_owncall" in (q.honeypot || {})) {
                                     matching.lotw_received = true;
-                                } else {
+                                }
+                                if ("app_eqsl_ag" in (q.honeypot || {})) {
                                     matching.eqsl_received = true;
                                 }
                             }
