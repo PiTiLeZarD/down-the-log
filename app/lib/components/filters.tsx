@@ -37,6 +37,7 @@ export const filterMap: Record<string, FilterFunction> = {
     cq: (qso) => [String(qso.cqzone)],
     itu: (qso) => [String(qso.ituzone)],
     dxcc: (qso) => [dxcc2label(qso.dxcc)],
+    state: (qso) => [String(qso.state)],
     pota: (qso) => [qso.pota || "", qso.myPota || ""],
     wwff: (qso) => [qso.wwff || "", qso.myWwff || ""],
     sota: (qso) => [qso.sota || "", qso.mySota || ""],
@@ -192,9 +193,16 @@ export const Filters: FiltersComponent = ({ showTag }): JSX.Element => {
                     {filter && <Button text={filter} onPress={handleSelectFilter(filter)} />}
                     {!filter && (
                         <PaginatedList itemsPerPage={itemsPerPage}>
-                            {Object.keys(filterMap).map((name) => (
-                                <Button key={name} text={name} variant="outlined" onPress={handleSelectFilter(name)} />
-                            ))}
+                            {Object.keys(filterMap)
+                                .sort()
+                                .map((name) => (
+                                    <Button
+                                        key={name}
+                                        text={name}
+                                        variant="outlined"
+                                        onPress={handleSelectFilter(name)}
+                                    />
+                                ))}
                         </PaginatedList>
                     )}
                     {filter && (

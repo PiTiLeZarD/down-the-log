@@ -66,13 +66,17 @@ const Stats: StatsComponent = (): JSX.Element => {
                     <SelectInput
                         value={firstStat}
                         onValueChange={(newStatType) => setFirstStat(newStatType)}
-                        items={Object.keys(filterMap).map((t) => ({ label: t, value: t }))}
+                        items={Object.keys(filterMap)
+                            .sort()
+                            .map((t) => ({ label: t, value: t }))}
                     />
                     <Typography>Top side:</Typography>
                     <SelectInput
                         value={secondStat}
                         onValueChange={(newStatType) => setSecondStat(newStatType)}
-                        items={Object.keys(filterMap).map((t) => ({ label: t, value: t }))}
+                        items={Object.keys(filterMap)
+                            .sort()
+                            .map((t) => ({ label: t, value: t }))}
                     />
                     <Typography>Use favourites when available</Typography>
                     <Switch value={useFavourites} onValueChange={(v) => setUseFavourites(v)} />
