@@ -1,14 +1,15 @@
 import React from "react";
 import { useFormContext } from "react-hook-form";
+import { View } from "react-native";
 import { useStyles } from "react-native-unistyles";
 import { Band, band2freq, bands, freq2band } from "../../data/bands";
 import { Mode } from "../../data/modes";
 import { Modal } from "../../utils/modal";
 import { Button } from "../../utils/theme/components/button";
 import { Input } from "../../utils/theme/components/input";
+import { PaginatedList } from "../../utils/theme/components/paginated-list";
 import { Typography } from "../../utils/theme/components/typography";
 import { useSettings } from "../../utils/use-settings";
-import { Grid } from "../grid";
 import { QSO } from "../qso";
 import { Stack } from "../stack";
 
@@ -55,46 +56,50 @@ export const BandFreqInput: BandFreqInputComponent = ({ noLabel = false }): JSX.
     return (
         <Stack>
             {!noLabel && <Typography>Frequency:</Typography>}
-            <Button
-                text={`${frequency ? (+frequency).toFixed(3) : "N/A"} Mhz (${band || "N/A"})`}
-                onPress={() => setOpen(true)}
-            />
+            <Stack direction="row">
+                <View style={{ flexGrow: 1 }}>
+                    <Input
+                        numeric
+                        style={[!bandUserInput ? { backgroundColor: theme.colours.secondary[theme.shades.main] } : {}]}
+                        value={freqUserInput}
+                        onFocus={(ev) => {
+                            const elt = ev.target as any as HTMLInputElement;
+                            if (bandUserInput && frequency) {
+                                requestAnimationFrame(() => {
+                                    elt.selectionStart = String(frequency).indexOf(".");
+                                    elt.selectionEnd = String(frequency).length - 1;
+                                });
+                            }
+                        }}
+                        suffix="kHz"
+                        onChangeText={(nfreq) => setFreqUserInput(nfreq)}
+                    />
+                </View>
+                <View style={{ flex: 0.5 }}>
+                    <Button text={`${band || "N/A"}`} onPress={() => setOpen(true)} />
+                </View>
+            </Stack>
             <Modal wide open={open} onClose={() => setOpen(false)}>
-                <Stack gap="xxl">
+                <Stack>
                     {favouriteBands.length > 0 && (
                         <Button
                             text={showAll ? "Only favourite bands" : "Show all bands"}
                             onPress={() => setShowAll(!showAll)}
                         />
                     )}
-                    <Grid container>
+                    <PaginatedList itemsPerPage={6}>
                         {allBands.map((b) => (
-                            <Grid key={b} item xs={2}>
-                                <Button
-                                    style={{ padding: theme.margins.sm, margin: theme.margins.sm }}
-                                    textStyle={{ fontSize: 18 }}
-                                    text={b}
-                                    variant={b == band ? "contained" : "outlined"}
-                                    onPress={() => {
-                                        setValue("band", b as Band);
-                                        setValue("frequency", band2freq(b as Band, mode) || 14144);
-                                    }}
-                                />
-                            </Grid>
+                            <Button
+                                key={b}
+                                text={b}
+                                variant={b == band ? "contained" : "outlined"}
+                                onPress={() => {
+                                    setValue("band", b as Band);
+                                    setValue("frequency", band2freq(b as Band, mode) || 14144);
+                                }}
+                            />
                         ))}
-                    </Grid>
-                    <Typography>Frequency: </Typography>
-                    <Input
-                        numeric
-                        style={[
-                            { textAlign: "center", fontSize: 30 },
-                            !bandUserInput ? { backgroundColor: theme.colours.secondary[theme.shades.main] } : {},
-                        ]}
-                        textStyle={{ fontSize: 20, lineHeight: 30 }}
-                        value={freqUserInput}
-                        suffix="kHz"
-                        onChangeText={(nfreq) => setFreqUserInput(nfreq)}
-                    />
+                    </PaginatedList>
                     <Button colour="success" text="OK" onPress={() => setOpen(false)} />
                 </Stack>
             </Modal>
