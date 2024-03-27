@@ -84,7 +84,7 @@ const Adif: AdifComponent = (): JSX.Element => {
                 </TabsLayout>
 
                 <View>
-                    <Button colour="secondary" text="Erase all qsos" onPress={handleErase} />
+                    <Button colour="secondary" text="Erase all qsos" onPress={handleErase} variant="outlined" />
                 </View>
             </Stack>
         </PageLayout>
