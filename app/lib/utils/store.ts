@@ -99,7 +99,11 @@ const StoreActions: DTLStoreActionsMutatorProps = (set) => ({
                 : { qsos: [...state.qsos.filter((q) => q.id != qso.id), qso] },
         ),
     updateSetting: (field, value) => set((state) => ({ settings: { ...state.settings, [field]: value } })),
-    updateFilters: (filters) => set((state) => ({ filters })),
+    updateFilters: (filters) =>
+        set((state) => ({
+            filters,
+            settings: { ...state.settings, showFilters: filters.length ? true : state.settings.showFilters },
+        })),
     deleteLog: (qso) => set((state) => ({ qsos: [...state.qsos.filter((q) => q.id != qso.id)] })),
     resetStore: () => set(() => ({ qsos: [] })),
     setCurrentLocation: (location) => set(() => ({ currentLocation: location })),
