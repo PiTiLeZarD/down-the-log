@@ -175,7 +175,7 @@ export const record2qso = (record: QSORecord): QSO => ({
     cqzone: int(record.cqz),
     ituzone: int(record.ituz),
     country: record.country,
-    continent: castAs<Continent>(continents as any, record.cont),
+    continent: castAs<Continent>(Object.keys(continents) as Continent[], record.cont),
     distance: int(record.distance),
     frequency: int(record.freq),
     band:

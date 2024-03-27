@@ -327,12 +327,7 @@ export const FormFields: FormFieldsComponent = ({ qso }): JSX.Element => {
                                 <StateField name="state" />
                             </Grid>
                             <Grid item xs={6}>
-                                <FormField
-                                    role="select"
-                                    name="continent"
-                                    label="Continent:"
-                                    options={Object.fromEntries(continents.map((ctn) => [ctn, ctn]))}
-                                />
+                                <FormField role="select" name="continent" label="Continent:" options={continents} />
                                 <ContinentWarning />
                             </Grid>
                         </Grid>

@@ -1,8 +1,16 @@
 // https://www.arrl.org/files/file/DXCC/2020%20Current_Deleted.txt
 // https://www.qrz.com/atlas
 
-export const continents = ["NA", "SA", "EU", "AF", "OC", "AS", "AN"] as const;
-export type Continent = (typeof continents)[number];
+export const continents = {
+    NA: "North America",
+    SA: "South America",
+    EU: "Europe",
+    AF: "Africa",
+    OC: "Oceania",
+    AS: "Asia",
+    AN: "Antartica",
+};
+export type Continent = keyof typeof continents;
 export type CallsignData = {
     iso3: string;
     dxcc: string;
