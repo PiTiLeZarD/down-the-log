@@ -74,7 +74,10 @@ export const Reference: ReferenceComponent = ({ position, max, event, reference,
                 <Grid item xs={1}>
                     {eventData?.locator && (
                         <View>
-                            <GmapsChip locator={eventData?.locator} zoom={10} />
+                            {event !== "pota" && <GmapsChip locator={eventData?.locator} zoom={10} />}
+                            {event === "pota" && (
+                                <Button variant="chip" text="pota" url={`https://pota.app/#/park/${reference}`} />
+                            )}
                         </View>
                     )}
                 </Grid>

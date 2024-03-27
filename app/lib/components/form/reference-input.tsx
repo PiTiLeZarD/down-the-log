@@ -47,7 +47,7 @@ export const ReferenceInput: ReferenceInputComponent = ({ event, mine = false })
     return (
         <Stack>
             <Input value={value} onChangeText={(v) => setValue(key, v.toUpperCase())} />
-            <ReferenceInfo reference={value} data={eventDataMap[event]} />
+            <ReferenceInfo event={event} reference={value} data={eventDataMap[event]} />
         </Stack>
     );
 };
