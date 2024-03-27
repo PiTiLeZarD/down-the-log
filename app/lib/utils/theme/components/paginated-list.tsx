@@ -16,7 +16,7 @@ export const PaginatedList: PaginatedListComponent = ({ itemsPerPage = 10, child
 
     useEffect(() => setPage(0), [elements.length]);
 
-    if (elements.length < itemsPerPage) return <>{children}</>;
+    if (elements.length <= itemsPerPage) return <>{children}</>;
 
     const showBack = page > 0;
     const showForward = page < elements.length / itemsPerPage - 1;
