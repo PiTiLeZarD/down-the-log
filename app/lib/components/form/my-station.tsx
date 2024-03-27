@@ -9,6 +9,7 @@ import { ButtonOffset } from "../button-offset";
 import { QSO, useQsos } from "../qso";
 import { Stack } from "../stack";
 import { FormField } from "./form-field";
+import { StateField } from "./state-field";
 
 export type MyStationProps = {};
 
@@ -41,7 +42,7 @@ export const MyStation: MyStationComponent = (): JSX.Element => {
                     <FormField name="myQth" label="My QTH:" />
                     <FormField name="myLocator" label="My Gridsquare:" />
                     <FormField role="country" name="myCountry" label="My Country:" />
-                    <FormField name="myState" label="My State:" />
+                    <StateField name="myState" />
                     <Stack direction="row">
                         <View style={{ flexGrow: 1 }}>
                             <FormField name="myRig" label="My Rig:" />

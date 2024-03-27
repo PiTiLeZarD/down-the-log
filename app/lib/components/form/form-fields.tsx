@@ -33,6 +33,7 @@ import { LocatorField } from "./locator-field";
 import { ModeInput } from "./mode-input";
 import { MyStation } from "./my-station";
 import { Signal } from "./signal";
+import { StateField } from "./state-field";
 
 const stylesheet = createStyleSheet((theme) => ({
     datetime: {
@@ -323,7 +324,7 @@ export const FormFields: FormFieldsComponent = ({ qso }): JSX.Element => {
                         <CountryWarning />
                         <Grid container>
                             <Grid item xs={6}>
-                                <FormField name="state" label="State:" />
+                                <StateField name="state" />
                             </Grid>
                             <Grid item xs={6}>
                                 <FormField

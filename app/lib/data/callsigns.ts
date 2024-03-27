@@ -1662,6 +1662,9 @@ export const callsigns: CallsignData[] = [
         regexp: /^4U.*/,
         gs: "FN30ar",
         ctn: "NA",
+        states: {
+            NY: /.*/,
+        },
     },
     {
         iso3: "USA",
