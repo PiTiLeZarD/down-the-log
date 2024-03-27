@@ -1,5 +1,6 @@
 import React from "react";
 import { Switch } from "react-native-gesture-handler";
+import { MissingReferencesWarning } from "./lib/components/missing-references-warning";
 import { PageLayout } from "./lib/components/page-layout";
 import { useQsos } from "./lib/components/qso";
 import { Reference } from "./lib/components/reference";
@@ -42,6 +43,7 @@ const Events: EventsComponent = (): JSX.Element => {
                                 <Typography>10</Typography>
                             </Stack>
                         )}
+                        <MissingReferencesWarning event={event} />
                         <Typography variant="h3">Hunting</Typography>
                         <Button
                             startIcon="download"
