@@ -4,6 +4,7 @@ import { View, useWindowDimensions } from "react-native";
 import { createStyleSheet, useStyles } from "react-native-unistyles";
 import { callsigns } from "../data/callsigns";
 import { countries } from "../data/countries";
+import { isDigital } from "../data/modes";
 import { sortNumsAndAlpha, unique } from "../utils/arrays";
 import { normalise } from "../utils/locator";
 import { Modal } from "../utils/modal";
@@ -34,6 +35,7 @@ export const filterMap: Record<string, FilterFunction> = {
     day: (qso) => [String(qso.date.toObject().day)],
     band: (qso) => [String(qso.band)],
     mode: (qso) => [String(qso.mode)],
+    modeGrouped: (qso) => [qso.mode === "CW" ? "CW" : isDigital(qso.mode) ? "Data" : "Phone"],
     cq: (qso) => [String(qso.cqzone)],
     itu: (qso) => [String(qso.ituzone)],
     dxcc: (qso) => [dxcc2label(qso.dxcc)],
@@ -46,10 +48,10 @@ export const filterMap: Record<string, FilterFunction> = {
     myRig: (qso) => [qso.myRig || "N/A"],
     myAntenna: (qso) => [qso.myAntenna || "N/A"],
     sig: (qso) => [qso.sig || "", qso.mySig || ""],
-    has_event: (qso) => [hasEvent(qso) ? "Yes" : "No"],
-    has_note: (qso) => [qso.note ? "Yes" : "No"],
-    has_duration: (qso) => [qso.dateOff ? "Yes" : "No"],
-    has_duplicates: (qso, i, a) => [
+    hasEvent: (qso) => [hasEvent(qso) ? "Yes" : "No"],
+    hasNote: (qso) => [qso.note ? "Yes" : "No"],
+    hasDuration: (qso) => [qso.dateOff ? "Yes" : "No"],
+    hasDuplicates: (qso, i, a) => [
         findMatchingQsos(a, qso, 2).filter((q) => q.id !== qso.id).length > 0 ? "Yes" : "No",
     ],
     gridsquare: (qso) => [qso.locator?.substring(0, 3) || ""],

@@ -2,7 +2,6 @@ import React from "react";
 import { Switch } from "react-native";
 import { FilterName, Filters, filterMap, filterQsos } from "./lib/components/filters";
 import { Grid } from "./lib/components/grid";
-import { GridMap } from "./lib/components/grid-map";
 import { PageLayout } from "./lib/components/page-layout";
 import { QSO, useQsos } from "./lib/components/qso";
 import { Stack } from "./lib/components/stack";
@@ -40,8 +39,8 @@ export type StatsProps = {};
 export type StatsComponent = React.FC<StatsProps>;
 
 const Stats: StatsComponent = (): JSX.Element => {
-    const [firstStat, setFirstStat] = React.useState<FilterName>("mode");
-    const [secondStat, setSecondStat] = React.useState<FilterName>("band");
+    const [firstStat, setFirstStat] = React.useState<FilterName>("year");
+    const [secondStat, setSecondStat] = React.useState<FilterName>("modeGrouped");
     const [useFavourites, setUseFavourites] = React.useState<boolean>(true);
     const qsosFilters = useStore((state) => state.filters);
     const qsos = filterQsos(useQsos(), qsosFilters);
@@ -128,7 +127,6 @@ const Stats: StatsComponent = (): JSX.Element => {
                         <Typography>{qsos.length}</Typography>
                     </Grid>
                 </Grid>
-                <GridMap />
             </Stack>
         </PageLayout>
     );
