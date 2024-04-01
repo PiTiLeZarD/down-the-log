@@ -44,14 +44,18 @@ const Events: EventsComponent = (): JSX.Element => {
                             </Stack>
                         )}
                         <MissingReferencesWarning event={event} />
-                        <Typography variant="h3">Hunting</Typography>
-                        <Button
-                            startIcon="download"
-                            text={`Hunting ADIF (${unique(qsos.filter((q) => !!q[event]).map((q) => q[event])).length})`}
-                            onPress={handleDownloadHunting(event)}
-                        />
-                        <Typography variant="h3">Activating</Typography>
-                        <PaginatedList itemsPerPage={6}>
+                        {!["pota"].includes(event) && (
+                            <>
+                                <Typography variant="h3">Hunting</Typography>
+                                <Button
+                                    startIcon="download"
+                                    text={`Hunting ADIF (${unique(qsos.filter((q) => !!q[event]).map((q) => q[event])).length})`}
+                                    onPress={handleDownloadHunting(event)}
+                                />
+                                <Typography variant="h3">Activating</Typography>
+                            </>
+                        )}
+                        <PaginatedList itemsPerPage={6} whenEmpty={<Typography>No events available</Typography>}>
                             {Object.entries(getActivations(event, qsos, getMax(event))).map(
                                 ([reference, activations], i) => (
                                     <Reference

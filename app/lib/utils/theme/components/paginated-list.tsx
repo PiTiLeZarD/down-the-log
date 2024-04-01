@@ -6,16 +6,18 @@ import { Typography } from "./typography";
 
 export type PaginatedListProps = {
     itemsPerPage?: number;
+    whenEmpty?: React.ReactNode;
 };
 
 export type PaginatedListComponent = React.FC<React.PropsWithChildren<PaginatedListProps>>;
 
-export const PaginatedList: PaginatedListComponent = ({ itemsPerPage = 10, children }): JSX.Element => {
+export const PaginatedList: PaginatedListComponent = ({ itemsPerPage = 10, whenEmpty, children }): JSX.Element => {
     const elements = React.Children.toArray(children);
     const [page, setPage] = React.useState<number>(0);
 
     useEffect(() => setPage(0), [elements.length]);
 
+    if (elements.length === 0) return <>{whenEmpty}</> || <Typography>No elements found</Typography>;
     if (elements.length <= itemsPerPage) return <>{children}</>;
 
     const showBack = page > 0;

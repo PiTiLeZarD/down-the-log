@@ -5,12 +5,6 @@ This is the rough todolist I want to work on.
 ## Must have
 
 -   [ ] should make a visual indication that hamqth isn't available, it happens often
--   [ ] POTA
-    -   [ ] Allow downlading ADIF for non finished activation
-    -   [ ] Change WIP to Incomplete
-    -   [ ] pota button to be more right aligned
-    -   [ ] Remove hunting
-    -   [ ] Allow to re-order them (or have pota first)
 
 ## Good to have
 
