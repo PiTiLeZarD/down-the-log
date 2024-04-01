@@ -8,9 +8,9 @@ import { clusterByDate, groupBy } from "./arrays";
 import { RecordMassageFn } from "./file-format";
 
 export const capitalise = (s: string) => s.charAt(0).toUpperCase() + s.slice(1);
-export const events = ["wwff", "pota", "sota", "iota", "sig"] as const;
+export const events = ["pota", "wwff", "sota", "iota", "sig"] as const;
 export type EventType = (typeof events)[number];
-export type EventStatus = "None" | "Activated" | "WIP";
+export type EventStatus = "None" | "Activated" | "WIP" | "Incomplete";
 export type EventActivation = { status: EventStatus; qsos: QSO[] };
 export type EventActivations = Record<string, Record<string, EventActivation>>;
 
@@ -49,7 +49,7 @@ const grouping = {
 export type EventRule = (qsos: QSO[], max?: number) => EventStatus;
 export const rules: Record<EventType, EventRule> = {
     wwff: (qsos: QSO[], max = 44) => (qsos.length >= max ? "Activated" : "WIP"),
-    pota: (qsos: QSO[]) => (qsos.length >= 10 ? "Activated" : "WIP"),
+    pota: (qsos: QSO[]) => (qsos.length >= 10 ? "Activated" : "Incomplete"),
     sota: (qsos: QSO[]) => (qsos.length >= 4 ? "Activated" : "WIP"),
     iota: (qsos: QSO[]) => (qsos.length >= 0 ? "Activated" : "WIP"),
     sig: (qsos: QSO[]) => (qsos.length >= 0 ? "Activated" : "WIP"),

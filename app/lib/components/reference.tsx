@@ -71,7 +71,7 @@ export const Reference: ReferenceComponent = ({ position, max, event, reference,
                         <Typography>{rules["wwff"](allQsos, max)}</Typography>
                     </Grid>
                 )}
-                <Grid item xs={1}>
+                <Grid item xs={["pota"].includes(event) ? 3 : 1}>
                     {eventData?.locator && (
                         <View>
                             {event !== "pota" && <GmapsChip locator={eventData?.locator} zoom={10} />}
@@ -81,8 +81,8 @@ export const Reference: ReferenceComponent = ({ position, max, event, reference,
                         </View>
                     )}
                 </Grid>
-                <Grid item xs={2}>
-                    {!["pota"].includes(event) && (
+                {!["pota"].includes(event) && (
+                    <Grid item xs={2}>
                         <View>
                             <Button
                                 startIcon="download"
@@ -92,8 +92,8 @@ export const Reference: ReferenceComponent = ({ position, max, event, reference,
                                 onPress={() => handleDownload(allQsos)}
                             />
                         </View>
-                    )}
-                </Grid>
+                    </Grid>
+                )}
             </Grid>
             {Object.entries(activations).map(([date, { status, qsos }]) => (
                 <Grid container key={date}>
@@ -115,15 +115,12 @@ export const Reference: ReferenceComponent = ({ position, max, event, reference,
                     {["pota"].includes(event) && (
                         <Grid item xs={1}>
                             <View>
-                                {status === "Activated" && (
-                                    <Button
-                                        startIcon="download"
-                                        variant="chip"
-                                        colour="secondary"
-                                        onPress={() => handleDownload(qsos)}
-                                    />
-                                )}
-                                {status !== "Activated" && <Button startIcon="close" variant="chip" colour="grey" />}
+                                <Button
+                                    startIcon="download"
+                                    variant="chip"
+                                    colour="secondary"
+                                    onPress={() => handleDownload(qsos)}
+                                />
                             </View>
                         </Grid>
                     )}
