@@ -45,7 +45,7 @@ export const adx2Record = (adx: Element): QSORecord => {
 };
 
 const headerToAdx = (header: Header) =>
-    `<HEADER>${adxField("NOTE", header.note)}${Object.entries(header.fields || {})
+    `<HEADER>${adxField("NOTE", header.note)}${adxField("adif_ver", "3.1.4")}${Object.entries(header.fields || {})
         .map(([k, v]) => adxField(k, v))
         .join("")}</HEADER>`;
 

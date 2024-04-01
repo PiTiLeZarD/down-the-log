@@ -224,7 +224,6 @@ export type Header = {
 export const header = (): Header => ({
     note: "ADIF Export from down-the-log by VK4ALE\nfor further info visit: https://github.com/PiTiLeZarD/down-the-log",
     fields: {
-        adif_ver: "3.1.4",
         created_timestamp: DateTime.utc().toFormat("yyyyMMdd HHmmss"),
         programid: "down-the-log",
         programversion: "0.0.1",

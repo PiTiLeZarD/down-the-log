@@ -69,6 +69,7 @@ export const adif2Record = (adif: string): QSORecord => {
 const headerToAdif = (header: Header) =>
     [
         header.note,
+        adifField("adif_ver", "3.1.4"),
         ...(header.fields ? Object.entries(header.fields).map(([k, v]) => adifField(k, v)) : [""]),
         "<EOH>",
         "",
