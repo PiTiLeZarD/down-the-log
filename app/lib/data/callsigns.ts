@@ -343,7 +343,7 @@ export const callsigns: CallsignData[] = [
     {
         iso3: "CHL",
         dxcc: "112",
-        regexp: /^3G|CE.*/,
+        regexp: /^(3G|C[A-E]).*/,
         gs: "FF43ij",
         ctn: "SA",
     },
@@ -1226,7 +1226,7 @@ export const callsigns: CallsignData[] = [
     {
         iso3: "PHL",
         dxcc: "375",
-        regexp: /^4[D-I].*/,
+        regexp: /^(D[U-Z]|4[D-I]).*/,
         gs: "PK02wb",
         ctn: "OC",
     },
