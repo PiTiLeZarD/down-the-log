@@ -229,3 +229,10 @@ export const header = (): Header => ({
         programversion: "0.0.1",
     },
 });
+
+export type FileFormatAPI = {
+    toRecord: (from: unknown) => QSORecord;
+    fromRecord: (record: QSORecord) => string;
+    parseFile: (fileContent: string) => QSORecord[];
+    generateFile: (qsos: QSO[], header: Header, massage?: RecordMassageFn) => string;
+};

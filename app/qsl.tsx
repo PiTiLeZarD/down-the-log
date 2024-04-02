@@ -9,7 +9,7 @@ import { QSO, findMatchingQso, useQsos } from "./lib/components/qso";
 import { Stack } from "./lib/components/stack";
 import { TabsLayout } from "./lib/components/tabs-layout";
 import { baseCallsign } from "./lib/utils/callsign";
-import { downloadQsos, getImportFunctionFromFilename, record2qso } from "./lib/utils/file-format";
+import { downloadQsos, getFileApiFromFilename, record2qso } from "./lib/utils/file-format";
 import { useStore } from "./lib/utils/store";
 import { Alert } from "./lib/utils/theme/components/alert";
 import { Button } from "./lib/utils/theme/components/button";
@@ -47,7 +47,8 @@ const Qsl: QslComponent = (): JSX.Element => {
                     const content =
                         typeof fr.result == "string" ? fr.result : new TextDecoder("utf-8").decode(fr.result);
 
-                    const updates = getImportFunctionFromFilename(file.name)(content)
+                    const updates = getFileApiFromFilename(file.name)
+                        .parseFile(content)
                         .filter(
                             (r, i, a) =>
                                 a.findIndex(

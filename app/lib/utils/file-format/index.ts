@@ -1,8 +1,8 @@
 import { QSO } from "../../components/qso";
-import { adifFileToRecordList, qsos2Adif } from "./adif";
-import { adxFileToRecordList, qsos2Adx } from "./adx";
-import { QSORecord, RecordMassageFn } from "./common";
-import { qsos2Wsjtx, wsjtxFileToRecordList } from "./wsjtx";
+import { AdifAPI } from "./adif";
+import { AdxAPI } from "./adx";
+import { FileFormatAPI, RecordMassageFn, header } from "./common";
+import { WsjtxAPI } from "./wsjtx";
 
 export { RecordMassageFn, qso2record, record2qso } from "./common";
 
@@ -14,20 +14,20 @@ export const downloadQsos = (
 ) =>
     Object.assign(document.createElement("a"), {
         href: `data:text/plain,${encodeURIComponent(
-            { adif: qsos2Adif, adx: qsos2Adx, wsjtx: qsos2Wsjtx }[type](qsos, massage),
+            { adif: AdifAPI, adx: AdxAPI, wsjtx: WsjtxAPI }[type].generateFile(qsos, header(), massage),
         )}`,
         download: title,
     }).click();
 
-export const getImportFunctionFromFilename = (filename: string): ((c: string) => QSORecord[]) => {
-    if (filename === "wsjtx.log") return wsjtxFileToRecordList;
-    if (filename.endsWith("adx")) return adxFileToRecordList;
+export const getFileApiFromFilename = (filename: string): FileFormatAPI => {
+    if (filename === "wsjtx.log") return WsjtxAPI;
+    if (filename.endsWith("adx")) return AdxAPI;
     if (
         filename.endsWith("adif") ||
         filename.endsWith("adi") ||
         filename.endsWith("adi.txt") ||
         filename.endsWith("adif.txt")
     )
-        return adifFileToRecordList;
-    return () => [];
+        return AdifAPI;
+    throw new Error(`No File API Found for ${filename}`);
 };

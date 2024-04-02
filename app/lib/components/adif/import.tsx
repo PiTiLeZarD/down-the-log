@@ -1,7 +1,7 @@
 import React from "react";
 import { Platform, View } from "react-native";
 import { createStyleSheet, useStyles } from "react-native-unistyles";
-import { getImportFunctionFromFilename, record2qso } from "../../utils/file-format";
+import { getFileApiFromFilename, record2qso } from "../../utils/file-format";
 import { useStore } from "../../utils/store";
 import { Typography } from "../../utils/theme/components/typography";
 import { fireSwal } from "../../utils/theme/swal";
@@ -47,7 +47,8 @@ export const Import: ImportComponent = (): JSX.Element => {
                     const content =
                         typeof fr.result == "string" ? fr.result : new TextDecoder("utf-8").decode(fr.result);
 
-                    const toImport: QSO[] = getImportFunctionFromFilename(file.name)(content)
+                    const toImport: QSO[] = getFileApiFromFilename(file.name)
+                        .parseFile(content)
                         .map((r) => record2qso(r))
                         .map((q) =>
                             prefillLocation(
