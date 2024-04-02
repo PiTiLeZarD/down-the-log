@@ -1,6 +1,7 @@
 import { QSO } from "../../components/qso";
 import { AdifAPI } from "./adif";
 import { AdxAPI } from "./adx";
+import { CabrilloAPI } from "./cabrillo";
 import { FileFormatAPI, RecordMassageFn, header } from "./common";
 import { WsjtxAPI } from "./wsjtx";
 
@@ -9,12 +10,16 @@ export { RecordMassageFn, qso2record, record2qso } from "./common";
 export const downloadQsos = (
     title: string,
     qsos: QSO[],
-    type: "adif" | "adx" | "wsjtx" = "adif",
+    type: "adif" | "adx" | "wsjtx" | "cabrillo" = "adif",
     massage?: RecordMassageFn,
 ) =>
     Object.assign(document.createElement("a"), {
         href: `data:text/plain,${encodeURIComponent(
-            { adif: AdifAPI, adx: AdxAPI, wsjtx: WsjtxAPI }[type].generateFile(qsos, header(), massage),
+            { adif: AdifAPI, adx: AdxAPI, wsjtx: WsjtxAPI, cabrillo: CabrilloAPI }[type].generateFile(
+                qsos,
+                header(),
+                massage,
+            ),
         )}`,
         download: title,
     }).click();
@@ -22,6 +27,7 @@ export const downloadQsos = (
 export const getFileApiFromFilename = (filename: string): FileFormatAPI => {
     if (filename === "wsjtx.log") return WsjtxAPI;
     if (filename.endsWith("adx")) return AdxAPI;
+    if (filename.endsWith("cab")) return CabrilloAPI;
     if (
         filename.endsWith("adif") ||
         filename.endsWith("adi") ||

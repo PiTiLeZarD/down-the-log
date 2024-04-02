@@ -33,11 +33,19 @@ export const Export: ExportComponent = (): JSX.Element => {
                     variant="outlined"
                     onPress={() => downloadQsos(`${today}_adx_export.adx`, filteredQsos, "adx")}
                 />
+            </Stack>
+            <Stack direction="row">
                 <Button
                     startIcon="download-outline"
                     text="Download (WSJTX)"
                     variant="outlined"
                     onPress={() => downloadQsos(`wsjtx.log`, filteredQsos, "wsjtx")}
+                />
+                <Button
+                    startIcon="download-outline"
+                    text="Download (Cabrillo)"
+                    variant="outlined"
+                    onPress={() => downloadQsos(`${today}_export.cab`, filteredQsos, "cabrillo")}
                 />
             </Stack>
         </Stack>
