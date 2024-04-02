@@ -6,10 +6,10 @@ export const groupBy = <T extends object, K extends string>(
     f: (o: T, i: number, a: T[]) => K | K[],
 ): Record<K, T[]> =>
     a.reduce<Record<K, T[]>>(
-        (groups, elt) => ({
+        (groups, elt, i, aa) => ({
             ...groups,
             ...((vs) => Object.fromEntries(vs.map((v) => [v, [...(groups[v] || []), elt]])))(
-                ((v) => (Array.isArray(v) ? v : [v]))(f(elt)),
+                ((v) => (Array.isArray(v) ? v : [v]))(f(elt, i, aa)),
             ),
         }),
         {} as Record<K, T[]>,
