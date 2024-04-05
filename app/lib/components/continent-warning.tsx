@@ -1,6 +1,5 @@
-import React from "react";
 import { useFormContext } from "react-hook-form";
-import { getCallsignData } from "../utils/callsign";
+import { callsigns } from "../data/callsigns";
 import { Alert } from "../utils/theme/components/alert";
 import { Typography } from "../utils/theme/components/typography";
 import { QSO } from "./qso";
@@ -11,14 +10,15 @@ export type ContinentWarningComponent = React.FC<ContinentWarningProps>;
 
 export const ContinentWarning: ContinentWarningComponent = (): JSX.Element => {
     const { watch } = useFormContext<QSO>();
-    const callsign = watch("callsign");
+    const country = watch("country");
     const continent = watch("continent");
 
-    const csdata = getCallsignData(callsign);
-    if (!csdata || csdata.ctn == continent) return <></>;
+    const ctn = callsigns.find((c) => c.iso3 === country)?.ctn;
+    if (!ctn || ctn === continent) return <></>;
+
     return (
         <Alert severity="warning">
-            <Typography>Continent/Callsign mismatch</Typography>
+            <Typography>Continent/Country mismatch</Typography>
         </Alert>
     );
 };
