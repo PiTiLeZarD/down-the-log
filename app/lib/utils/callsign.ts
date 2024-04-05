@@ -14,6 +14,7 @@ export const getCallsignData = (callsign: string): CsDataType => {
             undefined,
         );
     }
+
     return data;
 };
 
@@ -32,6 +33,12 @@ export const parseCallsign = (callsign: string) => {
         delineation,
         suffix,
     };
+};
+
+export const collapseCallsign = (callsign: string): string => {
+    const parsed = parseCallsign(callsign);
+    if (parsed?.locPrefix) return `${parsed?.locPrefix}${parsed?.locIndex || parsed?.index}${parsed?.delineation}`;
+    return baseCallsign(callsign) || callsign;
 };
 
 export const baseCallsign = (callsign: string) => {
