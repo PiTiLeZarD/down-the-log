@@ -1,6 +1,5 @@
 import React, { useEffect } from "react";
 import { useFormContext } from "react-hook-form";
-import { callsigns } from "../data/callsigns";
 import { collapseCallsign, getCallsignData } from "../utils/callsign";
 import { Alert } from "../utils/theme/components/alert";
 import { Typography } from "../utils/theme/components/typography";
@@ -17,11 +16,10 @@ export const CountryWarning: CountryWarningComponent = (): JSX.Element => {
     const csdata = getCallsignData(collapseCallsign(callsign));
 
     useEffect(() => {
-        const cs = callsigns.find((c) => c.iso3 === country);
-        if (cs) {
-            if (cs.ctn != getValues("continent")) setValue("continent", cs.ctn);
-            if (+cs.dxcc != getValues("dxcc")) setValue("dxcc", +cs.dxcc);
-            if (cs.gs != getValues("locator")) setValue("locator", cs.gs);
+        if (csdata) {
+            if (csdata.ctn != getValues("continent")) setValue("continent", csdata.ctn);
+            if (+csdata.dxcc != getValues("dxcc")) setValue("dxcc", +csdata.dxcc);
+            if (csdata.gs != getValues("locator")) setValue("locator", csdata.gs);
         }
     }, [country]);
 
