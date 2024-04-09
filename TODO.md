@@ -4,8 +4,7 @@ This is the rough todolist I want to work on.
 
 ## Must have
 
--   Stats to have presets
--   Parks matching across wwff and pota should be an option, for now it's "if it matches, you can't get away from it"
+-   [ ] Stats to have presets
 -   [ ] use gdrive as backup/restore
     -   [ ] RN: https://react-native-documents.github.io/
     -   [ ] Web: https://www.npmjs.com/package/gdrive-fs
@@ -43,6 +42,7 @@ This is the rough todolist I want to work on.
 
 ## Done
 
+-   [x] Parks matching across wwff and pota should be an option, for now it's "if it matches, you can't get away from it"
 -   [x] find duplicates
 -   [x] dropdowns are always white and even when the text is white
 -   [x] use https://services.swpc.noaa.gov/text/daily-solar-indices.txt for SFI (and try to plot more in the modal)
