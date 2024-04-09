@@ -4,7 +4,7 @@
         "beforeBuildCommand": "pnpm build:web",
         "beforeDevCommand": "pnpm start:web",
         "devPath": "http://localhost:19000",
-        "distDir": "../dist"
+        "distDir": "../down-the-log"
     },
     "package": {
         "productName": "down-the-log",
