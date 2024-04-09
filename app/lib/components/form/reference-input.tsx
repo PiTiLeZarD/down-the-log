@@ -1,5 +1,6 @@
 import React, { useEffect } from "react";
 import { useFormContext } from "react-hook-form";
+import links from "../../data/potawwfflinks.json";
 import { EventType, capitalise, eventDataMap } from "../../utils/event-rules";
 import { Input } from "../../utils/theme/components/input";
 import { QSO } from "../qso";
@@ -10,6 +11,10 @@ export type ReferenceInputProps = {
     event: EventType;
     mine?: boolean;
 };
+
+const flip = (obj: Record<string, string>): Record<string, string> =>
+    Object.fromEntries(Object.entries(obj).map((a) => a.reverse()));
+const linksFlipped = flip(links);
 
 export type ReferenceInputComponent = React.FC<ReferenceInputProps>;
 
@@ -33,13 +38,9 @@ export const ReferenceInput: ReferenceInputComponent = ({ event, mine = false })
             const otherKey = (mine ? `my${capitalise(otherEvent)}` : otherEvent) as keyof QSO;
             const otherValue = qso[otherKey] as string;
 
-            if (!value && otherValue && otherValue in eventDataMap[otherEvent]) {
-                const newRef = Object.entries(eventDataMap[event]).find(
-                    ([ref, { name }]) => name.toLowerCase() === eventDataMap[otherEvent][otherValue].name.toLowerCase(),
-                );
-                if (newRef) {
-                    setValue(key, newRef[0]);
-                }
+            const eventLinks: Record<string, string> = event === "pota" ? links : linksFlipped;
+            if (value && !otherValue && value in eventLinks) {
+                setValue(otherKey, eventLinks[value]);
             }
         }
     }, [value]);
