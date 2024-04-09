@@ -4,6 +4,7 @@ This is the rough todolist I want to work on.
 
 ## Must have
 
+-   Stats to have presets
 -   Parks matching across wwff and pota should be an option, for now it's "if it matches, you can't get away from it"
 -   [ ] use gdrive as backup/restore
     -   [ ] RN: https://react-native-documents.github.io/
