@@ -4,10 +4,15 @@ This is the rough todolist I want to work on.
 
 ## Must have
 
--   [ ] should make a visual indication that hamqth isn't available, it happens often
+-   Parks matching across wwff and pota should be an option, for now it's "if it matches, you can't get away from it"
+-   [ ] use gdrive as backup/restore
+    -   [ ] RN: https://react-native-documents.github.io/
+    -   [ ] Web: https://www.npmjs.com/package/gdrive-fs
+-   [ ] QSL's interface to match manually when they're not matched. Also try to suss out why it doesn't match sometimes.
 
 ## Good to have
 
+-   [ ] should make a visual indication that hamqth isn't available, it happens often
 -   [ ] parksandpeaks integration (https://parksnpeaks.org/api/) CORS issue, I've contacted them, let's see
 -   [ ] band map, ability to link callsign/frequency on the band, use this to start qso's (also ability to write name/qth and other details so it's prefilled)
 -   [ ] hamclock modules (sunspot or sun data, propagaion, greyline, short/long path etc...)
@@ -20,7 +25,6 @@ This is the rough todolist I want to work on.
     -   [ ] script the apk/dmg releases
 -   [ ] Have a "Net" module, showing what's going on where and when
     -   [ ] also plan on grouping qsos in the same net, or having a way to make it visually clear that they all belong to the same thing
--   [ ] use gdrive as backup/restore
 -   [x] Stats
     -   [x] qsos /continent /country /year,month
     -   [ ] heatmap of qso per day (github style)
