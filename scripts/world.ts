@@ -42,7 +42,7 @@ const data: GeoJSONFeatureCollection = JSON.parse(readFileSync(filepath, "utf8")
 
 const countries = Object.fromEntries(
     data.features.map((d) => [
-        d.properties.ADMIN,
+        d.properties.ISO_A3,
         (d.geometry.type === "MultiPolygon"
             ? (d.geometry.coordinates as Array<Polygon[]>).map((ps) => ps.map((p) => encode(p)))
             : [(d.geometry.coordinates as Polygon[]).map((p) => encode(p))]
