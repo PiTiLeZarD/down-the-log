@@ -4,8 +4,6 @@ dist
 down-the-log
 .DS_Store
 
-# ignore world data for now
-src/data/world.json
 scripts/*.geojson
 scripts/*.json
 scripts/*.csv
