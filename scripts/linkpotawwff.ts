@@ -7,6 +7,35 @@ const wwff: Record<string, ReferenceDatum> = JSON.parse(readFileSync("./app/lib/
 
 const links: Record<string, string> = {};
 
+const cleanParkName = (name: string) =>
+    [
+        "forest",
+        "national",
+        "park",
+        "reserve",
+        "conservation",
+        "wildlife",
+        "reserve",
+        "sanctuary",
+        "recreation",
+        "nature",
+        "historic",
+        "site",
+        "natura",
+        "scenic",
+        "trail",
+        "country",
+        "landscape",
+        "area",
+        "wetland",
+        "ecological",
+        "memoral",
+        "parkway",
+    ]
+        .reduce((acc, curr) => acc.replaceAll(curr, ""), name.toLowerCase())
+        .trim()
+        .replace(/\s{2,}/, " ");
+
 const wwffnames = Object.fromEntries(Object.entries(wwff).map(([wwffref, wwffdatum]) => [wwffdatum.name, wwffref]));
 Object.keys(pota).forEach((potaref) => {
     if (pota[potaref].name in wwffnames) {
@@ -19,18 +48,30 @@ Object.keys(pota)
     .filter((ref) => !(ref in links))
     .forEach((potaref, i) => {
         console.log(`${i} / ${total}`);
-        const parksAround = Object.keys(wwff).filter(
-            (wwffref) => wwff[wwffref].locator?.substring(0, 4) === pota[potaref].locator?.substring(0, 4),
+        const locationMatch = Object.keys(wwff).filter(
+            (wwffref) => !!wwff[wwffref].locator && wwff[wwffref].locator === pota[potaref].locator,
         );
+        if (locationMatch.length === 1) {
+            links[potaref] = locationMatch[0];
+            return;
+        }
+
+        const parksAround =
+            locationMatch.length > 1
+                ? locationMatch
+                : Object.keys(wwff).filter(
+                      (wwffref) => wwff[wwffref].locator?.substring(0, 4) === pota[potaref].locator?.substring(0, 4),
+                  );
         if (parksAround.length === 0) return;
 
         if (parksAround.length === 1) {
             links[potaref] = parksAround[0];
+            return;
         }
 
-        const closewwffnames = Object.fromEntries(parksAround.map((p) => [wwff[p].name, p]));
-        const match = closest(pota[potaref].name, Object.keys(closewwffnames));
-        links[potaref] = wwffnames[match];
+        const closewwffnames = Object.fromEntries(parksAround.map((p) => [cleanParkName(wwff[p].name), p]));
+        const match = closest(cleanParkName(pota[potaref].name), Object.keys(closewwffnames));
+        links[potaref] = closewwffnames[match];
     });
 
 writeFileSync("./app/lib/data/potawwfflinks.json", JSON.stringify(links));
