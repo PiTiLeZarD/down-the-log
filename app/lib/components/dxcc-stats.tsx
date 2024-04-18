@@ -3,6 +3,7 @@ import React from "react";
 import { View } from "react-native";
 import { groupQsos } from "../../stats";
 import { sortBands } from "../data/bands";
+import { clranks, mostWanted } from "../data/clranks";
 import { unique } from "../utils/arrays";
 import { useStore } from "../utils/store";
 import { Button } from "../utils/theme/components/button";
@@ -52,6 +53,9 @@ export const DxccStats: DxccStatsComponent = ({ dxcc }): JSX.Element => {
 
     return (
         <Stack>
+            <Typography style={{ textAlign: "center", fontWeight: "bold", margin: 8 }}>
+                Most wanted: {mostWanted(dxcc)}/{clranks.length}
+            </Typography>
             <Stack direction="row">
                 <View style={{ flex: 1 }} />
                 {modes.map((m) => (

@@ -3,6 +3,7 @@ import React from "react";
 import { View, useWindowDimensions } from "react-native";
 import { createStyleSheet, useStyles } from "react-native-unistyles";
 import { callsigns } from "../data/callsigns";
+import { mostWanted } from "../data/clranks";
 import { countries } from "../data/countries";
 import { isDigital } from "../data/modes";
 import { sortNumsAndAlpha, unique } from "../utils/arrays";
@@ -44,6 +45,7 @@ export const filterMap: Record<string, FilterFunction> = {
     wwff: (qso) => [qso.wwff || "", qso.myWwff || ""],
     sota: (qso) => [qso.sota || "", qso.mySota || ""],
     iota: (qso) => [qso.iota || "", qso.myIota || ""],
+    mostWanted: (qso) => [qso.dxcc ? `${mostWanted(+qso.dxcc)}` : ""],
     myCallsign: (qso) => [qso.myCallsign || "N/A"],
     myRig: (qso) => [qso.myRig || "N/A"],
     myAntenna: (qso) => [qso.myAntenna || "N/A"],

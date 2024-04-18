@@ -1,5 +1,6 @@
 import { DateTime } from "luxon";
 import React, { useMemo } from "react";
+import { clranks, mostWanted } from "../../data/clranks";
 import cqzones from "../../data/cqzones.json";
 import ituzones from "../../data/ituzones.json";
 import { findCountry, getCallsignData } from "../../utils/callsign";
@@ -79,7 +80,14 @@ export const CallsignInputExtra: CallsignInputExtraComponent = ({ value, hamqthC
                     <Typography variant="subtitle">
                         ITU: {callsignData.gs ? findZone(ituzones, maidenhead2Latlong(callsignData.gs)) : "??"}
                     </Typography>
-                    <Typography variant="subtitle">DXCC: {callsignData.dxcc}</Typography>
+                    <Typography variant="subtitle">
+                        DXCC: {callsignData.dxcc}{" "}
+                        {callsignData.dxcc && (
+                            <>
+                                ({mostWanted(+callsignData.dxcc)}/{clranks.length})
+                            </>
+                        )}
+                    </Typography>
                 </Stack>
             </Grid>
         </Grid>
