@@ -9,6 +9,11 @@ This is the rough todolist I want to work on.
     -   [ ] RN: https://react-native-documents.github.io/
     -   [ ] Web: https://www.npmjs.com/package/gdrive-fs
 -   [ ] QSL's interface to match manually when they're not matched. Also try to suss out why it doesn't match sometimes.
+-   [ ] red lines for issues with location/callsign
+-   [ ] customise straight from input box
+-   [ ] Bug: customising input is written over
+-   [ ] Work on spots (spotting oneself for parks, list spots from others, maybe code an API for all this, seems like most services don't plan for CORS)
+-   [ ] Think about events 2fer, n-fer
 
 ## Good to have
 
@@ -42,6 +47,7 @@ This is the rough todolist I want to work on.
 
 ## Done
 
+-   [x] little tree for p2p calls, little note for the ones with a comment (chatbox-ellipses-outline)
 -   [x] Parks matching across wwff and pota should be an option, for now it's "if it matches, you can't get away from it"
 -   [x] find duplicates
 -   [x] dropdowns are always white and even when the text is white
