@@ -1,4 +1,4 @@
-import { useLocalSearchParams } from "expo-router";
+import { useLocalSearchParams, useRouter } from "expo-router";
 import React, { useEffect } from "react";
 import { FormProvider, useForm } from "react-hook-form";
 import { FormFields } from "./lib/components/form/form-fields";
@@ -11,6 +11,7 @@ export type QsoProps = {};
 export type QsoComponent = React.FC<QsoProps>;
 
 const Qso: QsoComponent = (): JSX.Element => {
+    const { navigate } = useRouter();
     const { qsoId } = useLocalSearchParams();
     const qso = useQsos().find((q) => q.id == qsoId);
     const log = useStore((state) => state.log);
@@ -21,7 +22,10 @@ const Qso: QsoComponent = (): JSX.Element => {
     useEffect(() => methods.reset(qso), [qsoId]);
     useAutoSave(methods.control, log);
 
-    if (!qso) return <></>;
+    if (!qso) {
+        navigate("/");
+        return <></>;
+    }
     return (
         <FormProvider {...methods}>
             <FormFields qso={qso} />
