@@ -1471,7 +1471,7 @@ export const callsigns: CallsignData[] = [
     {
         iso3: "ESP",
         dxcc: "281",
-        regexp: /^(E[A-CE-H]|ED(?!1)).*/,
+        regexp: /^(E[A-CE-H]|ED(?!1)|A[ONM]).*/,
         gs: "IM89ju",
         ctn: "EU",
     },
