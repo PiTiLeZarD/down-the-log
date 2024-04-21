@@ -32,13 +32,25 @@ const Adif: AdifComponent = (): JSX.Element => {
     );
 
     const handleErase = () => {
-        resetStore();
         fireSwal({
+            title: `Erase all QSOs?`,
+            icon: "question",
+            text: "This action cannot be reverted!",
+            confirmButtonText: "Yes, Delete it!",
+            cancelButtonText: "Cancel",
             theme,
-            title: "Done!",
-            text: "All records have been erased!",
-            icon: "success",
-            confirmButtonText: "Ok",
+            onResult: (result) => {
+                if (result.isConfirmed) {
+                    resetStore();
+                    fireSwal({
+                        theme,
+                        title: "Done!",
+                        text: "All records have been erased!",
+                        icon: "success",
+                        confirmButtonText: "Ok",
+                    });
+                }
+            },
         });
     };
 

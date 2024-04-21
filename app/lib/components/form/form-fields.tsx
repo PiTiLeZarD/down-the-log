@@ -84,8 +84,21 @@ export const FormFields: FormFieldsComponent = ({ qso }): JSX.Element => {
     const csdata = getCallsignData(qso.callsign);
 
     const onDelete = () => {
-        if (qso) deleteLog(qso);
-        goBack();
+        if (qso)
+            fireSwal({
+                title: `Delete QSO with ${qso.callsign}?`,
+                icon: "question",
+                text: "This action cannot be reverted!",
+                confirmButtonText: "Yes, Delete it!",
+                cancelButtonText: "Cancel",
+                theme,
+                onResult: (result) => {
+                    if (result.isConfirmed) {
+                        deleteLog(qso);
+                        goBack();
+                    }
+                },
+            });
     };
 
     const clearTimer = () => {
