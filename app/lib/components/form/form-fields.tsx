@@ -6,6 +6,7 @@ import { Switch } from "react-native-gesture-handler";
 import { createStyleSheet, useStyles } from "react-native-unistyles";
 import { continents } from "../../data/callsigns";
 import { getCallsignData } from "../../utils/callsign";
+import { roundTo } from "../../utils/math";
 import { Modal } from "../../utils/modal";
 import { useStore } from "../../utils/store";
 import { Alert } from "../../utils/theme/components/alert";
@@ -99,6 +100,35 @@ export const FormFields: FormFieldsComponent = ({ qso }): JSX.Element => {
                     }
                 },
             });
+    };
+    const handleClipboard = () => {
+        const msg: string[] = [];
+
+        msg.push(
+            `${qso.date.toFormat("yyMMdd HH:mm")} [${qso.callsign} ${(qso.name || "").padStart(21 - qso.callsign.length, " ")}] DXCC:${String(qso.dxcc || 0).padStart(3, "0")}`,
+        );
+        const operating = `${String((qso.frequency || 0) * 1000).padStart(6, ".")} [${qso.band}/${qso.mode}] ${String(qso.power || 0).padStart(4, "0")}W`;
+        const qsl = `[${qso.lotw_received ? "LoTW" : "L̶o̶T̶W̶"}/${qso.eqsl_received ? "eQSL" : "e̶Q̶S̶L̶"}]`;
+        const rst = `↑${qso.rst_received} ↓${qso.rst_sent}`;
+        msg.push(`${operating.padEnd(26, " ")} ${qsl} ${rst}`);
+
+        const distance = String(roundTo(qso.distance || 0, 0));
+
+        msg.push(
+            `${qso.myLocator} ${"-".padStart(Math.ceil((27 - distance.length) / 2), "-")} ${distance}km ${"-".padStart(Math.floor((27 - distance.length) / 2), "-")}> ${qso.locator}`,
+        );
+
+        // Events
+        // POTA:AU-1234  SOTA:VK2/CT-003  WWFF:VKFF-1234
+
+        navigator.clipboard.writeText(`\`\`\`${msg.join("\n")}\`\`\``);
+        fireSwal({
+            title: "Clipboard",
+            text: "QSO successfully copied to clipboard",
+            theme,
+            icon: "success",
+            confirmButtonText: "OK",
+        });
     };
 
     const clearTimer = () => {
@@ -354,6 +384,7 @@ export const FormFields: FormFieldsComponent = ({ qso }): JSX.Element => {
             </View>
             <PreviousQsos />
             <Stack direction="row">
+                <Button variant="outlined" text="Clipboard" onPress={() => handleClipboard()} />
                 <Button variant="outlined" text="Delete" colour="secondary" onPress={() => onDelete()} />
             </Stack>
         </PageLayout>
