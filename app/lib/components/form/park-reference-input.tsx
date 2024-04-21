@@ -8,7 +8,7 @@ import { QSO } from "../qso";
 import { ReferenceInfo } from "../reference-info";
 import { Stack } from "../stack";
 
-export type ReferenceInputProps = {
+export type ParkReferenceInputProps = {
     event: EventType;
     mine?: boolean;
 };
@@ -17,9 +17,9 @@ const flip = (obj: Record<string, string>): Record<string, string> =>
     Object.fromEntries(Object.entries(obj).map((a) => a.reverse()));
 const linksFlipped = flip(links);
 
-export type ReferenceInputComponent = React.FC<ReferenceInputProps>;
+export type ParkReferenceInputComponent = React.FC<ParkReferenceInputProps>;
 
-export const ReferenceInput: ReferenceInputComponent = ({ event, mine = false }): JSX.Element => {
+export const ParkReferenceInput: ParkReferenceInputComponent = ({ event, mine = false }): JSX.Element => {
     const { getValues, setValue } = useFormContext<QSO>();
     const [hint, setHint] = React.useState<string>();
     const qso = getValues();

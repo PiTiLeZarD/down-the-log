@@ -8,7 +8,8 @@ import { Typography } from "../../utils/theme/components/typography";
 import { Grid } from "../grid";
 import { QSO, allEvents } from "../qso";
 import { Stack } from "../stack";
-import { ReferenceInput } from "./reference-input";
+import { ParkReferenceInput } from "./park-reference-input";
+import { SiginfoReferenceInput } from "./siginfo-reference-input";
 
 export type EventsProps = {};
 
@@ -47,10 +48,10 @@ export const Events: EventsComponent = (): JSX.Element => {
                             <Typography variant="em">POTA</Typography>
                         </Grid>
                         <Grid item xs={5}>
-                            <ReferenceInput event="pota" />
+                            <ParkReferenceInput event="pota" />
                         </Grid>
                         <Grid item xs={5}>
-                            <ReferenceInput event="pota" mine />
+                            <ParkReferenceInput event="pota" mine />
                         </Grid>
                     </Grid>
                     <Grid container>
@@ -58,10 +59,10 @@ export const Events: EventsComponent = (): JSX.Element => {
                             <Typography variant="em">WWFF</Typography>
                         </Grid>
                         <Grid item xs={5}>
-                            <ReferenceInput event="wwff" />
+                            <ParkReferenceInput event="wwff" />
                         </Grid>
                         <Grid item xs={5}>
-                            <ReferenceInput event="wwff" mine />
+                            <ParkReferenceInput event="wwff" mine />
                         </Grid>
                     </Grid>
                     <Grid container>
@@ -69,10 +70,10 @@ export const Events: EventsComponent = (): JSX.Element => {
                             <Typography variant="em">SOTA</Typography>
                         </Grid>
                         <Grid item xs={5}>
-                            <ReferenceInput event="sota" />
+                            <ParkReferenceInput event="sota" />
                         </Grid>
                         <Grid item xs={5}>
-                            <ReferenceInput event="sota" mine />
+                            <ParkReferenceInput event="sota" mine />
                         </Grid>
                     </Grid>
                     <Grid container>
@@ -80,10 +81,10 @@ export const Events: EventsComponent = (): JSX.Element => {
                             <Typography variant="em">IOTA</Typography>
                         </Grid>
                         <Grid item xs={5}>
-                            <ReferenceInput event="iota" />
+                            <ParkReferenceInput event="iota" />
                         </Grid>
                         <Grid item xs={5}>
-                            <ReferenceInput event="iota" mine />
+                            <ParkReferenceInput event="iota" mine />
                         </Grid>
                     </Grid>
                     <Grid container>
@@ -102,10 +103,10 @@ export const Events: EventsComponent = (): JSX.Element => {
                             <Typography variant="em">SIG Info</Typography>
                         </Grid>
                         <Grid item xs={5}>
-                            <Input value={qso.sigInfo} onChangeText={(v) => setValue("sigInfo", v.toUpperCase())} />
+                            <SiginfoReferenceInput />
                         </Grid>
                         <Grid item xs={5}>
-                            <Input value={qso.mySigInfo} onChangeText={(v) => setValue("mySigInfo", v.toUpperCase())} />
+                            <SiginfoReferenceInput mine />
                         </Grid>
                     </Grid>
                     <Button colour="success" text="OK" onPress={() => setOpen(false)} />

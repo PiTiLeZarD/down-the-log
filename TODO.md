@@ -14,6 +14,16 @@ This is the rough todolist I want to work on.
 -   [ ] Bug: customising input is written over
 -   [ ] Work on spots (spotting oneself for parks, list spots from others, maybe code an API for all this, seems like most services don't plan for CORS)
 -   [ ] Think about events 2fer, n-fer
+-   [ ] QSO Issues
+    -   [ ] one function to spit out [field, description][] issues
+    -   [ ] country/continent/dxcc/grid warnings from this
+    -   [ ] frequency not in band warning
+    -   [ ] ability to ignore issues
+    -   [ ] missing pota/wwff when match is found
+    -   [ ] mising references
+    -   [ ] have filter (hasIssues)
+    -   [ ] remove the current warnings (country/continent/dxx) and on events
+-   [ ] previous qso list to be a little more useful
 
 ## Good to have
 
@@ -47,6 +57,7 @@ This is the rough todolist I want to work on.
 
 ## Done
 
+-   [x] add zlota siota links from sig
 -   [x] little tree for p2p calls, little note for the ones with a comment (chatbox-ellipses-outline)
 -   [x] Parks matching across wwff and pota should be an option, for now it's "if it matches, you can't get away from it"
 -   [x] find duplicates
