@@ -5,5 +5,5 @@
         "esModuleInterop": true,
         "jsx": "react-jsx"
     },
-    "exclude": ["node_modules", "src-tauri"]
+    "exclude": ["node_modules", "src-tauri", "down-the-log"]
 }
