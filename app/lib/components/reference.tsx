@@ -2,7 +2,7 @@ import { useRouter } from "expo-router";
 import { DateTime } from "luxon";
 import React from "react";
 import { View } from "react-native";
-import { useStyles } from "react-native-unistyles";
+import { useUnistyles } from "react-native-unistyles";
 import {
     EventActivation,
     EventType,
@@ -33,8 +33,8 @@ const distances = (qsos: QSO[]) => qsos.filter((q) => !!q.distance).map((q) => q
 
 export type ReferenceComponent = React.FC<ReferenceProps>;
 
-export const Reference: ReferenceComponent = ({ position, max, event, reference, activations }): JSX.Element => {
-    const { theme } = useStyles();
+export const Reference: ReferenceComponent = ({ position, max, event, reference, activations }): React.JSX.Element => {
+    const { theme } = useUnistyles();
     const eventData = eventDataMap[event][reference];
     const updateFilters = useStore((state) => state.updateFilters);
     const { navigate } = useRouter();

@@ -11,7 +11,7 @@ export type ExportProps = {};
 
 export type ExportComponent = React.FC<ExportProps>;
 
-export const Export: ExportComponent = (): JSX.Element => {
+export const Export: ExportComponent = (): React.JSX.Element => {
     const filters = useStore((state) => state.filters);
     const qsos = useQsos();
     const filteredQsos = filterQsos(qsos, filters);

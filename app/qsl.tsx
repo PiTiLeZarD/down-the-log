@@ -1,8 +1,8 @@
 import { DateTime } from "luxon";
 import React from "react";
 import { View } from "react-native";
-import { useStyles } from "react-native-unistyles";
-import { stylesheet } from "./lib/components/adif/import";
+import { useUnistyles } from "react-native-unistyles";
+import { styles } from "./lib/components/adif/import";
 import { Dropzone, FileWithPreview } from "./lib/components/dropzone";
 import { PageLayout } from "./lib/components/page-layout";
 import { QSO, findMatchingQso, useQsos } from "./lib/components/qso";
@@ -21,9 +21,9 @@ export type QslProps = {};
 
 export type QslComponent = React.FC<QslProps>;
 
-const Qsl: QslComponent = (): JSX.Element => {
+const Qsl: QslComponent = (): React.JSX.Element => {
     const qsos = useQsos();
-    const { styles, theme } = useStyles(stylesheet);
+    const { theme } = useUnistyles();
     const log = useStore((state) => state.log);
     const today = DateTime.local().toFormat("yyyyMMdd");
     const settings = useSettings();

@@ -19,7 +19,7 @@ export type QsoListItemProps = {
 export type QsoListItemComponent = React.FC<QsoListItemProps>;
 
 export const QsoListItem: QsoListItemComponent = React.memo(
-    ({ item: qso, index, lineHeight, onQsoPress, imperial }): JSX.Element => {
+    ({ item: qso, index, lineHeight, onQsoPress, imperial }): React.JSX.Element => {
         const icons = [
             qso.note ? <Icon name="chatbox-ellipses-outline" /> : null,
             hasEvent(qso) ? <Icon name="earth" /> : null,

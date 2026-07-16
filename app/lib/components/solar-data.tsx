@@ -3,7 +3,7 @@ import { DateTime } from "luxon";
 import React, { useEffect } from "react";
 import { View } from "react-native";
 import { BarChart, Grid, YAxis } from "react-native-svg-charts";
-import { useStyles } from "react-native-unistyles";
+import { useUnistyles } from "react-native-unistyles";
 import { Modal } from "../utils/modal";
 import { widthMatches } from "../utils/theme/breakpoints";
 import colours from "../utils/theme/colours.json";
@@ -53,9 +53,9 @@ const fetchMagneticData = async () =>
     axios
         .get("https://services.swpc.noaa.gov/products/noaa-planetary-k-index.json")
         .then(({ data }) =>
-            data.splice(1).map((e: string[]) => ({
-                date: DateTime.fromFormat(e[0].substring(0, e[0].length - 4), "yyyy-MM-dd HH:mm:ss"),
-                value: +e[1],
+            data.map((e: { time_tag: string; Kp: number }) => ({
+                date: DateTime.fromISO(e.time_tag),
+                value: +e.Kp,
             })),
         )
         .then(serialise);
@@ -81,11 +81,11 @@ export type SolarDataProps = {};
 
 export type SolarDataComponent = React.FC<SolarDataProps>;
 
-export const SolarData: SolarDataComponent = (): JSX.Element => {
+export const SolarData: SolarDataComponent = (): React.JSX.Element => {
     const [modal, setModal] = React.useState<boolean>(false);
     const [solarData, setSolarData] = React.useState<DataType[]>();
     const [magneticData, setMagneticData] = React.useState<DataType[]>();
-    const { theme } = useStyles();
+    const { theme } = useUnistyles();
 
     const updateCache = () => {
         useCache("solarData", fetchSolarData, 60 * 60 * 3).then((data) => setSolarData(deserialise(data)));

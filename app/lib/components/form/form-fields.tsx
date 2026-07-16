@@ -3,7 +3,7 @@ import React, { useEffect, useRef } from "react";
 import { useFormContext } from "react-hook-form";
 import { Pressable, View } from "react-native";
 import { Switch } from "react-native-gesture-handler";
-import { createStyleSheet, useStyles } from "react-native-unistyles";
+import { StyleSheet, useUnistyles } from "react-native-unistyles";
 import { continents } from "../../data/callsigns";
 import { getCallsignData } from "../../utils/callsign";
 import { roundTo } from "../../utils/math";
@@ -36,7 +36,7 @@ import { MyStation } from "./my-station";
 import { Signal } from "./signal";
 import { StateField } from "./state-field";
 
-const stylesheet = createStyleSheet((theme) => ({
+const styles = StyleSheet.create((theme) => ({
     datetime: {
         borderStyle: "solid",
         borderBottomWidth: theme.margins.sm,
@@ -72,11 +72,11 @@ const diffTimeInMinutes = (qso: QSO, dt: DateTime) => dt.diff(qso.date, ["minute
 
 export type FormFieldsComponent = React.FC<FormFieldsProps>;
 
-export const FormFields: FormFieldsComponent = ({ qso }): JSX.Element => {
+export const FormFields: FormFieldsComponent = ({ qso }): React.JSX.Element => {
     const isLastQso = useQsos()[0].id === qso.id;
-    const timer = useRef<ReturnType<typeof setInterval>>();
+    const timer = useRef<ReturnType<typeof setInterval> | undefined>(undefined);
     const [now, setNow] = React.useState<DateTime>(DateTime.utc());
-    const { styles, theme } = useStyles(stylesheet);
+    const { theme } = useUnistyles();
     const [openTimeLocModal, setOpenTimeLocModal] = React.useState<boolean>(false);
     const deleteLog = useStore((state) => state.deleteLog);
     const settings = useSettings();

@@ -1,9 +1,9 @@
 import React from "react";
 import { Modal as RNModal, View } from "react-native";
-import { createStyleSheet, useStyles } from "react-native-unistyles";
+import { StyleSheet } from "react-native-unistyles";
 import { Grid } from "../components/grid";
 
-const stylesheet = createStyleSheet((theme) => ({
+const styles = StyleSheet.create((theme) => ({
     container: {
         backgroundColor: theme.background,
         flex: 1,
@@ -18,8 +18,7 @@ export type ModalProps = {
 
 export type ModalComponent = React.FC<React.PropsWithChildren<ModalProps>>;
 
-export const Modal: ModalComponent = ({ open, wide, onClose, children }): JSX.Element => {
-    const { styles } = useStyles(stylesheet);
+export const Modal: ModalComponent = ({ open, wide, onClose, children }): React.JSX.Element => {
     return (
         <RNModal animationType="none" visible={open} onRequestClose={onClose} transparent>
             <View style={styles.container}>

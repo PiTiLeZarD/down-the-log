@@ -11,7 +11,7 @@ export type PaginatedListProps = {
 
 export type PaginatedListComponent = React.FC<React.PropsWithChildren<PaginatedListProps>>;
 
-export const PaginatedList: PaginatedListComponent = ({ itemsPerPage = 10, whenEmpty, children }): JSX.Element => {
+export const PaginatedList: PaginatedListComponent = ({ itemsPerPage = 10, whenEmpty, children }): React.JSX.Element => {
     const elements = React.Children.toArray(children);
     const [page, setPage] = React.useState<number>(0);
 

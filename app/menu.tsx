@@ -1,6 +1,6 @@
 import { useRouter } from "expo-router";
 import React from "react";
-import { createStyleSheet, useStyles } from "react-native-unistyles";
+import { StyleSheet } from "react-native-unistyles";
 import { Grid } from "./lib/components/grid";
 import { PageLayout } from "./lib/components/page-layout";
 import { Stack } from "./lib/components/stack";
@@ -8,7 +8,7 @@ import { Button } from "./lib/utils/theme/components/button";
 import { Icon, IconName } from "./lib/utils/theme/components/icon";
 import { Typography } from "./lib/utils/theme/components/typography";
 
-const stylesheet = createStyleSheet((theme) => ({
+const styles = StyleSheet.create((theme) => ({
     menuButton: {
         backgroundColor: theme.colours.primary[theme.shades.lighter],
     },
@@ -27,9 +27,8 @@ export type MenuButtonProps = {
 
 export type MenuButtonComponent = React.FC<MenuButtonProps>;
 
-export const MenuButton: MenuButtonComponent = ({ navigateTo, icon, text }): JSX.Element => {
+export const MenuButton: MenuButtonComponent = ({ navigateTo, icon, text }): React.JSX.Element => {
     const { navigate } = useRouter();
-    const { styles } = useStyles(stylesheet);
 
     return (
         <Button onPress={() => navigate(navigateTo)} style={styles.menuButton}>
@@ -45,7 +44,7 @@ export type MenuProps = {};
 
 export type MenuComponent = React.FC<MenuProps>;
 
-const Menu: MenuComponent = (): JSX.Element => {
+const Menu: MenuComponent = (): React.JSX.Element => {
     const { navigate } = useRouter();
     return (
         <PageLayout title="Menu">

@@ -12,7 +12,7 @@ export type PreviousQsosProps = {};
 
 export type PreviousQsosComponent = React.FC<PreviousQsosProps>;
 
-export const PreviousQsos: PreviousQsosComponent = (): JSX.Element => {
+export const PreviousQsos: PreviousQsosComponent = (): React.JSX.Element => {
     const { getValues } = useFormContext<QSO>();
     const { id, callsign } = getValues();
     const { navigate } = useRouter();

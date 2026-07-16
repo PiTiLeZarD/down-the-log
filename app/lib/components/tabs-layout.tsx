@@ -1,11 +1,11 @@
 import React from "react";
 import { View } from "react-native";
-import { createStyleSheet, useStyles } from "react-native-unistyles";
+import { StyleSheet } from "react-native-unistyles";
 import { Button } from "../utils/theme/components/button";
 import { ColourVariant } from "../utils/theme/theme";
 import { Stack } from "./stack";
 
-const stylesheet = createStyleSheet((theme) => ({
+const styles = StyleSheet.create((theme) => ({
     mainContainer: {
         flexGrow: 1,
         marginTop: theme.margins.xl,
@@ -60,8 +60,7 @@ export const TabsLayout: TabsLayoutComponent = ({
     variant = "primary",
     tabs,
     children,
-}): JSX.Element => {
-    const { styles } = useStyles(stylesheet);
+}): React.JSX.Element => {
     const [current, setCurrent] = React.useState<number>(0);
 
     const tabsButtons = (

@@ -24,7 +24,7 @@ export const Dropzone: DropzoneComponent = ({
     dropzoneOptions,
     children,
     ...otherProps
-}): JSX.Element => {
+}): React.JSX.Element => {
     const { getRootProps, getInputProps } = useDropzone({
         onDrop: (acceptedFiles) => {
             onAcceptedFiles(

@@ -3,7 +3,7 @@ import { Stack } from "expo-router";
 import * as SplashScreen from "expo-splash-screen";
 import React, { useCallback } from "react";
 import { SafeAreaProvider, SafeAreaView } from "react-native-safe-area-context";
-import { createStyleSheet, useStyles } from "react-native-unistyles";
+import { StyleSheet } from "react-native-unistyles";
 import { LocationHeader } from "./lib/components/location-header";
 import { latlong2Maidenhead } from "./lib/utils/locator";
 import { useStore } from "./lib/utils/store";
@@ -16,7 +16,7 @@ export {
     ErrorBoundary,
 } from "expo-router";
 
-const stylesheet = createStyleSheet((theme) => ({
+const styles = StyleSheet.create((theme) => ({
     main: {
         backgroundColor: theme.background,
     },
@@ -24,12 +24,11 @@ const stylesheet = createStyleSheet((theme) => ({
 
 SplashScreen.preventAutoHideAsync();
 
-const RootLayout = (): JSX.Element => {
+const RootLayout = (): React.JSX.Element => {
     const [fontsLoaded, fontError] = useFonts({
         Quicksand: require("../assets/Quicksand-VariableFont_wght.ttf"),
     });
 
-    const { styles } = useStyles(stylesheet);
     const setCurrentLocation = useStore((state) => state.setCurrentLocation);
     const settings = useSettings();
     const location = useLocation(settings.myGridsquare);

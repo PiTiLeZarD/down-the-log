@@ -5,8 +5,8 @@ export const useThrottle = <T, ARGS extends any[]>(
     ms: number = 200,
 ): ((...args: ARGS) => T | undefined) => {
     const [state, setState] = useState<T | undefined>(undefined);
-    const timeout = useRef<ReturnType<typeof setTimeout>>();
-    const currentArgs = useRef<ARGS>();
+    const timeout = useRef<ReturnType<typeof setTimeout> | undefined>(undefined);
+    const currentArgs = useRef<ARGS | undefined>(undefined);
 
     const timeoutCb = () => {
         Promise.resolve(fn(...(currentArgs.current as ARGS))).then((ret) => setState(ret));

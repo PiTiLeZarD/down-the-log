@@ -10,7 +10,7 @@ export type QrzChipProps = {
 
 export type QrzChipComponent = React.FC<QrzChipProps>;
 
-export const QrzChip: QrzChipComponent = ({ callsign, textIsCallsign = false, includeFlag = false }): JSX.Element => {
+export const QrzChip: QrzChipComponent = ({ callsign, textIsCallsign = false, includeFlag = false }): React.JSX.Element => {
     const parsed = parseCallsign(callsign);
     return (
         <Button

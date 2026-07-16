@@ -16,7 +16,7 @@ export type MissingReferencesWarningProps = {
 
 export type MissingReferencesWarningComponent = React.FC<MissingReferencesWarningProps>;
 
-export const MissingReferencesWarning: MissingReferencesWarningComponent = ({ event }): JSX.Element => {
+export const MissingReferencesWarning: MissingReferencesWarningComponent = ({ event }): React.JSX.Element => {
     const updateFilters = useStore((state) => state.updateFilters);
     const { navigate } = useRouter();
     const references = unique(

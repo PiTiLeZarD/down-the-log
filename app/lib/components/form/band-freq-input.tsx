@@ -1,7 +1,7 @@
 import React from "react";
 import { useFormContext } from "react-hook-form";
 import { View } from "react-native";
-import { useStyles } from "react-native-unistyles";
+import { useUnistyles } from "react-native-unistyles";
 import { Band, band2freq, bands, freq2band } from "../../data/bands";
 import { Mode } from "../../data/modes";
 import { Modal } from "../../utils/modal";
@@ -25,8 +25,8 @@ export type BandFreqInputProps = {
 
 export type BandFreqInputComponent = React.FC<BandFreqInputProps>;
 
-export const BandFreqInput: BandFreqInputComponent = ({ noLabel = false }): JSX.Element => {
-    const { theme } = useStyles();
+export const BandFreqInput: BandFreqInputComponent = ({ noLabel = false }): React.JSX.Element => {
+    const { theme } = useUnistyles();
     const [showAll, setShowAll] = React.useState<boolean>(false);
     const [open, setOpen] = React.useState<boolean>(false);
     const { watch, setValue, getValues } = useFormContext<QSO>();

@@ -1,6 +1,6 @@
 import React from "react";
 import { Platform, View } from "react-native";
-import { createStyleSheet, useStyles } from "react-native-unistyles";
+import { StyleSheet, useUnistyles } from "react-native-unistyles";
 import { getFileApiFromFilename, record2qso } from "../../utils/file-format";
 import { useStore } from "../../utils/store";
 import { Typography } from "../../utils/theme/components/typography";
@@ -10,7 +10,7 @@ import { Dropzone, FileWithPreview } from "../dropzone";
 import { QSO, findMatchingQso, prefillLocation, prefillMyStation, useQsos } from "../qso";
 import { Stack } from "../stack";
 
-export const stylesheet = createStyleSheet((theme) => ({
+export const styles = StyleSheet.create((theme) => ({
     dropzone: {
         display: "flex",
         width: "100%",
@@ -32,8 +32,8 @@ export type ImportProps = {};
 
 export type ImportComponent = React.FC<ImportProps>;
 
-export const Import: ImportComponent = (): JSX.Element => {
-    const { theme, styles } = useStyles(stylesheet);
+export const Import: ImportComponent = (): React.JSX.Element => {
+    const { theme } = useUnistyles();
     const qsos = useQsos();
     const log = useStore((state) => state.log);
     const currentLocation = useStore((state) => state.currentLocation);

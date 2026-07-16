@@ -1,4 +1,4 @@
-import { UnistylesRegistry } from "react-native-unistyles";
+import { StyleSheet } from "react-native-unistyles";
 export { breakpoints, getScreenSize, spacing } from "./breakpoints";
 export { colour, theme } from "./theme";
 
@@ -16,11 +16,13 @@ declare module "react-native-unistyles" {
     export interface UnistylesThemes extends AppThemes {}
 }
 
-UnistylesRegistry.addThemes({
-    light: theme("light"),
-    dark: theme("dark"),
-})
-    .addConfig({
+StyleSheet.configure({
+    themes: {
+        light: theme("light"),
+        dark: theme("dark"),
+    },
+    breakpoints,
+    settings: {
         adaptiveThemes: true,
-    })
-    .addBreakpoints(breakpoints);
+    },
+});

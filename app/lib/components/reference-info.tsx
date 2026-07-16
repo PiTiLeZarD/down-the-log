@@ -15,7 +15,7 @@ export type ReferenceInfoProps = {
 
 export type ReferenceInfoComponent = React.FC<ReferenceInfoProps>;
 
-export const ReferenceInfo: ReferenceInfoComponent = ({ event, reference, data, info }): JSX.Element => {
+export const ReferenceInfo: ReferenceInfoComponent = ({ event, reference, data, info }): React.JSX.Element => {
     if (!reference) return <></>;
     if (event === "sig") {
         if (info?.toLowerCase() === "zlota") {

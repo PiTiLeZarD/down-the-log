@@ -10,7 +10,7 @@ export type AboutProps = {};
 
 export type AboutComponent = React.FC<AboutProps>;
 
-const About: AboutComponent = (): JSX.Element => {
+const About: AboutComponent = (): React.JSX.Element => {
     return (
         <PageLayout title="About">
             <Stack gap="xxl">

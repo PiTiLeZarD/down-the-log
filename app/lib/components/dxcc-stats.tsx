@@ -18,7 +18,7 @@ export type DxccStatsProps = {
 
 export type DxccStatsComponent = React.FC<DxccStatsProps>;
 
-export const DxccStats: DxccStatsComponent = ({ dxcc }): JSX.Element => {
+export const DxccStats: DxccStatsComponent = ({ dxcc }): React.JSX.Element => {
     const qsos = useQsos().filter((q) => q.dxcc === dxcc);
     const updateFilters = useStore((state) => state.updateFilters);
     const { navigate } = useRouter();

@@ -1,6 +1,6 @@
 import React from "react";
 import { View, ViewStyle } from "react-native";
-import { createStyleSheet, useStyles } from "react-native-unistyles";
+import { StyleSheet } from "react-native-unistyles";
 import { breakpoints, spacing } from "../../utils/theme";
 import { Styles, mergeStyles } from "../../utils/theme/components/styles";
 
@@ -12,7 +12,7 @@ export type StackProps = {
 
 export type StackComponent = React.FC<React.PropsWithChildren<StackProps>>;
 
-const stylesheet = createStyleSheet((theme) => ({
+const styles = StyleSheet.create((theme) => ({
     defaultRow: {
         alignItems: "center",
     },
@@ -21,8 +21,7 @@ const stylesheet = createStyleSheet((theme) => ({
     },
 }));
 
-export const Stack: StackComponent = ({ style, gap = "xs", direction = "column", children }): JSX.Element => {
-    const { styles } = useStyles(stylesheet);
+export const Stack: StackComponent = ({ style, gap = "xs", direction = "column", children }): React.JSX.Element => {
     return (
         <View
             style={mergeStyles<ViewStyle>(direction == "row" ? styles.defaultRow : styles.defaultCol, style, {

@@ -1,6 +1,6 @@
 import { DateTime } from "luxon";
 import React from "react";
-import { createStyleSheet, useStyles } from "react-native-unistyles";
+import { StyleSheet } from "react-native-unistyles";
 import { Typography } from "../utils/theme/components/typography";
 import { Grid } from "./grid";
 
@@ -8,7 +8,7 @@ export type ClocksProps = {};
 
 export type ClocksComponent = React.FC<ClocksProps>;
 
-const stylesheet = createStyleSheet((theme) => ({
+const styles = StyleSheet.create((theme) => ({
     container: {
         backgroundColor: theme.colours.primary[theme.shades.light],
         paddingTop: theme.margins.md,
@@ -16,9 +16,8 @@ const stylesheet = createStyleSheet((theme) => ({
     },
 }));
 
-export const Clocks: ClocksComponent = (): JSX.Element => {
+export const Clocks: ClocksComponent = (): React.JSX.Element => {
     const [time, setTime] = React.useState<DateTime>(DateTime.local());
-    const { styles } = useStyles(stylesheet);
 
     React.useEffect(() => {
         const timer = setInterval(() => {

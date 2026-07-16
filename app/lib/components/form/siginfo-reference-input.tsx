@@ -11,7 +11,7 @@ export type SiginfoReferenceInputProps = {
 
 export type SiginfoReferenceInputComponent = React.FC<SiginfoReferenceInputProps>;
 
-export const SiginfoReferenceInput: SiginfoReferenceInputComponent = ({ mine }): JSX.Element => {
+export const SiginfoReferenceInput: SiginfoReferenceInputComponent = ({ mine }): React.JSX.Element => {
     const { getValues, setValue } = useFormContext<QSO>();
     const qso = getValues();
     const event = qso[(mine ? "mySig" : "sig") as keyof QSO] as string;

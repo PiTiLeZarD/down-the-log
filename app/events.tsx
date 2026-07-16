@@ -17,7 +17,7 @@ export type EventsProps = {};
 
 export type EventsComponent = React.FC<EventsProps>;
 
-const Events: EventsComponent = (): JSX.Element => {
+const Events: EventsComponent = (): React.JSX.Element => {
     const qsos = useQsos();
     const [wwffLocal, setWwffLocal] = React.useState<boolean>(false);
     const getMax = (event: EventType) => (event === "wwff" && wwffLocal ? 10 : undefined);

@@ -1,6 +1,5 @@
 import React from "react";
 import { View, ViewStyle } from "react-native";
-import { useStyles } from "react-native-unistyles";
 import { useGeneratedStyles } from "./styles";
 
 export type GridProps = {
@@ -30,9 +29,8 @@ export const Grid: GridComponent = ({
     xxl,
     columns = 12,
     children,
-}): JSX.Element => {
-    const { gridStyles, screenSize } = useGeneratedStyles(columns);
-    const { styles } = useStyles(gridStyles);
+}): React.JSX.Element => {
+    const { gridStyles: styles, screenSize } = useGeneratedStyles(columns);
 
     if ((container && item) || (!container && !item)) throw Error("Pick one, container or item");
 

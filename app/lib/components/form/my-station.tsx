@@ -15,7 +15,7 @@ export type MyStationProps = {};
 
 export type MyStationComponent = React.FC<MyStationProps>;
 
-export const MyStation: MyStationComponent = (): JSX.Element => {
+export const MyStation: MyStationComponent = (): React.JSX.Element => {
     const [open, setOpen] = React.useState<boolean>(false);
     const { getValues, setValue } = useFormContext<QSO>();
 

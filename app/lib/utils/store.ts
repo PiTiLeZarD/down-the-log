@@ -118,25 +118,12 @@ export const useStore = create<
     devtools(
         persist(combine(InitialStore, StoreActions), {
             name: "dtl-storage",
-            storage: createJSONStorage(() => AsyncStorage),
-            deserialize: (s: string) => {
-                const storage: { state: UseStorePropsType; version: number } = JSON.parse(s);
-
-                storage.state.qsos = storage.state.qsos.map((q: QSO) => {
-                    q.date = DateTime.fromISO(q.date as unknown as string, { setZone: true });
-                    if (q.dateOff) q.dateOff = DateTime.fromISO(q.dateOff as unknown as string, { setZone: true });
-                    return q;
-                });
-
-                if (storage.state.settings.hamqth?.sessionStart) {
-                    storage.state.settings.hamqth!.sessionStart = DateTime.fromISO(
-                        storage.state.settings.hamqth?.sessionStart as unknown as string,
-                        { setZone: true },
-                    );
-                }
-
-                return storage;
-            },
+            storage: createJSONStorage(() => AsyncStorage, {
+                reviver: (key, value) =>
+                    (key === "date" || key === "dateOff" || key === "sessionStart") && typeof value === "string"
+                        ? DateTime.fromISO(value, { setZone: true })
+                        : value,
+            }),
         }),
     ),
 );

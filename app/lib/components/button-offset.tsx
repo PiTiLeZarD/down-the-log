@@ -6,7 +6,7 @@ export type ButtonOffsetProps = {};
 
 export type ButtonOffsetComponent = React.FC<React.PropsWithChildren<ButtonOffsetProps>>;
 
-export const ButtonOffset: ButtonOffsetComponent = ({ children }): JSX.Element => {
+export const ButtonOffset: ButtonOffsetComponent = ({ children }): React.JSX.Element => {
     return (
         <Stack>
             <Typography>&nbsp;</Typography>

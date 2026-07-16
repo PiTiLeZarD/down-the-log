@@ -20,7 +20,7 @@ export type CallsignInputExtraProps = {
 
 export type CallsignInputExtraComponent = React.FC<CallsignInputExtraProps>;
 
-export const CallsignInputExtra: CallsignInputExtraComponent = ({ value, hamqthCSData }): JSX.Element => {
+export const CallsignInputExtra: CallsignInputExtraComponent = ({ value, hamqthCSData }): React.JSX.Element => {
     const callsignData = useMemo(() => (value ? getCallsignData(value) : undefined), [value]);
     const settings = useSettings();
     const country = callsignData ? findCountry(callsignData) : null;

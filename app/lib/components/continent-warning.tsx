@@ -8,7 +8,7 @@ export type ContinentWarningProps = {};
 
 export type ContinentWarningComponent = React.FC<ContinentWarningProps>;
 
-export const ContinentWarning: ContinentWarningComponent = (): JSX.Element => {
+export const ContinentWarning: ContinentWarningComponent = (): React.JSX.Element => {
     const { watch } = useFormContext<QSO>();
     const country = watch("country");
     const continent = watch("continent");

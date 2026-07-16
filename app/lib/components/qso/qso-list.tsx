@@ -1,7 +1,7 @@
 import React from "react";
 import { Pressable, View, ViewStyle } from "react-native";
 import BigList from "react-native-big-list";
-import { createStyleSheet, useStyles } from "react-native-unistyles";
+import { StyleSheet } from "react-native-unistyles";
 import { QSO } from ".";
 import { Modal } from "../../utils/modal";
 import { useStore } from "../../utils/store";
@@ -27,7 +27,7 @@ const qsos2sections = (qsos: QSO[]): QSO[][] =>
 
 const LINEHEIGHT = 28;
 
-const stylesheet = createStyleSheet((theme) => ({
+const styles = StyleSheet.create((theme) => ({
     biglist: {
         backgroundColor: theme.background,
     },
@@ -53,10 +53,9 @@ export type QsoListSectionHeaderProps = {
 
 export type QsoListSectionHeaderComponent = React.FC<QsoListSectionHeaderProps>;
 ``;
-export const QsoListSectionHeader: QsoListSectionHeaderComponent = ({ section, sections }): JSX.Element => {
+export const QsoListSectionHeader: QsoListSectionHeaderComponent = ({ section, sections }): React.JSX.Element => {
     const [mapOpen, setmapOpen] = React.useState<boolean>(false);
     const settings = useSettings();
-    const { styles } = useStyles(stylesheet);
     const text = `${sections[section][0].date.toFormat(settings.datemonth ? "MM-dd-yyyy" : "dd/MM/yyyy")} (${sections[section].length})`;
 
     if (!settings.google || !settings.google.key || !settings.google.secret) {
@@ -96,8 +95,7 @@ export type QsoListComponent = React.FC<QsoListProps>;
 const applyFilters = (qsos: QSO[], filters: QsoListProps["filters"]) =>
     filters ? qsos.filter((qso) => filters.reduce((facc, f) => facc && f(qso), true)) : qsos;
 
-export const QsoList: QsoListComponent = ({ style, filters, qsos, onQsoPress }): JSX.Element => {
-    const { styles } = useStyles(stylesheet);
+export const QsoList: QsoListComponent = ({ style, filters, qsos, onQsoPress }): React.JSX.Element => {
     const settings = useStore((state) => state.settings);
     const launch = (q: QSO[], f: QsoListProps["filters"]) => qsos2sections(applyFilters(q, f));
     const throttled = useThrottle(launch, 250);

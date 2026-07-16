@@ -9,7 +9,7 @@ export type GeocodeButtonProps = {};
 
 export type GeocodeButtonComponent = React.FC<GeocodeButtonProps>;
 
-export const GeocodeButton: GeocodeButtonComponent = (): JSX.Element => {
+export const GeocodeButton: GeocodeButtonComponent = (): React.JSX.Element => {
     const { getValues, setValue } = useFormContext();
     const { qth } = getValues();
     const settings = useSettings();

@@ -32,14 +32,14 @@ export type MapProps = {
 
 export type MapComponent = React.FC<React.PropsWithChildren<MapProps>>;
 
-const getActualWidth = (width: "auto" | number, ref: React.RefObject<View>) =>
+const getActualWidth = (width: "auto" | number, ref: React.RefObject<View | null>) =>
     typeof width === "number"
         ? Math.min(width, 640)
         : ref.current
           ? Math.min((ref.current as unknown as HTMLElement).clientWidth, 640)
           : null;
 
-export const Map: MapComponent = ({ width = "auto", height, google, children }): JSX.Element => {
+export const Map: MapComponent = ({ width = "auto", height, google, children }): React.JSX.Element => {
     const widthRef = useRef<View>(null);
     const features = groupBy<Feature, string>(
         React.Children.toArray(children)

@@ -1,7 +1,7 @@
 import { useRouter } from "expo-router";
 import React from "react";
 import { View, useWindowDimensions } from "react-native";
-import { createStyleSheet, useStyles } from "react-native-unistyles";
+import { StyleSheet, useUnistyles } from "react-native-unistyles";
 import { callsigns } from "../data/callsigns";
 import { mostWanted } from "../data/clranks";
 import { countries } from "../data/countries";
@@ -19,7 +19,7 @@ import { fireSwal } from "../utils/theme/swal";
 import { QSO, findMatchingQsos, hasEvent, useQsos } from "./qso";
 import { Stack } from "./stack";
 
-const stylesheet = createStyleSheet((theme) => ({
+const styles = StyleSheet.create((theme) => ({
     container: {
         backgroundColor: theme.background,
     },
@@ -115,9 +115,8 @@ const castValue = (k: string, v: string) => {
 
 export type FiltersComponent = React.FC<FiltersProps>;
 
-export const Filters: FiltersComponent = ({ showTag }): JSX.Element => {
-    const { styles } = useStyles(stylesheet);
-    const { theme } = useStyles();
+export const Filters: FiltersComponent = ({ showTag }): React.JSX.Element => {
+    const { theme } = useUnistyles();
     const filters = useStore((state) => state.filters);
     const qsos = filterQsos(useQsos(), filters);
     const { height } = useWindowDimensions();

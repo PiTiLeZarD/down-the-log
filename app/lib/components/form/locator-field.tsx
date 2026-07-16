@@ -17,7 +17,7 @@ export type LocatorFieldProps = {
 
 export type LocatorFieldComponent = React.FC<LocatorFieldProps>;
 
-export const LocatorField: LocatorFieldComponent = ({ name, label }): JSX.Element => {
+export const LocatorField: LocatorFieldComponent = ({ name, label }): React.JSX.Element => {
     const { watch, getValues, setValue } = useFormContext<QSO>();
 
     useEffect(() => {

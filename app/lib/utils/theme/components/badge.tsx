@@ -1,10 +1,10 @@
 import React from "react";
 import { View } from "react-native";
-import { createStyleSheet, useStyles } from "react-native-unistyles";
+import { StyleSheet } from "react-native-unistyles";
 import { ColourVariant } from "../theme";
 import { Typography } from "./typography";
 
-const stylesheet = createStyleSheet((theme) => ({
+const styles = StyleSheet.create((theme) => ({
     container: {
         position: "relative",
     },
@@ -29,8 +29,7 @@ export type BadgeProps = {
 
 export type BadgeComponent = React.FC<React.PropsWithChildren<BadgeProps>>;
 
-export const Badge: BadgeComponent = ({ count, colour = "primary", children }): JSX.Element => {
-    const { styles } = useStyles(stylesheet);
+export const Badge: BadgeComponent = ({ count, colour = "primary", children }): React.JSX.Element => {
     if (count === 0) return <>{children}</>;
     return (
         <View style={styles.container}>

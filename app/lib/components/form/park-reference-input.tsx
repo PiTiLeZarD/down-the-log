@@ -19,7 +19,7 @@ const linksFlipped = flip(links);
 
 export type ParkReferenceInputComponent = React.FC<ParkReferenceInputProps>;
 
-export const ParkReferenceInput: ParkReferenceInputComponent = ({ event, mine = false }): JSX.Element => {
+export const ParkReferenceInput: ParkReferenceInputComponent = ({ event, mine = false }): React.JSX.Element => {
     const { getValues, setValue } = useFormContext<QSO>();
     const [hint, setHint] = React.useState<string>();
     const qso = getValues();

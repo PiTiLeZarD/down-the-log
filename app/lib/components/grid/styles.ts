@@ -1,14 +1,14 @@
 import React from "react";
 import { useWindowDimensions } from "react-native";
-import { createStyleSheet } from "react-native-unistyles";
+import { ViewStyle } from "react-native";
 import { getScreenSize, spacing } from "../../utils/theme";
 
-const generateStyles = (width: number, columns: number = 12) => {
+const generateStyles = (width: number, columns: number = 12): Record<string, ViewStyle> => {
     const colWidth = 100 / columns;
 
     const colSpacing = spacing[getScreenSize(width)];
 
-    return createStyleSheet({
+    return {
         row: {
             flexDirection: "row",
             flexWrap: "wrap",
@@ -17,9 +17,12 @@ const generateStyles = (width: number, columns: number = 12) => {
         ...Object.fromEntries(
             new Array(columns)
                 .fill(null)
-                .map((_, c) => [`col_${c + 1}`, { width: `${colWidth * (c + 1)}%`, paddingRight: colSpacing }]),
+                .map((_, c) => [
+                    `col_${c + 1}`,
+                    { width: `${colWidth * (c + 1)}%` as ViewStyle["width"], paddingRight: colSpacing },
+                ]),
         ),
-    });
+    };
 };
 
 export const useGeneratedStyles = (columns: number = 12) => {

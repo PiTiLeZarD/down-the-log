@@ -13,7 +13,7 @@ export type GridMapProps = {};
 
 export type GridMapComponent = React.FC<GridMapProps>;
 
-export const GridMap: GridMapComponent = (): JSX.Element => {
+export const GridMap: GridMapComponent = (): React.JSX.Element => {
     const filters = useStore((state) => state.filters);
     const qsos = filterQsos(useQsos(), filters);
     const { google } = useSettings();

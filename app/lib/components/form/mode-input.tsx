@@ -13,7 +13,7 @@ export type ModeInputProps = {
 
 export type ModeInputComponent = React.FC<ModeInputProps>;
 
-export const ModeInput: ModeInputComponent = ({ noLabel = false }): JSX.Element => {
+export const ModeInput: ModeInputComponent = ({ noLabel = false }): React.JSX.Element => {
     const [showAllModes, setShowAllModes] = React.useState<boolean>(false);
     const settings = useSettings();
 

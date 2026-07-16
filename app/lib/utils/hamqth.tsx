@@ -1,7 +1,7 @@
 import axios from "axios";
 import { DateTime } from "luxon";
 import { useEffect } from "react";
-import { useStyles } from "react-native-unistyles";
+import { useUnistyles } from "react-native-unistyles";
 import { baseCallsign, parseCallsign } from "./callsign";
 import { latlong2Maidenhead, normalise } from "./locator";
 import { useStore } from "./store";
@@ -99,7 +99,7 @@ export const fetchCallsignData = async (sessionId: string, callsign: string) =>
     });
 
 export const useHamqth = (callsign?: string) => {
-    const { theme } = useStyles();
+    const { theme } = useUnistyles();
     const settings = useSettings();
     const updateSetting = useStore((state) => state.updateSetting);
 

@@ -10,7 +10,7 @@ export type GmapsChipProps = {
 
 export type GmapsChipComponent = React.FC<GmapsChipProps>;
 
-export const GmapsChip: GmapsChipComponent = ({ text = "gmaps", locator, zoom = 4 }): JSX.Element => {
+export const GmapsChip: GmapsChipComponent = ({ text = "gmaps", locator, zoom = 4 }): React.JSX.Element => {
     const [buttonText, setButtonText] = React.useState<string>(text);
 
     const latlng = locator ? maidenhead2Latlong(locator) : undefined;

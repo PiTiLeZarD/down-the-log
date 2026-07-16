@@ -1,7 +1,7 @@
 import { useRouter } from "expo-router";
 import React from "react";
 import { View } from "react-native";
-import { createStyleSheet, useStyles } from "react-native-unistyles";
+import { StyleSheet } from "react-native-unistyles";
 import cqzones from "../data/cqzones.json";
 import dxcc from "../data/dxcc.json";
 import ituzones from "../data/ituzones.json";
@@ -16,7 +16,7 @@ import { Clocks } from "./clocks";
 import { SolarData } from "./solar-data";
 import { Stack } from "./stack";
 
-const stylesheet = createStyleSheet((theme) => ({
+const styles = StyleSheet.create((theme) => ({
     header: {
         backgroundColor: theme.colours.primary[theme.shades.light],
         padding: theme.margins.md,
@@ -34,11 +34,10 @@ export type LocationHeaderProps = {};
 
 export type LocationHeaderComponent = React.FC<LocationHeaderProps>;
 
-export const LocationHeader: LocationHeaderComponent = (): JSX.Element => {
+export const LocationHeader: LocationHeaderComponent = (): React.JSX.Element => {
     const { navigate } = useRouter();
     const currentLocation = useStore((state) => state.currentLocation);
     const settings = useSettings();
-    const { styles } = useStyles(stylesheet);
 
     return (
         <View style={styles.header}>

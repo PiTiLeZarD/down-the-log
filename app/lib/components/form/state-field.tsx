@@ -12,7 +12,7 @@ export type StateFieldProps = {
 
 export type StateFieldComponent = React.FC<StateFieldProps>;
 
-export const StateField: StateFieldComponent = ({ name }): JSX.Element => {
+export const StateField: StateFieldComponent = ({ name }): React.JSX.Element => {
     const { watch, setValue } = useFormContext<QSO>();
     const value = watch(name);
     const callsign = watch("callsign");

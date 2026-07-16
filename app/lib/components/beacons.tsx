@@ -56,7 +56,7 @@ export type BeaconsProps = {};
 
 export type BeaconsComponent = React.FC<BeaconsProps>;
 
-export const Beacons: BeaconsComponent = (): JSX.Element => {
+export const Beacons: BeaconsComponent = (): React.JSX.Element => {
     const [modalOpen, setModalOpen] = React.useState<boolean>(false);
     const currentLocation = useStore((state) => state.currentLocation);
     const updateSetting = useStore((state) => state.updateSetting);

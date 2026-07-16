@@ -16,7 +16,7 @@ export type QsoMapProps = {
 
 export type QsoMapComponent = React.FC<QsoMapProps>;
 
-export const QsoMap: QsoMapComponent = ({ qso, qsos, width = "auto", height = 200 }): JSX.Element => {
+export const QsoMap: QsoMapComponent = ({ qso, qsos, width = "auto", height = 200 }): React.JSX.Element => {
     const { google } = useStore((state) => state.settings);
 
     if (!qso && !qsos) {

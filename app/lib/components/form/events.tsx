@@ -15,7 +15,7 @@ export type EventsProps = {};
 
 export type EventsComponent = React.FC<EventsProps>;
 
-export const Events: EventsComponent = (): JSX.Element => {
+export const Events: EventsComponent = (): React.JSX.Element => {
     const [open, setOpen] = React.useState<boolean>(false);
     const { getValues, setValue } = useFormContext<QSO>();
     const qso = getValues();

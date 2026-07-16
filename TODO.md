@@ -35,7 +35,7 @@ This is the rough todolist I want to work on.
     -   [x] data ranges: https://3fs.net.au/making-sense-of-solar-indices/
     -   [x] SFI and SSN: https://services.swpc.noaa.gov/json/solar-cycle/predicted-solar-cycle.json
     -   [x] Kp and A: https://services.swpc.noaa.gov/products/noaa-planetary-k-index.json
--   [ ] yarn release should use ghpages to create the demo, build the tauri app and release it, build ios/android apps
+-   [ ] pnpm release should use ghpages to create the demo, build the tauri app and release it, build ios/android apps
     -   [x] demo website on github
     -   [ ] look into automatic/programatic github release
     -   [ ] script the apk/dmg releases

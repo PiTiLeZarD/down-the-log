@@ -1,6 +1,6 @@
 import React from "react";
 import { Pressable, View } from "react-native";
-import { useStyles } from "react-native-unistyles";
+import { useUnistyles } from "react-native-unistyles";
 import { Export } from "./lib/components/adif/export";
 import { Import } from "./lib/components/adif/import";
 import { PageLayout } from "./lib/components/page-layout";
@@ -19,8 +19,8 @@ export type AdifProps = {};
 
 export type AdifComponent = React.FC<AdifProps>;
 
-const Adif: AdifComponent = (): JSX.Element => {
-    const { theme } = useStyles();
+const Adif: AdifComponent = (): React.JSX.Element => {
+    const { theme } = useUnistyles();
     const [showHoneypotDetails, setShowHoneypotDetails] = React.useState<boolean>(false);
     const resetStore = useStore((state) => state.resetStore);
     const qsos = useQsos();

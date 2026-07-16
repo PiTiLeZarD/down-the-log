@@ -1,10 +1,10 @@
 import React from "react";
 import { Pressable, TextStyle } from "react-native";
-import { createStyleSheet, useStyles } from "react-native-unistyles";
+import { StyleSheet } from "react-native-unistyles";
 import { Typography } from "../../utils/theme/components/typography";
 import { Grid } from "../grid";
 
-const stylesheet = createStyleSheet((theme) => ({
+const styles = StyleSheet.create((theme) => ({
     cell: {
         paddingHorizontal: theme.margins.md,
         paddingVertical: theme.margins.sm,
@@ -44,8 +44,7 @@ export const QsoRow: QsoRowComponent = ({
     band,
     callsign,
     name,
-}): JSX.Element => {
-    const { styles } = useStyles(stylesheet);
+}): React.JSX.Element => {
     const cellContent = (content: React.ReactNode, style: TextStyle) =>
         typeof content === "string" ? <Typography style={style}>{content}</Typography> : content;
     const cellStyle = header ? styles.header(lineHeight) : { lineHeight };

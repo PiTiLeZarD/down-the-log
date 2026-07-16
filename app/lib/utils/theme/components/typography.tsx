@@ -1,7 +1,7 @@
 import { EM, H1, H2, H3, H4, H5, H6, P, Span } from "@expo/html-elements";
 import React from "react";
 import { TextStyle } from "react-native";
-import { createStyleSheet, useStyles } from "react-native-unistyles";
+import { StyleSheet } from "react-native-unistyles";
 import { Styles, mergeStyles } from "./styles";
 
 export type TypographyVariant = "h1" | "h2" | "h3" | "h4" | "h5" | "h6" | "body" | "paragraph" | "subtitle" | "em";
@@ -18,7 +18,7 @@ const variantComponentMap: Record<TypographyVariant, React.ElementType> = {
     em: EM,
 };
 
-const stylesheet = createStyleSheet((theme) => ({
+const styles = StyleSheet.create((theme) => ({
     h1: {
         ...theme.components.typography,
         color: theme.colours.primary[theme.shades.darker],
@@ -95,8 +95,7 @@ export type TypographyProps = {
 
 export type TypographyComponent = React.FC<React.PropsWithChildren<TypographyProps>>;
 
-export const Typography: TypographyComponent = ({ style, underline, variant = "body", children }): JSX.Element => {
-    const { styles } = useStyles(stylesheet);
+export const Typography: TypographyComponent = ({ style, underline, variant = "body", children }): React.JSX.Element => {
     const Comp = variantComponentMap[variant];
     return (
         <Comp style={mergeStyles<TextStyle>(styles[variant], underline ? styles.underline : {}, style)}>

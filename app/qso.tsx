@@ -10,7 +10,7 @@ export type QsoProps = {};
 
 export type QsoComponent = React.FC<QsoProps>;
 
-const Qso: QsoComponent = (): JSX.Element => {
+const Qso: QsoComponent = (): React.JSX.Element => {
     const { navigate } = useRouter();
     const { qsoId } = useLocalSearchParams();
     const qso = useQsos().find((q) => q.id == qsoId);

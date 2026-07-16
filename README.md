@@ -24,7 +24,7 @@ But in a nutshell, I'd like to have all the goodies in a good looking app (don't
 ## You want to try it for yourself?
 
 ```
-yarn install
+pnpm install
 ```
 
 VSCode should give you the commands needed to run everything when you CMD+SHFT+B, otherwise check the package.json

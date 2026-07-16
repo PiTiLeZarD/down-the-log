@@ -1,6 +1,6 @@
 import React from "react";
 import { Switch } from "react-native";
-import { UnistylesRuntime, useStyles } from "react-native-unistyles";
+import { UnistylesRuntime, useUnistyles } from "react-native-unistyles";
 import { PageLayout } from "./lib/components/page-layout";
 import { PickFavourite } from "./lib/components/pick-favourite";
 import { Stack } from "./lib/components/stack";
@@ -20,8 +20,8 @@ export type SettingsProps = {};
 
 export type SettingsComponent = React.FC<SettingsProps>;
 
-const Settings: SettingsComponent = (): JSX.Element => {
-    const { theme } = useStyles();
+const Settings: SettingsComponent = (): React.JSX.Element => {
+    const { theme } = useUnistyles();
     const settings = useSettings();
     const currentLocation = useStore((state) => state.currentLocation);
     const updateSetting = useStore((state) => state.updateSetting);
@@ -61,6 +61,7 @@ const Settings: SettingsComponent = (): JSX.Element => {
                         <Switch
                             value={UnistylesRuntime.themeName === "dark"}
                             onValueChange={(v) => {
+                                if (UnistylesRuntime.hasAdaptiveThemes) UnistylesRuntime.setAdaptiveThemes(false);
                                 UnistylesRuntime.setTheme(v ? "dark" : "light");
                             }}
                         />

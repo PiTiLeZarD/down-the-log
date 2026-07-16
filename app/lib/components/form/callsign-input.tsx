@@ -1,7 +1,7 @@
 import React, { useEffect } from "react";
 import { useFormContext } from "react-hook-form";
 import { View } from "react-native";
-import { createStyleSheet, useStyles } from "react-native-unistyles";
+import { StyleSheet } from "react-native-unistyles";
 import { baseCallsign } from "../../utils/callsign";
 import { useHamqth } from "../../utils/hamqth";
 import { Button } from "../../utils/theme/components/button";
@@ -16,7 +16,7 @@ import { FormField } from "./form-field";
 import { ModeInput } from "./mode-input";
 import { Signal } from "./signal";
 
-const stylesheet = createStyleSheet((theme) => ({
+const styles = StyleSheet.create((theme) => ({
     inputBox: {
         backgroundColor: theme.colours.primary[theme.shades.light],
         borderTopColor: theme.colours.primary[theme.shades.darker],
@@ -35,9 +35,8 @@ export type CallsignInputProps = {
 
 export type CallsignInputComponent = React.FC<CallsignInputProps>;
 
-export const CallsignInput: CallsignInputComponent = ({ handleAdd }): JSX.Element => {
+export const CallsignInput: CallsignInputComponent = ({ handleAdd }): React.JSX.Element => {
     const qsos = useQsos();
-    const { styles } = useStyles(stylesheet);
     const { watch, setValue } = useFormContext<QSO>();
     const { inputBarConfig, contestMode } = useSettings();
 

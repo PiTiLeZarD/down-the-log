@@ -9,7 +9,7 @@ export type CountryWarningProps = {};
 
 export type CountryWarningComponent = React.FC<CountryWarningProps>;
 
-export const CountryWarning: CountryWarningComponent = (): JSX.Element => {
+export const CountryWarning: CountryWarningComponent = (): React.JSX.Element => {
     const { watch, setValue, getValues } = useFormContext<QSO>();
     const callsign = watch("callsign");
     const country = watch("country");

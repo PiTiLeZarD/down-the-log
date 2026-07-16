@@ -8,14 +8,14 @@ import {
     TextStyle,
     View,
 } from "react-native";
-import { createStyleSheet, useStyles } from "react-native-unistyles";
+import { StyleSheet } from "react-native-unistyles";
 import { Stack } from "../../../components/stack";
 import { useThrottle } from "../../use-throttle";
 import { Icon } from "./icon";
 import { Styles, mergeStyles } from "./styles";
 import { Typography } from "./typography";
 
-const stylesheet = createStyleSheet((theme) => ({
+const styles = StyleSheet.create((theme) => ({
     input: {
         ...theme.components.typography,
         borderWidth: theme.margins.xs,
@@ -63,7 +63,7 @@ export const Input: InputComponent = ({
     numeric = false,
     password = false,
     ...otherProps
-}): JSX.Element => {
+}): React.JSX.Element => {
     const [secure, setSecure] = React.useState<boolean>(password);
     const [value, setValue] = React.useState<string>(otherProps.value || "");
     useEffect(() => setSecure(password), [password]);
@@ -99,7 +99,6 @@ export const Input: InputComponent = ({
             elt.selectionEnd = caret;
         });
     };
-    const { styles } = useStyles(stylesheet);
 
     return (
         <Stack direction="row" gap={0}>

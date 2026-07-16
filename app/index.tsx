@@ -3,7 +3,7 @@ import { DateTime } from "luxon";
 import React, { useEffect } from "react";
 import { FormProvider, useForm } from "react-hook-form";
 import { View } from "react-native";
-import { createStyleSheet, useStyles } from "react-native-unistyles";
+import { StyleSheet } from "react-native-unistyles";
 import { Beacons } from "./lib/components/beacons";
 import { Filters, filterQsos } from "./lib/components/filters";
 import { CallsignInput } from "./lib/components/form/callsign-input";
@@ -22,7 +22,7 @@ import { Alert } from "./lib/utils/theme/components/alert";
 import { Typography } from "./lib/utils/theme/components/typography";
 import { useSettings } from "./lib/utils/use-settings";
 
-const stylesheet = createStyleSheet((theme) => ({
+const styles = StyleSheet.create((theme) => ({
     container: {
         display: "flex",
         flex: 1,
@@ -43,9 +43,8 @@ export type IndexProps = {};
 
 export type IndexComponent = React.FC<IndexProps>;
 
-const Index: IndexComponent = (): JSX.Element => {
+const Index: IndexComponent = (): React.JSX.Element => {
     const qsos = useQsos();
-    const { styles } = useStyles(stylesheet);
     const currentLocation = useStore((state) => state.currentLocation);
     const settings = useSettings();
     const log = useStore((state) => state.log);

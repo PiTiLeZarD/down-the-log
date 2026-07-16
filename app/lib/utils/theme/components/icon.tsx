@@ -1,7 +1,7 @@
 import { Ionicons } from "@expo/vector-icons";
 import { IconProps as VIIconProps } from "@expo/vector-icons/build/createIconSet";
 import React from "react";
-import { useStyles } from "react-native-unistyles";
+import { useUnistyles } from "react-native-unistyles";
 import { ColourVariant } from "../theme";
 
 export type IconName = keyof (typeof Ionicons)["glyphMap"];
@@ -21,8 +21,8 @@ export const Icon: IconComponent = ({
     size = 20,
     contrast = false,
     ...otherProps
-}): JSX.Element => {
-    const { theme } = useStyles();
+}): React.JSX.Element => {
+    const { theme } = useUnistyles();
     return (
         <Ionicons
             name={name as any}

@@ -1,8 +1,8 @@
 import React from "react";
 import RNPickerSelect, { PickerSelectProps } from "react-native-picker-select";
-import { createStyleSheet, useStyles } from "react-native-unistyles";
+import { StyleSheet } from "react-native-unistyles";
 
-const stylesheet = createStyleSheet((theme) => ({
+const styles = StyleSheet.create((theme) => ({
     web: {
         ...theme.components.typography,
         borderWidth: theme.margins.xs,
@@ -19,8 +19,7 @@ export type SelectInputProps = PickerSelectProps;
 
 export type SelectInputComponent = React.FC<SelectInputProps>;
 
-export const SelectInput: SelectInputComponent = ({ ...otherProps }): JSX.Element => {
-    const { styles } = useStyles(stylesheet);
+export const SelectInput: SelectInputComponent = ({ ...otherProps }): React.JSX.Element => {
     return (
         <RNPickerSelect
             style={{

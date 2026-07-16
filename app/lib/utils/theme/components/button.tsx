@@ -1,13 +1,13 @@
 import React from "react";
 import { Linking, Pressable, PressableProps, Text, TextProps, TextStyle, ViewStyle } from "react-native";
-import { createStyleSheet, useStyles } from "react-native-unistyles";
+import { StyleSheet } from "react-native-unistyles";
 import { Stack } from "../../../components/stack";
 import { ColourVariant } from "../theme";
 import { Icon, IconName } from "./icon";
 import { Styles, mergeStyles } from "./styles";
 
 export type ButtonVariants = "contained" | "outlined" | "chip";
-const stylesheet = createStyleSheet((theme) => ({
+const styles = StyleSheet.create((theme) => ({
     button: {
         ...theme.components.button,
     },
@@ -55,8 +55,7 @@ export const ButtonText: ButtonTextComponent = ({
     colour = "primary",
     children,
     ...otherProps
-}): JSX.Element => {
-    const { styles } = useStyles(stylesheet);
+}): React.JSX.Element => {
 
     return (
         <Text
@@ -96,13 +95,12 @@ export const Button: ButtonComponent = ({
     endIcon,
     children,
     ...otherProps
-}): JSX.Element => {
+}): React.JSX.Element => {
     const handleLink = (url: string) => async () => {
         const supported = await Linking.canOpenURL(url);
         if (supported) await Linking.openURL(url);
     };
 
-    const { styles } = useStyles(stylesheet);
     return (
         <Pressable
             style={mergeStyles<ViewStyle>(styles.button, styles[`button_${variant}`](colour), style)}
