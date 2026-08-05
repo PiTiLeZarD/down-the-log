@@ -8,7 +8,7 @@ import ituzones from "../data/ituzones.json";
 import { maidenhead2Latlong } from "../utils/locator";
 import { findZone } from "../utils/polydec";
 import { useStore } from "../utils/store";
-import { widthMatches } from "../utils/theme/breakpoints";
+import { useWidthMatches } from "../utils/theme/breakpoints";
 import { Button } from "../utils/theme/components/button";
 import { Typography } from "../utils/theme/components/typography";
 import { useSettings } from "../utils/use-settings";
@@ -58,11 +58,11 @@ export const LocationHeader: LocationHeaderComponent = (): React.JSX.Element => 
                     )}
                 </Stack>
                 <View style={{ flexGrow: 1 }}>
-                    <Typography variant={widthMatches("md") ? "h1" : "h5"} style={styles.callsign}>
+                    <Typography variant={useWidthMatches("md") ? "h1" : "h5"} style={styles.callsign}>
                         {settings.myCallsign}
                     </Typography>
                 </View>
-                <View style={widthMatches("md") ? {} : { display: "none" }}>
+                <View style={useWidthMatches("md") ? {} : { display: "none" }}>
                     <Stack direction="row">
                         <SolarData />
                         <Clocks />
@@ -72,7 +72,7 @@ export const LocationHeader: LocationHeaderComponent = (): React.JSX.Element => 
                     <Button onPress={() => navigate("/menu")} startIcon="menu" />
                 </View>
             </Stack>
-            <View style={widthMatches(undefined, "md") ? {} : { display: "none" }}>
+            <View style={useWidthMatches(undefined, "md") ? {} : { display: "none" }}>
                 <Stack>
                     <SolarData />
                     <Clocks />

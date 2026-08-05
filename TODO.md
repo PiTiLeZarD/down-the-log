@@ -53,8 +53,55 @@ This is the rough todolist I want to work on.
 ## Mobile apps journey
 
 - [ ] find a solution for import/export on mobile (download works, upload probably doesn't)
+    - [ ] `downloadQsos` builds a `document.createElement("a")`, so export is dead on native (`app/lib/utils/file-format/index.ts:16`). `expo-file-system` + `expo-sharing` covers it
+    - [ ] while in there: the `data:text/plain,` href caps out around a few MB in some browsers, `Blob` + `URL.createObjectURL` is safer for big logs
+- [ ] ADX import and HamQTH lookup both call `new DOMParser()`, which doesn't exist on native (`file-format/adx.ts:50`, `utils/hamqth.tsx:42`). `fast-xml-parser` is already a devDep, promote it and swap
 - [ ] ios/android debug and shakedown
 - [ ] open accounts on playstore and apple dev
+
+## Bugs found in the code review (2026-08-05)
+
+- [ ] ADIF `COUNTRY` is written and read as our iso3, but the spec says it holds the DXCC entity name (`file-format/common.ts:121` out, `:181` in). Breaks interop both ways, and is why the filter had to fall back to the raw value. Needs an iso3 <-> DXCC-name map
+- [ ] QSL import mutates the matched QSO in place against a render-time snapshot of the log (`app/qsl.tsx:66-71`). Two files imported back to back both work off pre-import state. Probably the reason matching sometimes misses. Return new objects and re-read the store
+- [ ] `console.groupEnd;` is missing its call parens (`app/qsl.tsx:107`), so the group never closes
+- [ ] `utils/merge.ts` throws away the recursive return value, so nested merges silently do nothing. Nothing imports it, so just delete the file
+- [ ] HamQTH user/password aren't URL-encoded (`utils/hamqth.tsx:38-40`), so a password containing `&` `+` `#` or a space fails login with no useful error. Same for the address in `utils/geocode.ts:18`. Use `URLSearchParams`
+- [ ] HamQTH session never refreshes: the effect has `[]` deps (`utils/hamqth.tsx:127`) but sessions expire after an hour (`:59`), so lookups go quiet until the app remounts. Depend on user/password and retry when `isSessionValid` flips
+- [ ] `unsanitize` deletes entities it doesn't know: the regex matches any `&xx;`..`&xxxx;` and the switch default returns `""` (`file-format/common.ts:92-106`). An `&nbsp;` in a comment vanishes on import. Default should return the match untouched
+- [ ] eQSL/LoTW flags are always exported, `"N"` when we simply don't know (`file-format/common.ts:135-138`). That asserts "not sent" to whatever logbook receives the file. Emit nothing when the flag is unset
+- [ ] ADIF header `programversion` is hardcoded to `"0.0.1"` (`file-format/common.ts:235`) and `scripts/sync-version.mjs` doesn't patch it. Add it to `VERSIONED_FILES`
+
+## Performance
+
+- [ ] `hasDuplicates` filter is O(n^2) with a regex inside: `findMatchingQsos` per QSO across every QSO (`components/filters.tsx:56`). At a few thousand QSOs that's tens of millions of `baseCallsign` regex runs and the filter screen locks up. Build a `Map<baseCallsign, QSO[]>` once
+- [ ] ADIF import has the same shape, every imported record scans the whole log (`components/adif/import.tsx:59`). Same index fixes it
+- [ ] memoise `baseCallsign` — it gets called repeatedly on identical strings from list rendering, filtering and dedup
+- [ ] `useSettings` rebuilds the settings object every render (`utils/use-settings.ts:5`), so nothing downstream can memo on it. Run `fixSettings` once in the persist `merge` option instead
+- [ ] `filterQsos` re-runs on every keystroke in the callsign box (`app/index.tsx:88`), memo on `[qsos, filters]`
+- [ ] consider one `useFilteredQsos()` selector doing sort + filter + memo, consumed by index/stats/filters/qsl, instead of `filterQsos(useQsos(), filters)` repeated in each
+
+## Security
+
+- [ ] the Google Maps **signing secret** lives in the client: HMAC'd in the browser (`components/google-static-map/map.tsx:19-25`) and persisted to localStorage (`app/settings.tsx:210`). Google's signing secret is server-side only — anyone with the device or a shared browser profile can sign unlimited Static Maps requests on my bill. Either drop signing (key + referrer restriction + quota cap is the normal client-side posture) or proxy the signing
+- [ ] HamQTH password is stored in plaintext (`utils/store.ts:21`) and sent as a GET query param, so it lands in browser history. `expo-secure-store` on native at least
+- [ ] Tauri runs with `"csp": null` (`src-tauri/tauri.conf.json`). Set a real one, the asset origins are all known
+- [ ] the settings blurb says data is "never sent anywhere (except for hamqth or..." (`app/settings.tsx:155`) — should also name geocode.maps.co and Google
+
+## Housekeeping
+
+- [ ] no tests at all. The pure logic is the testable part and is exactly where the review bugs were: `callsign.ts`, `locator.ts`, ADIF/ADX round-trip, `event-rules.ts`, the `prefill*` helpers. vitest
+- [ ] lint backlog — `pnpm lint` is green on errors but leaves 49 warnings. Work through them, then promote each rule to `error` in `eslint.config.js`
+    - [ ] 25 `react-hooks/exhaustive-deps` — includes the HamQTH session one already listed above
+    - [ ] 8 `react-hooks/set-state-in-effect` — `band-freq-input`, `park-reference-input`, `state-field`, `grid/styles`, `use-location`. Cascading renders, and probably related to "there's issues to what is prefilled while making a bunch of qsos"
+    - [ ] 8 `react-hooks/refs` — `form-fields.tsx`, `google-static-map/map.tsx` (the `widthRef.current` read during render)
+    - [ ] 2 `no-unused-expressions` — one of them is the `console.groupEnd;` bug listed above, the other is a stray `` ` `` in `qso-list.tsx`
+    - [ ] 4 `@typescript-eslint/no-unused-vars`, 1 `import/no-named-as-default-member`
+    - [ ] 1 `react-hooks/incompatible-library` — react-hook-form's `watch()` can't be memoized, so React Compiler skips `app/index.tsx` entirely. Worth knowing before turning the compiler on
+- [ ] unmaintained deps carrying real weight under React 19 / RN 0.86: `react-native-svg-charts` (last publish 2019), `react-native-big-list` (2022), `react-native-picker-select`. All three already needed `autoProcessPaths` workarounds in `babel.config.js`. Biggest risk to the next Expo upgrade — `@shopify/flash-list` replaces big-list, `victory-native` or plain `react-native-svg` replaces the charts
+
+## Refactors
+
+- [ ] the whole design system (Button, Input, Typography...) sits in `app/lib/utils/theme/components/`, three levels down under `utils`. Promote to `app/lib/ui/`
 
 ## Done
 

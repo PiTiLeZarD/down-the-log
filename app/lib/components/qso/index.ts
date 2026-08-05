@@ -1,5 +1,6 @@
 import humanize from "humanize-duration";
 import { DateTime, Interval } from "luxon";
+import { useMemo } from "react";
 import uuid from "react-native-uuid";
 import { Band, band2freq, freq2band } from "../../data/bands";
 import { Continent } from "../../data/callsigns";
@@ -12,9 +13,11 @@ import { maidenDistance, maidenhead2Latlong } from "../../utils/locator";
 import { findZone } from "../../utils/polydec";
 import { useStore } from "../../utils/store";
 
+// sort() is in-place, so sorting the array zustand handed us would reorder the store itself.
+// Copy first, and memoise so every consumer doesn't re-sort the whole log on each render.
 export const useQsos = (): QSO[] => {
     const qsos = useStore((state) => state.qsos);
-    return qsos.sort((q1, q2) => (q1.date <= q2.date ? 1 : -1));
+    return useMemo(() => [...qsos].sort((q1, q2) => (q1.date <= q2.date ? 1 : -1)), [qsos]);
 };
 
 export type QSO = {
@@ -165,8 +168,10 @@ export const prefillOperating = (
     frequency: qso.frequency || operating.frequency || band2freq(operating.band),
     mode: qso.mode || operating.mode,
     band: qso.band || operating.band || freq2band(operating.frequency) || "20m",
-    rst_received: qso.rst_received || isDigital(operating.mode) ? "-1" : "59",
-    rst_sent: qso.rst_sent || isDigital(operating.mode) ? "-1" : "59",
+    // The ternary needs the parens: || binds tighter, so without them an already-filled
+    // report would make the whole condition truthy and get overwritten with "-1".
+    rst_received: qso.rst_received || (isDigital(operating.mode) ? "-1" : "59"),
+    rst_sent: qso.rst_sent || (isDigital(operating.mode) ? "-1" : "59"),
 });
 
 export const prefillLocation = (qso: QSO) => {

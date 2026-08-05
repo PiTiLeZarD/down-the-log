@@ -107,7 +107,6 @@ const GENERIC = new RegExp(
 const normalise = (name: string) =>
     name
         .normalize("NFD")
-        // eslint-disable-next-line no-misleading-character-class
         .replace(/[̀-ͯ]/g, "") // strip diacritics so "Forêt" matches "Foret"
         .toLowerCase()
         .replace(/[^a-z0-9\s]/g, " ")

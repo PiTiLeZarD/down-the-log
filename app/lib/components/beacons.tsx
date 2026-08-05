@@ -5,7 +5,7 @@ import { findCountry, getCallsignData } from "../utils/callsign";
 import { maidenDistance } from "../utils/locator";
 import { Modal } from "../utils/modal";
 import { useStore } from "../utils/store";
-import { widthMatches } from "../utils/theme/breakpoints";
+import { useWidthMatches } from "../utils/theme/breakpoints";
 import { Alert } from "../utils/theme/components/alert";
 import { Button } from "../utils/theme/components/button";
 import { Typography } from "../utils/theme/components/typography";
@@ -63,7 +63,7 @@ export const Beacons: BeaconsComponent = (): React.JSX.Element => {
     const settings = useSettings();
     const [band, setBand] = React.useState<Band>("20m");
     const [beacon, setBeacon] = React.useState<Beacon>(Object.keys(beaconsMap)[0] as Beacon);
-    const smallScreen = widthMatches(undefined, "md");
+    const smallScreen = useWidthMatches(undefined, "md");
 
     const updateBeacon = (b: Band) => {
         if (band != b) setBand(b);

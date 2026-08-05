@@ -1,0 +1,37 @@
+name: CI
+
+# Release only runs on tags, so nothing checked the code on the way in. This does.
+on:
+    push:
+        branches:
+            - master
+    pull_request:
+    workflow_dispatch:
+
+env:
+    NODE_VERSION: "24"
+    PNPM_VERSION: "11"
+
+jobs:
+    checks:
+        runs-on: ubuntu-latest
+        steps:
+            - uses: actions/checkout@v4
+
+            - uses: pnpm/action-setup@v4
+              with:
+                  version: ${{ env.PNPM_VERSION }}
+
+            - uses: actions/setup-node@v4
+              with:
+                  node-version: ${{ env.NODE_VERSION }}
+                  cache: pnpm
+
+            - run: pnpm install --frozen-lockfile
+
+            - name: Typecheck
+              run: pnpm types
+
+            # Warnings are the backlog in TODO.md, so only errors fail the build for now.
+            - name: Lint
+              run: pnpm lint

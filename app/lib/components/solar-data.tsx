@@ -5,12 +5,12 @@ import { View } from "react-native";
 import { BarChart, Grid, YAxis } from "react-native-svg-charts";
 import { useUnistyles } from "react-native-unistyles";
 import { Modal } from "../utils/modal";
-import { widthMatches } from "../utils/theme/breakpoints";
+import { useWidthMatches } from "../utils/theme/breakpoints";
 import colours from "../utils/theme/colours.json";
 import { Button } from "../utils/theme/components/button";
 import { Typography } from "../utils/theme/components/typography";
 import { hexToCssRgb } from "../utils/theme/theme";
-import { useCache } from "../utils/use-cache";
+import { withCache } from "../utils/with-cache";
 import { Stack } from "./stack";
 
 const dtFormat = "yyyyMMddHHmm";
@@ -88,8 +88,8 @@ export const SolarData: SolarDataComponent = (): React.JSX.Element => {
     const { theme } = useUnistyles();
 
     const updateCache = () => {
-        useCache("solarData", fetchSolarData, 60 * 60 * 3).then((data) => setSolarData(deserialise(data)));
-        useCache("magneticData", fetchMagneticData, 60 * 60 * 3).then((data) => setMagneticData(deserialise(data)));
+        withCache("solarData", fetchSolarData, 60 * 60 * 3).then((data) => setSolarData(deserialise(data)));
+        withCache("magneticData", fetchMagneticData, 60 * 60 * 3).then((data) => setMagneticData(deserialise(data)));
     };
 
     useEffect(() => {
@@ -102,7 +102,7 @@ export const SolarData: SolarDataComponent = (): React.JSX.Element => {
     const magneticValues = magneticData ? magneticData.map(({ value }) => value) : undefined;
 
     return (
-        <Stack direction={widthMatches("md") ? "column" : "row"}>
+        <Stack direction={useWidthMatches("md") ? "column" : "row"}>
             <Button
                 variant="chip"
                 colour="grey"

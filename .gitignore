@@ -10,3 +10,8 @@ scripts/*.csv
 scripts/*.kmz
 scripts/*.kml
 scripts/*.txt
+
+# Logs are personal data: they carry other operators' callsigns, names and QTHs.
+*.adif
+*.adi
+*.adx

@@ -13,7 +13,7 @@ export const toBase64 = (file: File) =>
 export type FileWithPreview = File & { preview: string };
 
 export type DropzoneProps = {
-    dropzoneOptions?: Object;
+    dropzoneOptions?: object;
     onAcceptedFiles: (files: FileWithPreview[]) => void;
 } & ViewProps;
 

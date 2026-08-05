@@ -1,2 +1,4 @@
 allowBuilds:
   esbuild: true
+  # Native binding for eslint-import-resolver-typescript, pulled in by eslint-config-expo.
+  unrs-resolver: true

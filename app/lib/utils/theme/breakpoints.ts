@@ -27,7 +27,7 @@ export const spacing: Record<keyof typeof breakpoints, number> = {
     xxl: 10,
 };
 
-export const widthMatches = (from?: keyof typeof breakpoints, to?: keyof typeof breakpoints): boolean => {
+export const useWidthMatches = (from?: keyof typeof breakpoints, to?: keyof typeof breakpoints): boolean => {
     const { width } = useWindowDimensions();
     const fromWidth = from ? breakpoints[from] : 0;
     const toWidth = to ? breakpoints[to] : Infinity;

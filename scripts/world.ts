@@ -7,7 +7,7 @@ import { Polygon } from "../app/lib/utils/polygon";
  * This script will turn this into a { country_iso3: encodeedPolygons[] }
  *
  * run it with
- * $ ts-node scripts/world.ts ./scripts/countries.geojson
+ * $ tsx scripts/world.ts ./scripts/countries.geojson
  *
  * Get an updated file:
  * install gdal (brew install gdal)

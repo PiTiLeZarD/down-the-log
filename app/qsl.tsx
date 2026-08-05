@@ -27,15 +27,18 @@ const Qsl: QslComponent = (): React.JSX.Element => {
     const log = useStore((state) => state.log);
     const today = DateTime.local().toFormat("yyyyMMdd");
     const settings = useSettings();
+    // qsos comes newest first, so copy before reversing to reach the oldest one: reverse()
+    // is in-place and would flip the store's own array.
     const fromDate = (
-        qsos.reverse().find((q) => q.myCallsign === settings.myCallsign) || {
+        [...qsos].reverse().find((q) => q.myCallsign === settings.myCallsign) || {
             date: DateTime.local().minus({ month: 1 }),
         }
     ).date;
 
     const handleQslDownload = (type: "lotw" | "eqsl") => () => {
-        const qslQsos = qsos.filter((q) => (type === "lotw" ? !q.lotw_sent : !q.eqsl_sent));
-        qslQsos.forEach((q) => (q[`${type}_sent`] = true));
+        const qslQsos = qsos
+            .filter((q) => (type === "lotw" ? !q.lotw_sent : !q.eqsl_sent))
+            .map((q): QSO => ({ ...q, ...(type === "lotw" ? { lotw_sent: true } : { eqsl_sent: true }) }));
         log(qslQsos);
         downloadQsos(`${today}_${type}.adif`, qslQsos);
     };

@@ -1,6 +1,5 @@
 import React from "react";
-import { useWindowDimensions } from "react-native";
-import { ViewStyle } from "react-native";
+import { useWindowDimensions, ViewStyle } from "react-native";
 import { getScreenSize, spacing } from "../../utils/theme";
 
 const generateStyles = (width: number, columns: number = 12): Record<string, ViewStyle> => {

@@ -2,11 +2,9 @@
  * get the file here:
  * https://github.com/amazingproducer/dxcc-world-map
  */
-import { writeFileSync } from "node:fs";
+import { readFileSync, writeFileSync } from "node:fs";
 import { encode } from "../app/lib/utils/polydec";
 import { Polygon } from "../app/lib/utils/polygon";
-
-import dxcc from "./dxcc.json";
 
 type GeoJSONProperties = {
     dxcc_prefix: string;
@@ -26,9 +24,13 @@ type GeoJSONFeatureCollection = {
     features: GeoJSONFeature[];
 };
 
+// The source geojson is a manual download that stays out of git, like every other script's
+// input here, so read it at runtime: a static import breaks `pnpm types` on a fresh checkout.
+const dxcc = JSON.parse(readFileSync("./scripts/dxcc.json", "utf8")) as GeoJSONFeatureCollection;
+
 const reversePolygon = (p: Polygon): Polygon => p.map(([a, b]) => [b, a]);
 const dxccData = Object.fromEntries(
-    (dxcc as GeoJSONFeatureCollection).features.map((d) => [
+    dxcc.features.map((d) => [
         String(d.properties.dxcc_entity_code).padStart(3, "0"),
         (d.geometry.type === "MultiPolygon"
             ? (d.geometry.coordinates as Array<Polygon[]>).map((ps) => ps.map((p) => encode(reversePolygon(p))))

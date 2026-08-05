@@ -15,12 +15,14 @@ import { QsoListItem } from "./qso-list-item";
 import { QsoMap } from "./qso-map";
 import { QsoRow } from "./qso-row";
 
+// position is a display concern, so it goes on a copy: writing it onto the QSO itself would
+// stamp a render-order field onto the persisted store.
 const qsos2sections = (qsos: QSO[]): QSO[][] =>
     Object.values(
         qsos.reduce<Record<string, QSO[]>>((sections, qso, index) => {
-            qso.position = qsos.length - index - 1;
-            const title = qso.date.toFormat("dd/MM/yyyy");
-            sections[title] = [...(sections[title] || []), qso];
+            const positioned = { ...qso, position: qsos.length - index - 1 };
+            const title = positioned.date.toFormat("dd/MM/yyyy");
+            sections[title] = [...(sections[title] || []), positioned];
             return sections;
         }, {}),
     );

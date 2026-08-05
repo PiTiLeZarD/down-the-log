@@ -58,7 +58,9 @@ export const filterMap: Record<string, FilterFunction> = {
     ],
     gridsquare: (qso) => [qso.locator?.substring(0, 3) || ""],
     continent: (qso) => [qso.continent || ""],
-    country: (qso) => [qso.country ? countries[qso.country].name : ""],
+    // country holds our iso3 on QSOs we resolved ourselves, but an imported ADIF puts the
+    // DXCC entity name in there instead, which isn't a key of countries. Fall back to the raw value.
+    country: (qso) => [qso.country ? countries[qso.country]?.name || qso.country : ""],
     qsl: (qso) => [
         qso.lotw_received ? "LoTW received" : "LoTW not received",
         qso.lotw_sent ? "LoTW sent" : "LoTW not sent",
