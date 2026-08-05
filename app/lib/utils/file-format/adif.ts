@@ -75,9 +75,8 @@ export const AdifAPI: FileFormatAPI = {
 
     parseFile: (fileContent) => {
         let lines = fileContent.replace(/(?:\\[r]|[\r]+)+/g, "").split("\n");
-        if (!lines[0].startsWith("<")) {
-            lines = lines.splice(lines.findIndex((v) => v.toUpperCase().startsWith("<EOH>")) + 1);
-        }
+        const eoh = lines.findIndex((v) => v.toUpperCase().includes("<EOH>"));
+        if (eoh !== -1) lines = lines.slice(eoh + 1);
         return lines
             .reduce<string[][]>((records, line) => {
                 const lastRecord = records.length ? records.splice(records.length - 1, 1)[0] : [];

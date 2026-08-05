@@ -33,6 +33,11 @@ export const FormField: FormFieldComponent = ({
     const { field } = useController({ name, control });
     const value = String(field.value || "");
 
+    // RNPickerSelect falls back to its placeholder (value: null) when the current value isn't one of the
+    // items, so picking anything then writes null over a perfectly good value. Always offer it back.
+    const withCurrentValue = (items: { label: string; value: string }[]) =>
+        value === "" || items.some((item) => item.value === value) ? items : [...items, { label: value, value }];
+
     const settings = useSettings();
     const dtFormat = role === "date" ? (settings.datemonth ? "MM-dd-yyyy" : "dd/MM/yyyy") : "HH:mm:ss";
     const dtValue =
@@ -91,7 +96,7 @@ export const FormField: FormFieldComponent = ({
                 <SelectInput
                     value={value}
                     onValueChange={field.onChange}
-                    items={Object.entries(options || {}).map(([value, label]) => ({ label, value }))}
+                    items={withCurrentValue(Object.entries(options || {}).map(([value, label]) => ({ label, value })))}
                     {...(label ? { "aria-labelledby": `label${field.name}` } : {})}
                     {...otherProps}
                 />
@@ -101,10 +106,12 @@ export const FormField: FormFieldComponent = ({
                 <SelectInput
                     value={value}
                     onValueChange={field.onChange}
-                    items={Object.entries(countries).map(([value, { name, flag }]) => ({
-                        label: `${flag} ${name}`,
-                        value,
-                    }))}
+                    items={withCurrentValue(
+                        Object.entries(countries).map(([value, { name, flag }]) => ({
+                            label: `${flag} ${name}`,
+                            value,
+                        })),
+                    )}
                     {...(label ? { "aria-labelledby": `label${field.name}` } : {})}
                     {...otherProps}
                 />

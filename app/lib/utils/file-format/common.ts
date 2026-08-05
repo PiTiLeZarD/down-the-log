@@ -2,7 +2,7 @@ import { DateTime } from "luxon";
 import { QSO, newQsoID } from "../../components/qso";
 import { Band, bands, freq2band } from "../../data/bands";
 import { Continent, continents } from "../../data/callsigns";
-import { Mode, modes } from "../../data/modes";
+import { resolveMode } from "../../data/modes";
 import { normalise } from "../locator";
 
 export type Honeypot = Record<string, string>;
@@ -156,66 +156,72 @@ export const qso2record = (qso: QSO): QSORecord => ({
     honeypot: qso.honeypot || {},
 });
 
-export const record2qso = (record: QSORecord): QSO => ({
-    id: newQsoID(),
-    date: DateTime.fromFormat(
-        `${record.qso_date} ${record.time_on}`,
-        record.time_on?.length === 6 ? "yyyyMMdd HHmmss" : "yyyyMMdd HHmm",
-    ),
-    dateOff:
-        record.qso_date_off && record.time_off && record.time_off != record.time_on
-            ? DateTime.fromFormat(
-                  `${record.qso_date_off} ${record.time_off}`,
-                  record.time_off?.length === 6 ? "yyyyMMdd HHmmss" : "yyyyMMdd HHmm",
-              )
-            : undefined,
-    callsign: record.call as string,
-    prefix: record.pfx,
-    dxcc: int(record.dxcc),
-    cqzone: int(record.cqz),
-    ituzone: int(record.ituz),
-    country: record.country,
-    continent: castAs<Continent>(Object.keys(continents) as Continent[], record.cont),
-    distance: int(record.distance),
-    frequency: int(record.freq),
-    band:
-        castAs<Band>(Object.keys(bands) as Band[], record.band) ||
-        (record.freq ? freq2band(+(record.freq as string)) : undefined) ||
-        undefined,
-    mode: castAs<Mode>(modes as any, record.mode),
-    power: int(record.tx_pwr),
-    name: record.name,
-    state: record.state,
-    locator: normalise(record.gridsquare),
-    qth: record.qth,
-    myQth: record.my_city,
-    myCallsign: record.station_callsign || record.operator,
-    myLocator: normalise(record.my_gridsquare),
-    note: record.comment,
-    rst_sent: record.rst_sent,
-    rst_received: record.rst_rcvd,
-    eqsl_received: record.eqsl_qsl_rcvd === "Y",
-    eqsl_sent: record.eqsl_qsl_sent === "Y",
-    lotw_received: record.lotw_qsl_rcvd === "Y",
-    lotw_sent: record.lotw_qsl_sent === "Y",
-    pota: record.pota_ref,
-    myPota: record.my_pota_ref,
-    wwff: record.wwff_ref,
-    myWwff: record.my_wwff_ref,
-    sota: record.sota_ref,
-    mySota: record.my_sota_ref,
-    iota: record.iota,
-    myIota: record.my_iota,
-    sig: record.sig,
-    mySig: record.my_sig,
-    sigInfo: record.sig_info,
-    mySigInfo: record.my_sig_info,
-    myRig: record.my_rig,
-    myAntenna: record.my_antenna,
-    myCountry: record.my_country,
-    myState: record.my_state,
-    honeypot: record.honeypot,
-});
+export const record2qso = (record: QSORecord): QSO => {
+    const mode = resolveMode(record.mode);
+    // MODE held a submode (FT4, USB, PSK31...): keep the original around so an export doesn't lose it
+    const submode = mode && record.mode?.toUpperCase().trim() !== mode ? record.mode?.toUpperCase().trim() : undefined;
+
+    return {
+        id: newQsoID(),
+        date: DateTime.fromFormat(
+            `${record.qso_date} ${record.time_on}`,
+            record.time_on?.length === 6 ? "yyyyMMdd HHmmss" : "yyyyMMdd HHmm",
+        ),
+        dateOff:
+            record.qso_date_off && record.time_off && record.time_off != record.time_on
+                ? DateTime.fromFormat(
+                      `${record.qso_date_off} ${record.time_off}`,
+                      record.time_off?.length === 6 ? "yyyyMMdd HHmmss" : "yyyyMMdd HHmm",
+                  )
+                : undefined,
+        callsign: record.call as string,
+        prefix: record.pfx,
+        dxcc: int(record.dxcc),
+        cqzone: int(record.cqz),
+        ituzone: int(record.ituz),
+        country: record.country,
+        continent: castAs<Continent>(Object.keys(continents) as Continent[], record.cont),
+        distance: int(record.distance),
+        frequency: int(record.freq),
+        band:
+            castAs<Band>(Object.keys(bands) as Band[], record.band) ||
+            (record.freq ? freq2band(+(record.freq as string)) : undefined) ||
+            undefined,
+        mode,
+        power: int(record.tx_pwr),
+        name: record.name,
+        state: record.state,
+        locator: normalise(record.gridsquare),
+        qth: record.qth,
+        myQth: record.my_city,
+        myCallsign: record.station_callsign || record.operator,
+        myLocator: normalise(record.my_gridsquare),
+        note: record.comment,
+        rst_sent: record.rst_sent,
+        rst_received: record.rst_rcvd,
+        eqsl_received: record.eqsl_qsl_rcvd === "Y",
+        eqsl_sent: record.eqsl_qsl_sent === "Y",
+        lotw_received: record.lotw_qsl_rcvd === "Y",
+        lotw_sent: record.lotw_qsl_sent === "Y",
+        pota: record.pota_ref,
+        myPota: record.my_pota_ref,
+        wwff: record.wwff_ref,
+        myWwff: record.my_wwff_ref,
+        sota: record.sota_ref,
+        mySota: record.my_sota_ref,
+        iota: record.iota,
+        myIota: record.my_iota,
+        sig: record.sig,
+        mySig: record.my_sig,
+        sigInfo: record.sig_info,
+        mySigInfo: record.my_sig_info,
+        myRig: record.my_rig,
+        myAntenna: record.my_antenna,
+        myCountry: record.my_country,
+        myState: record.my_state,
+        honeypot: submode && !record.honeypot?.submode ? { ...record.honeypot, submode } : record.honeypot,
+    };
+};
 
 export type Header = {
     note?: string;

@@ -24,7 +24,6 @@ This is the rough todolist I want to work on.
     - [ ] have filter (hasIssues)
     - [ ] remove the current warnings (country/continent/dxx) and on events
 - [ ] previous qso list to be a little more useful
-- [ ] mode is often null, find out why
 
 ## Good to have
 
@@ -157,3 +156,4 @@ This is the rough todolist I want to work on.
     - [x] typing a callsign should filter the list based on what's being typed
     - [x] today/this month/this year/all
     - [x] list should display the date (QSOsecretary style)
+- [x] mode is often null, find out why
