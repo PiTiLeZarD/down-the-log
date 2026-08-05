@@ -13,11 +13,7 @@ import { Button } from "./lib/utils/theme/components/button";
 import { PaginatedList } from "./lib/utils/theme/components/paginated-list";
 import { Typography } from "./lib/utils/theme/components/typography";
 
-export type EventsProps = {};
-
-export type EventsComponent = React.FC<EventsProps>;
-
-const Events: EventsComponent = (): React.JSX.Element => {
+const Events = () => {
     const qsos = useQsos();
     const [wwffLocal, setWwffLocal] = React.useState<boolean>(false);
     const getMax = (event: EventType) => (event === "wwff" && wwffLocal ? 10 : undefined);

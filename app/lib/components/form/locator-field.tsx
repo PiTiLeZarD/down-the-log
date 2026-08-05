@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import { useEffect } from "react";
 import { useFormContext } from "react-hook-form";
 import cqzones from "../../data/cqzones.json";
 import ituzones from "../../data/ituzones.json";
@@ -15,9 +15,7 @@ export type LocatorFieldProps = {
     label: string;
 };
 
-export type LocatorFieldComponent = React.FC<LocatorFieldProps>;
-
-export const LocatorField: LocatorFieldComponent = ({ name, label }): React.JSX.Element => {
+export const LocatorField = ({ name, label }: LocatorFieldProps) => {
     const { watch, getValues, setValue } = useFormContext<QSO>();
 
     useEffect(() => {

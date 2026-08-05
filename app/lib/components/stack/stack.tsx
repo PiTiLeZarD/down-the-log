@@ -1,16 +1,14 @@
-import React from "react";
+import { PropsWithChildren } from "react";
 import { View, ViewStyle } from "react-native";
 import { StyleSheet } from "react-native-unistyles";
 import { breakpoints, spacing } from "../../utils/theme";
 import { Styles, mergeStyles } from "../../utils/theme/components/styles";
 
-export type StackProps = {
+export type StackProps = PropsWithChildren<{
     style?: Styles<ViewStyle>;
     direction?: "row" | "column";
     gap?: keyof typeof breakpoints | number;
-};
-
-export type StackComponent = React.FC<React.PropsWithChildren<StackProps>>;
+}>;
 
 const styles = StyleSheet.create((theme) => ({
     defaultRow: {
@@ -21,7 +19,7 @@ const styles = StyleSheet.create((theme) => ({
     },
 }));
 
-export const Stack: StackComponent = ({ style, gap = "xs", direction = "column", children }): React.JSX.Element => {
+export const Stack = ({ style, gap = "xs", direction = "column", children }: StackProps) => {
     return (
         <View
             style={mergeStyles<ViewStyle>(direction == "row" ? styles.defaultRow : styles.defaultCol, style, {

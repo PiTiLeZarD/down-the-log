@@ -15,11 +15,7 @@ import { Icon } from "./lib/utils/theme/components/icon";
 import { Typography } from "./lib/utils/theme/components/typography";
 import { fireSwal } from "./lib/utils/theme/swal";
 
-export type AdifProps = {};
-
-export type AdifComponent = React.FC<AdifProps>;
-
-const Adif: AdifComponent = (): React.JSX.Element => {
+const Adif = () => {
     const { theme } = useUnistyles();
     const [showHoneypotDetails, setShowHoneypotDetails] = React.useState<boolean>(false);
     const resetStore = useStore((state) => state.resetStore);

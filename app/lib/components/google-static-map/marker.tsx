@@ -6,9 +6,8 @@ export type MarkerProps = {
     location: LatLng;
 } & { style?: Partial<FeatureMarkerStyle> };
 
-export type MarkerComponent = React.FC<MarkerProps> & RenderFeature<MarkerProps>;
-
-export const Marker: MarkerComponent = () => null;
+// The intersection is load-bearing: `Map` reads the static `renderFeature` off the element type.
+export const Marker: React.FC<MarkerProps> & RenderFeature<MarkerProps> = () => null;
 Marker.renderFeature = ({ location, style }) => ({
     type: "markers",
     data: latLngToPosition(location),

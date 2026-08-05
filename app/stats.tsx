@@ -34,11 +34,7 @@ export const applyFavourites = (values: string[], stat: FilterName, settings: Se
     return values.filter((v) => favourites.includes(v));
 };
 
-export type StatsProps = {};
-
-export type StatsComponent = React.FC<StatsProps>;
-
-const Stats: StatsComponent = (): React.JSX.Element => {
+const Stats = () => {
     const [firstStat, setFirstStat] = React.useState<FilterName>("year");
     const [secondStat, setSecondStat] = React.useState<FilterName>("modeGrouped");
     const [useFavourites, setUseFavourites] = React.useState<boolean>(true);

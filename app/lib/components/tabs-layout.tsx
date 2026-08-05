@@ -1,4 +1,4 @@
-import React from "react";
+import React, { PropsWithChildren } from "react";
 import { View } from "react-native";
 import { StyleSheet } from "react-native-unistyles";
 import { Button } from "../utils/theme/components/button";
@@ -47,20 +47,13 @@ const styles = StyleSheet.create((theme) => ({
     },
 }));
 
-export type TabsLayoutProps = {
+export type TabsLayoutProps = PropsWithChildren<{
     tabs: string[];
     position?: "top" | "bottom";
     variant?: ColourVariant;
-};
+}>;
 
-export type TabsLayoutComponent = React.FC<React.PropsWithChildren<TabsLayoutProps>>;
-
-export const TabsLayout: TabsLayoutComponent = ({
-    position = "top",
-    variant = "primary",
-    tabs,
-    children,
-}): React.JSX.Element => {
+export const TabsLayout = ({ position = "top", variant = "primary", tabs, children }: TabsLayoutProps) => {
     const [current, setCurrent] = React.useState<number>(0);
 
     const tabsButtons = (

@@ -1,4 +1,4 @@
-import React from "react";
+import React, { PropsWithChildren } from "react";
 import { Linking, Pressable, PressableProps, Text, TextProps, TextStyle, ViewStyle } from "react-native";
 import { StyleSheet } from "react-native-unistyles";
 import { Stack } from "../../../components/stack";
@@ -42,20 +42,18 @@ const styles = StyleSheet.create((theme) => ({
     }),
 }));
 
-export type ButtonTextProps = TextProps & {
+export type ButtonTextProps = PropsWithChildren<TextProps & {
     variant?: ButtonVariants;
     colour?: ColourVariant;
-};
+}>;
 
-export type ButtonTextComponent = React.FC<React.PropsWithChildren<ButtonTextProps>>;
-
-export const ButtonText: ButtonTextComponent = ({
+export const ButtonText = ({
     style,
     variant = "contained",
     colour = "primary",
     children,
     ...otherProps
-}): React.JSX.Element => {
+}: ButtonTextProps) => {
 
     return (
         <Text
@@ -71,7 +69,7 @@ export const ButtonText: ButtonTextComponent = ({
     );
 };
 
-export type ButtonProps = Omit<PressableProps, "style"> & {
+export type ButtonProps = PropsWithChildren<Omit<PressableProps, "style"> & {
     text?: React.ReactNode;
     style?: Styles<ViewStyle>;
     textStyle?: Styles<TextStyle>;
@@ -80,11 +78,9 @@ export type ButtonProps = Omit<PressableProps, "style"> & {
     variant?: ButtonVariants;
     colour?: ColourVariant;
     url?: string;
-};
+}>;
 
-export type ButtonComponent = React.FC<React.PropsWithChildren<ButtonProps>>;
-
-export const Button: ButtonComponent = ({
+export const Button = ({
     style,
     textStyle,
     variant = "contained",
@@ -95,7 +91,7 @@ export const Button: ButtonComponent = ({
     endIcon,
     children,
     ...otherProps
-}): React.JSX.Element => {
+}: ButtonProps) => {
     const handleLink = (url: string) => async () => {
         const supported = await Linking.canOpenURL(url);
         if (supported) await Linking.openURL(url);

@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import { useEffect } from "react";
 import { useFormContext } from "react-hook-form";
 import { View } from "react-native";
 import { StyleSheet } from "react-native-unistyles";
@@ -33,9 +33,7 @@ export type CallsignInputProps = {
     handleAdd: () => void;
 };
 
-export type CallsignInputComponent = React.FC<CallsignInputProps>;
-
-export const CallsignInput: CallsignInputComponent = ({ handleAdd }): React.JSX.Element => {
+export const CallsignInput = ({ handleAdd }: CallsignInputProps) => {
     const qsos = useQsos();
     const { watch, setValue } = useFormContext<QSO>();
     const { inputBarConfig, contestMode } = useSettings();

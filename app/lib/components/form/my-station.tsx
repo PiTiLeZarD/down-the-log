@@ -11,11 +11,7 @@ import { Stack } from "../stack";
 import { FormField } from "./form-field";
 import { StateField } from "./state-field";
 
-export type MyStationProps = {};
-
-export type MyStationComponent = React.FC<MyStationProps>;
-
-export const MyStation: MyStationComponent = (): React.JSX.Element => {
+export const MyStation = () => {
     const [open, setOpen] = React.useState<boolean>(false);
     const { getValues, setValue } = useFormContext<QSO>();
 

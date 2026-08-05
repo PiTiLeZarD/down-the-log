@@ -1,4 +1,3 @@
-import React from "react";
 import { useFormContext } from "react-hook-form";
 import { Input } from "../../utils/theme/components/input";
 import { QSO } from "../qso";
@@ -9,9 +8,7 @@ export type SiginfoReferenceInputProps = {
     mine?: boolean;
 };
 
-export type SiginfoReferenceInputComponent = React.FC<SiginfoReferenceInputProps>;
-
-export const SiginfoReferenceInput: SiginfoReferenceInputComponent = ({ mine }): React.JSX.Element => {
+export const SiginfoReferenceInput = ({ mine }: SiginfoReferenceInputProps) => {
     const { getValues, setValue } = useFormContext<QSO>();
     const qso = getValues();
     const event = qso[(mine ? "mySig" : "sig") as keyof QSO] as string;

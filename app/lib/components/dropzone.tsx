@@ -1,4 +1,4 @@
-import React from "react";
+import { PropsWithChildren } from "react";
 import { useDropzone } from "react-dropzone";
 import { View, ViewProps } from "react-native";
 
@@ -12,19 +12,17 @@ export const toBase64 = (file: File) =>
 
 export type FileWithPreview = File & { preview: string };
 
-export type DropzoneProps = {
+export type DropzoneProps = PropsWithChildren<{
     dropzoneOptions?: object;
     onAcceptedFiles: (files: FileWithPreview[]) => void;
-} & ViewProps;
+} & ViewProps>;
 
-export type DropzoneComponent = React.FC<React.PropsWithChildren<DropzoneProps>>;
-
-export const Dropzone: DropzoneComponent = ({
+export const Dropzone = ({
     onAcceptedFiles,
     dropzoneOptions,
     children,
     ...otherProps
-}): React.JSX.Element => {
+}: DropzoneProps) => {
     const { getRootProps, getInputProps } = useDropzone({
         onDrop: (acceptedFiles) => {
             onAcceptedFiles(

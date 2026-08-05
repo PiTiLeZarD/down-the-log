@@ -1,4 +1,4 @@
-import React from "react";
+import { PropsWithChildren } from "react";
 import { ViewStyle } from "react-native";
 import { StyleSheet } from "react-native-unistyles";
 import { Stack } from "../../../components/stack";
@@ -22,14 +22,12 @@ const styles = StyleSheet.create((theme) => ({
     }),
 }));
 
-export type AlertProps = {
+export type AlertProps = PropsWithChildren<{
     style?: Styles<ViewStyle>;
     severity?: Severity;
-};
+}>;
 
-export type AlertComponent = React.FC<React.PropsWithChildren<AlertProps>>;
-
-export const Alert: AlertComponent = ({ style, severity = "warning", children }): React.JSX.Element => {
+export const Alert = ({ style, severity = "warning", children }: AlertProps) => {
     return (
         <Stack direction="row" gap="xxl" style={mergeStyles<ViewStyle>(styles.container(severity), style)}>
             <Icon

@@ -1,15 +1,11 @@
-import React, { useEffect } from "react";
+import { useEffect } from "react";
 import { useFormContext } from "react-hook-form";
 import { collapseCallsign, getCallsignData } from "../utils/callsign";
 import { Alert } from "../utils/theme/components/alert";
 import { Typography } from "../utils/theme/components/typography";
 import { QSO } from "./qso";
 
-export type CountryWarningProps = {};
-
-export type CountryWarningComponent = React.FC<CountryWarningProps>;
-
-export const CountryWarning: CountryWarningComponent = (): React.JSX.Element => {
+export const CountryWarning = () => {
     const { watch, setValue, getValues } = useFormContext<QSO>();
     const callsign = watch("callsign");
     const country = watch("country");

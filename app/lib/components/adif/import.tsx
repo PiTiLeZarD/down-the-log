@@ -1,4 +1,3 @@
-import React from "react";
 import { Platform, View } from "react-native";
 import { StyleSheet, useUnistyles } from "react-native-unistyles";
 import { getFileApiFromFilename, record2qso } from "../../utils/file-format";
@@ -28,11 +27,7 @@ export const styles = StyleSheet.create((theme) => ({
     },
 }));
 
-export type ImportProps = {};
-
-export type ImportComponent = React.FC<ImportProps>;
-
-export const Import: ImportComponent = (): React.JSX.Element => {
+export const Import = () => {
     const { theme } = useUnistyles();
     const qsos = useQsos();
     const log = useStore((state) => state.log);

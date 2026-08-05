@@ -1,5 +1,5 @@
 import { DateTime } from "luxon";
-import React, { useMemo } from "react";
+import { useMemo } from "react";
 import { clranks, mostWanted } from "../../data/clranks";
 import cqzones from "../../data/cqzones.json";
 import ituzones from "../../data/ituzones.json";
@@ -18,9 +18,7 @@ export type CallsignInputExtraProps = {
     hamqthCSData?: Partial<HamQTHCallsignData>;
 };
 
-export type CallsignInputExtraComponent = React.FC<CallsignInputExtraProps>;
-
-export const CallsignInputExtra: CallsignInputExtraComponent = ({ value, hamqthCSData }): React.JSX.Element => {
+export const CallsignInputExtra = ({ value, hamqthCSData }: CallsignInputExtraProps) => {
     const callsignData = useMemo(() => (value ? getCallsignData(value) : undefined), [value]);
     const settings = useSettings();
     const country = callsignData ? findCountry(callsignData) : null;

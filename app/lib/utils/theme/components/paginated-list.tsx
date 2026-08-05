@@ -1,17 +1,15 @@
-import React, { useEffect } from "react";
+import React, { useEffect, PropsWithChildren } from "react";
 import { View } from "react-native";
 import { Stack } from "../../../components/stack";
 import { Button } from "./button";
 import { Typography } from "./typography";
 
-export type PaginatedListProps = {
+export type PaginatedListProps = PropsWithChildren<{
     itemsPerPage?: number;
     whenEmpty?: React.ReactNode;
-};
+}>;
 
-export type PaginatedListComponent = React.FC<React.PropsWithChildren<PaginatedListProps>>;
-
-export const PaginatedList: PaginatedListComponent = ({ itemsPerPage = 10, whenEmpty, children }): React.JSX.Element => {
+export const PaginatedList = ({ itemsPerPage = 10, whenEmpty, children }: PaginatedListProps) => {
     const elements = React.Children.toArray(children);
     const [page, setPage] = React.useState<number>(0);
 

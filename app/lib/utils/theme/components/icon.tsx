@@ -1,6 +1,5 @@
 import { Ionicons } from "@expo/vector-icons";
 import { IconProps as VIIconProps } from "@expo/vector-icons/build/createIconSet";
-import React from "react";
 import { useUnistyles } from "react-native-unistyles";
 import { ColourVariant } from "../theme";
 
@@ -13,15 +12,7 @@ export type IconProps = {
     colour?: ColourVariant;
 } & VIIconProps<string>;
 
-export type IconComponent = React.FC<IconProps>;
-
-export const Icon: IconComponent = ({
-    name,
-    colour = "primary",
-    size = 20,
-    contrast = false,
-    ...otherProps
-}): React.JSX.Element => {
+export const Icon = ({ name, colour = "primary", size = 20, contrast = false, ...otherProps }: IconProps) => {
     const { theme } = useUnistyles();
     return (
         <Ionicons

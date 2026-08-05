@@ -1,5 +1,4 @@
 import { useRouter } from "expo-router";
-import React from "react";
 import { StyleSheet } from "react-native-unistyles";
 import { Grid } from "./lib/components/grid";
 import { PageLayout } from "./lib/components/page-layout";
@@ -25,9 +24,7 @@ export type MenuButtonProps = {
     icon: IconName;
 };
 
-export type MenuButtonComponent = React.FC<MenuButtonProps>;
-
-export const MenuButton: MenuButtonComponent = ({ navigateTo, icon, text }): React.JSX.Element => {
+export const MenuButton = ({ navigateTo, icon, text }: MenuButtonProps) => {
     const { navigate } = useRouter();
 
     return (
@@ -40,11 +37,7 @@ export const MenuButton: MenuButtonComponent = ({ navigateTo, icon, text }): Rea
     );
 };
 
-export type MenuProps = {};
-
-export type MenuComponent = React.FC<MenuProps>;
-
-const Menu: MenuComponent = (): React.JSX.Element => {
+const Menu = () => {
     const { navigate } = useRouter();
     return (
         <PageLayout title="Menu">

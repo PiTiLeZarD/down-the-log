@@ -1,4 +1,3 @@
-import React from "react";
 import { QSO } from ".";
 import { groupBy } from "../../utils/arrays";
 import { maidenhead2Latlong } from "../../utils/locator";
@@ -14,9 +13,7 @@ export type QsoMapProps = {
     height?: number;
 };
 
-export type QsoMapComponent = React.FC<QsoMapProps>;
-
-export const QsoMap: QsoMapComponent = ({ qso, qsos, width = "auto", height = 200 }): React.JSX.Element => {
+export const QsoMap = ({ qso, qsos, width = "auto", height = 200 }: QsoMapProps) => {
     const { google } = useStore((state) => state.settings);
 
     if (!qso && !qsos) {

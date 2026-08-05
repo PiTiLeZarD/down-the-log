@@ -4,10 +4,6 @@ import { StyleSheet } from "react-native-unistyles";
 import { Typography } from "../utils/theme/components/typography";
 import { Grid } from "./grid";
 
-export type ClocksProps = {};
-
-export type ClocksComponent = React.FC<ClocksProps>;
-
 const styles = StyleSheet.create((theme) => ({
     container: {
         backgroundColor: theme.colours.primary.light,
@@ -16,7 +12,7 @@ const styles = StyleSheet.create((theme) => ({
     },
 }));
 
-export const Clocks: ClocksComponent = (): React.JSX.Element => {
+export const Clocks = () => {
     const [time, setTime] = React.useState<DateTime>(DateTime.local());
 
     React.useEffect(() => {

@@ -13,9 +13,7 @@ export type PickFavouriteProps = {
     availableValues: string[];
 };
 
-export type PickFavouriteComponent = React.FC<PickFavouriteProps>;
-
-export const PickFavourite: PickFavouriteComponent = ({ label, settingsKey, availableValues }): React.JSX.Element => {
+export const PickFavourite = ({ label, settingsKey, availableValues }: PickFavouriteProps) => {
     const [open, setOpen] = React.useState<boolean>(false);
     const settings = useSettings();
     const updateSetting = useStore((state) => state.updateSetting);

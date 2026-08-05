@@ -13,9 +13,7 @@ export type SignalProps = {
     field: keyof QSO;
 };
 
-export type SignalComponent = React.FC<SignalProps>;
-
-export const Signal: SignalComponent = ({ field }): React.JSX.Element => {
+export const Signal = ({ field }: SignalProps) => {
     const [open, setOpen] = React.useState<boolean>(false);
     const { watch, setValue } = useFormContext<QSO>();
     const signal = watch(field);

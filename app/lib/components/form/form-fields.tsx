@@ -70,9 +70,7 @@ export type FormFieldsProps = {
 
 const diffTimeInMinutes = (qso: QSO, dt: DateTime) => dt.diff(qso.date, ["minutes"]).toObject().minutes || 0;
 
-export type FormFieldsComponent = React.FC<FormFieldsProps>;
-
-export const FormFields: FormFieldsComponent = ({ qso }): React.JSX.Element => {
+export const FormFields = ({ qso }: FormFieldsProps) => {
     const isLastQso = useQsos()[0].id === qso.id;
     const timer = useRef<ReturnType<typeof setInterval> | undefined>(undefined);
     const [now, setNow] = React.useState<DateTime>(DateTime.utc());

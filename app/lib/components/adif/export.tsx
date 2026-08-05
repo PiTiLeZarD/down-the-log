@@ -1,5 +1,4 @@
 import { DateTime } from "luxon";
-import React from "react";
 import { downloadQsos } from "../../utils/file-format";
 import { useStore } from "../../utils/store";
 import { Button } from "../../utils/theme/components/button";
@@ -7,11 +6,7 @@ import { Filters, filterQsos } from "../filters";
 import { useQsos } from "../qso";
 import { Stack } from "../stack";
 
-export type ExportProps = {};
-
-export type ExportComponent = React.FC<ExportProps>;
-
-export const Export: ExportComponent = (): React.JSX.Element => {
+export const Export = () => {
     const filters = useStore((state) => state.filters);
     const qsos = useQsos();
     const filteredQsos = filterQsos(qsos, filters);

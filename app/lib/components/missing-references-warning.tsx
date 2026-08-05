@@ -1,5 +1,4 @@
 import { useRouter } from "expo-router";
-import React from "react";
 import { View } from "react-native";
 import { unique } from "../utils/arrays";
 import { EventType, capitalise, eventDataMap } from "../utils/event-rules";
@@ -14,9 +13,7 @@ export type MissingReferencesWarningProps = {
     event: EventType;
 };
 
-export type MissingReferencesWarningComponent = React.FC<MissingReferencesWarningProps>;
-
-export const MissingReferencesWarning: MissingReferencesWarningComponent = ({ event }): React.JSX.Element => {
+export const MissingReferencesWarning = ({ event }: MissingReferencesWarningProps) => {
     const updateFilters = useStore((state) => state.updateFilters);
     const { navigate } = useRouter();
     const references = unique(

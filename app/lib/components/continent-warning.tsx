@@ -4,11 +4,7 @@ import { Alert } from "../utils/theme/components/alert";
 import { Typography } from "../utils/theme/components/typography";
 import { QSO } from "./qso";
 
-export type ContinentWarningProps = {};
-
-export type ContinentWarningComponent = React.FC<ContinentWarningProps>;
-
-export const ContinentWarning: ContinentWarningComponent = (): React.JSX.Element => {
+export const ContinentWarning = () => {
     const { watch } = useFormContext<QSO>();
     const country = watch("country");
     const continent = watch("continent");

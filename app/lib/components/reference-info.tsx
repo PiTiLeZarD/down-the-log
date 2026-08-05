@@ -1,4 +1,3 @@
-import React from "react";
 import { EventType } from "../utils/event-rules";
 import { Button } from "../utils/theme/components/button";
 import { Typography } from "../utils/theme/components/typography";
@@ -13,9 +12,7 @@ export type ReferenceInfoProps = {
     data?: Record<string, ReferenceDatum>;
 };
 
-export type ReferenceInfoComponent = React.FC<ReferenceInfoProps>;
-
-export const ReferenceInfo: ReferenceInfoComponent = ({ event, reference, data, info }): React.JSX.Element => {
+export const ReferenceInfo = ({ event, reference, data, info }: ReferenceInfoProps) => {
     if (!reference) return <></>;
     if (event === "sig") {
         if (info?.toLowerCase() === "zlota") {

@@ -1,5 +1,4 @@
 import { useRouter } from "expo-router";
-import React from "react";
 import { View } from "react-native";
 import { groupQsos } from "../../stats";
 import { sortBands } from "../data/bands";
@@ -16,9 +15,7 @@ export type DxccStatsProps = {
     dxcc: number;
 };
 
-export type DxccStatsComponent = React.FC<DxccStatsProps>;
-
-export const DxccStats: DxccStatsComponent = ({ dxcc }): React.JSX.Element => {
+export const DxccStats = ({ dxcc }: DxccStatsProps) => {
     const qsos = useQsos().filter((q) => q.dxcc === dxcc);
     const updateFilters = useStore((state) => state.updateFilters);
     const { navigate } = useRouter();

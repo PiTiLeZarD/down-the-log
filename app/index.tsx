@@ -1,6 +1,6 @@
 import { useRouter } from "expo-router";
 import { DateTime } from "luxon";
-import React, { useEffect } from "react";
+import { useEffect } from "react";
 import { FormProvider, useForm } from "react-hook-form";
 import { View } from "react-native";
 import { StyleSheet } from "react-native-unistyles";
@@ -39,11 +39,7 @@ const styles = StyleSheet.create((theme) => ({
     },
 }));
 
-export type IndexProps = {};
-
-export type IndexComponent = React.FC<IndexProps>;
-
-const Index: IndexComponent = (): React.JSX.Element => {
+const Index = () => {
     const qsos = useQsos();
     const currentLocation = useStore((state) => state.currentLocation);
     const settings = useSettings();

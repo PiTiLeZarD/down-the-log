@@ -28,7 +28,7 @@ const styles = StyleSheet.create((theme) => ({
 
 SplashScreen.preventAutoHideAsync();
 
-const RootLayout = (): React.JSX.Element => {
+const RootLayout = () => {
     const [fontsLoaded, fontError] = useFonts({
         Quicksand: require("../assets/Quicksand-VariableFont_wght.ttf"),
     });

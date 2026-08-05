@@ -1,12 +1,10 @@
-import React from "react";
+import { PropsWithChildren } from "react";
 import { Typography } from "../utils/theme/components/typography";
 import { Stack } from "./stack";
 
-export type ButtonOffsetProps = {};
+export type ButtonOffsetProps = PropsWithChildren;
 
-export type ButtonOffsetComponent = React.FC<React.PropsWithChildren<ButtonOffsetProps>>;
-
-export const ButtonOffset: ButtonOffsetComponent = ({ children }): React.JSX.Element => {
+export const ButtonOffset = ({ children }: ButtonOffsetProps) => {
     return (
         <Stack>
             <Typography>&nbsp;</Typography>

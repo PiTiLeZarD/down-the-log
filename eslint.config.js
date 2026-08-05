@@ -13,7 +13,6 @@ module.exports = defineConfig([
             // Turned off rather than left as noise, so a real warning is worth reading.
             eqeqeq: "off",
             "@typescript-eslint/array-type": "off",
-            "@typescript-eslint/no-empty-object-type": "off", // the `export type XProps = {}` convention
             "react/no-unescaped-entities": "off", // apostrophes in copy are fine
             "react/display-name": "off",
 

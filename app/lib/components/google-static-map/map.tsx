@@ -1,6 +1,6 @@
 import { Image } from "expo-image";
 import jsSHA from "jssha";
-import React, { useRef } from "react";
+import React, { useRef, PropsWithChildren } from "react";
 import { View } from "react-native";
 import { groupBy } from "../../utils/arrays";
 import { Feature } from "./common";
@@ -24,13 +24,11 @@ const signRequest = (url: string, secret: string) => {
     return `${url}&signature=${b64safeUrl(sha1.getHMAC("B64"))}`;
 };
 
-export type MapProps = {
+export type MapProps = PropsWithChildren<{
     width?: number | "auto";
     height: number;
     google: GoogleCredentials;
-};
-
-export type MapComponent = React.FC<React.PropsWithChildren<MapProps>>;
+}>;
 
 const getActualWidth = (width: "auto" | number, ref: React.RefObject<View | null>) =>
     typeof width === "number"
@@ -39,7 +37,7 @@ const getActualWidth = (width: "auto" | number, ref: React.RefObject<View | null
           ? Math.min((ref.current as unknown as HTMLElement).clientWidth, 640)
           : null;
 
-export const Map: MapComponent = ({ width = "auto", height, google, children }): React.JSX.Element => {
+export const Map = ({ width = "auto", height, google, children }: MapProps) => {
     const widthRef = useRef<View>(null);
     const features = groupBy<Feature, string>(
         React.Children.toArray(children)

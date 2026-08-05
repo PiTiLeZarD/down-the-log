@@ -1,4 +1,3 @@
-import React from "react";
 import { findCountry, getCallsignData, parseCallsign } from "../utils/callsign";
 import { Button } from "../utils/theme/components/button";
 
@@ -8,9 +7,7 @@ export type QrzChipProps = {
     includeFlag?: boolean;
 };
 
-export type QrzChipComponent = React.FC<QrzChipProps>;
-
-export const QrzChip: QrzChipComponent = ({ callsign, textIsCallsign = false, includeFlag = false }): React.JSX.Element => {
+export const QrzChip = ({ callsign, textIsCallsign = false, includeFlag = false }: QrzChipProps) => {
     const parsed = parseCallsign(callsign);
     return (
         <Button

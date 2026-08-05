@@ -11,11 +11,7 @@ import { Stack } from "../stack";
 import { ParkReferenceInput } from "./park-reference-input";
 import { SiginfoReferenceInput } from "./siginfo-reference-input";
 
-export type EventsProps = {};
-
-export type EventsComponent = React.FC<EventsProps>;
-
-export const Events: EventsComponent = (): React.JSX.Element => {
+export const Events = () => {
     const [open, setOpen] = React.useState<boolean>(false);
     const { getValues, setValue } = useFormContext<QSO>();
     const qso = getValues();

@@ -1,4 +1,4 @@
-import React from "react";
+import { PropsWithChildren } from "react";
 import { View } from "react-native";
 import { StyleSheet } from "react-native-unistyles";
 import { ColourVariant } from "../theme";
@@ -22,14 +22,12 @@ const styles = StyleSheet.create((theme) => ({
     content: {},
 }));
 
-export type BadgeProps = {
+export type BadgeProps = PropsWithChildren<{
     count: number;
     colour?: ColourVariant;
-};
+}>;
 
-export type BadgeComponent = React.FC<React.PropsWithChildren<BadgeProps>>;
-
-export const Badge: BadgeComponent = ({ count, colour = "primary", children }): React.JSX.Element => {
+export const Badge = ({ count, colour = "primary", children }: BadgeProps) => {
     if (count === 0) return <>{children}</>;
     return (
         <View style={styles.container}>

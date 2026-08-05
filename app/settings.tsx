@@ -1,4 +1,3 @@
-import React from "react";
 import { Switch } from "react-native";
 import { UnistylesRuntime, useUnistyles } from "react-native-unistyles";
 import { PageLayout } from "./lib/components/page-layout";
@@ -16,11 +15,7 @@ import { Typography } from "./lib/utils/theme/components/typography";
 import { fireSwal } from "./lib/utils/theme/swal";
 import { useSettings } from "./lib/utils/use-settings";
 
-export type SettingsProps = {};
-
-export type SettingsComponent = React.FC<SettingsProps>;
-
-const Settings: SettingsComponent = (): React.JSX.Element => {
+const Settings = () => {
     const { theme, rt } = useUnistyles();
     const settings = useSettings();
     const currentLocation = useStore((state) => state.currentLocation);

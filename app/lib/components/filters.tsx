@@ -115,9 +115,7 @@ const castValue = (k: string, v: string) => {
     return v;
 };
 
-export type FiltersComponent = React.FC<FiltersProps>;
-
-export const Filters: FiltersComponent = ({ showTag }): React.JSX.Element => {
+export const Filters = ({ showTag }: FiltersProps) => {
     const { theme } = useUnistyles();
     const filters = useStore((state) => state.filters);
     const qsos = filterQsos(useQsos(), filters);

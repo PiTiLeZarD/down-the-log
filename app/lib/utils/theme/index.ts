@@ -12,8 +12,11 @@ type AppThemes = {
 };
 
 declare module "react-native-unistyles" {
+    // Empty extending interfaces are how Unistyles wants its types augmented.
+    /* eslint-disable @typescript-eslint/no-empty-object-type */
     export interface UnistylesBreakpoints extends AppBreakpoints {}
     export interface UnistylesThemes extends AppThemes {}
+    /* eslint-enable @typescript-eslint/no-empty-object-type */
 }
 
 StyleSheet.configure({

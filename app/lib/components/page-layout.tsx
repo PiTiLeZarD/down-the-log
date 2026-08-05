@@ -1,4 +1,4 @@
-import React from "react";
+import React, { PropsWithChildren } from "react";
 import { ScrollView, View } from "react-native";
 import { useUnistyles } from "react-native-unistyles";
 import { Button } from "../utils/theme/components/button";
@@ -7,14 +7,12 @@ import { useGoBack } from "../utils/use-go-back";
 import { Grid } from "./grid";
 import { Stack } from "./stack";
 
-export type PageLayoutProps = {
+export type PageLayoutProps = PropsWithChildren<{
     title: React.ReactNode;
     titleMargin?: number;
-};
+}>;
 
-export type PageLayoutComponent = React.FC<React.PropsWithChildren<PageLayoutProps>>;
-
-export const PageLayout: PageLayoutComponent = ({ title, titleMargin = 18, children }): React.JSX.Element => {
+export const PageLayout = ({ title, titleMargin = 18, children }: PageLayoutProps) => {
     const goBack = useGoBack();
     const { theme } = useUnistyles();
     return (

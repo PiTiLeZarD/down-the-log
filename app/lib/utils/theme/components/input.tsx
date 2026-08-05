@@ -52,9 +52,7 @@ export type InputProps = TextInputProps & {
     suffix?: React.ReactNode;
 };
 
-export type InputComponent = React.FC<InputProps>;
-
-export const Input: InputComponent = ({
+export const Input = ({
     style,
     textStyle,
     prefix,
@@ -63,7 +61,7 @@ export const Input: InputComponent = ({
     numeric = false,
     password = false,
     ...otherProps
-}): React.JSX.Element => {
+}: InputProps) => {
     const [secure, setSecure] = React.useState<boolean>(password);
     const [value, setValue] = React.useState<string>(otherProps.value || "");
     useEffect(() => setSecure(password), [password]);

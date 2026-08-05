@@ -1,4 +1,4 @@
-import React from "react";
+import { PropsWithChildren } from "react";
 import { Modal as RNModal, View } from "react-native";
 import { StyleSheet } from "react-native-unistyles";
 import { Grid } from "../components/grid";
@@ -10,15 +10,13 @@ const styles = StyleSheet.create((theme) => ({
     },
 }));
 
-export type ModalProps = {
+export type ModalProps = PropsWithChildren<{
     open: boolean;
     wide?: boolean;
     onClose: () => void;
-};
+}>;
 
-export type ModalComponent = React.FC<React.PropsWithChildren<ModalProps>>;
-
-export const Modal: ModalComponent = ({ open, wide, onClose, children }): React.JSX.Element => {
+export const Modal = ({ open, wide, onClose, children }: ModalProps) => {
     return (
         <RNModal animationType="none" visible={open} onRequestClose={onClose} transparent>
             <View style={styles.container}>

@@ -23,9 +23,7 @@ export type BandFreqInputProps = {
     noLabel?: boolean;
 };
 
-export type BandFreqInputComponent = React.FC<BandFreqInputProps>;
-
-export const BandFreqInput: BandFreqInputComponent = ({ noLabel = false }): React.JSX.Element => {
+export const BandFreqInput = ({ noLabel = false }: BandFreqInputProps) => {
     const { theme } = useUnistyles();
     const [showAll, setShowAll] = React.useState<boolean>(false);
     const [open, setOpen] = React.useState<boolean>(false);

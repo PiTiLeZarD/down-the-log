@@ -17,9 +17,7 @@ const flip = (obj: Record<string, string>): Record<string, string> =>
     Object.fromEntries(Object.entries(obj).map((a) => a.reverse()));
 const linksFlipped = flip(links);
 
-export type ParkReferenceInputComponent = React.FC<ParkReferenceInputProps>;
-
-export const ParkReferenceInput: ParkReferenceInputComponent = ({ event, mine = false }): React.JSX.Element => {
+export const ParkReferenceInput = ({ event, mine = false }: ParkReferenceInputProps) => {
     const { getValues, setValue } = useFormContext<QSO>();
     const [hint, setHint] = React.useState<string>();
     const qso = getValues();

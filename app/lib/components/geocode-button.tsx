@@ -1,15 +1,10 @@
-import React from "react";
 import { useFormContext } from "react-hook-form";
 import { geocode } from "../utils/geocode";
 import { latlong2Maidenhead } from "../utils/locator";
 import { Button } from "../utils/theme/components/button";
 import { useSettings } from "../utils/use-settings";
 
-export type GeocodeButtonProps = {};
-
-export type GeocodeButtonComponent = React.FC<GeocodeButtonProps>;
-
-export const GeocodeButton: GeocodeButtonComponent = (): React.JSX.Element => {
+export const GeocodeButton = () => {
     const { getValues, setValue } = useFormContext();
     const { qth } = getValues();
     const settings = useSettings();

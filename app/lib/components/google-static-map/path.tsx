@@ -10,9 +10,8 @@ export type PathProps = {
     polyline?: string;
 } & { style?: Partial<FeaturePathStyle> };
 
-export type PathComponent = React.FC<PathProps> & RenderFeature<PathProps>;
-
-export const Path: PathComponent = () => null;
+// The intersection is load-bearing: `Map` reads the static `renderFeature` off the element type.
+export const Path: React.FC<PathProps> & RenderFeature<PathProps> = () => null;
 Path.renderFeature = ({ from, to, polygon, polyline, style }) => {
     if (from && to)
         return {

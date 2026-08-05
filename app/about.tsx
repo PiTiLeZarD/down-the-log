@@ -1,4 +1,3 @@
-import React from "react";
 import { View } from "react-native";
 import { PageLayout } from "./lib/components/page-layout";
 import { Stack } from "./lib/components/stack";
@@ -6,11 +5,7 @@ import { Alert } from "./lib/utils/theme/components/alert";
 import { Button } from "./lib/utils/theme/components/button";
 import { Typography } from "./lib/utils/theme/components/typography";
 
-export type AboutProps = {};
-
-export type AboutComponent = React.FC<AboutProps>;
-
-const About: AboutComponent = (): React.JSX.Element => {
+const About = () => {
     return (
         <PageLayout title="About">
             <Stack gap="xxl">

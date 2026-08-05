@@ -53,9 +53,8 @@ export type QsoListSectionHeaderProps = {
     sections: QSO[][];
 };
 
-export type QsoListSectionHeaderComponent = React.FC<QsoListSectionHeaderProps>;
 ``;
-export const QsoListSectionHeader: QsoListSectionHeaderComponent = ({ section, sections }): React.JSX.Element => {
+export const QsoListSectionHeader = ({ section, sections }: QsoListSectionHeaderProps) => {
     const [mapOpen, setmapOpen] = React.useState<boolean>(false);
     const settings = useSettings();
     const text = `${sections[section][0].date.toFormat(settings.datemonth ? "MM-dd-yyyy" : "dd/MM/yyyy")} (${sections[section].length})`;
@@ -92,12 +91,10 @@ export type QsoListProps = {
     style?: ViewStyle;
 };
 
-export type QsoListComponent = React.FC<QsoListProps>;
-
 const applyFilters = (qsos: QSO[], filters: QsoListProps["filters"]) =>
     filters ? qsos.filter((qso) => filters.reduce((facc, f) => facc && f(qso), true)) : qsos;
 
-export const QsoList: QsoListComponent = ({ style, filters, qsos, onQsoPress }): React.JSX.Element => {
+export const QsoList = ({ style, filters, qsos, onQsoPress }: QsoListProps) => {
     const settings = useStore((state) => state.settings);
     const launch = (q: QSO[], f: QsoListProps["filters"]) => qsos2sections(applyFilters(q, f));
     const throttled = useThrottle(launch, 250);

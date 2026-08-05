@@ -18,9 +18,7 @@ export type FormFieldProps = {
     options?: Record<string, string>;
 } & Record<string, unknown>;
 
-export type FormFieldComponent = React.FC<FormFieldProps>;
-
-export const FormField: FormFieldComponent = ({
+export const FormField = ({
     role = "text",
     name,
     label,
@@ -28,7 +26,7 @@ export const FormField: FormFieldComponent = ({
     numberOfLines = 4,
     options,
     ...otherProps
-}): React.JSX.Element => {
+}: FormFieldProps) => {
     const { control, setValue } = useFormContext<QSO>();
     const { field } = useController({ name, control });
     const value = String(field.value || "");

@@ -77,11 +77,7 @@ const scaleColour = (value: number, cutoffs: number[], reverse: boolean = false)
     return coloursGradient[status];
 };
 
-export type SolarDataProps = {};
-
-export type SolarDataComponent = React.FC<SolarDataProps>;
-
-export const SolarData: SolarDataComponent = (): React.JSX.Element => {
+export const SolarData = () => {
     const [modal, setModal] = React.useState<boolean>(false);
     const [solarData, setSolarData] = React.useState<DataType[]>();
     const [magneticData, setMagneticData] = React.useState<DataType[]>();

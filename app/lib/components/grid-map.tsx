@@ -1,4 +1,3 @@
-import React from "react";
 import { unique } from "../utils/arrays";
 import { corners2Path, fixLatLngForStaticMaps, maidenhead2Corners } from "../utils/locator";
 import { latlng2coord } from "../utils/polygon";
@@ -9,11 +8,7 @@ import { Map } from "./google-static-map/map";
 import { Path } from "./google-static-map/path";
 import { useQsos } from "./qso";
 
-export type GridMapProps = {};
-
-export type GridMapComponent = React.FC<GridMapProps>;
-
-export const GridMap: GridMapComponent = (): React.JSX.Element => {
+export const GridMap = () => {
     const filters = useStore((state) => state.filters);
     const qsos = filterQsos(useQsos(), filters);
     const { google } = useSettings();

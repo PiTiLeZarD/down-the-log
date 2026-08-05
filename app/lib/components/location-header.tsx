@@ -1,5 +1,4 @@
 import { useRouter } from "expo-router";
-import React from "react";
 import { View } from "react-native";
 import { StyleSheet } from "react-native-unistyles";
 import cqzones from "../data/cqzones.json";
@@ -30,11 +29,7 @@ const styles = StyleSheet.create((theme) => ({
     },
 }));
 
-export type LocationHeaderProps = {};
-
-export type LocationHeaderComponent = React.FC<LocationHeaderProps>;
-
-export const LocationHeader: LocationHeaderComponent = (): React.JSX.Element => {
+export const LocationHeader = () => {
     const { navigate } = useRouter();
     const currentLocation = useStore((state) => state.currentLocation);
     const settings = useSettings();

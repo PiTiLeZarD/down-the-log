@@ -1,5 +1,4 @@
 import { DateTime } from "luxon";
-import React from "react";
 import { View } from "react-native";
 import { useUnistyles } from "react-native-unistyles";
 import { styles } from "./lib/components/adif/import";
@@ -17,11 +16,7 @@ import { Typography } from "./lib/utils/theme/components/typography";
 import { fireSwal } from "./lib/utils/theme/swal";
 import { useSettings } from "./lib/utils/use-settings";
 
-export type QslProps = {};
-
-export type QslComponent = React.FC<QslProps>;
-
-const Qsl: QslComponent = (): React.JSX.Element => {
+const Qsl = () => {
     const qsos = useQsos();
     const { theme } = useUnistyles();
     const log = useStore((state) => state.log);

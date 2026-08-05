@@ -5,9 +5,7 @@ import { useUnistyles } from "react-native-unistyles";
 
 export type SelectInputProps = PickerSelectProps;
 
-export type SelectInputComponent = React.FC<SelectInputProps>;
-
-export const SelectInput: SelectInputComponent = ({ ...otherProps }): React.JSX.Element => {
+export const SelectInput = ({ ...otherProps }: SelectInputProps) => {
     // `inputWeb` is a nested style bag, not the `style` prop, so unistyles can never attach to it and a
     // StyleSheet.create value would arrive empty. Build a plain object off the live theme instead.
     const { theme } = useUnistyles();

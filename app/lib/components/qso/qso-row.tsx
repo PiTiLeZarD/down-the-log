@@ -31,9 +31,7 @@ export type QsoRowProps = {
     onPress?: () => void;
 };
 
-export type QsoRowComponent = React.FC<QsoRowProps>;
-
-export const QsoRow: QsoRowComponent = ({
+export const QsoRow = ({
     onPress,
     header = false,
     success = false,
@@ -44,7 +42,7 @@ export const QsoRow: QsoRowComponent = ({
     band,
     callsign,
     name,
-}): React.JSX.Element => {
+}: QsoRowProps) => {
     const cellContent = (content: React.ReactNode, style: TextStyle) =>
         typeof content === "string" ? <Typography style={style}>{content}</Typography> : content;
     const cellStyle = header ? styles.header(lineHeight) : { lineHeight };

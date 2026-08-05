@@ -1,5 +1,4 @@
 import { useRouter } from "expo-router";
-import React from "react";
 import { useFormContext } from "react-hook-form";
 import { baseCallsign } from "../utils/callsign";
 import { PaginatedList } from "../utils/theme/components/paginated-list";
@@ -8,11 +7,7 @@ import { QSO, useQsos } from "./qso";
 import { QsoRow } from "./qso/qso-row";
 import { Stack } from "./stack";
 
-export type PreviousQsosProps = {};
-
-export type PreviousQsosComponent = React.FC<PreviousQsosProps>;
-
-export const PreviousQsos: PreviousQsosComponent = (): React.JSX.Element => {
+export const PreviousQsos = () => {
     const { getValues } = useFormContext<QSO>();
     const { id, callsign } = getValues();
     const { navigate } = useRouter();
