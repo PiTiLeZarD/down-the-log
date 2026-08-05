@@ -61,7 +61,7 @@ This is the rough todolist I want to work on.
 
 ## Bugs found in the code review (2026-08-05)
 
-- [ ] ADIF `COUNTRY` is written and read as our iso3, but the spec says it holds the DXCC entity name (`file-format/common.ts:121` out, `:181` in). Breaks interop both ways, and is why the filter had to fall back to the raw value. Needs an iso3 <-> DXCC-name map
+- [ ] ADIF `COUNTRY` is written and read as our iso3, but the spec says it holds the DXCC entity name. Breaks interop both ways, and is why the filter had to fall back to the raw value. Needs an iso3 <-> DXCC-name map — now a `to`/`from` codec on the single `field("country", "country")` row in `file-format/common.ts`
 - [ ] QSL import mutates the matched QSO in place against a render-time snapshot of the log (`app/qsl.tsx:66-71`). Two files imported back to back both work off pre-import state. Probably the reason matching sometimes misses. Return new objects and re-read the store
 - [ ] `console.groupEnd;` is missing its call parens (`app/qsl.tsx:107`), so the group never closes
 - [ ] `utils/merge.ts` throws away the recursive return value, so nested merges silently do nothing. Nothing imports it, so just delete the file

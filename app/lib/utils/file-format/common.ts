@@ -63,7 +63,6 @@ export type QSORecord = Record<RecordField, string | undefined> & Record<"honeyp
 export type RecordMassageFn = (r: QSORecord) => QSORecord;
 
 export const int = (v?: string) => (v !== undefined ? +v : undefined);
-export const string = (v?: number) => (v !== undefined ? String(v) : undefined);
 export const castAs: <T>(values: T[], input?: string) => T | undefined = (values, input) => {
     if (input === undefined) return undefined;
     const cleanInput = input.toUpperCase().trim();
@@ -105,56 +104,101 @@ export const unsanitize = (v: string) =>
         return "";
     });
 
-export const qso2record = (qso: QSO): QSORecord => ({
-    qso_date: qso.date && qso.date.toFormat("yyyyMMdd"),
-    time_on: qso.date && qso.date.toFormat("HHmmss"),
-    qso_date_off: qso.dateOff && qso.dateOff.toFormat("yyyyMMdd"),
-    time_off: qso.dateOff && qso.dateOff.toFormat("HHmmss"),
-    band: qso.band,
-    freq: string(qso.frequency),
-    mode: qso.mode,
-    tx_pwr: string(qso.power),
-    rst_sent: qso.rst_sent,
-    rst_rcvd: qso.rst_received,
-    call: qso.callsign,
-    pfx: qso.prefix,
-    country: qso.country,
-    state: qso.state,
-    name: qso.name,
-    distance: string(qso.distance),
-    station_callsign: qso.myCallsign,
-    operator: qso.myCallsign,
-    my_city: qso.myQth,
-    my_gridsquare: qso.myLocator,
-    qth: qso.qth,
-    gridsquare: qso.locator,
-    cont: qso.continent,
-    dxcc: string(qso.dxcc),
-    cqz: string(qso.cqzone),
-    ituz: string(qso.ituzone),
-    eqsl_qsl_rcvd: qso.eqsl_received ? "Y" : "N",
-    eqsl_qsl_sent: qso.eqsl_sent ? "Y" : "N",
-    lotw_qsl_rcvd: qso.lotw_received ? "Y" : "N",
-    lotw_qsl_sent: qso.lotw_sent ? "Y" : "N",
-    comment: qso.note,
-    pota_ref: qso.pota,
-    my_pota_ref: qso.myPota,
-    wwff_ref: qso.wwff,
-    my_wwff_ref: qso.myWwff,
-    sota_ref: qso.sota,
-    my_sota_ref: qso.mySota,
-    iota: qso.iota,
-    my_iota: qso.myIota,
-    sig: qso.sig,
-    my_sig: qso.mySig,
-    sig_info: qso.sigInfo,
-    my_sig_info: qso.mySigInfo,
-    my_rig: qso.myRig,
-    my_antenna: qso.myAntenna,
-    my_country: qso.myCountry,
-    my_state: qso.myState,
-    honeypot: qso.honeypot || {},
-});
+/**
+ * One row per ADIF field, driving both directions. `qso2record` and `record2qso` used to be two
+ * hand-maintained mirrors and they drifted (COUNTRY was written as our iso3 but read back as-is),
+ * so there is deliberately no second list to keep in sync: a field is defined once, here.
+ *
+ * `to` and `from` both see the raw value including undefined, so a codec can decide what an
+ * absent value means (the QSL flags export "N" rather than nothing, for instance).
+ * The handful of fields that aren't 1:1 — the dates, OPERATOR, the submode stashing — stay
+ * explicit in the two functions below.
+ */
+export type FieldCodec<K extends keyof QSO> = {
+    to?: (value: QSO[K], qso: QSO) => string | undefined;
+    from?: (value: string | undefined, record: QSORecord) => QSO[K];
+};
+
+type FieldDescriptor = {
+    qsoKey: keyof QSO;
+    adifKey: RecordField;
+    // Erased: each row is checked against QSO[K] by `field()` on the way in, but the array itself
+    // holds a mix of value types and can't stay generic.
+    to: (value: any, qso: QSO) => string | undefined;
+    from: (value: string | undefined, record: QSORecord) => any;
+};
+
+const defaultTo = (value: unknown) => (value === undefined || value === null ? undefined : String(value));
+const defaultFrom = (value: string | undefined) => value;
+
+const field = <K extends keyof QSO>(qsoKey: K, adifKey: RecordField, codec: FieldCodec<K> = {}): FieldDescriptor =>
+    ({ qsoKey, adifKey, to: codec.to || defaultTo, from: codec.from || defaultFrom }) as FieldDescriptor;
+
+const number = { from: (v?: string) => int(v) };
+const boolean = { to: (v?: boolean) => (v ? "Y" : "N"), from: (v?: string) => v === "Y" };
+
+export const fields: FieldDescriptor[] = [
+    field("band", "band", {
+        from: (v, record) =>
+            castAs<Band>(Object.keys(bands) as Band[], v) ||
+            (record.freq ? freq2band(+(record.freq as string)) : undefined) ||
+            undefined,
+    }),
+    field("frequency", "freq", number),
+    field("mode", "mode", { from: (v) => resolveMode(v) }),
+    field("power", "tx_pwr", number),
+    field("rst_sent", "rst_sent"),
+    field("rst_received", "rst_rcvd"),
+    field("callsign", "call"),
+    field("prefix", "pfx"),
+    field("country", "country"),
+    field("state", "state"),
+    field("name", "name"),
+    field("distance", "distance", number),
+    // myCallsign owns two ADIF fields. Both rows resolve it the same way, so whichever runs last
+    // wins with the same answer, and each still writes its own tag.
+    field("myCallsign", "station_callsign", { from: (v, record) => v || record.operator }),
+    field("myCallsign", "operator", { from: (v, record) => record.station_callsign || v }),
+    field("myQth", "my_city"),
+    field("myLocator", "my_gridsquare", { from: (v) => normalise(v) }),
+    field("qth", "qth"),
+    field("locator", "gridsquare", { from: (v) => normalise(v) }),
+    field("continent", "cont", { from: (v) => castAs<Continent>(Object.keys(continents) as Continent[], v) }),
+    field("dxcc", "dxcc", number),
+    field("cqzone", "cqz", number),
+    field("ituzone", "ituz", number),
+    field("eqsl_received", "eqsl_qsl_rcvd", boolean),
+    field("eqsl_sent", "eqsl_qsl_sent", boolean),
+    field("lotw_received", "lotw_qsl_rcvd", boolean),
+    field("lotw_sent", "lotw_qsl_sent", boolean),
+    field("note", "comment"),
+    field("pota", "pota_ref"),
+    field("myPota", "my_pota_ref"),
+    field("wwff", "wwff_ref"),
+    field("myWwff", "my_wwff_ref"),
+    field("sota", "sota_ref"),
+    field("mySota", "my_sota_ref"),
+    field("iota", "iota"),
+    field("myIota", "my_iota"),
+    field("sig", "sig"),
+    field("mySig", "my_sig"),
+    field("sigInfo", "sig_info"),
+    field("mySigInfo", "my_sig_info"),
+    field("myRig", "my_rig"),
+    field("myAntenna", "my_antenna"),
+    field("myCountry", "my_country"),
+    field("myState", "my_state"),
+];
+
+export const qso2record = (qso: QSO): QSORecord =>
+    ({
+        qso_date: qso.date && qso.date.toFormat("yyyyMMdd"),
+        time_on: qso.date && qso.date.toFormat("HHmmss"),
+        qso_date_off: qso.dateOff && qso.dateOff.toFormat("yyyyMMdd"),
+        time_off: qso.dateOff && qso.dateOff.toFormat("HHmmss"),
+        ...Object.fromEntries(fields.map(({ qsoKey, adifKey, to }) => [adifKey, to(qso[qsoKey], qso)])),
+        honeypot: qso.honeypot || {},
+    }) as QSORecord;
 
 export const record2qso = (record: QSORecord): QSO => {
     const mode = resolveMode(record.mode);
@@ -162,6 +206,7 @@ export const record2qso = (record: QSORecord): QSO => {
     const submode = mode && record.mode?.toUpperCase().trim() !== mode ? record.mode?.toUpperCase().trim() : undefined;
 
     return {
+        ...Object.fromEntries(fields.map(({ qsoKey, adifKey, from }) => [qsoKey, from(record[adifKey], record)])),
         id: newQsoID(),
         date: DateTime.fromFormat(
             `${record.qso_date} ${record.time_on}`,
@@ -174,53 +219,8 @@ export const record2qso = (record: QSORecord): QSO => {
                       record.time_off?.length === 6 ? "yyyyMMdd HHmmss" : "yyyyMMdd HHmm",
                   )
                 : undefined,
-        callsign: record.call as string,
-        prefix: record.pfx,
-        dxcc: int(record.dxcc),
-        cqzone: int(record.cqz),
-        ituzone: int(record.ituz),
-        country: record.country,
-        continent: castAs<Continent>(Object.keys(continents) as Continent[], record.cont),
-        distance: int(record.distance),
-        frequency: int(record.freq),
-        band:
-            castAs<Band>(Object.keys(bands) as Band[], record.band) ||
-            (record.freq ? freq2band(+(record.freq as string)) : undefined) ||
-            undefined,
-        mode,
-        power: int(record.tx_pwr),
-        name: record.name,
-        state: record.state,
-        locator: normalise(record.gridsquare),
-        qth: record.qth,
-        myQth: record.my_city,
-        myCallsign: record.station_callsign || record.operator,
-        myLocator: normalise(record.my_gridsquare),
-        note: record.comment,
-        rst_sent: record.rst_sent,
-        rst_received: record.rst_rcvd,
-        eqsl_received: record.eqsl_qsl_rcvd === "Y",
-        eqsl_sent: record.eqsl_qsl_sent === "Y",
-        lotw_received: record.lotw_qsl_rcvd === "Y",
-        lotw_sent: record.lotw_qsl_sent === "Y",
-        pota: record.pota_ref,
-        myPota: record.my_pota_ref,
-        wwff: record.wwff_ref,
-        myWwff: record.my_wwff_ref,
-        sota: record.sota_ref,
-        mySota: record.my_sota_ref,
-        iota: record.iota,
-        myIota: record.my_iota,
-        sig: record.sig,
-        mySig: record.my_sig,
-        sigInfo: record.sig_info,
-        mySigInfo: record.my_sig_info,
-        myRig: record.my_rig,
-        myAntenna: record.my_antenna,
-        myCountry: record.my_country,
-        myState: record.my_state,
         honeypot: submode && !record.honeypot?.submode ? { ...record.honeypot, submode } : record.honeypot,
-    };
+    } as QSO;
 };
 
 export type Header = {
