@@ -8,6 +8,8 @@ export type Colours = Record<
 >;
 export type Shade = "lighter" | "light" | "main" | "dark" | "darker";
 export type ColourVariant = "primary" | "secondary" | "grey" | "success";
+// Numeric keys plus the shade aliases resolved for the current light/dark mode.
+export type ShadedColour = Colour & Record<Shade, string>;
 
 export const colour = (name: keyof Colours, shade: keyof Colour) =>
     ((colours as Colours)[name] || {})[shade] || "#FF0000";
@@ -30,14 +32,45 @@ export const hexToCssRgb = (hex: string) => {
     return `rgb(${rgb?.r}, ${rgb?.g}, ${rgb?.b})`;
 };
 
+const shadeKeys = (shade: "light" | "dark") =>
+    (shade === "light"
+        ? {
+              lighter: "100",
+              light: "300",
+              main: "500",
+              dark: "700",
+              darker: "900",
+          }
+        : {
+              lighter: "900",
+              light: "700",
+              main: "500",
+              dark: "300",
+              darker: "100",
+          }) as Record<Shade, keyof Colour>;
+
+// Unistyles resolves theme strings to CSS variables on web, so a theme value can never be used as a
+// lookup key inside StyleSheet.create. Bake the shade aliases into every palette instead.
+const withShades = (palette: Colour, shade: "light" | "dark"): ShadedColour => {
+    const keys = shadeKeys(shade);
+    return {
+        ...palette,
+        lighter: palette[keys.lighter],
+        light: palette[keys.light],
+        main: palette[keys.main],
+        dark: palette[keys.dark],
+        darker: palette[keys.darker],
+    };
+};
+
 export const theme = (shade: "light" | "dark") =>
     ({
         colours: {
-            primary: colours.blue,
-            secondary: colours.orange,
-            grey: colours.gray,
-            success: colours.green,
-        } as Record<ColourVariant, Colour>,
+            primary: withShades(colours.blue, shade),
+            secondary: withShades(colours.orange, shade),
+            grey: withShades(colours.gray, shade),
+            success: withShades(colours.green, shade),
+        } as Record<ColourVariant, ShadedColour>,
         components: {
             typography: {
                 fontFamily: "Quicksand",
@@ -71,21 +104,6 @@ export const theme = (shade: "light" | "dark") =>
             xl: 12,
             xxl: 16,
         },
-        shades: (shade === "light"
-            ? {
-                  lighter: "100",
-                  light: "300",
-                  main: "500",
-                  dark: "700",
-                  darker: "900",
-              }
-            : {
-                  lighter: "900",
-                  light: "700",
-                  main: "500",
-                  dark: "300",
-                  darker: "100",
-              }) as Record<Shade, keyof Colour>,
         rowShade: shade === "light" ? (odd: boolean) => (odd ? "200" : "100") : (odd: boolean) => (odd ? "800" : "900"),
     }) as const;
 

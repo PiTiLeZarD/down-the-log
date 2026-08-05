@@ -18,8 +18,8 @@ import { Signal } from "./signal";
 
 const styles = StyleSheet.create((theme) => ({
     inputBox: {
-        backgroundColor: theme.colours.primary[theme.shades.light],
-        borderTopColor: theme.colours.primary[theme.shades.darker],
+        backgroundColor: theme.colours.primary.light,
+        borderTopColor: theme.colours.primary.darker,
         borderTopWidth: theme.margins.sm,
         borderTopStyle: "solid",
         padding: theme.margins.md,

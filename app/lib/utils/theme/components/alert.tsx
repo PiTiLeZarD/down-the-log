@@ -11,9 +11,7 @@ type Severity = "info" | "warning" | "success";
 const styles = StyleSheet.create((theme) => ({
     container: (severity: Severity) => ({
         backgroundColor:
-            theme.colours[{ info: "primary", warning: "secondary", success: "success" }[severity] as ColourVariant][
-                theme.shades.light
-            ],
+            theme.colours[{ info: "primary", warning: "secondary", success: "success" }[severity] as ColourVariant].light,
         borderRadius: theme.margins.md,
         margin: theme.margins.md,
         paddingTop: theme.margins.lg,

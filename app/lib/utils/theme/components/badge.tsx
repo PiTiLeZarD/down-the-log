@@ -13,7 +13,7 @@ const styles = StyleSheet.create((theme) => ({
         zIndex: 1000,
         top: -(theme.components.typography.fontSize / 2),
         right: -(theme.components.typography.fontSize / 2),
-        backgroundColor: theme.colours[colour][theme.shades.main],
+        backgroundColor: theme.colours[colour].main,
         padding: theme.margins.md,
         paddingLeft: theme.margins.lg,
         paddingRight: theme.margins.lg,

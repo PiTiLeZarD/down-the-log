@@ -20,9 +20,9 @@ export const fireSwal = ({
     theme,
 }: SwalProps) => {
     const SwalTheme = {
-        confirmButtonColor: theme.colours.primary[theme.shades.dark],
-        denyButtonColor: theme.colours.secondary[theme.shades.dark],
-        cancelButtonColor: theme.colours.grey[theme.shades.dark],
+        confirmButtonColor: theme.colours.primary.dark,
+        denyButtonColor: theme.colours.secondary.dark,
+        cancelButtonColor: theme.colours.grey.dark,
     };
     Swal.fire({
         ...SwalTheme,

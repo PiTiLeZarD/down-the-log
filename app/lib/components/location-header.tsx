@@ -18,10 +18,10 @@ import { Stack } from "./stack";
 
 const styles = StyleSheet.create((theme) => ({
     header: {
-        backgroundColor: theme.colours.primary[theme.shades.light],
+        backgroundColor: theme.colours.primary.light,
         padding: theme.margins.md,
         borderBottomWidth: theme.margins.sm,
-        borderBottomColor: theme.colours.grey[theme.shades.darker],
+        borderBottomColor: theme.colours.grey.darker,
     },
     callsign: {
         marginTop: 5,

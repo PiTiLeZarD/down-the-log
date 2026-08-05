@@ -21,7 +21,7 @@ export type SettingsProps = {};
 export type SettingsComponent = React.FC<SettingsProps>;
 
 const Settings: SettingsComponent = (): React.JSX.Element => {
-    const { theme } = useUnistyles();
+    const { theme, rt } = useUnistyles();
     const settings = useSettings();
     const currentLocation = useStore((state) => state.currentLocation);
     const updateSetting = useStore((state) => state.updateSetting);
@@ -59,13 +59,13 @@ const Settings: SettingsComponent = (): React.JSX.Element => {
                     <Typography>Theme</Typography>
                     <Stack direction="row">
                         <Switch
-                            value={UnistylesRuntime.themeName === "dark"}
+                            value={rt.themeName === "dark"}
                             onValueChange={(v) => {
-                                if (UnistylesRuntime.hasAdaptiveThemes) UnistylesRuntime.setAdaptiveThemes(false);
+                                if (rt.hasAdaptiveThemes) UnistylesRuntime.setAdaptiveThemes(false);
                                 UnistylesRuntime.setTheme(v ? "dark" : "light");
                             }}
                         />
-                        <Typography>{UnistylesRuntime.themeName}</Typography>
+                        <Typography>{rt.themeName}</Typography>
                     </Stack>
                     <Typography underline>Show NCDXF/IARU Beacons:</Typography>
                     <Switch

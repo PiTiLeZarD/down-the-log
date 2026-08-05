@@ -20,7 +20,7 @@ const styles = StyleSheet.create((theme) => ({
         ...theme.components.typography,
         borderWidth: theme.margins.xs,
         borderStyle: "solid",
-        borderColor: theme.colours.primary[theme.shades.light],
+        borderColor: theme.colours.primary.light,
         borderRadius: theme.margins.md,
         padding: theme.margins.lg,
         flexGrow: 1,
@@ -28,7 +28,7 @@ const styles = StyleSheet.create((theme) => ({
         color: theme.text.main,
     },
     inputText: {
-        backgroundColor: theme.colours.primary[theme.shades.light],
+        backgroundColor: theme.colours.primary.light,
         borderRadius: theme.margins.md,
         padding: theme.margins.lg,
         height: "100%",

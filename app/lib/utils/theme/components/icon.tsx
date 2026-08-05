@@ -27,7 +27,7 @@ export const Icon: IconComponent = ({
         <Ionicons
             name={name as any}
             size={size}
-            color={theme.colours[colour][theme.shades[contrast ? "lighter" : "dark"]]}
+            color={theme.colours[colour][contrast ? "lighter" : "dark"]}
             {...otherProps}
         />
     );

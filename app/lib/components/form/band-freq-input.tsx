@@ -60,7 +60,7 @@ export const BandFreqInput: BandFreqInputComponent = ({ noLabel = false }): Reac
                 <View style={{ flexGrow: 1 }}>
                     <Input
                         numeric
-                        style={[!bandUserInput ? { backgroundColor: theme.colours.secondary[theme.shades.main] } : {}]}
+                        style={[!bandUserInput ? { backgroundColor: theme.colours.secondary.main } : {}]}
                         value={freqUserInput}
                         onFocus={(ev) => {
                             const elt = ev.target as any as HTMLInputElement;

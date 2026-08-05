@@ -10,7 +10,7 @@ import { Typography } from "./lib/utils/theme/components/typography";
 
 const styles = StyleSheet.create((theme) => ({
     menuButton: {
-        backgroundColor: theme.colours.primary[theme.shades.lighter],
+        backgroundColor: theme.colours.primary.lighter,
     },
     menuButtonStack: {
         height: 100,

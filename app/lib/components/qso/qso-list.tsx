@@ -36,10 +36,10 @@ const styles = StyleSheet.create((theme) => ({
         display: "flex",
         alignItems: "center",
         borderStyle: "solid",
-        borderColor: theme.colours.primary[theme.shades.darker],
+        borderColor: theme.colours.primary.darker,
         borderTopWidth: 1,
         borderBottomWidth: 1,
-        backgroundColor: theme.colours.primary[theme.shades.lighter],
+        backgroundColor: theme.colours.primary.lighter,
     },
     sectionHeaderText: {
         lineHeight: LINEHEIGHT,

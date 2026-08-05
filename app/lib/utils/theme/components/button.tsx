@@ -12,15 +12,15 @@ const styles = StyleSheet.create((theme) => ({
         ...theme.components.button,
     },
     button_contained: (colour: ColourVariant) => ({
-        backgroundColor: theme.colours[colour][theme.shades.dark],
+        backgroundColor: theme.colours[colour].dark,
     }),
     button_outlined: (colour: ColourVariant) => ({
         borderStyle: "solid",
         borderWidth: theme.margins.sm,
-        borderColor: theme.colours[colour][theme.shades.dark],
+        borderColor: theme.colours[colour].dark,
     }),
     button_chip: (colour: ColourVariant) => ({
-        backgroundColor: theme.colours[colour][theme.shades.light],
+        backgroundColor: theme.colours[colour].light,
         borderRadius: theme.margins.xxl,
         paddingTop: theme.margins.sm,
         paddingBottom: theme.margins.sm,
@@ -31,13 +31,13 @@ const styles = StyleSheet.create((theme) => ({
         ...theme.components.buttonText,
     },
     buttonText_contained: (colour: ColourVariant) => ({
-        color: theme.colours[colour][theme.shades.lighter],
+        color: theme.colours[colour].lighter,
     }),
     buttonText_outlined: (colour: ColourVariant) => ({
-        color: theme.colours[colour][theme.shades.dark],
+        color: theme.colours[colour].dark,
     }),
     buttonText_chip: (colour: ColourVariant) => ({
-        color: theme.colours[colour][theme.shades.darker],
+        color: theme.colours[colour].darker,
         fontSize: theme.components.typography.fontSize - 4,
     }),
 }));

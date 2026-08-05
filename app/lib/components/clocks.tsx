@@ -10,7 +10,7 @@ export type ClocksComponent = React.FC<ClocksProps>;
 
 const styles = StyleSheet.create((theme) => ({
     container: {
-        backgroundColor: theme.colours.primary[theme.shades.light],
+        backgroundColor: theme.colours.primary.light,
         paddingTop: theme.margins.md,
         paddingBottom: theme.margins.md,
     },

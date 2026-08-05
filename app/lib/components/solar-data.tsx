@@ -138,7 +138,7 @@ export const SolarData: SolarDataComponent = (): React.JSX.Element => {
                                     style={{ height: 150, flexGrow: 1 }}
                                     data={solarValues}
                                     numberOfTicks={3}
-                                    svg={{ fill: hexToCssRgb(theme.colours.primary[theme.shades.dark]) }}
+                                    svg={{ fill: hexToCssRgb(theme.colours.primary.dark) }}
                                 >
                                     <Grid />
                                 </BarChart>
@@ -156,7 +156,7 @@ export const SolarData: SolarDataComponent = (): React.JSX.Element => {
                                     style={{ height: 150, flexGrow: 1 }}
                                     data={magneticValues}
                                     numberOfTicks={3}
-                                    svg={{ fill: hexToCssRgb(theme.colours.primary[theme.shades.dark]) }}
+                                    svg={{ fill: hexToCssRgb(theme.colours.primary.dark) }}
                                 >
                                     <Grid />
                                 </BarChart>

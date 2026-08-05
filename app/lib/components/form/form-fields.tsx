@@ -40,15 +40,15 @@ const styles = StyleSheet.create((theme) => ({
     datetime: {
         borderStyle: "solid",
         borderBottomWidth: theme.margins.sm,
-        borderBottomColor: theme.colours.grey[theme.shades.darker],
+        borderBottomColor: theme.colours.grey.darker,
     },
     callsignInput: {
         textAlign: "center",
-        color: theme.colours.primary[theme.shades.darker],
+        color: theme.colours.primary.darker,
         fontWeight: "700",
         fontSize: 20,
         borderBottomWidth: 3,
-        borderBottomColor: theme.colours.primary[theme.shades.dark],
+        borderBottomColor: theme.colours.primary.dark,
         borderStyle: "dashed",
     },
     locsubtitle: (alert: boolean = false) => ({
@@ -57,7 +57,7 @@ const styles = StyleSheet.create((theme) => ({
         borderRadius: theme.margins.md,
         ...(alert
             ? {
-                  backgroundColor: theme.colours.secondary[theme.shades.dark],
+                  backgroundColor: theme.colours.secondary.dark,
                   color: theme.background,
               }
             : {}),
