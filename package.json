@@ -25,10 +25,10 @@
         "clean": "rm -Rf down-the-log",
         "prepages": "pnpm clean && pnpm build:web",
         "pages": "gh-pages -t -b ghpages -d down-the-log",
-        "refreshpota": "wget -O scripts/all_parks_ext.csv https://pota.app/all_parks_ext.csv && ts-node scripts/pota.ts",
-        "refreshsota": "wget -O scripts/summitslist.csv https://storage.sota.org.uk/summitslist.csv && ts-node scripts/sota.ts",
-        "refreshwwff": "wget -O scripts/wwff_directory.csv https://wwff.co/wwff-data/wwff_directory.csv && ts-node scripts/wwff.ts",
-        "potawwfflinks": "ts-node scripts/linkpotawwff.ts ",
+        "refreshpota": "wget -O scripts/all_parks_ext.csv https://pota.app/all_parks_ext.csv && tsx scripts/pota.ts",
+        "refreshsota": "wget -O scripts/summitslist.csv https://storage.sota.org.uk/summitslist.csv && tsx scripts/sota.ts",
+        "refreshwwff": "wget -O scripts/wwff_directory.csv https://wwff.co/wwff-data/wwff_directory.csv && tsx scripts/wwff.ts",
+        "potawwfflinks": "tsx scripts/linkpotawwff.ts ",
         "refreshdata": "pnpm refreshpota && pnpm refreshsota && pnpm refreshwwff && pnpm potawwfflinks"
     },
     "dependencies": {
@@ -87,6 +87,7 @@
         "csv-parse": "^5.5.6",
         "fast-xml-parser": "^4.4.0",
         "fastest-levenshtein": "^1.0.16",
+        "tsx": "^4.23.5",
         "typescript": "~6.0.3"
     },
     "private": true
