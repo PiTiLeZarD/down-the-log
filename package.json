@@ -25,6 +25,7 @@
         "clean": "rm -Rf down-the-log",
         "prepages": "pnpm clean && pnpm build:web",
         "pages": "gh-pages -t -b ghpages -d down-the-log",
+        "tag": "node scripts/tag.mjs",
         "refreshpota": "wget -O scripts/all_parks_ext.csv https://pota.app/all_parks_ext.csv && tsx scripts/pota.ts",
         "refreshsota": "wget -O scripts/summitslist.csv https://storage.sota.org.uk/summitslist.csv && tsx scripts/sota.ts",
         "refreshwwff": "wget -O scripts/wwff_directory.csv https://wwff.co/wwff-data/wwff_directory.csv && tsx scripts/wwff.ts",
