@@ -1,16 +1,13 @@
 import axios from "axios";
 import { DateTime } from "luxon";
 import React, { useEffect } from "react";
-import { View } from "react-native";
-import { BarChart, Grid, YAxis } from "react-native-svg-charts";
-import { useUnistyles } from "react-native-unistyles";
 import { Modal } from "../utils/modal";
 import { useWidthMatches } from "../utils/theme/breakpoints";
 import colours from "../utils/theme/colours.json";
 import { Button } from "../utils/theme/components/button";
 import { Typography } from "../utils/theme/components/typography";
-import { hexToCssRgb } from "../utils/theme/theme";
 import { withCache } from "../utils/with-cache";
+import { BarChart } from "./bar-chart";
 import { Stack } from "./stack";
 
 const dtFormat = "yyyyMMddHHmm";
@@ -81,7 +78,6 @@ export const SolarData = () => {
     const [modal, setModal] = React.useState<boolean>(false);
     const [solarData, setSolarData] = React.useState<DataType[]>();
     const [magneticData, setMagneticData] = React.useState<DataType[]>();
-    const { theme } = useUnistyles();
 
     const updateCache = () => {
         withCache("solarData", fetchSolarData, 60 * 60 * 3).then((data) => setSolarData(deserialise(data)));
@@ -93,7 +89,6 @@ export const SolarData = () => {
         const ts = setInterval(updateCache, 10 * 60 * 1000);
         return () => clearInterval(ts);
     }, []);
-    const contentInset = { top: 20, bottom: 20 };
     const solarValues = solarData ? solarData.map(({ value }) => value) : undefined;
     const magneticValues = magneticData ? magneticData.map(({ value }) => value) : undefined;
 
@@ -127,36 +122,14 @@ export const SolarData = () => {
                     {solarValues && (
                         <Stack>
                             <Typography>Solar flux index (Currently: {solarValues[solarValues.length - 1]})</Typography>
-                            <View style={{ height: 150, flexDirection: "row" }}>
-                                <YAxis contentInset={contentInset} data={solarValues} numberOfTicks={3} />
-                                <BarChart
-                                    contentInset={contentInset}
-                                    style={{ height: 150, flexGrow: 1 }}
-                                    data={solarValues}
-                                    numberOfTicks={3}
-                                    svg={{ fill: hexToCssRgb(theme.colours.primary.dark) }}
-                                >
-                                    <Grid />
-                                </BarChart>
-                            </View>
+                            <BarChart data={solarValues} />
                         </Stack>
                     )}
                     {!solarValues && <Typography>Looking for solar data...</Typography>}
                     {magneticValues && (
                         <Stack>
                             <Typography>K index (Currently: {magneticValues[magneticValues.length - 1]})</Typography>
-                            <View style={{ height: 150, flexDirection: "row" }}>
-                                <YAxis contentInset={contentInset} data={magneticValues} numberOfTicks={3} />
-                                <BarChart
-                                    contentInset={contentInset}
-                                    style={{ height: 150, flexGrow: 1 }}
-                                    data={magneticValues}
-                                    numberOfTicks={3}
-                                    svg={{ fill: hexToCssRgb(theme.colours.primary.dark) }}
-                                >
-                                    <Grid />
-                                </BarChart>
-                            </View>
+                            <BarChart data={magneticValues} />
                         </Stack>
                     )}
                     {!magneticValues && <Typography>Looking for magnetic data...</Typography>}

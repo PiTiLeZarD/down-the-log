@@ -1,6 +1,5 @@
 import React from "react";
-import { Pressable, View, ViewStyle } from "react-native";
-import BigList from "react-native-big-list";
+import { FlatList, Pressable, View, ViewStyle } from "react-native";
 import { StyleSheet } from "react-native-unistyles";
 import { QSO } from ".";
 import { Modal } from "../../utils/modal";
@@ -9,7 +8,6 @@ import { Button } from "../../utils/theme/components/button";
 import { mergeStyles } from "../../utils/theme/components/styles";
 import { Typography } from "../../utils/theme/components/typography";
 import { useSettings } from "../../utils/use-settings";
-import { useThrottle } from "../../utils/use-throttle";
 import { Stack } from "../stack";
 import { QsoListItem } from "./qso-list-item";
 import { QsoMap } from "./qso-map";
@@ -27,10 +25,21 @@ const qsos2sections = (qsos: QSO[]): QSO[][] =>
         }, {}),
     );
 
+// SectionList can't give exact layout without hand-rolling the index maths, so the grouped log is
+// flattened into one row list instead and the header rows are told apart by `kind`.
+type Row = { kind: "section"; key: string; qsos: QSO[] } | { kind: "qso"; key: string; qso: QSO; index: number };
+
+const sections2rows = (sections: QSO[][]): Row[] =>
+    sections.flatMap((qsos, section) => [
+        { kind: "section" as const, key: `section-${section}`, qsos },
+        ...qsos.map((qso, index) => ({ kind: "qso" as const, key: qso.id, qso, index })),
+    ]);
+
 const LINEHEIGHT = 28;
 
 const styles = StyleSheet.create((theme) => ({
-    biglist: {
+    list: {
+        flexGrow: 1,
         backgroundColor: theme.background,
     },
     sectionHeader: {
@@ -49,15 +58,13 @@ const styles = StyleSheet.create((theme) => ({
 }));
 
 export type QsoListSectionHeaderProps = {
-    section: number;
-    sections: QSO[][];
+    qsos: QSO[];
 };
 
-``;
-export const QsoListSectionHeader = ({ section, sections }: QsoListSectionHeaderProps) => {
+export const QsoListSectionHeader = ({ qsos }: QsoListSectionHeaderProps) => {
     const [mapOpen, setmapOpen] = React.useState<boolean>(false);
     const settings = useSettings();
-    const text = `${sections[section][0].date.toFormat(settings.datemonth ? "MM-dd-yyyy" : "dd/MM/yyyy")} (${sections[section].length})`;
+    const text = `${qsos[0].date.toFormat(settings.datemonth ? "MM-dd-yyyy" : "dd/MM/yyyy")} (${qsos.length})`;
 
     if (!settings.google || !settings.google.key || !settings.google.secret) {
         return (
@@ -75,7 +82,7 @@ export const QsoListSectionHeader = ({ section, sections }: QsoListSectionHeader
                 <Typography style={styles.sectionHeaderText}>{text}</Typography>
                 <Modal wide open={mapOpen} onClose={() => setmapOpen(false)}>
                     <Stack gap="xl">
-                        <QsoMap qsos={sections[section]} width={640} height={640} />
+                        <QsoMap qsos={qsos} width={640} height={640} />
                         <Button text="Ok" colour="success" onPress={() => setmapOpen(false)} />
                     </Stack>
                 </Modal>
@@ -96,39 +103,47 @@ const applyFilters = (qsos: QSO[], filters: QsoListProps["filters"]) =>
 
 export const QsoList = ({ style, filters, qsos, onQsoPress }: QsoListProps) => {
     const settings = useStore((state) => state.settings);
-    const launch = (q: QSO[], f: QsoListProps["filters"]) => qsos2sections(applyFilters(q, f));
-    const throttled = useThrottle(launch, 250);
-    const sections = throttled(qsos, filters);
-
-    if (!sections) return <></>;
+    // Both props have to be referentially stable for this to hold: a fresh row array on every render
+    // re-runs the grouping over the whole log.
+    const rows = React.useMemo(() => sections2rows(qsos2sections(applyFilters(qsos, filters))), [qsos, filters]);
 
     return (
-        <BigList
-            style={mergeStyles<ViewStyle>(styles.biglist, style)}
-            placeholder
-            stickySectionHeadersEnabled={false}
-            sections={sections}
-            keyExtractor={(item) => item.id}
-            renderItem={({ item, index }) => (
-                <QsoListItem {...{ onQsoPress, item, index, lineHeight: LINEHEIGHT, imperial: settings.imperial }} />
-            )}
-            renderHeader={() => (
-                <QsoRow
-                    header
-                    lineHeight={LINEHEIGHT}
-                    position="ID"
-                    time="Time"
-                    duration="Duration"
-                    callsign="Callsign"
-                    name="Name"
-                    band="Band"
-                />
-            )}
-            renderSectionHeader={(section) => <QsoListSectionHeader section={section} sections={sections} />}
-            renderFooter={() => <></>}
-            itemHeight={LINEHEIGHT}
-            headerHeight={LINEHEIGHT}
-            sectionHeaderHeight={LINEHEIGHT}
-        />
+        // The wrapper carries the theming: FlatList isn't processed by unistyles, so a stylesheet handed
+        // straight to it would arrive empty.
+        <View style={mergeStyles<ViewStyle>(styles.list, style)}>
+            <FlatList
+                data={rows}
+                extraData={settings.imperial}
+                keyExtractor={(row) => row.key}
+                initialNumToRender={40}
+                renderItem={({ item: row }) =>
+                    row.kind === "section" ? (
+                        <QsoListSectionHeader qsos={row.qsos} />
+                    ) : (
+                        <QsoListItem
+                            {...{
+                                onQsoPress,
+                                item: row.qso,
+                                index: row.index,
+                                lineHeight: LINEHEIGHT,
+                                imperial: settings.imperial,
+                            }}
+                        />
+                    )
+                }
+                ListHeaderComponent={
+                    <QsoRow
+                        header
+                        lineHeight={LINEHEIGHT}
+                        position="ID"
+                        time="Time"
+                        duration="Duration"
+                        callsign="Callsign"
+                        name="Name"
+                        band="Band"
+                    />
+                }
+            />
+        </View>
     );
 };

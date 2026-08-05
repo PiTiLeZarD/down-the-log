@@ -1,6 +1,6 @@
 import { useRouter } from "expo-router";
 import { DateTime } from "luxon";
-import { useEffect } from "react";
+import { useEffect, useMemo } from "react";
 import { FormProvider, useForm } from "react-hook-form";
 import { View } from "react-native";
 import { StyleSheet } from "react-native-unistyles";
@@ -32,6 +32,10 @@ const styles = StyleSheet.create((theme) => ({
     content: {
         flexGrow: 1,
     },
+    // The list grows into whatever the inputs leave behind rather than pushing them off-screen.
+    list: {
+        height: 0,
+    },
     inputs: {
         width: "100%",
         backgroundColor: theme.background,
@@ -51,6 +55,11 @@ const Index = () => {
     const lastQso = qsos.length ? qsos[0] : undefined;
 
     const callsign = methods.watch("callsign");
+    const listQsos = useMemo(() => filterQsos(qsos, qsosFilters), [qsos, qsosFilters]);
+    const listFilters = useMemo(
+        () => (callsign ? [(q: QSO) => q.callsign.includes(callsign)] : undefined),
+        [callsign],
+    );
     const resetQso = (previousQso?: QSO) => {
         let qso = prefillMyStation(createQso(""), { myCallsign: settings.myCallsign, myLocator: currentLocation });
         if (previousQso || lastQso) qso = carryOver(qso, previousQso || (lastQso as QSO), settings.carryOver);
@@ -80,9 +89,9 @@ const Index = () => {
                 {settings.showBeacons && <Beacons />}
                 {settings.showFilters && <Filters showTag />}
                 <QsoList
-                    style={{ height: 0 }}
-                    qsos={filterQsos(qsos, qsosFilters)}
-                    filters={callsign ? [(q) => q.callsign.includes(callsign)] : undefined}
+                    style={styles.list}
+                    qsos={listQsos}
+                    filters={listFilters}
                     onQsoPress={(qso) => navigate(`/qso?qsoId=${qso.id}`)}
                 />
             </View>

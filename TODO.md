@@ -73,11 +73,15 @@ This is the rough todolist I want to work on.
 
 ## Performance
 
+- [ ] opening a QSO for the first time in a session stalls for about a second. `form-fields.tsx` pulls in `Events` -> `event-rules.ts`, which imports `pota.json` (6.7MB), `sota.json` (8.9MB), `wwff.json` (4.2MB) and `iota.json`. expo-router loads route modules on first navigation, so that whole ~20MB of JSON-as-object-literal is parsed and evaluated on the first click, and is warm afterwards — which is exactly the symptom. Options: `require` the datasets lazily inside the lookups that need them, ship them as `JSON.parse("...")` strings (much faster to parse than object literals), or move the lookups behind an index built at build time
+- [ ] `useAutoSave` writes on mount: `useWatch` returns values straight away, so the effect fires immediately and `log(qso)` rebuilds the whole `qsos` array and re-persists the entire store every single time a QSO page is opened, edited or not. Only save once the form is actually dirty
+
 - [ ] `hasDuplicates` filter is O(n^2) with a regex inside: `findMatchingQsos` per QSO across every QSO (`components/filters.tsx:56`). At a few thousand QSOs that's tens of millions of `baseCallsign` regex runs and the filter screen locks up. Build a `Map<baseCallsign, QSO[]>` once
 - [ ] ADIF import has the same shape, every imported record scans the whole log (`components/adif/import.tsx:59`). Same index fixes it
 - [ ] memoise `baseCallsign` — it gets called repeatedly on identical strings from list rendering, filtering and dedup
 - [ ] `useSettings` rebuilds the settings object every render (`utils/use-settings.ts:5`), so nothing downstream can memo on it. Run `fixSettings` once in the persist `merge` option instead
-- [ ] `filterQsos` re-runs on every keystroke in the callsign box (`app/index.tsx:88`), memo on `[qsos, filters]`
+- [x] `filterQsos` re-runs on every keystroke in the callsign box (`app/index.tsx:88`), memo on `[qsos, filters]`
+- [ ] `useThrottle` reschedules on every render and `setState`s a fresh value, so any component that calls it during render re-renders itself forever at the throttle interval. `QsoList` was doing this (fixed with a memo); `useHamQTH` still does (`utils/hamqth.tsx:134`), which means a HamQTH lookup every 500ms for as long as a callsign sits in the box. Either compare against the last args before scheduling, or debounce the input instead of the result
 - [ ] consider one `useFilteredQsos()` selector doing sort + filter + memo, consumed by index/stats/filters/qsl, instead of `filterQsos(useQsos(), filters)` repeated in each
 
 ## Security
@@ -97,7 +101,12 @@ This is the rough todolist I want to work on.
     - [ ] 2 `no-unused-expressions` — one of them is the `console.groupEnd;` bug listed above, the other is a stray `` ` `` in `qso-list.tsx`
     - [ ] 4 `@typescript-eslint/no-unused-vars`, 1 `import/no-named-as-default-member`
     - [ ] 1 `react-hooks/incompatible-library` — react-hook-form's `watch()` can't be memoized, so React Compiler skips `app/index.tsx` entirely. Worth knowing before turning the compiler on
-- [ ] unmaintained deps carrying real weight under React 19 / RN 0.86: `react-native-svg-charts` (last publish 2019), `react-native-big-list` (2022), `react-native-picker-select`. All three already needed `autoProcessPaths` workarounds in `babel.config.js`. Biggest risk to the next Expo upgrade — `@shopify/flash-list` replaces big-list, `victory-native` or plain `react-native-svg` replaces the charts
+- [x] unmaintained deps carrying real weight under React 19 / RN 0.86: `react-native-svg-charts` (last publish 2019), `react-native-big-list` (2022), `react-native-picker-select`. All three already needed `autoProcessPaths` workarounds in `babel.config.js`. Biggest risk to the next Expo upgrade — `@shopify/flash-list` replaces big-list, `victory-native` or plain `react-native-svg` replaces the charts
+    - [x] `react-native-big-list` -> `FlatList` (sections flattened into one row list). Tried `@shopify/flash-list` first, but v2 positions cells absolutely off measured heights, so every mount showed the rows piled up for a frame before they snapped into place. `FlatList` lays out in flow, so the first paint is already correct
+    - [x] `react-native-picker-select` -> `@react-native-picker/picker`, which was already a dependency. iOS keeps the modal-wheel behaviour, web/android use the picker directly
+    - [x] `react-native-svg-charts` -> `components/bar-chart.tsx`, plain views, no svg needed
+    - [x] `autoProcessPaths` is down to `@expo/html-elements` only
+    - [ ] none of it is verified on a real ios/android build yet, only web
 
 ## Refactors
 

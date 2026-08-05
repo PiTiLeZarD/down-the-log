@@ -10,11 +10,7 @@ module.exports = (api) => {
                     // Unistyles hides style properties behind non-enumerable descriptors, so a
                     // stylesheet handed to a component it hasn't processed silently renders unstyled.
                     // These libraries all forward our styles to a react-native primitive.
-                    autoProcessPaths: [
-                        "@expo/html-elements/src",
-                        "react-native-big-list/dist",
-                        "react-native-picker-select/src",
-                    ],
+                    autoProcessPaths: ["@expo/html-elements/src"],
                 },
             ],
             "react-native-worklets/plugin",

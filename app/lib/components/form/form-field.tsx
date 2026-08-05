@@ -31,8 +31,8 @@ export const FormField = ({
     const { field } = useController({ name, control });
     const value = String(field.value || "");
 
-    // RNPickerSelect falls back to its placeholder (value: null) when the current value isn't one of the
-    // items, so picking anything then writes null over a perfectly good value. Always offer it back.
+    // A picker whose value isn't one of its items shows the first item instead, so the next change event
+    // writes that over a perfectly good value. Always offer the current value back as an item.
     const withCurrentValue = (items: { label: string; value: string }[]) =>
         value === "" || items.some((item) => item.value === value) ? items : [...items, { label: value, value }];
 

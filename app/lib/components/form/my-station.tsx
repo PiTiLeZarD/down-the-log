@@ -47,10 +47,9 @@ export const MyStation = () => {
                             <View style={{ flex: 0.5 }}>
                                 <ButtonOffset>
                                     <SelectInput
-                                        onValueChange={(v, i) => {
+                                        onValueChange={(v) => {
                                             if (v !== "-1") setValue("myRig", v);
                                         }}
-                                        placeholder="Pick"
                                         value="-1"
                                         items={[
                                             { label: "Pick", value: "-1" },
@@ -69,10 +68,9 @@ export const MyStation = () => {
                             <View style={{ flex: 0.5 }}>
                                 <ButtonOffset>
                                     <SelectInput
-                                        onValueChange={(v, i) => {
+                                        onValueChange={(v) => {
                                             if (v !== "-1") setValue("myAntenna", v);
                                         }}
-                                        placeholder="Pick"
                                         value="-1"
                                         items={[
                                             { label: "Pick", value: "-1" },
