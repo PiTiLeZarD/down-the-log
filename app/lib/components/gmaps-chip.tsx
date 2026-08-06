@@ -1,6 +1,6 @@
 import React from "react";
 import { maidenhead2Latlong } from "../utils/locator";
-import { Button } from "../utils/theme/components/button";
+import { Button } from "../ui/button";
 
 export type GmapsChipProps = {
     text?: string;

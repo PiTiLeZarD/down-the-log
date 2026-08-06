@@ -85,10 +85,6 @@ This is the rough todolist I want to work on.
 
 - [ ] no tests at all. The pure logic is the testable part and is exactly where the review bugs were: `callsign.ts`, `locator.ts`, ADIF/ADX round-trip, `event-rules.ts`, the `prefill*` helpers. vitest
 
-## Refactors
-
-- [ ] the whole design system (Button, Input, Typography...) sits in `app/lib/utils/theme/components/`, three levels down under `utils`. Promote to `app/lib/ui/`
-
 ## Done
 
 - [x] add zlota siota links from sig
@@ -210,3 +206,4 @@ This is the rough todolist I want to work on.
     - [x] `react-native-picker-select` -> `@react-native-picker/picker`, which was already a dependency. iOS keeps the modal-wheel behaviour, web/android use the picker directly
     - [x] `react-native-svg-charts` -> `components/bar-chart.tsx`, plain views, no svg needed
     - [x] `autoProcessPaths` is down to `@expo/html-elements` only
+- [x] the whole design system (Button, Input, Typography...) sat in `app/lib/utils/theme/components/`, three levels down under `utils`. Now `app/lib/ui/`, with the theme tokens (`theme.ts`, `breakpoints.ts`, `colours.json`) flattened alongside the components

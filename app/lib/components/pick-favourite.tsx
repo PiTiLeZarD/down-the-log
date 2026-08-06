@@ -2,8 +2,8 @@ import React from "react";
 import { View } from "react-native";
 import { Modal } from "../utils/modal";
 import { Settings, useStore } from "../utils/store";
-import { Button } from "../utils/theme/components/button";
-import { PaginatedList } from "../utils/theme/components/paginated-list";
+import { Button } from "../ui/button";
+import { PaginatedList } from "../ui/paginated-list";
 import { useSettings } from "../utils/use-settings";
 import { Stack } from "./stack";
 

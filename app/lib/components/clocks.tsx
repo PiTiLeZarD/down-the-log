@@ -1,7 +1,7 @@
 import { DateTime } from "luxon";
 import React from "react";
 import { StyleSheet } from "react-native-unistyles";
-import { Typography } from "../utils/theme/components/typography";
+import { Typography } from "../ui/typography";
 import { Grid } from "./grid";
 
 const styles = StyleSheet.create((theme) => ({

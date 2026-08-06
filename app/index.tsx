@@ -18,8 +18,8 @@ import {
 } from "./lib/components/qso";
 import { QsoList } from "./lib/components/qso/qso-list";
 import { useStore } from "./lib/utils/store";
-import { Alert } from "./lib/utils/theme/components/alert";
-import { Typography } from "./lib/utils/theme/components/typography";
+import { Alert } from "./lib/ui/alert";
+import { Typography } from "./lib/ui/typography";
 import { useSettings } from "./lib/utils/use-settings";
 
 const styles = StyleSheet.create((theme) => ({

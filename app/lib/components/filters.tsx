@@ -10,12 +10,12 @@ import { sortNumsAndAlpha, unique } from "../utils/arrays";
 import { normalise } from "../utils/locator";
 import { Modal } from "../utils/modal";
 import { useStore } from "../utils/store";
-import { Alert } from "../utils/theme/components/alert";
-import { Button } from "../utils/theme/components/button";
-import { Input } from "../utils/theme/components/input";
-import { PaginatedList } from "../utils/theme/components/paginated-list";
-import { Typography } from "../utils/theme/components/typography";
-import { fireSwal } from "../utils/theme/swal";
+import { Alert } from "../ui/alert";
+import { Button } from "../ui/button";
+import { Input } from "../ui/input";
+import { PaginatedList } from "../ui/paginated-list";
+import { Typography } from "../ui/typography";
+import { fireSwal } from "../ui/swal";
 import { QSO, findMatchingQsos, hasEvent, useQsos } from "./qso";
 import { Stack } from "./stack";
 

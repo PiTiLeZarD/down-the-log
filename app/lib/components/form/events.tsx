@@ -1,10 +1,10 @@
 import React from "react";
 import { useFormContext } from "react-hook-form";
 import { Modal } from "../../utils/modal";
-import { Badge } from "../../utils/theme/components/badge";
-import { Button } from "../../utils/theme/components/button";
-import { Input } from "../../utils/theme/components/input";
-import { Typography } from "../../utils/theme/components/typography";
+import { Badge } from "../../ui/badge";
+import { Button } from "../../ui/button";
+import { Input } from "../../ui/input";
+import { Typography } from "../../ui/typography";
 import { Grid } from "../grid";
 import { QSO, allEvents } from "../qso";
 import { Stack } from "../stack";

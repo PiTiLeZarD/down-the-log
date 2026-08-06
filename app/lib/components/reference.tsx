@@ -13,9 +13,9 @@ import {
 } from "../utils/event-rules";
 import { downloadQsos } from "../utils/file-format";
 import { useStore } from "../utils/store";
-import { Button } from "../utils/theme/components/button";
-import { Icon } from "../utils/theme/components/icon";
-import { Typography } from "../utils/theme/components/typography";
+import { Button } from "../ui/button";
+import { Icon } from "../ui/icon";
+import { Typography } from "../ui/typography";
 import { GmapsChip } from "./gmaps-chip";
 import { Grid } from "./grid";
 import { QSO } from "./qso";

@@ -6,8 +6,8 @@ import { useUnistyles } from "react-native-unistyles";
 import { baseCallsign, parseCallsign } from "./callsign";
 import { latlong2Maidenhead, normalise } from "./locator";
 import { useStore } from "./store";
-import { fireSwal } from "./theme/swal";
-import { ThemeType } from "./theme/theme";
+import { fireSwal } from "../ui/swal";
+import { ThemeType } from "../ui/theme";
 import { useSettings } from "./use-settings";
 import { useThrottle } from "./use-throttle";
 

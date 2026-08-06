@@ -3,9 +3,9 @@ import { StyleSheet } from "react-native-unistyles";
 import { Grid } from "./lib/components/grid";
 import { PageLayout } from "./lib/components/page-layout";
 import { Stack } from "./lib/components/stack";
-import { Button } from "./lib/utils/theme/components/button";
-import { Icon, IconName } from "./lib/utils/theme/components/icon";
-import { Typography } from "./lib/utils/theme/components/typography";
+import { Button } from "./lib/ui/button";
+import { Icon, IconName } from "./lib/ui/icon";
+import { Typography } from "./lib/ui/typography";
 
 const styles = StyleSheet.create((theme) => ({
     menuButton: {

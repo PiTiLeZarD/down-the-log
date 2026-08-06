@@ -9,11 +9,11 @@ import { Stack } from "./lib/components/stack";
 import { TabsLayout } from "./lib/components/tabs-layout";
 import { unique } from "./lib/utils/arrays";
 import { useStore } from "./lib/utils/store";
-import { Alert } from "./lib/utils/theme/components/alert";
-import { Button } from "./lib/utils/theme/components/button";
-import { Icon } from "./lib/utils/theme/components/icon";
-import { Typography } from "./lib/utils/theme/components/typography";
-import { fireSwal } from "./lib/utils/theme/swal";
+import { Alert } from "./lib/ui/alert";
+import { Button } from "./lib/ui/button";
+import { Icon } from "./lib/ui/icon";
+import { Typography } from "./lib/ui/typography";
+import { fireSwal } from "./lib/ui/swal";
 
 const Adif = () => {
     const { theme } = useUnistyles();

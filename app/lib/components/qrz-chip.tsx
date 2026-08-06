@@ -1,5 +1,5 @@
 import { findCountry, getCallsignData, parseCallsign } from "../utils/callsign";
-import { Button } from "../utils/theme/components/button";
+import { Button } from "../ui/button";
 
 export type QrzChipProps = {
     callsign: string;

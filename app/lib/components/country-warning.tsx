@@ -1,8 +1,8 @@
 import { useEffect, useEffectEvent } from "react";
 import { useFormContext } from "react-hook-form";
 import { collapseCallsign, getCallsignData } from "../utils/callsign";
-import { Alert } from "../utils/theme/components/alert";
-import { Typography } from "../utils/theme/components/typography";
+import { Alert } from "../ui/alert";
+import { Typography } from "../ui/typography";
 import { QSO } from "./qso";
 
 export const CountryWarning = () => {

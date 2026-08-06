@@ -1,9 +1,9 @@
 import { View } from "react-native";
 import { PageLayout } from "./lib/components/page-layout";
 import { Stack } from "./lib/components/stack";
-import { Alert } from "./lib/utils/theme/components/alert";
-import { Button } from "./lib/utils/theme/components/button";
-import { Typography } from "./lib/utils/theme/components/typography";
+import { Alert } from "./lib/ui/alert";
+import { Button } from "./lib/ui/button";
+import { Typography } from "./lib/ui/typography";
 
 const About = () => {
     return (

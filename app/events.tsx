@@ -9,9 +9,9 @@ import { TabsLayout } from "./lib/components/tabs-layout";
 import { unique } from "./lib/utils/arrays";
 import { EventType, eventDataMassageMap, events, getActivations } from "./lib/utils/event-rules";
 import { downloadQsos } from "./lib/utils/file-format";
-import { Button } from "./lib/utils/theme/components/button";
-import { PaginatedList } from "./lib/utils/theme/components/paginated-list";
-import { Typography } from "./lib/utils/theme/components/typography";
+import { Button } from "./lib/ui/button";
+import { PaginatedList } from "./lib/ui/paginated-list";
+import { Typography } from "./lib/ui/typography";
 
 const Events = () => {
     const qsos = useQsos();

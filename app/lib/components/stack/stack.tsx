@@ -1,8 +1,8 @@
 import { PropsWithChildren } from "react";
 import { View, ViewStyle } from "react-native";
 import { StyleSheet } from "react-native-unistyles";
-import { breakpoints, spacing } from "../../utils/theme";
-import { Styles, mergeStyles } from "../../utils/theme/components/styles";
+import { breakpoints, spacing } from "../../ui";
+import { Styles, mergeStyles } from "../../ui/styles";
 
 export type StackProps = PropsWithChildren<{
     style?: Styles<ViewStyle>;

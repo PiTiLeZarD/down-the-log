@@ -1,7 +1,7 @@
 import { useFormContext } from "react-hook-form";
 import { geocode } from "../utils/geocode";
 import { latlong2Maidenhead } from "../utils/locator";
-import { Button } from "../utils/theme/components/button";
+import { Button } from "../ui/button";
 import { useSettings } from "../utils/use-settings";
 
 export const GeocodeButton = () => {

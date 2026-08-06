@@ -3,9 +3,9 @@ import { View } from "react-native";
 import { unique } from "../utils/arrays";
 import { EventType, capitalise, eventDataMap } from "../utils/event-rules";
 import { useStore } from "../utils/store";
-import { Alert } from "../utils/theme/components/alert";
-import { Button } from "../utils/theme/components/button";
-import { Typography } from "../utils/theme/components/typography";
+import { Alert } from "../ui/alert";
+import { Button } from "../ui/button";
+import { Typography } from "../ui/typography";
 import { QSO, useQsos } from "./qso";
 import { Stack } from "./stack";
 

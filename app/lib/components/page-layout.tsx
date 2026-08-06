@@ -1,8 +1,8 @@
 import React, { PropsWithChildren } from "react";
 import { ScrollView, View } from "react-native";
 import { useUnistyles } from "react-native-unistyles";
-import { Button } from "../utils/theme/components/button";
-import { Typography } from "../utils/theme/components/typography";
+import { Button } from "../ui/button";
+import { Typography } from "../ui/typography";
 import { useGoBack } from "../utils/use-go-back";
 import { Grid } from "./grid";
 import { Stack } from "./stack";

@@ -2,7 +2,7 @@ import { Picker, PickerProps } from "@react-native-picker/picker";
 import React from "react";
 import { Platform, Pressable, TextStyle } from "react-native";
 import { useUnistyles } from "react-native-unistyles";
-import { Modal } from "../../modal";
+import { Modal } from "../utils/modal";
 import { Button } from "./button";
 import { Typography } from "./typography";
 

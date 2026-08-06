@@ -9,8 +9,8 @@ import {
     View,
 } from "react-native";
 import { StyleSheet } from "react-native-unistyles";
-import { Stack } from "../../../components/stack";
-import { useThrottle } from "../../use-throttle";
+import { Stack } from "../components/stack";
+import { useThrottle } from "../utils/use-throttle";
 import { Icon } from "./icon";
 import { Styles, mergeStyles } from "./styles";
 import { Typography } from "./typography";

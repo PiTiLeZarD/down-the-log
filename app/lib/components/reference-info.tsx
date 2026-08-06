@@ -1,6 +1,6 @@
 import { EventType } from "../utils/event-rules";
-import { Button } from "../utils/theme/components/button";
-import { Typography } from "../utils/theme/components/typography";
+import { Button } from "../ui/button";
+import { Typography } from "../ui/typography";
 import { GmapsChip } from "./gmaps-chip";
 
 export type ReferenceDatum = { name: string; locator?: string };

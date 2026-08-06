@@ -1,8 +1,8 @@
 import { PropsWithChildren } from "react";
 import { ViewStyle } from "react-native";
 import { StyleSheet } from "react-native-unistyles";
-import { Stack } from "../../../components/stack";
-import { ColourVariant } from "../theme";
+import { Stack } from "../components/stack";
+import { ColourVariant } from "./theme";
 import { Icon, IconName } from "./icon";
 import { Styles, mergeStyles } from "./styles";
 

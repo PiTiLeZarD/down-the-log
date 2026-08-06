@@ -1,8 +1,8 @@
 import { useRouter } from "expo-router";
 import { useFormContext } from "react-hook-form";
 import { baseCallsign } from "../utils/callsign";
-import { PaginatedList } from "../utils/theme/components/paginated-list";
-import { Typography } from "../utils/theme/components/typography";
+import { PaginatedList } from "../ui/paginated-list";
+import { Typography } from "../ui/typography";
 import { QSO, useQsos } from "./qso";
 import { QsoRow } from "./qso/qso-row";
 import { Stack } from "./stack";

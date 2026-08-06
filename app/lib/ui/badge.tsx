@@ -1,7 +1,7 @@
 import { PropsWithChildren } from "react";
 import { View } from "react-native";
 import { StyleSheet } from "react-native-unistyles";
-import { ColourVariant } from "../theme";
+import { ColourVariant } from "./theme";
 import { Typography } from "./typography";
 
 const styles = StyleSheet.create((theme) => ({

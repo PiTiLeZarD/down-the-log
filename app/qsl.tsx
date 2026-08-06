@@ -10,10 +10,10 @@ import { TabsLayout } from "./lib/components/tabs-layout";
 import { baseCallsign } from "./lib/utils/callsign";
 import { downloadQsos, getFileApiFromFilename, record2qso } from "./lib/utils/file-format";
 import { useStore } from "./lib/utils/store";
-import { Alert } from "./lib/utils/theme/components/alert";
-import { Button } from "./lib/utils/theme/components/button";
-import { Typography } from "./lib/utils/theme/components/typography";
-import { fireSwal } from "./lib/utils/theme/swal";
+import { Alert } from "./lib/ui/alert";
+import { Button } from "./lib/ui/button";
+import { Typography } from "./lib/ui/typography";
+import { fireSwal } from "./lib/ui/swal";
 import { useSettings } from "./lib/utils/use-settings";
 
 const Qsl = () => {

@@ -8,7 +8,7 @@ import { StyleSheet, useUnistyles } from "react-native-unistyles";
 import { LocationHeader } from "./lib/components/location-header";
 import { latlong2Maidenhead } from "./lib/utils/locator";
 import { useStore } from "./lib/utils/store";
-import "./lib/utils/theme";
+import "./lib/ui";
 import { useLocation } from "./lib/utils/use-location";
 import { useSettings } from "./lib/utils/use-settings";
 

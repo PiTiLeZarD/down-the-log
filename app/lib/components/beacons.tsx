@@ -5,10 +5,10 @@ import { findCountry, getCallsignData } from "../utils/callsign";
 import { maidenDistance } from "../utils/locator";
 import { Modal } from "../utils/modal";
 import { useStore } from "../utils/store";
-import { useWidthMatches } from "../utils/theme/breakpoints";
-import { Alert } from "../utils/theme/components/alert";
-import { Button } from "../utils/theme/components/button";
-import { Typography } from "../utils/theme/components/typography";
+import { useWidthMatches } from "../ui/breakpoints";
+import { Alert } from "../ui/alert";
+import { Button } from "../ui/button";
+import { Typography } from "../ui/typography";
 import { useSettings } from "../utils/use-settings";
 import { Stack } from "./stack";
 

@@ -1,6 +1,6 @@
 import React, { PropsWithChildren } from "react";
 import { View } from "react-native";
-import { Stack } from "../../../components/stack";
+import { Stack } from "../components/stack";
 import { Button } from "./button";
 import { Typography } from "./typography";
 

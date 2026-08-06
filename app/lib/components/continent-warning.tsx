@@ -1,7 +1,7 @@
 import { useFormContext } from "react-hook-form";
 import { callsigns } from "../data/callsigns";
-import { Alert } from "../utils/theme/components/alert";
-import { Typography } from "../utils/theme/components/typography";
+import { Alert } from "../ui/alert";
+import { Typography } from "../ui/typography";
 import { QSO } from "./qso";
 
 export const ContinentWarning = () => {

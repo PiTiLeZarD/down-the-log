@@ -1,7 +1,7 @@
 import React from "react";
 import { View } from "react-native";
 import { Mode, modes } from "../../data/modes";
-import { Button } from "../../utils/theme/components/button";
+import { Button } from "../../ui/button";
 import { useSettings } from "../../utils/use-settings";
 import { ButtonOffset } from "../button-offset";
 import { Stack } from "../stack";

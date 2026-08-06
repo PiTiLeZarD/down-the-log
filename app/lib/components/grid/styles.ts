@@ -1,6 +1,6 @@
 import React from "react";
 import { useWindowDimensions, ViewStyle } from "react-native";
-import { getScreenSize, spacing } from "../../utils/theme";
+import { getScreenSize, spacing } from "../../ui";
 
 const generateStyles = (width: number, columns: number = 12): Record<string, ViewStyle> => {
     const colWidth = 100 / columns;

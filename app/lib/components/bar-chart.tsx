@@ -1,7 +1,7 @@
 import React from "react";
 import { View } from "react-native";
 import { StyleSheet } from "react-native-unistyles";
-import { Typography } from "../utils/theme/components/typography";
+import { Typography } from "../ui/typography";
 
 const LABELHEIGHT = 12;
 

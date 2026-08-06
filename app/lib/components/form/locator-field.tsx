@@ -4,7 +4,7 @@ import cqzones from "../../data/cqzones.json";
 import ituzones from "../../data/ituzones.json";
 import { maidenDistance, maidenhead2Latlong, normalise } from "../../utils/locator";
 import { findZone } from "../../utils/polydec";
-import { Typography } from "../../utils/theme/components/typography";
+import { Typography } from "../../ui/typography";
 import { GmapsChip } from "../gmaps-chip";
 import { QSO } from "../qso";
 import { Stack } from "../stack";

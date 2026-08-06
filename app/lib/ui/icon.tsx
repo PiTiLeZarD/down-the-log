@@ -1,7 +1,7 @@
 import { Ionicons } from "@expo/vector-icons";
 import { IconProps as VIIconProps } from "@expo/vector-icons/build/createIconSet";
 import { useUnistyles } from "react-native-unistyles";
-import { ColourVariant } from "../theme";
+import { ColourVariant } from "./theme";
 
 export type IconName = keyof (typeof Ionicons)["glyphMap"];
 

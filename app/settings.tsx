@@ -9,10 +9,10 @@ import { modes } from "./lib/data/modes";
 import { HamQTHSettingsType } from "./lib/utils/hamqth";
 import { normalise } from "./lib/utils/locator";
 import { useStore } from "./lib/utils/store";
-import { Button } from "./lib/utils/theme/components/button";
-import { Input } from "./lib/utils/theme/components/input";
-import { Typography } from "./lib/utils/theme/components/typography";
-import { fireSwal } from "./lib/utils/theme/swal";
+import { Button } from "./lib/ui/button";
+import { Input } from "./lib/ui/input";
+import { Typography } from "./lib/ui/typography";
+import { fireSwal } from "./lib/ui/swal";
 import { useSettings } from "./lib/utils/use-settings";
 
 const Settings = () => {

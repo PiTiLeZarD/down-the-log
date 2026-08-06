@@ -8,7 +8,7 @@ import { HamQTHCallsignData } from "../../utils/hamqth";
 import { maidenDistance, maidenhead2Latlong } from "../../utils/locator";
 import { findZone } from "../../utils/polydec";
 import { useStore } from "../../utils/store";
-import { Typography } from "../../utils/theme/components/typography";
+import { Typography } from "../../ui/typography";
 import { useSettings } from "../../utils/use-settings";
 import { Grid } from "../grid";
 import { Stack } from "../stack";

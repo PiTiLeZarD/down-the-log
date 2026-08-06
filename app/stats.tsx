@@ -8,8 +8,8 @@ import { Stack } from "./lib/components/stack";
 import { sortBands } from "./lib/data/bands";
 import { groupBy, sortNumsAndAlpha, unique } from "./lib/utils/arrays";
 import { Settings, useStore } from "./lib/utils/store";
-import { SelectInput } from "./lib/utils/theme/components/select-input";
-import { Typography } from "./lib/utils/theme/components/typography";
+import { SelectInput } from "./lib/ui/select-input";
+import { Typography } from "./lib/ui/typography";
 import { useSettings } from "./lib/utils/use-settings";
 
 export const groupQsos = (
