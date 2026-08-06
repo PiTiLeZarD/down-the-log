@@ -23,7 +23,21 @@ const patch = (relativePath, apply) => {
     writeFileSync(path, `${JSON.stringify(json, null, indent)}\n`);
 };
 
-export const VERSIONED_FILES = ["package.json", "app.json", "src-tauri/tauri.conf.json", "src-tauri/Cargo.toml"];
+// Non-JSON files: swap the version in place so the rest of the file is untouched.
+const patchSource = (relativePath, pattern, replacement) => {
+    const path = join(root, relativePath);
+    const source = readFileSync(path, "utf8");
+    if (!pattern.test(source)) throw new Error(`No version to patch in ${relativePath}`);
+    writeFileSync(path, source.replace(pattern, replacement));
+};
+
+export const VERSIONED_FILES = [
+    "package.json",
+    "app.json",
+    "src-tauri/tauri.conf.json",
+    "src-tauri/Cargo.toml",
+    "app/lib/utils/file-format/common.ts",
+];
 
 export const syncVersion = (tag) => {
     const version = parseVersion(tag);
@@ -32,8 +46,9 @@ export const syncVersion = (tag) => {
     patch("app.json", (json) => (json.expo.version = version));
     patch("src-tauri/tauri.conf.json", (json) => (json.version = version));
 
-    const cargoPath = join(root, "src-tauri/Cargo.toml");
-    writeFileSync(cargoPath, readFileSync(cargoPath, "utf8").replace(/^version = ".*"$/m, `version = "${version}"`));
+    patchSource("src-tauri/Cargo.toml", /^version = ".*"$/m, `version = "${version}"`);
+    // ADIF header advertises the exporting program's version to whoever reads the file.
+    patchSource("app/lib/utils/file-format/common.ts", /^(\s*programversion: )".*",$/m, `$1"${version}",`);
 
     return version;
 };

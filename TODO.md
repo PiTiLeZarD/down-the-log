@@ -63,13 +63,10 @@ This is the rough todolist I want to work on.
 
 - [ ] ADIF `COUNTRY` is written and read as our iso3, but the spec says it holds the DXCC entity name. Breaks interop both ways, and is why the filter had to fall back to the raw value. Needs an iso3 <-> DXCC-name map — now a `to`/`from` codec on the single `field("country", "country")` row in `file-format/common.ts`
 - [ ] QSL import mutates the matched QSO in place against a render-time snapshot of the log (`app/qsl.tsx:66-71`). Two files imported back to back both work off pre-import state. Probably the reason matching sometimes misses. Return new objects and re-read the store
-- [x] `console.groupEnd;` is missing its call parens (`app/qsl.tsx:107`), so the group never closes
 - [ ] `utils/merge.ts` throws away the recursive return value, so nested merges silently do nothing. Nothing imports it, so just delete the file
 - [ ] HamQTH user/password aren't URL-encoded (`utils/hamqth.tsx:38-40`), so a password containing `&` `+` `#` or a space fails login with no useful error. Same for the address in `utils/geocode.ts:18`. Use `URLSearchParams`
-- [x] HamQTH session never refreshes: the effect has `[]` deps (`utils/hamqth.tsx:127`) but sessions expire after an hour (`:59`), so lookups go quiet until the app remounts. Depend on user/password and retry when `isSessionValid` flips
 - [ ] `unsanitize` deletes entities it doesn't know: the regex matches any `&xx;`..`&xxxx;` and the switch default returns `""` (`file-format/common.ts:92-106`). An `&nbsp;` in a comment vanishes on import. Default should return the match untouched
 - [ ] eQSL/LoTW flags are always exported, `"N"` when we simply don't know (`file-format/common.ts:135-138`). That asserts "not sent" to whatever logbook receives the file. Emit nothing when the flag is unset
-- [ ] ADIF header `programversion` is hardcoded to `"0.0.1"` (`file-format/common.ts:235`) and `scripts/sync-version.mjs` doesn't patch it. Add it to `VERSIONED_FILES`
 
 ## Performance
 
@@ -80,7 +77,6 @@ This is the rough todolist I want to work on.
 - [ ] ADIF import has the same shape, every imported record scans the whole log (`components/adif/import.tsx:59`). Same index fixes it
 - [ ] memoise `baseCallsign` — it gets called repeatedly on identical strings from list rendering, filtering and dedup
 - [ ] `useSettings` rebuilds the settings object every render (`utils/use-settings.ts:5`), so nothing downstream can memo on it. Run `fixSettings` once in the persist `merge` option instead
-- [x] `filterQsos` re-runs on every keystroke in the callsign box (`app/index.tsx:88`), memo on `[qsos, filters]`
 - [ ] `useThrottle` reschedules on every render and `setState`s a fresh value, so any component that calls it during render re-renders itself forever at the throttle interval. `QsoList` was doing this (fixed with a memo); `useHamQTH` still does (`utils/hamqth.tsx:134`), which means a HamQTH lookup every 500ms for as long as a callsign sits in the box. Either compare against the last args before scheduling, or debounce the input instead of the result
 - [ ] consider one `useFilteredQsos()` selector doing sort + filter + memo, consumed by index/stats/filters/qsl, instead of `filterQsos(useQsos(), filters)` repeated in each
 
@@ -212,3 +208,7 @@ This is the rough todolist I want to work on.
     - [x] 8 `react-hooks/refs` — the ragchew timer in `form-fields.tsx` is derived state now, and `google-static-map/map.tsx` measures with `onLayout` instead of reading `clientWidth` off a ref during render
     - [x] 2 `no-unused-expressions`, 4 `@typescript-eslint/no-unused-vars`, 1 `import/no-named-as-default-member`
     - [x] 1 `react-hooks/incompatible-library` — `app/index.tsx` uses `useWatch` instead of `methods.watch()`, so React Compiler can process the file
+- [x] `console.groupEnd;` is missing its call parens (`app/qsl.tsx:107`), so the group never closes
+- [x] HamQTH session never refreshes: the effect has `[]` deps (`utils/hamqth.tsx:127`) but sessions expire after an hour (`:59`), so lookups go quiet until the app remounts. Depend on user/password and retry when `isSessionValid` flips
+- [x] ADIF header `programversion` is hardcoded to `"0.0.1"` (`file-format/common.ts:235`) and `scripts/sync-version.mjs` doesn't patch it. Add it to `VERSIONED_FILES`
+- [x] `filterQsos` re-runs on every keystroke in the callsign box (`app/index.tsx:88`), memo on `[qsos, filters]`
