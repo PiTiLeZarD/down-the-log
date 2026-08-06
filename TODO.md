@@ -81,10 +81,6 @@ This is the rough todolist I want to work on.
 - [ ] Tauri runs with `"csp": null` (`src-tauri/tauri.conf.json`). Set a real one, the asset origins are all known
 - [ ] the settings blurb says data is "never sent anywhere (except for hamqth or..." (`app/settings.tsx:155`) — should also name geocode.maps.co and Google
 
-## Housekeeping
-
-- [ ] no tests at all. The pure logic is the testable part and is exactly where the review bugs were: `callsign.ts`, `locator.ts`, ADIF/ADX round-trip, `event-rules.ts`, the `prefill*` helpers. vitest
-
 ## Done
 
 - [x] add zlota siota links from sig
@@ -207,3 +203,9 @@ This is the rough todolist I want to work on.
     - [x] `react-native-svg-charts` -> `components/bar-chart.tsx`, plain views, no svg needed
     - [x] `autoProcessPaths` is down to `@expo/html-elements` only
 - [x] the whole design system (Button, Input, Typography...) sat in `app/lib/utils/theme/components/`, three levels down under `utils`. Now `app/lib/ui/`, with the theme tokens (`theme.ts`, `breakpoints.ts`, `colours.json`) flattened alongside the components
+- [x] no tests at all. The pure logic is the testable part and is exactly where the review bugs were: `callsign.ts`, `locator.ts`, ADIF/ADX round-trip, `event-rules.ts`, the `prefill*` helpers. vitest — 169 tests in `tests/`, run with `pnpm test`
+- [x] `BAND` was never read on import: `castAs` upper cased its input but `bands` is keyed lower case (`"20m"`), so the lookup could not match and the band only survived through `FREQ`. `resolveBand` in `data/bands.ts` now matches either case
+- [x] ADIF timestamps were read in the running timezone, so an import landed on the wrong instant and, near midnight, on the wrong UTC day — which is what POTA day grouping counts. `record2qso` parses with `{ zone: "utc" }`
+- [x] `carryOver` ran every value through `String()`, so a carried `power`/`frequency` came back as `"5"` instead of `5`
+- [x] `unsanitize` returned `""` for any entity it did not know, so an imported comment carrying `&nbsp;` lost it. Unknown entities are left alone
+- [x] `parseCallsign` only saw a location prefix when it ended in a digit, so `F/VK4ALE/P` parsed as the single prefix `F/VK`. The index is now optional

@@ -1,6 +1,6 @@
 import { DateTime } from "luxon";
 import { QSO, newQsoID } from "../../components/qso";
-import { Band, bands, freq2band } from "../../data/bands";
+import { freq2band, resolveBand } from "../../data/bands";
 import { Continent, continents } from "../../data/callsigns";
 import { resolveMode } from "../../data/modes";
 import { normalise } from "../locator";
@@ -87,8 +87,10 @@ export const sanitize = (v: string) =>
         return "";
     });
 
+// Anything that isn't one of the five entities `sanitize` writes is left as it was found: an
+// imported comment carrying &nbsp; or &copy; used to lose it to the empty default.
 export const unsanitize = (v: string) =>
-    v.replace(/([&][a-z]{2,4}[;])/g, (c?: string) => {
+    v.replace(/([&][a-z]{2,4}[;])/g, (c: string) => {
         switch (c) {
             case "&lt;":
                 return "<";
@@ -101,7 +103,7 @@ export const unsanitize = (v: string) =>
             case "&quot;":
                 return '"';
         }
-        return "";
+        return c;
     });
 
 /**
@@ -140,9 +142,7 @@ const boolean = { to: (v?: boolean) => (v ? "Y" : "N"), from: (v?: string) => v 
 export const fields: FieldDescriptor[] = [
     field("band", "band", {
         from: (v, record) =>
-            castAs<Band>(Object.keys(bands) as Band[], v) ||
-            (record.freq ? freq2band(+(record.freq as string)) : undefined) ||
-            undefined,
+            resolveBand(v) || (record.freq ? freq2band(+(record.freq as string)) : undefined) || undefined,
     }),
     field("frequency", "freq", number),
     field("mode", "mode", { from: (v) => resolveMode(v) }),
@@ -208,15 +208,20 @@ export const record2qso = (record: QSORecord): QSO => {
     return {
         ...Object.fromEntries(fields.map(({ qsoKey, adifKey, from }) => [qsoKey, from(record[adifKey], record)])),
         id: newQsoID(),
+        // ADIF timestamps are UTC by definition and the log is kept in UTC, so they have to be read
+        // in UTC too: without the zone they land on the local instant, and near midnight that puts
+        // the QSO on the wrong UTC day, which is what the POTA day grouping counts.
         date: DateTime.fromFormat(
             `${record.qso_date} ${record.time_on}`,
             record.time_on?.length === 6 ? "yyyyMMdd HHmmss" : "yyyyMMdd HHmm",
+            { zone: "utc" },
         ),
         dateOff:
             record.qso_date_off && record.time_off && record.time_off != record.time_on
                 ? DateTime.fromFormat(
                       `${record.qso_date_off} ${record.time_off}`,
                       record.time_off?.length === 6 ? "yyyyMMdd HHmmss" : "yyyyMMdd HHmm",
+                      { zone: "utc" },
                   )
                 : undefined,
         honeypot: submode && !record.honeypot?.submode ? { ...record.honeypot, submode } : record.honeypot,

@@ -49,6 +49,12 @@ export const modeBandMap: Partial<Record<Mode, Partial<Record<Band, number>>>> =
 
 export type Band = keyof typeof bands;
 
+// ADIF writes the band enumeration in whatever case the logger felt like ("20M", "20m"), and the
+// table above is keyed lower case, so the comparison has to ignore case or an import silently
+// loses the band. Mirrors `resolveMode`.
+export const resolveBand = (value?: string): Band | undefined =>
+    value ? (Object.keys(bands) as Band[]).find((b) => b.toUpperCase() === value.toUpperCase().trim()) : undefined;
+
 export const band2freq = (band?: Band, mode?: Mode): number | undefined => {
     if (!band) return undefined;
     const mibBand = roundTo((bands[band][0] + bands[band][1]) / 2, 3);

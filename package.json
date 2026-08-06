@@ -22,6 +22,8 @@
         "eas:run:ios": "eas build:run -p ios",
         "eas:start": "pnpm start --dev-client",
         "types": "tsc --noEmit",
+        "test": "vitest run",
+        "test:watch": "vitest",
         "lint": "eslint .",
         "lint:fix": "eslint . --fix",
         "clean": "rm -Rf down-the-log",
@@ -89,7 +91,8 @@
         "fastest-levenshtein": "^1.0.16",
         "gh-pages": "^6.1.1",
         "tsx": "^4.23.5",
-        "typescript": "~6.0.3"
+        "typescript": "~6.0.3",
+        "vitest": "^3.2.7"
     },
     "private": true
 }

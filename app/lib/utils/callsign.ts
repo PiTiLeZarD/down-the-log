@@ -1,7 +1,10 @@
 import { CallsignData, callsigns } from "../data/callsigns";
 import { countries } from "../data/countries";
 
-const callsignRegexp = /^(([0-9]{0,1}[^0-9]+)([0-9]{1,2})\/)?([0-9]{0,1}[^0-9]+)([0-9]{1,2})([^\/-]+)[\/-]{0,1}(.*)$/g;
+// The location prefix index is optional: plenty of prefixes carry no digit at all (F/, PA/, ON/),
+// and requiring one meant F/VK4ALE parsed as the single prefix "F/VK" instead of a French operation
+// by VK4ALE.
+const callsignRegexp = /^(([0-9]{0,1}[^0-9]+)([0-9]{0,2})\/)?([0-9]{0,1}[^0-9]+)([0-9]{1,2})([^\/-]+)[\/-]{0,1}(.*)$/g;
 
 export type CallsignDataWithState = (CallsignData & { state?: string }) | undefined;
 export const withState = (callsign: string, csdata?: CallsignData): CallsignDataWithState =>

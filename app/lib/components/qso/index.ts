@@ -113,16 +113,11 @@ export const createQso = (callsign: string): QSO => ({
     honeypot: {},
 });
 
+// Values are copied as they are: running them through String() turned a carried power or frequency
+// into "5" / "14.2", which then no longer matched the number the rest of the QSO type expects.
 export const carryOver = (qso: QSO, previousQSO: QSO, carryOver: (keyof QSO)[] = []): QSO => ({
     ...qso,
-    ...Object.fromEntries(
-        carryOver
-            .map((f) => [
-                f,
-                previousQSO[f as keyof QSO] !== undefined ? String(previousQSO[f as keyof QSO]) : undefined,
-            ])
-            .filter(([k, v]) => v !== undefined),
-    ),
+    ...Object.fromEntries(carryOver.map((f) => [f, previousQSO[f]]).filter(([, v]) => v !== undefined)),
 });
 
 export const prefillSameCallsign = (qso: QSO, previousQSO: QSO): QSO => ({
