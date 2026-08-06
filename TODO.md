@@ -2,18 +2,44 @@
 
 This is the rough todolist I want to work on.
 
-## Must have
+## Maps
 
-- [ ] Stats to have presets
+- [ ] Remove all the google static maps and replace it with openstreetmaps
+- [ ] Map out a group of QSO's and then link it to a day, a filter, an event
+- [ ] Events maps to also draw the outline of the event
+
+## Stats
+
+- [ ] Stats should have presets for things we want to know often
+- [ ] hamclock modules (sunspot or sun data, propagaion, greyline, short/long path etc...)
+    - [x] data ranges: https://3fs.net.au/making-sense-of-solar-indices/
+    - [x] SFI and SSN: https://services.swpc.noaa.gov/json/solar-cycle/predicted-solar-cycle.json
+    - [x] Kp and A: https://services.swpc.noaa.gov/products/noaa-planetary-k-index.json
+- [x] Stats
+    - [x] qsos /continent /country /year,month
+    - [ ] heatmap of qso per day (github style)
+    - [x] qsos/band,mode
+    - [ ] graphs?
+
+## Features / UI
+
+- [ ] Work on spots (spotting oneself for parks, list spots from others, maybe code an API for all this, seems like most services don't plan for CORS)
+- [ ] Think about events 2fer, n-fer
+- [ ] red lines for issues with location/callsign
+- [ ] previous qso list to be a little more useful
+    - [ ] The date seems to wrap and shouldn't
+- [ ] should make a visual indication that hamqth isn't available, it happens often
+- [ ] band map, ability to link callsign/frequency on the band, use this to start qso's (also ability to write name/qth and other details so it's prefilled)
+- [ ] Have a "Net" module, showing what's going on where and when
+    - [ ] also plan on grouping qsos in the same net, or having a way to make it visually clear that they all belong to the same thing
+- [ ] cluster?
+
+## Data
+
 - [ ] use gdrive as backup/restore
     - [ ] RN: https://react-native-documents.github.io/
     - [ ] Web: https://www.npmjs.com/package/gdrive-fs
 - [ ] QSL's interface to match manually when they're not matched. Also try to suss out why it doesn't match sometimes.
-- [ ] red lines for issues with location/callsign
-- [ ] customise straight from input box
-- [ ] Bug: customising input is written over
-- [ ] Work on spots (spotting oneself for parks, list spots from others, maybe code an API for all this, seems like most services don't plan for CORS)
-- [ ] Think about events 2fer, n-fer
 - [ ] QSO Issues
     - [ ] one function to spit out [field, description][] issues
     - [ ] country/continent/dxcc/grid warnings from this
@@ -23,30 +49,7 @@ This is the rough todolist I want to work on.
     - [ ] mising references
     - [ ] have filter (hasIssues)
     - [ ] remove the current warnings (country/continent/dxx) and on events
-- [ ] previous qso list to be a little more useful
-
-## Good to have
-
-- [ ] should make a visual indication that hamqth isn't available, it happens often
 - [ ] parksandpeaks integration (https://parksnpeaks.org/api/) CORS issue, I've contacted them, let's see
-- [ ] band map, ability to link callsign/frequency on the band, use this to start qso's (also ability to write name/qth and other details so it's prefilled)
-- [ ] hamclock modules (sunspot or sun data, propagaion, greyline, short/long path etc...)
-    - [x] data ranges: https://3fs.net.au/making-sense-of-solar-indices/
-    - [x] SFI and SSN: https://services.swpc.noaa.gov/json/solar-cycle/predicted-solar-cycle.json
-    - [x] Kp and A: https://services.swpc.noaa.gov/products/noaa-planetary-k-index.json
-- [ ] pnpm release should use ghpages to create the demo, build the tauri app and release it, build ios/android apps
-    - [x] demo website on github
-    - [x] look into automatic/programatic github release
-    - [x] script the dmg releases
-    - [ ] script the apk releases
-- [ ] Have a "Net" module, showing what's going on where and when
-    - [ ] also plan on grouping qsos in the same net, or having a way to make it visually clear that they all belong to the same thing
-- [x] Stats
-    - [x] qsos /continent /country /year,month
-    - [ ] heatmap of qso per day (github style)
-    - [x] qsos/band,mode
-    - [ ] graphs?
-- [ ] cluster?
 - [ ] Look into the clublog dxcc db (https://dl2rum.de/RUMlogNG/docs/en/pages/Online_CLDX.html)
 - [ ] Band plan (typical adif band spread or australian band plan with ability to switch, also display band usage from https://www.wia.org.au/members/bandplans/data/documents/Australian%20Band%20Plans%20200901.pdf or whichever by country)
 
@@ -57,6 +60,11 @@ This is the rough todolist I want to work on.
     - [ ] while in there: the `data:text/plain,` href caps out around a few MB in some browsers, `Blob` + `URL.createObjectURL` is safer for big logs
 - [ ] ios/android debug and shakedown
 - [ ] open accounts on playstore and apple dev
+- [ ] pnpm release should use ghpages to create the demo, build the tauri app and release it, build ios/android apps
+    - [x] demo website on github
+    - [x] look into automatic/programatic github release
+    - [x] script the dmg releases
+    - [ ] script the apk releases
 
 ## Bugs found in the code review (2026-08-05)
 
