@@ -6,6 +6,9 @@ import { useWidthMatches } from "../ui/breakpoints";
 import colours from "../ui/colours.json";
 import { Button } from "../ui/button";
 import { Typography } from "../ui/typography";
+import { getCallsignData } from "../utils/callsign";
+import { useStore } from "../utils/store";
+import { useSettings } from "../utils/use-settings";
 import { withCache } from "../utils/with-cache";
 import { BarChart } from "./bar-chart";
 import { Stack } from "./stack";
@@ -76,6 +79,11 @@ export const SolarData = () => {
     const [modal, setModal] = React.useState<boolean>(false);
     const [solarData, setSolarData] = React.useState<DataType[]>();
     const [magneticData, setMagneticData] = React.useState<DataType[]>();
+    const settings = useSettings();
+    const currentLocation = useStore((state) => state.currentLocation);
+    const locator = settings.myGridsquare || currentLocation;
+    const callsign = settings.myCallsign;
+    const continent = getCallsignData(callsign)?.ctn?.toLowerCase();
 
     const updateCache = () => {
         withCache("solarData", fetchSolarData, 60 * 60 * 3).then((data) => setSolarData(deserialise(data)));
@@ -136,6 +144,26 @@ export const SolarData = () => {
                         text="MUF map"
                         variant="outlined"
                     />
+                    {locator && (
+                        <Button
+                            url={`https://hf.dxview.org/perspective/${locator}`}
+                            text="DXView"
+                            variant="outlined"
+                        />
+                    )}
+                    <Button
+                        url={`https://pskreporter.info/pskmap?${callsign ? `callsign=${callsign}&` : ""}search=Find`}
+                        text="PSKMap"
+                        variant="outlined"
+                    />
+                    <Button url="https://ham-stats.com/" text="HamStats" variant="outlined" />
+                    {continent && (
+                        <Button
+                            url={`https://dxmap.hb9vqq.ch/v8/?topic=${continent}&source=wspr`}
+                            text="DxMap"
+                            variant="outlined"
+                        />
+                    )}
                     <Button colour="success" text="OK" onPress={() => setModal(false)} />
                 </Stack>
             </Modal>
