@@ -46,10 +46,18 @@ export const collapseCallsign = (callsign: string): string => {
     return baseCallsign(callsign) || callsign;
 };
 
+// Dedup and list rendering call this over and over on the same handful of strings, and each miss
+// runs the callsign regexp. Callsigns are a bounded set, so a plain cache is enough.
+const baseCallsignCache = new Map<string, string | undefined>();
+
 export const baseCallsign = (callsign: string) => {
+    const cached = baseCallsignCache.get(callsign);
+    if (cached !== undefined || baseCallsignCache.has(callsign)) return cached;
+
     const parsed = parseCallsign(callsign);
-    if (!parsed) return undefined;
-    return `${parsed.prefix}${parsed.index}${parsed.delineation}`;
+    const base = parsed ? `${parsed.prefix}${parsed.index}${parsed.delineation}` : undefined;
+    baseCallsignCache.set(callsign, base);
+    return base;
 };
 
 export const findCountry = (csdata: CallsignDataWithState) => (csdata?.iso3 ? countries[csdata?.iso3] : undefined);

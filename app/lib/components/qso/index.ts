@@ -211,10 +211,31 @@ export const extrapolate = (qso: QSO, qsos: QSO[], carryOverFields: (keyof QSO)[
 
 const dt2mn = (dt1: DateTime, dt2: DateTime) => Math.abs(dt1.diff(dt2, ["minutes"]).toObject().minutes as number);
 
+// Callers like the duplicate filter and ADIF import ask for matches once per QSO, which used to
+// scan the whole log every time. Bucket by base callsign instead, keyed on the array identity so
+// the index is built once per log. The store never mutates its arrays in place, so a new log means
+// a new reference and a fresh index.
+const callsignIndexes = new WeakMap<QSO[], Map<string | undefined, QSO[]>>();
+
+export const qsosByCallsign = (qsos: QSO[]): Map<string | undefined, QSO[]> => {
+    const cached = callsignIndexes.get(qsos);
+    if (cached) return cached;
+
+    const index = new Map<string | undefined, QSO[]>();
+    // Unparseable callsigns all land in the undefined bucket, which keeps the old
+    // baseCallsign(a) === baseCallsign(b) behaviour of matching each other.
+    qsos.forEach((q) => {
+        const key = baseCallsign(q.callsign);
+        const bucket = index.get(key);
+        if (bucket) bucket.push(q);
+        else index.set(key, [q]);
+    });
+    callsignIndexes.set(qsos, index);
+    return index;
+};
+
 export const findMatchingQsos = (qsos: QSO[], data: QSO, threshold: number = 20): QSO[] =>
-    qsos.filter(
-        (q) => baseCallsign(q.callsign) === baseCallsign(data.callsign) && dt2mn(q.date, data.date) < threshold,
-    );
+    (qsosByCallsign(qsos).get(baseCallsign(data.callsign)) || []).filter((q) => dt2mn(q.date, data.date) < threshold);
 
 export const findMatchingQso = (qsos: QSO[], data: QSO): QSO | null =>
     findMatchingQsos(qsos, data).sort((qa, qb) => dt2mn(qa.date, data.date) - dt2mn(qb.date, data.date))[0] || null;
