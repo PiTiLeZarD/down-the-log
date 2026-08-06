@@ -70,9 +70,6 @@ This is the rough todolist I want to work on.
 ## Performance
 
 - [ ] opening a QSO for the first time in a session stalls for about a second. `form-fields.tsx` pulls in `Events` -> `event-rules.ts`, which imports `pota.json` (6.7MB), `sota.json` (8.9MB), `wwff.json` (4.2MB) and `iota.json`. expo-router loads route modules on first navigation, so that whole ~20MB of JSON-as-object-literal is parsed and evaluated on the first click, and is warm afterwards — which is exactly the symptom. Options: `require` the datasets lazily inside the lookups that need them, ship them as `JSON.parse("...")` strings (much faster to parse than object literals), or move the lookups behind an index built at build time
-- [ ] `useSettings` rebuilds the settings object every render (`utils/use-settings.ts:5`), so nothing downstream can memo on it. Run `fixSettings` once in the persist `merge` option instead
-- [ ] `useThrottle` reschedules on every render and `setState`s a fresh value, so any component that calls it during render re-renders itself forever at the throttle interval. `QsoList` was doing this (fixed with a memo); `useHamQTH` still does (`utils/hamqth.tsx:134`), which means a HamQTH lookup every 500ms for as long as a callsign sits in the box. Either compare against the last args before scheduling, or debounce the input instead of the result
-- [ ] consider one `useFilteredQsos()` selector doing sort + filter + memo, consumed by index/stats/filters/qsl, instead of `filterQsos(useQsos(), filters)` repeated in each
 
 ## Security
 
@@ -209,3 +206,6 @@ This is the rough todolist I want to work on.
 - [x] `carryOver` ran every value through `String()`, so a carried `power`/`frequency` came back as `"5"` instead of `5`
 - [x] `unsanitize` returned `""` for any entity it did not know, so an imported comment carrying `&nbsp;` lost it. Unknown entities are left alone
 - [x] `parseCallsign` only saw a location prefix when it ended in a digit, so `F/VK4ALE/P` parsed as the single prefix `F/VK`. The index is now optional
+- [x] `useSettings` rebuilt the settings object every render, so nothing downstream could memo on it. `fixSettings` runs once in the persist `merge` option now and the hook is a plain store slice
+- [x] `useThrottle` rescheduled on every render and `setState`d a fresh value, so a component calling it during render re-rendered itself forever at the throttle interval — `useHamqth` was firing a lookup every 500ms for as long as a callsign sat in the box. It compares against the last arguments before scheduling now. `useHamqth` passes the session id as an argument rather than closing over it, so a session refresh still reschedules the lookup
+- [x] one `useFilteredQsos()` selector doing sort + filter + memo (`components/filters.tsx`), consumed by index/stats/filters/grid-map/adif-export, instead of `filterQsos(useQsos(), filters)` repeated in each

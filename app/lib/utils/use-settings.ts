@@ -1,6 +1,5 @@
-import { fixSettings, useStore } from "./store";
+import { useStore } from "./store";
 
-export const useSettings = () => {
-    const settings = useStore((state) => state.settings);
-    return fixSettings(settings);
-};
+// A plain slice of the store: `fixSettings` runs once in the persist `merge`, so the reference is
+// stable between renders and consumers can memo on it.
+export const useSettings = () => useStore((state) => state.settings);

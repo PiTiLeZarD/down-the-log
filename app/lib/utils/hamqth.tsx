@@ -120,12 +120,11 @@ export const useHamqth = (callsign?: string) => {
     const settings = useSettings();
     const updateSetting = useStore((state) => state.updateSetting);
 
-    const launch = (cs: string) => {
-        if (cs && isSessionValid(settings.hamqth)) {
-            return fetchCallsignData(settings.hamqth?.sessionId as string, cs).catch((e) => swal(theme, e));
-        }
-        return undefined;
-    };
+    // The session id is an argument rather than something `launch` closes over, so that a session
+    // refresh changes the throttled arguments and reschedules the lookup. Closing over it would
+    // mean the same callsign never gets looked up again once the session it was typed under expired.
+    const launch = (cs: string, sessionId?: string) =>
+        cs && sessionId ? fetchCallsignData(sessionId, cs).catch((e) => swal(theme, e)) : undefined;
     const throttled = useThrottle(launch, 500);
 
     // Sessions expire after an hour, so this has to follow the credentials and the validity of the
@@ -153,7 +152,7 @@ export const useHamqth = (callsign?: string) => {
         const bcs = baseCallsign(callsign);
 
         if (bcs && (parsedCallsign?.delineation || "").length) {
-            return throttled(bcs);
+            return throttled(bcs, sessionValid ? settings.hamqth?.sessionId : undefined);
         }
     }
 

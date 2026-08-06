@@ -1,15 +1,11 @@
 import { DateTime } from "luxon";
 import { downloadQsos } from "../../utils/file-format";
-import { useStore } from "../../utils/store";
 import { Button } from "../../ui/button";
-import { Filters, filterQsos } from "../filters";
-import { useQsos } from "../qso";
+import { Filters, useFilteredQsos } from "../filters";
 import { Stack } from "../stack";
 
 export const Export = () => {
-    const filters = useStore((state) => state.filters);
-    const qsos = useQsos();
-    const filteredQsos = filterQsos(qsos, filters);
+    const filteredQsos = useFilteredQsos();
     const today = DateTime.local().toFormat("yyyyMMdd");
 
     return (

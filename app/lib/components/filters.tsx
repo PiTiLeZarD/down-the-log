@@ -79,6 +79,15 @@ export const filterQsos = (qsos: QSO[], qsosFilters: QsoFilter[]) =>
         ),
     );
 
+// The one sorted-filtered-memoised view of the log, shared by every screen that works off the
+// store's filters. Each of them used to call `filterQsos(useQsos(), filters)` inline, so the whole
+// log was re-filtered on every render of every one of them.
+export const useFilteredQsos = (): QSO[] => {
+    const qsos = useQsos();
+    const filters = useStore((state) => state.filters);
+    return React.useMemo(() => filterQsos(qsos, filters), [qsos, filters]);
+};
+
 export type FiltersProps = {
     showTag?: boolean;
 };
@@ -118,7 +127,7 @@ const castValue = (k: string, v: string) => {
 export const Filters = ({ showTag }: FiltersProps) => {
     const { theme } = useUnistyles();
     const filters = useStore((state) => state.filters);
-    const qsos = filterQsos(useQsos(), filters);
+    const qsos = useFilteredQsos();
     const { height } = useWindowDimensions();
     const [modal, setModal] = React.useState<boolean>(false);
     const [tagModal, setTagModal] = React.useState<boolean>(false);

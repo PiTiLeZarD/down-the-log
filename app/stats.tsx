@@ -1,13 +1,13 @@
 import React from "react";
 import { Switch } from "react-native";
-import { FilterName, Filters, filterMap, filterQsos } from "./lib/components/filters";
+import { FilterName, Filters, filterMap, useFilteredQsos } from "./lib/components/filters";
 import { Grid } from "./lib/components/grid";
 import { PageLayout } from "./lib/components/page-layout";
-import { QSO, useQsos } from "./lib/components/qso";
+import { QSO } from "./lib/components/qso";
 import { Stack } from "./lib/components/stack";
 import { sortBands } from "./lib/data/bands";
 import { groupBy, sortNumsAndAlpha, unique } from "./lib/utils/arrays";
-import { Settings, useStore } from "./lib/utils/store";
+import { Settings } from "./lib/utils/store";
 import { SelectInput } from "./lib/ui/select-input";
 import { Typography } from "./lib/ui/typography";
 import { useSettings } from "./lib/utils/use-settings";
@@ -38,8 +38,7 @@ const Stats = () => {
     const [firstStat, setFirstStat] = React.useState<FilterName>("year");
     const [secondStat, setSecondStat] = React.useState<FilterName>("modeGrouped");
     const [useFavourites, setUseFavourites] = React.useState<boolean>(true);
-    const qsosFilters = useStore((state) => state.filters);
-    const qsos = filterQsos(useQsos(), qsosFilters);
+    const qsos = useFilteredQsos();
     const groups = groupQsos(qsos, firstStat, secondStat);
     const settings = useSettings();
 

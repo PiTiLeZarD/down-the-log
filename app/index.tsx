@@ -5,7 +5,7 @@ import { FormProvider, useForm, useWatch } from "react-hook-form";
 import { View } from "react-native";
 import { StyleSheet } from "react-native-unistyles";
 import { Beacons } from "./lib/components/beacons";
-import { Filters, filterQsos } from "./lib/components/filters";
+import { Filters, useFilteredQsos } from "./lib/components/filters";
 import { CallsignInput } from "./lib/components/form/callsign-input";
 import {
     QSO,
@@ -48,7 +48,7 @@ const Index = () => {
     const currentLocation = useStore((state) => state.currentLocation);
     const settings = useSettings();
     const log = useStore((state) => state.log);
-    const qsosFilters = useStore((state) => state.filters);
+    const listQsos = useFilteredQsos();
     const methods = useForm<QSO>({ defaultValues: {} });
     const { navigate } = useRouter();
 
@@ -57,7 +57,6 @@ const Index = () => {
     // `useWatch` rather than `methods.watch()`: the latter can't be memoised, which made React
     // Compiler skip this whole file.
     const callsign = useWatch({ control: methods.control, name: "callsign" });
-    const listQsos = useMemo(() => filterQsos(qsos, qsosFilters), [qsos, qsosFilters]);
     const listFilters = useMemo(
         () => (callsign ? [(q: QSO) => q.callsign.includes(callsign)] : undefined),
         [callsign],

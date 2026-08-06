@@ -1,16 +1,13 @@
 import { unique } from "../utils/arrays";
 import { corners2Path, fixLatLngForStaticMaps, maidenhead2Corners } from "../utils/locator";
 import { latlng2coord } from "../utils/polygon";
-import { useStore } from "../utils/store";
 import { useSettings } from "../utils/use-settings";
-import { filterQsos } from "./filters";
+import { useFilteredQsos } from "./filters";
 import { Map } from "./google-static-map/map";
 import { Path } from "./google-static-map/path";
-import { useQsos } from "./qso";
 
 export const GridMap = () => {
-    const filters = useStore((state) => state.filters);
-    const qsos = filterQsos(useQsos(), filters);
+    const qsos = useFilteredQsos();
     const { google } = useSettings();
 
     if (!google || !(google.key && google.secret)) return <></>;

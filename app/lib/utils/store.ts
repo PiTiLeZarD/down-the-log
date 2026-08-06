@@ -118,6 +118,13 @@ export const useStore = create<
     devtools(
         persist(combine(InitialStore, StoreActions), {
             name: "dtl-storage",
+            // Settings coming back from storage are completed once, here. `useSettings` used to run
+            // `fixSettings` on every render, which handed out a fresh object each time and stopped
+            // anything downstream from memoising on it.
+            merge: (persisted, current) => {
+                const merged = { ...current, ...(persisted as Partial<UseStorePropsType>) };
+                return { ...merged, settings: fixSettings(merged.settings || {}) };
+            },
             storage: createJSONStorage(() => AsyncStorage, {
                 reviver: (key, value) =>
                     (key === "date" || key === "dateOff" || key === "sessionStart") && typeof value === "string"
