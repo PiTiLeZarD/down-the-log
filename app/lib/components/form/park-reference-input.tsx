@@ -18,37 +18,32 @@ const flip = (obj: Record<string, string>): Record<string, string> =>
 const linksFlipped = flip(links);
 
 export const ParkReferenceInput = ({ event, mine = false }: ParkReferenceInputProps) => {
-    const { getValues, setValue } = useFormContext<QSO>();
-    const [hint, setHint] = React.useState<string>();
-    const qso = getValues();
+    const { getValues, setValue, watch } = useFormContext<QSO>();
     const key = (mine ? `my${capitalise(event)}` : event) as keyof QSO;
-    const value = qso[key] as string;
+    const value = watch(key) as string;
 
     const otherEvent = event === "wwff" ? "pota" : "wwff";
     const otherKey = (mine ? `my${capitalise(otherEvent)}` : otherEvent) as keyof QSO;
-    const otherValue = qso[otherKey] as string;
+    const otherValue = watch(otherKey) as string;
+
+    // The POTA <-> WWFF cross reference is a derivation of the two fields, no state needed: filling the
+    // other reference in is exactly what makes the chip go away.
+    const eventLinks: Record<string, string> = event === "pota" ? links : linksFlipped;
+    const hint =
+        ["wwff", "pota"].includes(event) && value && !otherValue ? eventLinks[value] || undefined : undefined;
 
     useEffect(() => {
-        if (value in eventDataMap[event]) {
-            const { name, locator } = eventDataMap[event][value];
-            const qthKey = (mine ? `myQth` : "qth") as keyof QSO;
-            const locatorKey = (mine ? `myLocator` : "locator") as keyof QSO;
-            if (qso[qthKey] != name) setValue(qthKey, name);
-            if (qso[locatorKey] != locator) setValue(locatorKey, locator);
-        }
+        if (!(value in eventDataMap[event])) return;
 
-        if (["wwff", "pota"].includes(event)) {
-            const eventLinks: Record<string, string> = event === "pota" ? links : linksFlipped;
-            if (value && !otherValue && value in eventLinks) {
-                setHint(eventLinks[value]);
-            }
-        }
-    }, [value]);
+        const { name, locator } = eventDataMap[event][value];
+        const qthKey = (mine ? `myQth` : "qth") as keyof QSO;
+        const locatorKey = (mine ? `myLocator` : "locator") as keyof QSO;
+        const qso = getValues();
+        if (qso[qthKey] != name) setValue(qthKey, name);
+        if (qso[locatorKey] != locator) setValue(locatorKey, locator);
+    }, [value, event, mine, getValues, setValue]);
 
-    const handleHintClick = () => {
-        setValue(otherKey, hint);
-        setHint(undefined);
-    };
+    const handleHintClick = () => setValue(otherKey, hint);
 
     return (
         <Stack>

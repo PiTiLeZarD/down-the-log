@@ -1,7 +1,7 @@
 import { Image } from "expo-image";
 import jsSHA from "jssha";
-import React, { useRef, PropsWithChildren } from "react";
-import { View } from "react-native";
+import React, { PropsWithChildren } from "react";
+import { LayoutChangeEvent, View } from "react-native";
 import { groupBy } from "../../utils/arrays";
 import { Feature } from "./common";
 
@@ -30,15 +30,16 @@ export type MapProps = PropsWithChildren<{
     google: GoogleCredentials;
 }>;
 
-const getActualWidth = (width: "auto" | number, ref: React.RefObject<View | null>) =>
-    typeof width === "number"
-        ? Math.min(width, 640)
-        : ref.current
-          ? Math.min((ref.current as unknown as HTMLElement).clientWidth, 640)
-          : null;
-
 export const Map = ({ width = "auto", height, google, children }: MapProps) => {
-    const widthRef = useRef<View>(null);
+    // "auto" is measured from a zero-height probe view rather than read off a ref during render,
+    // which only ever produced a width because some parent happened to re-render us.
+    const [measuredWidth, setMeasuredWidth] = React.useState<number | null>(null);
+    const onLayout = React.useCallback(
+        ({ nativeEvent }: LayoutChangeEvent) =>
+            setMeasuredWidth((current) => (current === nativeEvent.layout.width ? current : nativeEvent.layout.width)),
+        [],
+    );
+
     const features = groupBy<Feature, string>(
         React.Children.toArray(children)
             .filter((f) => (React.isValidElement(f) ? "renderFeature" in (f as any).type : false))
@@ -54,7 +55,8 @@ export const Map = ({ width = "auto", height, google, children }: MapProps) => {
                 : o.type,
     );
 
-    const actualWidth = getActualWidth(width, widthRef);
+    const actualWidth =
+        typeof width === "number" ? Math.min(width, 640) : measuredWidth ? Math.min(measuredWidth, 640) : null;
 
     let url = "";
 
@@ -75,7 +77,7 @@ export const Map = ({ width = "auto", height, google, children }: MapProps) => {
 
     return (
         <>
-            <View style={{ width: "100%", height: 0 }} ref={widthRef} />
+            <View style={{ width: "100%", height: 0 }} onLayout={onLayout} />
             {actualWidth && (
                 <Image
                     style={{ width: actualWidth, height: Math.min(height, 640) }}

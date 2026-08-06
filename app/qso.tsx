@@ -1,5 +1,5 @@
 import { useLocalSearchParams, useRouter } from "expo-router";
-import { useEffect } from "react";
+import { useEffect, useEffectEvent } from "react";
 import { FormProvider, useForm } from "react-hook-form";
 import { FormFields } from "./lib/components/form/form-fields";
 import { QSO, useQsos } from "./lib/components/qso";
@@ -15,7 +15,9 @@ const Qso = () => {
     const methods = useForm<QSO>({
         defaultValues: qso,
     });
-    useEffect(() => methods.reset(qso), [qsoId]);
+    // Only navigating to another QSO reloads the form; edits to the one on screen must not.
+    const loadQso = useEffectEvent(() => methods.reset(qso));
+    useEffect(() => loadQso(), [qsoId]);
     useAutoSave(methods.control, log);
 
     if (!qso) {

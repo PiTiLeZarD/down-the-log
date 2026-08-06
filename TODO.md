@@ -63,10 +63,10 @@ This is the rough todolist I want to work on.
 
 - [ ] ADIF `COUNTRY` is written and read as our iso3, but the spec says it holds the DXCC entity name. Breaks interop both ways, and is why the filter had to fall back to the raw value. Needs an iso3 <-> DXCC-name map — now a `to`/`from` codec on the single `field("country", "country")` row in `file-format/common.ts`
 - [ ] QSL import mutates the matched QSO in place against a render-time snapshot of the log (`app/qsl.tsx:66-71`). Two files imported back to back both work off pre-import state. Probably the reason matching sometimes misses. Return new objects and re-read the store
-- [ ] `console.groupEnd;` is missing its call parens (`app/qsl.tsx:107`), so the group never closes
+- [x] `console.groupEnd;` is missing its call parens (`app/qsl.tsx:107`), so the group never closes
 - [ ] `utils/merge.ts` throws away the recursive return value, so nested merges silently do nothing. Nothing imports it, so just delete the file
 - [ ] HamQTH user/password aren't URL-encoded (`utils/hamqth.tsx:38-40`), so a password containing `&` `+` `#` or a space fails login with no useful error. Same for the address in `utils/geocode.ts:18`. Use `URLSearchParams`
-- [ ] HamQTH session never refreshes: the effect has `[]` deps (`utils/hamqth.tsx:127`) but sessions expire after an hour (`:59`), so lookups go quiet until the app remounts. Depend on user/password and retry when `isSessionValid` flips
+- [x] HamQTH session never refreshes: the effect has `[]` deps (`utils/hamqth.tsx:127`) but sessions expire after an hour (`:59`), so lookups go quiet until the app remounts. Depend on user/password and retry when `isSessionValid` flips
 - [ ] `unsanitize` deletes entities it doesn't know: the regex matches any `&xx;`..`&xxxx;` and the switch default returns `""` (`file-format/common.ts:92-106`). An `&nbsp;` in a comment vanishes on import. Default should return the match untouched
 - [ ] eQSL/LoTW flags are always exported, `"N"` when we simply don't know (`file-format/common.ts:135-138`). That asserts "not sent" to whatever logbook receives the file. Emit nothing when the flag is unset
 - [ ] ADIF header `programversion` is hardcoded to `"0.0.1"` (`file-format/common.ts:235`) and `scripts/sync-version.mjs` doesn't patch it. Add it to `VERSIONED_FILES`
@@ -94,13 +94,6 @@ This is the rough todolist I want to work on.
 ## Housekeeping
 
 - [ ] no tests at all. The pure logic is the testable part and is exactly where the review bugs were: `callsign.ts`, `locator.ts`, ADIF/ADX round-trip, `event-rules.ts`, the `prefill*` helpers. vitest
-- [ ] lint backlog — `pnpm lint` is green on errors but leaves 49 warnings. Work through them, then promote each rule to `error` in `eslint.config.js`
-    - [ ] 25 `react-hooks/exhaustive-deps` — includes the HamQTH session one already listed above
-    - [ ] 8 `react-hooks/set-state-in-effect` — `band-freq-input`, `park-reference-input`, `state-field`, `grid/styles`, `use-location`. Cascading renders, and probably related to "there's issues to what is prefilled while making a bunch of qsos"
-    - [ ] 8 `react-hooks/refs` — `form-fields.tsx`, `google-static-map/map.tsx` (the `widthRef.current` read during render)
-    - [ ] 2 `no-unused-expressions` — one of them is the `console.groupEnd;` bug listed above, the other is a stray `` ` `` in `qso-list.tsx`
-    - [ ] 4 `@typescript-eslint/no-unused-vars`, 1 `import/no-named-as-default-member`
-    - [ ] 1 `react-hooks/incompatible-library` — react-hook-form's `watch()` can't be memoized, so React Compiler skips `app/index.tsx` entirely. Worth knowing before turning the compiler on
 - [x] unmaintained deps carrying real weight under React 19 / RN 0.86: `react-native-svg-charts` (last publish 2019), `react-native-big-list` (2022), `react-native-picker-select`. All three already needed `autoProcessPaths` workarounds in `babel.config.js`. Biggest risk to the next Expo upgrade — `@shopify/flash-list` replaces big-list, `victory-native` or plain `react-native-svg` replaces the charts
     - [x] `react-native-big-list` -> `FlatList` (sections flattened into one row list). Tried `@shopify/flash-list` first, but v2 positions cells absolutely off measured heights, so every mount showed the rows piled up for a frame before they snapped into place. `FlatList` lays out in flow, so the first paint is already correct
     - [x] `react-native-picker-select` -> `@react-native-picker/picker`, which was already a dependency. iOS keeps the modal-wheel behaviour, web/android use the picker directly
@@ -213,3 +206,9 @@ This is the rough todolist I want to work on.
     - [x] today/this month/this year/all
     - [x] list should display the date (QSOsecretary style)
 - [x] mode is often null, find out why
+- [x] lint backlog — `pnpm lint` is clean and every rule below is now `error` in `eslint.config.js`
+    - [x] 25 `react-hooks/exhaustive-deps`. Most of them were "trigger on this one field, but read everything else fresh", which is `useEffectEvent` (React 19.2, supported by both the DOM and Fabric renderers here)
+    - [x] 8 `react-hooks/set-state-in-effect` — the prop-mirroring ones (`input`, `state-field`, `band-freq-input`, `paginated-list`) resync during render instead, `grid/styles` is a `useMemo`, `use-location` derives the static gridsquare
+    - [x] 8 `react-hooks/refs` — the ragchew timer in `form-fields.tsx` is derived state now, and `google-static-map/map.tsx` measures with `onLayout` instead of reading `clientWidth` off a ref during render
+    - [x] 2 `no-unused-expressions`, 4 `@typescript-eslint/no-unused-vars`, 1 `import/no-named-as-default-member`
+    - [x] 1 `react-hooks/incompatible-library` — `app/index.tsx` uses `useWatch` instead of `methods.watch()`, so React Compiler can process the file

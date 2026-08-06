@@ -1,7 +1,7 @@
 import { useRouter } from "expo-router";
 import { DateTime } from "luxon";
-import { useEffect, useMemo } from "react";
-import { FormProvider, useForm } from "react-hook-form";
+import { useEffect, useEffectEvent, useMemo } from "react";
+import { FormProvider, useForm, useWatch } from "react-hook-form";
 import { View } from "react-native";
 import { StyleSheet } from "react-native-unistyles";
 import { Beacons } from "./lib/components/beacons";
@@ -54,7 +54,9 @@ const Index = () => {
 
     const lastQso = qsos.length ? qsos[0] : undefined;
 
-    const callsign = methods.watch("callsign");
+    // `useWatch` rather than `methods.watch()`: the latter can't be memoised, which made React
+    // Compiler skip this whole file.
+    const callsign = useWatch({ control: methods.control, name: "callsign" });
     const listQsos = useMemo(() => filterQsos(qsos, qsosFilters), [qsos, qsosFilters]);
     const listFilters = useMemo(
         () => (callsign ? [(q: QSO) => q.callsign.includes(callsign)] : undefined),
@@ -65,9 +67,12 @@ const Index = () => {
         if (previousQso || lastQso) qso = carryOver(qso, previousQso || (lastQso as QSO), settings.carryOver);
         methods.reset(prefillOperating(qso, { mode: "SSB", band: "20m" }));
     };
-    useEffect(resetQso, [lastQso]);
+    // Resetting reads the settings and the current location, but only a new QSO in the log or an
+    // emptied callsign box should trigger it — an effect event keeps those out of the dependencies.
+    const resetForm = useEffectEvent(() => resetQso());
+    useEffect(() => resetForm(), [lastQso]);
     useEffect(() => {
-        if (callsign === "") resetQso();
+        if (callsign === "") resetForm();
     }, [callsign]);
 
     const handleAdd = () => {

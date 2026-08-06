@@ -1,4 +1,4 @@
-import { useEffect } from "react";
+import { useEffect, useEffectEvent } from "react";
 import { useFormContext } from "react-hook-form";
 import { View } from "react-native";
 import { StyleSheet } from "react-native-unistyles";
@@ -53,13 +53,14 @@ export const CallsignInput = ({ handleAdd }: CallsignInputProps) => {
         } as any;
     }
 
-    useEffect(() => {
+    const fillFromLookup = useEffectEvent(() => {
         if (hamqthCSData && hamqthCSData.callsign == baseCallsign(callsign)) {
             setValue("name", hamqthCSData.name);
             setValue("qth", hamqthCSData.qth);
             setValue("locator", hamqthCSData.grid);
         }
-    }, [hamqthCSData]);
+    });
+    useEffect(() => fillFromLookup(), [hamqthCSData]);
 
     return (
         <Stack style={styles.inputBox}>

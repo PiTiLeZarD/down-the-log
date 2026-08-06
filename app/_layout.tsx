@@ -64,7 +64,7 @@ const RootLayout = () => {
 
     React.useEffect(() => {
         if (location) setCurrentLocation(latlong2Maidenhead(location.coords));
-    }, [location]);
+    }, [location, setCurrentLocation]);
 
     const onLayoutRootView = useCallback(async () => {
         if (fontsLoaded || fontError) {

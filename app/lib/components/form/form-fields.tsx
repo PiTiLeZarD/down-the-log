@@ -1,5 +1,5 @@
 import { DateTime } from "luxon";
-import React, { useEffect, useRef } from "react";
+import React, { useEffect } from "react";
 import { useFormContext } from "react-hook-form";
 import { Pressable, View } from "react-native";
 import { Switch } from "react-native-gesture-handler";
@@ -72,7 +72,6 @@ const diffTimeInMinutes = (qso: QSO, dt: DateTime) => dt.diff(qso.date, ["minute
 
 export const FormFields = ({ qso }: FormFieldsProps) => {
     const isLastQso = useQsos()[0].id === qso.id;
-    const timer = useRef<ReturnType<typeof setInterval> | undefined>(undefined);
     const [now, setNow] = React.useState<DateTime>(DateTime.utc());
     const { theme } = useUnistyles();
     const [openTimeLocModal, setOpenTimeLocModal] = React.useState<boolean>(false);
@@ -129,26 +128,15 @@ export const FormFields = ({ qso }: FormFieldsProps) => {
         });
     };
 
-    const clearTimer = () => {
-        if (timer.current) {
-            clearInterval(timer.current);
-            timer.current = undefined;
-        }
-    };
-    const tick = () => {
-        if (diffTimeInMinutes(qso, now) < settings.timeoffThreshold) {
-            setNow(DateTime.utc());
-        } else {
-            clearTimer();
-        }
-    };
+    // Whether the QSO is still running is derived, not held in a ref: the chip below reads it during
+    // render, and a ref wouldn't re-render when the timer stopped. `now` ticking is what drives it.
+    const isRunning = isLastQso && !qso.dateOff && diffTimeInMinutes(qso, now) < settings.timeoffThreshold;
 
     useEffect(() => {
-        if (isLastQso && !qso.dateOff && diffTimeInMinutes(qso, now) < settings.timeoffThreshold) {
-            timer.current = setInterval(tick, 1000);
-        }
-        return clearTimer;
-    }, [isLastQso, qso, settings.timeoffThreshold]);
+        if (!isRunning) return;
+        const timer = setInterval(() => setNow(DateTime.utc()), 1000);
+        return () => clearInterval(timer);
+    }, [isRunning]);
 
     const qslInfo = () => {
         fireSwal({
@@ -200,20 +188,17 @@ export const FormFields = ({ qso }: FormFieldsProps) => {
                                 />
                             </Stack>
                             <Stack direction="row" style={{ justifyContent: "flex-end", flex: 1 }}>
-                                {timer.current && (
+                                {isRunning && (
                                     <View>
                                         <Button
                                             variant="chip"
                                             colour="secondary"
                                             text={duration(qso, now)}
-                                            onPress={() => {
-                                                setValue("dateOff", now);
-                                                clearTimer();
-                                            }}
+                                            onPress={() => setValue("dateOff", now)}
                                         />
                                     </View>
                                 )}
-                                {!timer.current && (
+                                {!isRunning && (
                                     <>
                                         <Typography variant="h6">
                                             {qso.dateOff ? qso.date.toFormat("HH:mm") : qso.date.toFormat("HH:mm:ss")}

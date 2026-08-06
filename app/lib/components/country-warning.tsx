@@ -1,4 +1,4 @@
-import { useEffect } from "react";
+import { useEffect, useEffectEvent } from "react";
 import { useFormContext } from "react-hook-form";
 import { collapseCallsign, getCallsignData } from "../utils/callsign";
 import { Alert } from "../utils/theme/components/alert";
@@ -11,17 +11,20 @@ export const CountryWarning = () => {
     const country = watch("country");
     const csdata = getCallsignData(collapseCallsign(callsign));
 
-    useEffect(() => {
-        if (csdata) {
-            if (csdata.ctn != getValues("continent")) setValue("continent", csdata.ctn);
-            if (+csdata.dxcc != getValues("dxcc")) setValue("dxcc", +csdata.dxcc);
-            if (csdata.gs != getValues("locator")) setValue("locator", csdata.gs);
-        }
-    }, [country]);
+    // Both of these read the callsign data but must only fire on the field named in the dependency
+    // array, otherwise they undo what the operator just typed. Effect events keep that split explicit.
+    const fillFromCallsign = useEffectEvent(() => {
+        if (!csdata) return;
+        if (csdata.ctn != getValues("continent")) setValue("continent", csdata.ctn);
+        if (+csdata.dxcc != getValues("dxcc")) setValue("dxcc", +csdata.dxcc);
+        if (csdata.gs != getValues("locator")) setValue("locator", csdata.gs);
+    });
+    useEffect(() => fillFromCallsign(), [country]);
 
-    useEffect(() => {
+    const fillCountry = useEffectEvent(() => {
         if (csdata?.iso3 && csdata.iso3 != country) setValue("country", csdata.iso3);
-    }, [callsign]);
+    });
+    useEffect(() => fillCountry(), [callsign]);
 
     if (!csdata) return <></>;
 

@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React from "react";
 import {
     NativeSyntheticEvent,
     Pressable,
@@ -63,8 +63,20 @@ export const Input = ({
     ...otherProps
 }: InputProps) => {
     const [secure, setSecure] = React.useState<boolean>(password);
-    const [value, setValue] = React.useState<string>(otherProps.value || "");
-    useEffect(() => setSecure(password), [password]);
+    const [value, setValue] = React.useState<string>(transformValue(otherProps.value || ""));
+
+    // Both bits of state mirror a prop. Resyncing during render (the supported pattern) instead of in
+    // an effect means the input never paints one frame of the previous value.
+    const [renderedFor, setRenderedFor] = React.useState<Pick<InputProps, "password" | "value">>({
+        password,
+        value: otherProps.value,
+    });
+    if (renderedFor.password !== password || renderedFor.value !== otherProps.value) {
+        setRenderedFor({ password, value: otherProps.value });
+        if (renderedFor.password !== password) setSecure(password);
+        const transformed = transformValue(otherProps.value || "");
+        if (transformed !== value) setValue(transformed);
+    }
 
     if (password)
         suffix = (
@@ -72,13 +84,6 @@ export const Input = ({
                 <Icon name={secure ? "eye-off" : "eye"} />
             </Pressable>
         );
-
-    useEffect(() => {
-        const mv = transformValue(otherProps.value || "");
-        if (mv !== value) {
-            setValue(mv);
-        }
-    }, [otherProps.value]);
 
     const launch = (ev: NativeSyntheticEvent<TextInputChangeEventData>, value: string) => {
         (otherProps.onChangeText || ((v: string) => {}))(value);

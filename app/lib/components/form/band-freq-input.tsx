@@ -41,16 +41,20 @@ export const BandFreqInput = ({ noLabel = false }: BandFreqInputProps) => {
             ? Object.keys(bands)
             : Object.keys(bands).filter((b) => favouriteBands.includes(b as Band));
 
-    React.useEffect(() => {
+    // The text box mirrors the form's frequency, so it resyncs during render rather than from an
+    // effect — an effect would show the previous frequency for a frame on every QSO change.
+    const [renderedFor, setRenderedFor] = React.useState<number | undefined>(frequency);
+    if (renderedFor !== frequency) {
+        setRenderedFor(frequency);
         setFreqUserInput(String(freqValue(frequency, band, mode)));
-    }, [frequency]);
+    }
 
     React.useEffect(() => {
         if (!Number.isNaN(+freqUserInput)) {
             setValue("frequency", +freqUserInput / 1000);
             if (bandUserInput !== null) setValue("band", bandUserInput);
         }
-    }, [freqUserInput]);
+    }, [freqUserInput, bandUserInput, setValue]);
     return (
         <Stack>
             {!noLabel && <Typography>Frequency:</Typography>}

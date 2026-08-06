@@ -1,5 +1,5 @@
 import { DateTime } from "luxon";
-import React, { useEffect } from "react";
+import React, { useEffect, useEffectEvent } from "react";
 import { useController, useFormContext } from "react-hook-form";
 import { countries } from "../../data/countries";
 import { Input } from "../../utils/theme/components/input";
@@ -41,21 +41,22 @@ export const FormField = ({
     const dtValue =
         ["date", "time"].includes(role) && value != "" ? (field.value as DateTime).toFormat(dtFormat) : undefined;
     const [userInput, setUserInput] = React.useState<string>(dtValue || "");
-    useEffect(() => {
+    const commitUserInput = useEffectEvent(() => {
         const dt = DateTime.fromFormat(userInput, dtFormat);
-        if (dt.isValid) {
-            const prev = field.value as DateTime;
-            const values = dt.toObject();
-            setValue(
-                name,
-                prev.set(
-                    role === "date"
-                        ? { day: values.day, month: values.month, year: values.year }
-                        : { hour: values.hour, minute: values.minute, second: values.second },
-                ),
-            );
-        }
-    }, [userInput]);
+        if (!dt.isValid) return;
+
+        const prev = field.value as DateTime;
+        const values = dt.toObject();
+        setValue(
+            name,
+            prev.set(
+                role === "date"
+                    ? { day: values.day, month: values.month, year: values.year }
+                    : { hour: values.hour, minute: values.minute, second: values.second },
+            ),
+        );
+    });
+    useEffect(() => commitUserInput(), [userInput]);
 
     return (
         <Stack>

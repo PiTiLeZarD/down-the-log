@@ -1,6 +1,6 @@
 import axios from "axios";
 import { DateTime } from "luxon";
-import { useEffect } from "react";
+import { useEffect, useEffectEvent } from "react";
 import { useUnistyles } from "react-native-unistyles";
 import { baseCallsign, parseCallsign } from "./callsign";
 import { latlong2Maidenhead, normalise } from "./locator";
@@ -111,20 +111,25 @@ export const useHamqth = (callsign?: string) => {
     };
     const throttled = useThrottle(launch, 500);
 
-    useEffect(() => {
-        if (settings.hamqth?.user && settings.hamqth.password) {
-            if (!isSessionValid(settings.hamqth)) {
-                console.info("Fetching new hamqth session");
-                fetchSessionId(settings.hamqth.user, settings.hamqth.password)
-                    .then((sessionId) => {
-                        if (sessionId) {
-                            updateSetting("hamqth", newSessionId(settings.hamqth, sessionId));
-                        }
-                    })
-                    .catch((e) => swal(theme, e));
-            }
-        }
-    }, []);
+    // Sessions expire after an hour, so this has to follow the credentials and the validity of the
+    // session rather than run once on mount, or lookups go quiet until the app is remounted.
+    const user = settings.hamqth?.user;
+    const password = settings.hamqth?.password;
+    const sessionValid = isSessionValid(settings.hamqth);
+
+    const refreshSession = useEffectEvent(() => {
+        if (!user || !password || sessionValid) return;
+
+        console.info("Fetching new hamqth session");
+        fetchSessionId(user, password)
+            .then((sessionId) => {
+                if (sessionId) {
+                    updateSetting("hamqth", newSessionId(settings.hamqth, sessionId));
+                }
+            })
+            .catch((e) => swal(theme, e));
+    });
+    useEffect(() => refreshSession(), [user, password, sessionValid]);
 
     if (callsign) {
         const parsedCallsign = parseCallsign(callsign);

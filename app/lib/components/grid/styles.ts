@@ -27,13 +27,10 @@ const generateStyles = (width: number, columns: number = 12): Record<string, Vie
 export const useGeneratedStyles = (columns: number = 12) => {
     const windowDimensions = useWindowDimensions();
 
-    const [gridStyles, setGridStyles] = React.useState<ReturnType<typeof generateStyles>>(
-        generateStyles(windowDimensions.width, columns),
+    const gridStyles = React.useMemo(
+        () => generateStyles(windowDimensions.width, columns),
+        [windowDimensions.width, columns],
     );
-
-    React.useEffect(() => {
-        setGridStyles(generateStyles(windowDimensions.width, columns));
-    }, [windowDimensions, columns]);
 
     return { gridStyles, screenSize: getScreenSize(windowDimensions.width), columns };
 };

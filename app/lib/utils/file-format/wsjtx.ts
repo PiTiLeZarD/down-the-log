@@ -20,7 +20,6 @@ export const WsjtxAPI: FileFormatAPI = {
             tx_pwr,
             comment,
             name,
-            _,
         ] = (from as string).split(",");
         const parsed = parseCallsign(call);
         return {

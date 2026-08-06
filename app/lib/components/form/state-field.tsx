@@ -11,7 +11,7 @@ export type StateFieldProps = {
 };
 
 export const StateField = ({ name }: StateFieldProps) => {
-    const { watch, setValue } = useFormContext<QSO>();
+    const { watch, setValue, getValues } = useFormContext<QSO>();
     const value = watch(name);
     const callsign = watch("callsign");
     const country = watch(name == "state" ? "country" : "myCountry");
@@ -19,17 +19,24 @@ export const StateField = ({ name }: StateFieldProps) => {
         country && value && country in states && value in states[country] ? states[country][value] : undefined;
     const [inputValue, setInputValue] = React.useState<string>(stateName || value || "");
 
-    useEffect(() => {
+    // The box mirrors the form field, so it resyncs during render instead of from an effect.
+    const [renderedFor, setRenderedFor] = React.useState<string | undefined>(value);
+    if (renderedFor !== value) {
+        setRenderedFor(value);
         if (value != inputValue) setInputValue(value || "");
-    }, [value]);
+    }
 
     useEffect(() => {
+        // Only the worked station's state can be read off a callsign. `myState` comes from the
+        // operator's own settings, so this must not write into the form when that's what we render.
+        if (name !== "state") return;
+
         const cs = withState(
             callsign,
             callsigns.find((c) => c.iso3 === country),
         );
-        if (cs && cs.state != value) setValue("state", cs.state);
-    }, [callsign]);
+        if (cs && cs.state != getValues("state")) setValue("state", cs.state);
+    }, [callsign, country, name, getValues, setValue]);
 
     return (
         <FormField

@@ -1,4 +1,4 @@
-import React, { useEffect, PropsWithChildren } from "react";
+import React, { PropsWithChildren } from "react";
 import { View } from "react-native";
 import { Stack } from "../../../components/stack";
 import { Button } from "./button";
@@ -13,7 +13,13 @@ export const PaginatedList = ({ itemsPerPage = 10, whenEmpty, children }: Pagina
     const elements = React.Children.toArray(children);
     const [page, setPage] = React.useState<number>(0);
 
-    useEffect(() => setPage(0), [elements.length]);
+    // Back to the first page whenever the list itself changes. Adjusting state during render is the
+    // supported way to do this, an effect would render the stale page first.
+    const [renderedFor, setRenderedFor] = React.useState<number>(elements.length);
+    if (renderedFor !== elements.length) {
+        setRenderedFor(elements.length);
+        setPage(0);
+    }
 
     if (elements.length === 0) return <>{whenEmpty}</> || <Typography>No elements found</Typography>;
     if (elements.length <= itemsPerPage) return <>{children}</>;

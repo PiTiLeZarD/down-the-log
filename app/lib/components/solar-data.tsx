@@ -21,8 +21,6 @@ const deserialise = (data: string) =>
         value: +value,
     }));
 
-const ssn = (sfi: number) => 1.14 * sfi - 73.21;
-
 const sirx =
     /^(\d{4} \d{2} \d{2})\s+(\d+)\s+(\d+)\s+(\d+)\s+(\d+)\s+([-]?\d+)\s+([*]|([A-Z]\d+[.]\d+))\s+(\d+)\s+(\d+)\s+(\d+)\s+(\d+)\s+(\d+)\s+(\d+)\s+(\d+)/;
 

@@ -6,7 +6,7 @@ const pad = (s: string | undefined, l: number, d: "LEFT" | "RIGHT" = "LEFT") =>
     (s || "")[d === "LEFT" ? "padEnd" : "padStart"](l, " ");
 
 const parseLine = (s: string): { key: string; line: string; values: string[] } => {
-    const [_, key, line] = s.split(/^([^:]+): (.*)/);
+    const [, key, line] = s.split(/^([^:]+): (.*)/);
     return { key, line, values: line.split(/\s{1,}/) };
 };
 

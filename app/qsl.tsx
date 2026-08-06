@@ -102,7 +102,7 @@ const Qsl = () => {
                                 );
                             }
                         });
-                        console.groupEnd;
+                        console.groupEnd();
                     }
                 }
             };

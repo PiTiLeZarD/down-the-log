@@ -38,7 +38,6 @@ export const MenuButton = ({ navigateTo, icon, text }: MenuButtonProps) => {
 };
 
 const Menu = () => {
-    const { navigate } = useRouter();
     return (
         <PageLayout title="Menu">
             <Grid container>

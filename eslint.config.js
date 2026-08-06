@@ -16,16 +16,27 @@ module.exports = defineConfig([
             "react/no-unescaped-entities": "off", // apostrophes in copy are fine
             "react/display-name": "off",
 
-            // The point of the linter here: these caught real bugs at review time.
+            // The point of the linter here: these caught real bugs at review time. The backlog they
+            // used to warn about is cleared, so anything new is a regression and fails the build.
             "react-hooks/rules-of-hooks": "error",
-            "react-hooks/exhaustive-deps": "warn",
+            "react-hooks/exhaustive-deps": "error",
 
-            // React Compiler era rules from react-hooks v7. They flag genuine issues in this
-            // codebase (see the lint backlog in TODO.md) but there are too many to block CI on
-            // today — warn until they're worked through, then promote to error.
-            "react-hooks/set-state-in-effect": "warn",
-            "react-hooks/refs": "warn",
-            "react-hooks/incompatible-library": "warn",
+            // React Compiler era rules from react-hooks v7.
+            "react-hooks/set-state-in-effect": "error",
+            "react-hooks/refs": "error",
+            "react-hooks/incompatible-library": "error",
+
+            // Statements that look like calls but aren't — a dropped `()` on console.groupEnd was one.
+            "no-unused-expressions": "error",
+            "import/no-named-as-default-member": "error",
+        },
+    },
+    {
+        // The plugin behind this one is only registered for TypeScript files upstream, so the
+        // override has to be scoped the same way.
+        files: ["**/*.ts", "**/*.tsx"],
+        rules: {
+            "@typescript-eslint/no-unused-vars": "error",
         },
     },
 ]);

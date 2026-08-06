@@ -1,5 +1,5 @@
 import { DateTime } from "luxon";
-import React, { useEffect } from "react";
+import React, { useEffect, useEffectEvent } from "react";
 import { Band, freq2band } from "../data/bands";
 import { findCountry, getCallsignData } from "../utils/callsign";
 import { maidenDistance } from "../utils/locator";
@@ -66,14 +66,14 @@ export const Beacons = () => {
         setBeacon(beaconOn(b));
     };
 
+    const tick = useEffectEvent(() => updateBeacon(band));
+
     useEffect(() => {
-        const beaconInterval = setInterval(() => {
-            updateBeacon(band);
-        }, 500);
+        const beaconInterval = setInterval(() => tick(), 500);
         return () => {
             clearInterval(beaconInterval);
         };
-    }, [band]);
+    }, []);
 
     const csdata = getCallsignData(beacon);
     const country = csdata ? findCountry(csdata) : null;
