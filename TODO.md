@@ -70,7 +70,7 @@ This is the rough todolist I want to work on.
 ## Performance
 
 - [ ] opening a QSO for the first time in a session stalls for about a second. `form-fields.tsx` pulls in `Events` -> `event-rules.ts`, which imports `pota.json` (6.7MB), `sota.json` (8.9MB), `wwff.json` (4.2MB) and `iota.json`. expo-router loads route modules on first navigation, so that whole ~20MB of JSON-as-object-literal is parsed and evaluated on the first click, and is warm afterwards — which is exactly the symptom. Options: `require` the datasets lazily inside the lookups that need them, ship them as `JSON.parse("...")` strings (much faster to parse than object literals), or move the lookups behind an index built at build time
-- [ ] `useAutoSave` writes on mount: `useWatch` returns values straight away, so the effect fires immediately and `log(qso)` rebuilds the whole `qsos` array and re-persists the entire store every single time a QSO page is opened, edited or not. Only save once the form is actually dirty
+- [x] `useAutoSave` writes on mount: `useWatch` returns values straight away, so the effect fires immediately and `log(qso)` rebuilds the whole `qsos` array and re-persists the entire store every single time a QSO page is opened, edited or not. Fixed by remembering the loaded `id` and skipping the first emission for it
 
 - [x] `hasDuplicates` filter is O(n^2) with a regex inside: `findMatchingQsos` per QSO across every QSO (`components/filters.tsx:56`). At a few thousand QSOs that's tens of millions of `baseCallsign` regex runs and the filter screen locks up. Build a `Map<baseCallsign, QSO[]>` once
 - [x] ADIF import has the same shape, every imported record scans the whole log (`components/adif/import.tsx:59`). Same index fixes it
