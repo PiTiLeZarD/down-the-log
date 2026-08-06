@@ -43,7 +43,7 @@ const About = () => {
                             variant="chip"
                             startIcon="link"
                             text="TODOLIST"
-                            url="https://github.com/PiTiLeZarD/down-the-log/blob/master/TODO.md"
+                            url="https://github.com/users/PiTiLeZarD/projects/1"
                         />
                     </View>
                 </Stack>
