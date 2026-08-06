@@ -55,7 +55,6 @@ This is the rough todolist I want to work on.
 - [ ] find a solution for import/export on mobile (download works, upload probably doesn't)
     - [ ] `downloadQsos` builds a `document.createElement("a")`, so export is dead on native (`app/lib/utils/file-format/index.ts:16`). `expo-file-system` + `expo-sharing` covers it
     - [ ] while in there: the `data:text/plain,` href caps out around a few MB in some browsers, `Blob` + `URL.createObjectURL` is safer for big logs
-- [ ] ADX import and HamQTH lookup both call `new DOMParser()`, which doesn't exist on native (`file-format/adx.ts:50`, `utils/hamqth.tsx:42`). `fast-xml-parser` is already a devDep, promote it and swap
 - [ ] ios/android debug and shakedown
 - [ ] open accounts on playstore and apple dev
 
@@ -212,3 +211,4 @@ This is the rough todolist I want to work on.
 - [x] HamQTH session never refreshes: the effect has `[]` deps (`utils/hamqth.tsx:127`) but sessions expire after an hour (`:59`), so lookups go quiet until the app remounts. Depend on user/password and retry when `isSessionValid` flips
 - [x] ADIF header `programversion` is hardcoded to `"0.0.1"` (`file-format/common.ts:235`) and `scripts/sync-version.mjs` doesn't patch it. Add it to `VERSIONED_FILES`
 - [x] `filterQsos` re-runs on every keystroke in the callsign box (`app/index.tsx:88`), memo on `[qsos, filters]`
+- [x] ADX import and HamQTH lookup both call `new DOMParser()`, which doesn't exist on native (`file-format/adx.ts:50`, `utils/hamqth.tsx:42`). `fast-xml-parser` is already a devDep, promote it and swap

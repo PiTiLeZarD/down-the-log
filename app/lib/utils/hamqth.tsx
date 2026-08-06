@@ -1,4 +1,5 @@
 import axios from "axios";
+import { XMLParser } from "fast-xml-parser";
 import { DateTime } from "luxon";
 import { useEffect, useEffectEvent } from "react";
 import { useUnistyles } from "react-native-unistyles";
@@ -33,24 +34,40 @@ export type HamQTHCallsignData = {
     utc_offset: number;
 };
 
+/**
+ * `DOMParser` only exists on web, so lookups died on native. `fast-xml-parser` is pure JS. Values
+ * stay strings (a grid like 1234 isn't a number) and the parser decodes XML entities for us.
+ */
+const parser = new XMLParser({ ignoreAttributes: true, parseTagValue: false, trimValues: true });
+
+/** Flat tag -> text map. HamQTH buries its payload under <HamQTH><search> or <session>, and the old
+ * `getElementsByTagName` lookup didn't care about depth, so neither does this. First tag wins. */
+type XMLDoc = Record<string, string>;
+
+const flatten = (node: unknown, into: XMLDoc = {}): XMLDoc => {
+    if (node === null || typeof node !== "object") return into;
+    Object.entries(node as Record<string, unknown>).forEach(([tag, value]) =>
+        [value].flat().forEach((v) => {
+            if (v !== null && typeof v === "object") flatten(v, into);
+            else if (!(tag in into)) into[tag] = String(v ?? "");
+        }),
+    );
+    return into;
+};
+
 const fetchData = async (params: Record<string, string>) => {
     const response = await axios.get(
         `https://www.hamqth.com/xml.php?${Object.entries(params)
             .map(([k, v]) => `${k}=${v}`)
             .join("&")}`,
     );
-    const parser = new DOMParser();
-    const doc = parser.parseFromString(response.data, "text/xml");
+    const doc = flatten(parser.parse(response.data));
     const error = pickXML(doc, "error");
     if (error) throw new Error(error);
     return doc;
 };
 
-const pickXML = (doc: Document, tag: string): string | undefined => {
-    const els = doc.getElementsByTagName(tag);
-    if (els && els.length) return els[0].innerHTML;
-    return undefined;
-};
+const pickXML = (doc: XMLDoc, tag: string): string | undefined => doc[tag] || undefined;
 
 export const isSessionValid = (hamqth: HamQTHSettingsType | undefined) =>
     hamqth &&
