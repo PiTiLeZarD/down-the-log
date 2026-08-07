@@ -24,6 +24,8 @@ const styles = StyleSheet.create((theme) => ({
         borderRadius: theme.margins.md,
         padding: theme.margins.lg,
         flexGrow: 1,
+        flexShrink: 1,
+        minWidth: 0,
         maxWidth: "100%",
         color: theme.text.main,
     },
@@ -32,6 +34,7 @@ const styles = StyleSheet.create((theme) => ({
         borderRadius: theme.margins.md,
         padding: theme.margins.lg,
         height: "100%",
+        flexShrink: 0,
     },
     leftFlatBorders: {
         borderTopLeftRadius: 0,

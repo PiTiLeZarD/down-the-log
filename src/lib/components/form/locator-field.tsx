@@ -4,10 +4,7 @@ import cqzones from "../../data/cqzones.json";
 import ituzones from "../../data/ituzones.json";
 import { maidenDistance, maidenhead2Latlong, normalise } from "../../utils/locator";
 import { findZone } from "../../utils/polydec";
-import { Typography } from "../../ui/typography";
-import { MapChip } from "../map-chip";
 import { QSO } from "../qso";
-import { Stack } from "../stack";
 import { FormField } from "./form-field";
 
 export type LocatorFieldProps = {
@@ -38,15 +35,6 @@ export const LocatorField = ({ name, label }: LocatorFieldProps) => {
     });
     useEffect(() => fillZones(), [locator]);
 
-    return (
-        <FormField
-            name={name}
-            label={
-                <Stack direction="row">
-                    <Typography style={{ flexGrow: 1 }}>{label}</Typography>
-                    <MapChip locator={getValues().locator} />
-                </Stack>
-            }
-        />
-    );
+    // No map chip here: the QSO map further down the form already plots both gridsquares.
+    return <FormField name={name} label={label} />;
 };

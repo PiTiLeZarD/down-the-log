@@ -11,7 +11,7 @@ import { Mode, isDigital } from "../../data/modes";
 import { baseCallsign, getCallsignData, parseCallsign } from "../../utils/callsign";
 import { maidenDistance, maidenhead2Latlong } from "../../utils/locator";
 import { findZone } from "../../utils/polydec";
-import { useStore } from "../../utils/store";
+import { Settings, useStore } from "../../utils/store";
 
 // sort() is in-place, so sorting the array zustand handed us would reorder the store itself.
 // Copy first, and memoise so every consumer doesn't re-sort the whole log on each render.
@@ -151,6 +151,17 @@ export const prefillMyStation = (
     myAntenna: qso.myAntenna || myStation.myAntenna,
     myState: qso.myState || myStation.myState,
     myCountry: qso.myCountry || myStation.myCountry,
+});
+
+// What the settings know about the operator, in the shape prefillMyStation wants. Everything else on
+// the station — rig, antenna, QTH, country — only ever comes from the previous QSO's carry-over, so
+// the first QSO of a log has them empty and MyStation flags that.
+export const myStationFromSettings = (settings: Settings, currentLocation?: string) => ({
+    myCallsign: settings.myCallsign,
+    myLocator: settings.myGridsquare || currentLocation,
+    // Which country the operator is licensed in is the best guess available for where they're
+    // transmitting from, and it's right until they take the callsign abroad.
+    myCountry: getCallsignData(settings.myCallsign)?.iso3,
 });
 
 export const prefillOperating = (

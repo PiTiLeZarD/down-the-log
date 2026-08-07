@@ -73,13 +73,15 @@ export const QsoRow = ({
                 <Grid item style={styles.cell} xs={-1} lg={1}>
                     {cellContent(duration, cellStyle)}
                 </Grid>
-                <Grid item style={styles.cell} xs={7} md={5}>
+                <Grid item style={styles.cell} xs={6} md={5}>
                     {cellContent(callsign, cellStyle)}
                 </Grid>
                 <Grid item style={styles.cell} xs={-1} md={2}>
                     {cellContent(name, cellStyle)}
                 </Grid>
-                <Grid item style={styles.cell} xs={2}>
+                {/* Band, mode and the status icons all share this cell, so it needs an extra column
+                    on a phone — at xs={2} the icons ran off the right edge of the screen. */}
+                <Grid item style={styles.cell} xs={3} md={2}>
                     {cellContent(band, cellStyle)}
                 </Grid>
             </Grid>

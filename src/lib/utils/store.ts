@@ -1,6 +1,7 @@
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import * as SecureStore from "expo-secure-store";
 import { DateTime } from "luxon";
+import React from "react";
 import { Platform } from "react-native";
 import { create } from "zustand";
 import { combine, devtools, persist, PersistStorage } from "zustand/middleware";
@@ -12,6 +13,8 @@ import type { Band } from "../data/bands";
 import type { Mode } from "../data/modes";
 import type { HamQTHSettingsType } from "./hamqth";
 
+// Only the operator's identity lives here. The rest of the station — rig, antenna, QTH, country —
+// is per-QSO: there's rarely just one of each, so it's set on the QSO and carried over from there.
 export type Settings = {
     myGridsquare?: string;
     myCallsign: string;
@@ -174,3 +177,12 @@ export const useStore = create<
         }),
     ),
 );
+
+// The store starts on its defaults and only fills in once AsyncStorage has answered. Anything that
+// treats an empty setting as "never configured" — the first-run setup — has to wait for that,
+// otherwise it fires at every launch before the real settings land.
+export const useHydrated = (): boolean => {
+    const [hydrated, setHydrated] = React.useState<boolean>(() => useStore.persist.hasHydrated());
+    React.useEffect(() => useStore.persist.onFinishHydration(() => setHydrated(true)), []);
+    return hydrated;
+};

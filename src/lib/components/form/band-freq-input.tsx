@@ -1,15 +1,14 @@
 import React from "react";
 import { useFormContext } from "react-hook-form";
-import { View } from "react-native";
 import { useUnistyles } from "react-native-unistyles";
 import { Band, band2freq, bands, freq2band } from "../../data/bands";
 import { Mode } from "../../data/modes";
-import { Modal } from "../../utils/modal";
 import { Button } from "../../ui/button";
 import { Input } from "../../ui/input";
-import { PaginatedList } from "../../ui/paginated-list";
+import { SelectInput } from "../../ui/select-input";
 import { Typography } from "../../ui/typography";
 import { useSettings } from "../../utils/use-settings";
+import { Grid } from "../grid";
 import { QSO } from "../qso";
 import { Stack } from "../stack";
 
@@ -26,7 +25,6 @@ export type BandFreqInputProps = {
 export const BandFreqInput = ({ noLabel = false }: BandFreqInputProps) => {
     const { theme } = useUnistyles();
     const [showAll, setShowAll] = React.useState<boolean>(false);
-    const [open, setOpen] = React.useState<boolean>(false);
     const { watch, setValue, getValues } = useFormContext<QSO>();
     const { favouriteBands } = useSettings();
 
@@ -40,6 +38,12 @@ export const BandFreqInput = ({ noLabel = false }: BandFreqInputProps) => {
         showAll || favouriteBands.length === 0
             ? Object.keys(bands)
             : Object.keys(bands).filter((b) => favouriteBands.includes(b as Band));
+    // A picker whose value isn't one of its items silently shows the first one instead, so a band
+    // outside the favourites list has to be offered back as an item.
+    const bandItems = (band && !allBands.includes(band) ? [band, ...allBands] : allBands).map((b) => ({
+        label: b,
+        value: b,
+    }));
 
     // The text box mirrors the form's frequency, so it resyncs during render rather than from an
     // effect — an effect would show the previous frequency for a frame on every QSO change.
@@ -56,10 +60,10 @@ export const BandFreqInput = ({ noLabel = false }: BandFreqInputProps) => {
         }
     }, [freqUserInput, bandUserInput, setValue]);
     return (
-        <Stack>
+        <Stack style={{ maxWidth: "100%" }}>
             {!noLabel && <Typography>Frequency:</Typography>}
-            <Stack direction="row">
-                <View style={{ flexGrow: 1 }}>
+            <Grid container>
+                <Grid item xs={6} md={8}>
                     <Input
                         numeric
                         style={[!bandUserInput ? { backgroundColor: theme.colours.secondary.main } : {}]}
@@ -76,35 +80,28 @@ export const BandFreqInput = ({ noLabel = false }: BandFreqInputProps) => {
                         suffix="kHz"
                         onChangeText={(nfreq) => setFreqUserInput(nfreq)}
                     />
-                </View>
-                <View style={{ flex: 0.5 }}>
-                    <Button text={`${band || "N/A"}`} onPress={() => setOpen(true)} />
-                </View>
-            </Stack>
-            <Modal wide open={open} onClose={() => setOpen(false)}>
-                <Stack>
-                    {favouriteBands.length > 0 && (
+                </Grid>
+                <Grid item {...(favouriteBands.length > 0 ? { xs: 5, md: 3 } : { xs: 6, md: 4 })}>
+                    <SelectInput
+                        aria-label="band"
+                        value={band}
+                        items={bandItems}
+                        onValueChange={(b) => {
+                            setValue("band", b as Band);
+                            setValue("frequency", band2freq(b as Band, mode) || 14.144);
+                        }}
+                    />
+                </Grid>
+                {favouriteBands.length > 0 && (
+                    <Grid item xs={1}>
                         <Button
-                            text={showAll ? "Only favourite bands" : "Show all bands"}
+                            aria-label={showAll ? "Only favourite bands" : "Show all bands"}
+                            startIcon={showAll ? "star-outline" : "star"}
                             onPress={() => setShowAll(!showAll)}
                         />
-                    )}
-                    <PaginatedList itemsPerPage={6}>
-                        {allBands.map((b) => (
-                            <Button
-                                key={b}
-                                text={b}
-                                variant={b == band ? "contained" : "outlined"}
-                                onPress={() => {
-                                    setValue("band", b as Band);
-                                    setValue("frequency", band2freq(b as Band, mode) || 14144);
-                                }}
-                            />
-                        ))}
-                    </PaginatedList>
-                    <Button colour="success" text="OK" onPress={() => setOpen(false)} />
-                </Stack>
-            </Modal>
+                    </Grid>
+                )}
+            </Grid>
         </Stack>
     );
 };

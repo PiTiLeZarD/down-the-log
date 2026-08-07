@@ -25,14 +25,16 @@ const styles = StyleSheet.create((theme) => ({
 export type BadgeProps = PropsWithChildren<{
     count: number;
     colour?: ColourVariant;
+    // Shown instead of the count when the number itself says nothing useful, e.g. a bare "!" warning.
+    label?: string;
 }>;
 
-export const Badge = ({ count, colour = "primary", children }: BadgeProps) => {
+export const Badge = ({ count, colour = "primary", label, children }: BadgeProps) => {
     if (count === 0) return <>{children}</>;
     return (
         <View style={styles.container}>
             <View style={styles.badge(colour)}>
-                <Typography variant="em">{count}</Typography>
+                <Typography variant="em">{label ?? count}</Typography>
             </View>
             <View style={styles.content}>{children}</View>
         </View>

@@ -105,12 +105,15 @@ export const FormField = ({
                 <SelectInput
                     value={value}
                     onValueChange={field.onChange}
-                    items={withCurrentValue(
-                        Object.entries(countries).map(([value, { name, flag }]) => ({
+                    items={withCurrentValue([
+                        // Without an empty entry a picker with no value shows its first item, so an
+                        // unset country read as Afghanistan — and the next change event saved it.
+                        { label: "—", value: "" },
+                        ...Object.entries(countries).map(([value, { name, flag }]) => ({
                             label: `${flag} ${name}`,
                             value,
                         })),
-                    )}
+                    ])}
                     {...(label ? { "aria-labelledby": `label${field.name}` } : {})}
                     {...otherProps}
                 />

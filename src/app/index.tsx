@@ -1,24 +1,27 @@
 import { useRouter } from "expo-router";
 import { DateTime } from "luxon";
-import { useEffect, useEffectEvent, useMemo } from "react";
+import React, { useEffect, useEffectEvent, useMemo } from "react";
 import { FormProvider, useForm, useWatch } from "react-hook-form";
 import { View } from "react-native";
 import { StyleSheet } from "react-native-unistyles";
 import { Beacons } from "../lib/components/beacons";
 import { Filters, useFilteredQsos } from "../lib/components/filters";
+import { FirstRunSetup } from "../lib/components/first-run-setup";
 import { CallsignInput } from "../lib/components/form/callsign-input";
 import {
     QSO,
     carryOver,
     createQso,
     extrapolate,
+    myStationFromSettings,
     prefillMyStation,
     prefillOperating,
     useQsos,
 } from "../lib/components/qso";
 import { QsoList } from "../lib/components/qso/qso-list";
-import { useStore } from "../lib/utils/store";
+import { useHydrated, useStore } from "../lib/utils/store";
 import { Alert } from "../lib/ui/alert";
+import { Button } from "../lib/ui/button";
 import { Typography } from "../lib/ui/typography";
 import { useSettings } from "../lib/utils/use-settings";
 
@@ -52,6 +55,12 @@ const Index = () => {
     const methods = useForm<QSO>({ defaultValues: {} });
     const { navigate } = useRouter();
 
+    // A missing callsign is the one setting the app can't work around, so it opens the setup itself
+    // on a fresh install rather than leaving a warning for the operator to act on.
+    const hydrated = useHydrated();
+    const [setupDismissed, setSetupDismissed] = React.useState<boolean>(false);
+    const needsSetup = hydrated && !settings.myCallsign;
+
     const lastQso = qsos.length ? qsos[0] : undefined;
 
     // `useWatch` rather than `methods.watch()`: the latter can't be memoised, which made React
@@ -62,7 +71,7 @@ const Index = () => {
         [callsign],
     );
     const resetQso = (previousQso?: QSO) => {
-        let qso = prefillMyStation(createQso(""), { myCallsign: settings.myCallsign, myLocator: currentLocation });
+        let qso = prefillMyStation(createQso(""), myStationFromSettings(settings, currentLocation));
         if (previousQso || lastQso) qso = carryOver(qso, previousQso || (lastQso as QSO), settings.carryOver);
         methods.reset(prefillOperating(qso, { mode: "SSB", band: "20m" }));
     };
@@ -85,9 +94,14 @@ const Index = () => {
     return (
         <View style={styles.container}>
             <View style={styles.content}>
-                {!settings.myCallsign && (
+                <FirstRunSetup
+                    open={needsSetup && !setupDismissed}
+                    onClose={() => setSetupDismissed(true)}
+                />
+                {needsSetup && setupDismissed && (
                     <Alert severity="warning">
-                        <Typography>Your callsign isn't set properly, check the settings to set it up!</Typography>
+                        <Typography style={{ flexGrow: 1 }}>Your callsign isn't set yet.</Typography>
+                        <Button text="Set it up" onPress={() => setSetupDismissed(false)} />
                     </Alert>
                 )}
                 {settings.showBeacons && <Beacons />}

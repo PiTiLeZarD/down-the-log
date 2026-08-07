@@ -1,6 +1,7 @@
 import React, { PropsWithChildren } from "react";
 import { ScrollView, View } from "react-native";
 import { useUnistyles } from "react-native-unistyles";
+import { useWidthMatches } from "../ui/breakpoints";
 import { Button } from "../ui/button";
 import { Typography } from "../ui/typography";
 import { useGoBack } from "../utils/use-go-back";
@@ -15,6 +16,8 @@ export type PageLayoutProps = PropsWithChildren<{
 export const PageLayout = ({ title, titleMargin = 18, children }: PageLayoutProps) => {
     const goBack = useGoBack();
     const { theme } = useUnistyles();
+    // On a phone the word "Back" costs more width than the arrow is worth next to a callsign field.
+    const compact = !useWidthMatches("md");
     return (
         <ScrollView>
             <Grid container>
@@ -34,7 +37,20 @@ export const PageLayout = ({ title, titleMargin = 18, children }: PageLayoutProp
                                 )}
 
                                 <View>
-                                    <Button text="Back" startIcon="arrow-back" onPress={goBack} />
+                                    <Button
+                                        text={compact ? undefined : "Back"}
+                                        aria-label="Back"
+                                        startIcon="arrow-back"
+                                        onPress={goBack}
+                                        style={
+                                            compact
+                                                ? {
+                                                      paddingLeft: theme.margins.xl,
+                                                      paddingRight: theme.margins.xl,
+                                                  }
+                                                : undefined
+                                        }
+                                    />
                                 </View>
                             </Stack>
                             {children}

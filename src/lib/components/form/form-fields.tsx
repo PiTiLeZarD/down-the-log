@@ -51,6 +51,12 @@ const styles = StyleSheet.create((theme) => ({
         borderBottomColor: theme.colours.primary.dark,
         borderStyle: "dashed",
     },
+    qslChip: {
+        paddingLeft: theme.margins.lg,
+        paddingRight: theme.margins.lg,
+        paddingTop: theme.margins.xs,
+        paddingBottom: theme.margins.xs,
+    },
     locsubtitle: (alert: boolean = false) => ({
         flex: 1,
         textAlign: "center",
@@ -169,19 +175,27 @@ export const FormFields = ({ qso }: FormFieldsProps) => {
                             <Typography variant="h6" style={{ flex: 1 }}>
                                 {qso.date.toFormat(settings.datemonth ? "MM-dd-yyyy" : "dd/MM/yyyy")}
                             </Typography>
-                            <Stack direction="row" style={{ flexGrow: 1 }}>
-                                <Button
-                                    variant="chip"
-                                    colour={qso.eqsl_received ? "success" : qso.eqsl_sent ? "primary" : "grey"}
-                                    text="eQSL"
-                                    onPress={qslInfo}
-                                />
-                                <Button
-                                    variant="chip"
-                                    colour={qso.lotw_received ? "success" : qso.lotw_sent ? "primary" : "grey"}
-                                    text="lotw"
-                                    onPress={qslInfo}
-                                />
+                            {/* Each chip is wrapped so it hugs its label — a bare Button carries flex:1
+                                and stretched the pair across half the row. */}
+                            <Stack direction="row" style={{ flexGrow: 1, justifyContent: "center" }}>
+                                <View>
+                                    <Button
+                                        variant="chip"
+                                        style={styles.qslChip}
+                                        colour={qso.eqsl_received ? "success" : qso.eqsl_sent ? "primary" : "grey"}
+                                        text="eQSL"
+                                        onPress={qslInfo}
+                                    />
+                                </View>
+                                <View>
+                                    <Button
+                                        variant="chip"
+                                        style={styles.qslChip}
+                                        colour={qso.lotw_received ? "success" : qso.lotw_sent ? "primary" : "grey"}
+                                        text="LoTW"
+                                        onPress={qslInfo}
+                                    />
+                                </View>
                             </Stack>
                             <Stack direction="row" style={{ justifyContent: "flex-end", flex: 1 }}>
                                 {isRunning && (

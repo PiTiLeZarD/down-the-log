@@ -1,4 +1,4 @@
-import { useRouter } from "expo-router";
+import { usePathname, useRouter } from "expo-router";
 import { View } from "react-native";
 import { StyleSheet } from "react-native-unistyles";
 import cqzones from "../data/cqzones.json";
@@ -33,6 +33,8 @@ export const LocationHeader = () => {
     const { navigate } = useRouter();
     const currentLocation = useStore((state) => state.currentLocation);
     const settings = useSettings();
+    // A QSO form is already tall on a phone; the solar chips push the fields off the first screen.
+    const hideSolar = usePathname().startsWith("/qso");
 
     return (
         <View style={styles.header}>
@@ -44,13 +46,13 @@ export const LocationHeader = () => {
                             {currentLocation ? currentLocation : "Looking for your location..."}
                         </Typography>
                     </Stack>
-                    {currentLocation && (
+                    {currentLocation ? (
                         <Typography variant="subtitle">
                             (CQ: {findZone(cqzones, maidenhead2Latlong(currentLocation))}, ITU:{" "}
                             {findZone(ituzones, maidenhead2Latlong(currentLocation))}, DXCC:{" "}
                             {findZone(dxcc, maidenhead2Latlong(currentLocation))})
                         </Typography>
-                    )}
+                    ) : null}
                 </Stack>
                 <View style={{ flexGrow: 1 }}>
                     <Typography variant={useWidthMatches("md") ? "h1" : "h5"} style={styles.callsign}>
@@ -69,7 +71,7 @@ export const LocationHeader = () => {
             </Stack>
             <View style={useWidthMatches(undefined, "md") ? {} : { display: "none" }}>
                 <Stack>
-                    <SolarData />
+                    {!hideSolar && <SolarData />}
                     <Clocks />
                 </Stack>
             </View>

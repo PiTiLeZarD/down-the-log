@@ -1,5 +1,6 @@
 import { Switch } from "react-native";
 import { UnistylesRuntime, useUnistyles } from "react-native-unistyles";
+import { DateFormatSetting, UnitsSetting } from "../lib/components/choice-setting";
 import { PageLayout } from "../lib/components/page-layout";
 import { PickFavourite } from "../lib/components/pick-favourite";
 import { Stack } from "../lib/components/stack";
@@ -49,6 +50,13 @@ const Settings = () => {
                             />
                         )}
                     </Stack>
+                    {/* Rig, antenna, QTH and country deliberately aren't here: an operator has more than
+                        one of each and they change per outing, so they're set on the QSO under My Station
+                        and carried over from there. */}
+                    <Typography variant="subtitle">
+                        Your rig, antenna, QTH and country are set per QSO, under My Station on the QSO form — each new
+                        QSO carries over what the last one used.
+                    </Typography>
                 </Stack>
                 <Stack>
                     <Typography>Theme</Typography>
@@ -84,16 +92,8 @@ const Settings = () => {
                         This is the amount of time the QSO timer will be available, you can still set timeOff date
                         manually after that.
                     </Typography>
-                    <Typography underline>Imperial distances (miles):</Typography>
-                    <Switch
-                        value={settings.imperial != undefined ? settings.imperial : false}
-                        onValueChange={(v) => updateSetting("imperial", v)}
-                    />
-                    <Typography underline>Date format ({settings.datemonth ? "MM-dd-yyyy" : "dd/MM/yyyy"}):</Typography>
-                    <Switch
-                        value={settings.datemonth != undefined ? settings.datemonth : false}
-                        onValueChange={(v) => updateSetting("datemonth", v)}
-                    />
+                    <UnitsSetting />
+                    <DateFormatSetting />
                     <Typography underline>Contest Mode:</Typography>
                     <Switch
                         value={settings.contestMode != undefined ? settings.contestMode : false}

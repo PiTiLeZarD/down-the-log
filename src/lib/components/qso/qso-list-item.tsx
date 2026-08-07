@@ -35,7 +35,7 @@ export const QsoListItem = React.memo(
                 time={qso.date.toFormat("HH:mm")}
                 duration={duration(qso)}
                 callsign={
-                    <Stack direction="row">
+                    <Stack direction="row" style={{ flexWrap: "wrap" }}>
                         <Typography>{qso.country ? countries[qso.country]?.flag : ""}</Typography>
                         <Typography>{qso.callsign}</Typography>
                         {qso.distance !== undefined && (
@@ -48,7 +48,9 @@ export const QsoListItem = React.memo(
                 }
                 name={qso.name || "N/A"}
                 band={
-                    <Stack direction="row">
+                    // Wraps rather than overflows: band, mode and up to four icons don't fit on one
+                    // line in a phone-width column.
+                    <Stack direction="row" style={{ flexWrap: "wrap" }}>
                         <Typography>{[qso.band, qso.mode].filter((e) => !!e).join("/")}</Typography>
                         {icons.map((icon, i) => (
                             <Fragment key={i}>{icon}</Fragment>
