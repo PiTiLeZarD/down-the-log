@@ -67,6 +67,8 @@ export type QSO = {
     myAntenna?: string;
     myState?: string;
     myCountry?: string;
+    // `field:code` keys of the data issues the operator has decided are fine on this QSO. See qso-issues.
+    ignoredIssues?: string[];
     honeypot?: Record<string, string>;
 };
 

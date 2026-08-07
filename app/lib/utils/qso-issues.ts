@@ -7,7 +7,27 @@ import { collapseCallsign, getCallsignData } from "./callsign";
 import { EventType, capitalise, eventDataMap, events } from "./event-rules";
 import { maidenDistance } from "./locator";
 
-export type QsoIssue = { field: keyof QSO; description: string };
+// The description quotes the offending values, so it moves as soon as the QSO is edited and can't
+// identify anything. Dismissals are keyed on field + code instead: an operator who accepts that our
+// entity table calls VK9 Australia keeps that dismissal, but a later wrong DXCC still surfaces.
+export const issueCodes = [
+    "country-unknown",
+    "country-callsign",
+    "continent-country",
+    "dxcc-country",
+    "locator-invalid",
+    "locator-distance",
+    "event-unknown",
+    "event-missing",
+    "event-mismatch",
+    "band-unknown",
+    "frequency-band",
+] as const;
+export type QsoIssueCode = (typeof issueCodes)[number];
+
+export type QsoIssue = { field: keyof QSO; code: QsoIssueCode; description: string; ignored: boolean };
+
+export const issueKey = (issue: Pick<QsoIssue, "field" | "code">): string => `${issue.field}:${issue.code}`;
 
 // The labels the form puts on those fields, so an issue points at something the operator can see.
 const fieldLabels: Partial<Record<keyof QSO, string>> = {
@@ -72,14 +92,18 @@ const callsignData = (callsign: string) => {
     return csdataCache.get(callsign);
 };
 
-const countryIssues = (qso: QSO, issues: QsoIssue[]) => {
+type RawIssue = Omit<QsoIssue, "ignored">;
+
+const countryIssues = (qso: QSO, issues: RawIssue[]) => {
     const csdata = callsignData(qso.callsign);
     const iso3 = resolveCountry(qso.country);
 
-    if (qso.country && !iso3) issues.push({ field: "country", description: `Unknown country "${qso.country}"` });
+    if (qso.country && !iso3)
+        issues.push({ field: "country", code: "country-unknown", description: `Unknown country "${qso.country}"` });
     if (csdata && iso3 && csdata.iso3 !== iso3)
         issues.push({
             field: "country",
+            code: "country-callsign",
             description: `Country ${countries[iso3].name} doesn't match the callsign (${countries[csdata.iso3]?.name})`,
         });
 
@@ -90,27 +114,37 @@ const countryIssues = (qso: QSO, issues: QsoIssue[]) => {
     if (qso.continent && !entities.some((e) => e.ctn === qso.continent))
         issues.push({
             field: "continent",
+            code: "continent-country",
             description: `Continent ${qso.continent} doesn't match ${name} (${unique(entities.map((e) => e.ctn)).join(", ")})`,
         });
 
     if (qso.dxcc && !entities.some((e) => [e.dxcc, ...(e.dxccAlt || [])].some((d) => +d === qso.dxcc)))
         issues.push({
             field: "dxcc",
+            code: "dxcc-country",
             description: `DXCC ${qso.dxcc} doesn't match ${name} (${entities.map((e) => +e.dxcc).join(", ")})`,
         });
 
     if (!qso.locator) return;
     if (!locatorRegexp.test(qso.locator)) {
-        issues.push({ field: "locator", description: `"${qso.locator}" is not a valid Maidenhead locator` });
+        issues.push({
+            field: "locator",
+            code: "locator-invalid",
+            description: `"${qso.locator}" is not a valid Maidenhead locator`,
+        });
         return;
     }
     // Antarctica wraps the pole, so no single reference square says anything useful about a grid there.
     if (entities.some((e) => e.ctn === "AN")) return;
     if (Math.min(...entities.map((e) => maidenDistance(qso.locator as string, e.gs))) > MAX_ENTITY_RADIUS_KM)
-        issues.push({ field: "locator", description: `Locator ${qso.locator} is nowhere near ${name}` });
+        issues.push({
+            field: "locator",
+            code: "locator-distance",
+            description: `Locator ${qso.locator} is nowhere near ${name}`,
+        });
 };
 
-const eventIssues = (qso: QSO, issues: QsoIssue[]) => {
+const eventIssues = (qso: QSO, issues: RawIssue[]) => {
     [false, true].forEach((mine) => {
         events
             .filter((event) => event !== "sig")
@@ -120,6 +154,7 @@ const eventIssues = (qso: QSO, issues: QsoIssue[]) => {
                 if (reference && !(reference in eventDataMap[event]))
                     issues.push({
                         field,
+                        code: "event-unknown",
                         description: `${reference} is not a known ${eventNames[event]} reference`,
                     });
             });
@@ -132,18 +167,23 @@ const eventIssues = (qso: QSO, issues: QsoIssue[]) => {
         const field = refField(event, mine);
         const reference = qso[field] as string | undefined;
         if (!reference)
-            issues.push({ field, description: `${eventNames[event]} reference missing for ${sig} ${sigInfo}` });
+            issues.push({
+                field,
+                code: "event-missing",
+                description: `${eventNames[event]} reference missing for ${sig} ${sigInfo}`,
+            });
         else if (reference !== sigInfo)
             issues.push({
                 field: mine ? "mySigInfo" : "sigInfo",
+                code: "event-mismatch",
                 description: `${sig} ${sigInfo} doesn't match the ${eventNames[event]} reference ${reference}`,
             });
     });
 };
 
-const bandIssues = (qso: QSO, issues: QsoIssue[]) => {
+const bandIssues = (qso: QSO, issues: RawIssue[]) => {
     if (qso.band && !(qso.band in bands)) {
-        issues.push({ field: "band", description: `Unknown band "${qso.band}"` });
+        issues.push({ field: "band", code: "band-unknown", description: `Unknown band "${qso.band}"` });
         return;
     }
     if (!qso.frequency || !qso.band) return;
@@ -152,6 +192,7 @@ const bandIssues = (qso: QSO, issues: QsoIssue[]) => {
     if (qso.frequency < low || qso.frequency > high)
         issues.push({
             field: "frequency",
+            code: "frequency-band",
             description: `${qso.frequency}MHz is outside ${qso.band} (${low}-${high}MHz)`,
         });
 };
@@ -161,17 +202,31 @@ const bandIssues = (qso: QSO, issues: QsoIssue[]) => {
 // edited QSO arrives as a new key and gets re-checked.
 const issueCache = new WeakMap<QSO, QsoIssue[]>();
 
+// Dismissed issues are still returned, flagged: the QSO page lists them so a dismissal can be taken
+// back, and only the callers that decide whether a QSO looks wrong (the red line, the filter) drop them.
 export const getQsoIssues = (qso: QSO): QsoIssue[] => {
     const cached = issueCache.get(qso);
     if (cached) return cached;
 
-    const issues: QsoIssue[] = [];
-    countryIssues(qso, issues);
-    eventIssues(qso, issues);
-    bandIssues(qso, issues);
+    const raw: RawIssue[] = [];
+    countryIssues(qso, raw);
+    eventIssues(qso, raw);
+    bandIssues(qso, raw);
+
+    const ignoredKeys = qso.ignoredIssues || [];
+    const issues = raw.map((issue) => ({ ...issue, ignored: ignoredKeys.includes(issueKey(issue)) }));
 
     issueCache.set(qso, issues);
     return issues;
 };
 
+// A QSO whose issues have all been dismissed still has them: `hasIssues` answers that literally, and
+// only `hasOpenIssues` — what the red line and the "left to fix" filter ask — honours the dismissals.
 export const hasIssues = (qso: QSO): boolean => getQsoIssues(qso).length > 0;
+export const hasOpenIssues = (qso: QSO): boolean => getQsoIssues(qso).some((issue) => !issue.ignored);
+export const hasIgnoredIssues = (qso: QSO): boolean => getQsoIssues(qso).some((issue) => issue.ignored);
+
+export const ignoreIssue = (ignored: string[] | undefined, issue: QsoIssue): string[] =>
+    unique([...(ignored || []), issueKey(issue)]);
+export const restoreIssue = (ignored: string[] | undefined, issue: QsoIssue): string[] =>
+    (ignored || []).filter((key) => key !== issueKey(issue));

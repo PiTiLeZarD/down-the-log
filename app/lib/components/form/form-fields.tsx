@@ -24,7 +24,7 @@ import { PageLayout } from "../page-layout";
 import { PreviousQsos } from "../previous-qsos";
 import { QrzChip } from "../qrz-chip";
 import { QSO, duration, useQsos } from "../qso";
-import { QsoIssues } from "../qso-issues";
+import { QsoIgnoredIssues, QsoIssues } from "../qso-issues";
 import { QsoMap } from "../qso/qso-map";
 import { Stack } from "../stack";
 import { BandFreqInput } from "./band-freq-input";
@@ -370,6 +370,7 @@ export const FormFields = ({ qso }: FormFieldsProps) => {
                 <Button variant="outlined" text="Clipboard" onPress={() => handleClipboard()} />
                 <Button variant="outlined" text="Delete" colour="secondary" onPress={() => onDelete()} />
             </Stack>
+            <QsoIgnoredIssues />
         </PageLayout>
     );
 };

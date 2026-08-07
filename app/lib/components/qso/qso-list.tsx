@@ -3,7 +3,7 @@ import { FlatList, Pressable, View, ViewStyle } from "react-native";
 import { StyleSheet } from "react-native-unistyles";
 import { QSO } from ".";
 import { Modal } from "../../utils/modal";
-import { hasIssues } from "../../utils/qso-issues";
+import { hasOpenIssues } from "../../utils/qso-issues";
 import { useStore } from "../../utils/store";
 import { Button } from "../../ui/button";
 import { mergeStyles } from "../../ui/styles";
@@ -116,7 +116,7 @@ export const QsoList = ({ style, filters, qsos, onQsoPress }: QsoListProps) => {
                                 onQsoPress,
                                 item: row.qso,
                                 index: row.index,
-                                issues: hasIssues(row.qso),
+                                openIssues: hasOpenIssues(row.qso),
                                 lineHeight: LINEHEIGHT,
                                 imperial: settings.imperial,
                             }}

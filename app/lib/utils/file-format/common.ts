@@ -55,6 +55,9 @@ export const allFields = [
     "my_antenna",
     "my_country",
     "my_state",
+    // ADIF's escape hatch for program-specific data (APP_<PROGRAMID>_<FIELD>). Other loggers leave it
+    // alone, and listing it here keeps it out of the honeypot, which reports fields we don't handle.
+    "app_down-the-log_ignored_issues",
 ] as const;
 
 export type RecordField = (typeof allFields)[number];
@@ -188,6 +191,16 @@ export const fields: FieldDescriptor[] = [
     field("myAntenna", "my_antenna"),
     field("myCountry", "my_country"),
     field("myState", "my_state"),
+    field("ignoredIssues", "app_down-the-log_ignored_issues", {
+        to: (v?: string[]) => (v?.length ? v.join(",") : undefined),
+        from: (v?: string) =>
+            v
+                ? v
+                      .split(",")
+                      .map((key) => key.trim())
+                      .filter(Boolean)
+                : undefined,
+    }),
 ];
 
 export const qso2record = (qso: QSO): QSORecord =>

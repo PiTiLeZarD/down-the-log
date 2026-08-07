@@ -14,22 +14,22 @@ export type QsoListItemProps = {
     lineHeight?: number;
     onQsoPress: QsoListProps["onQsoPress"];
     imperial: boolean;
-    issues: boolean;
+    openIssues: boolean;
 };
 
 export const QsoListItem = React.memo(
-    ({ item: qso, index, lineHeight, onQsoPress, imperial, issues }: QsoListItemProps) => {
+    ({ item: qso, index, lineHeight, onQsoPress, imperial, openIssues }: QsoListItemProps) => {
         const icons = [
             qso.note ? <Icon name="chatbox-ellipses-outline" /> : null,
             hasEvent(qso) ? <Icon name="earth" /> : null,
             (qso.pota && qso.myPota) || (qso.wwff && qso.myWwff) ? <Icon name="swap-horizontal" /> : null,
-            issues ? <Icon name="warning-outline" colour="danger" /> : null,
+            openIssues ? <Icon name="warning-outline" colour="danger" /> : null,
         ].filter((e) => !!e);
 
         return (
             <QsoRow
                 lineHeight={lineHeight}
-                danger={issues}
+                danger={openIssues}
                 success={qso.lotw_received || qso.eqsl_received}
                 position={String((qso.position === undefined ? index : qso.position) + 1)}
                 time={qso.date.toFormat("HH:mm")}
@@ -63,5 +63,5 @@ export const QsoListItem = React.memo(
         nextProps.item.id === prevProps.item.id &&
         nextProps.item.position === prevProps.item.position &&
         // Fixing a QSO has to clear its red line, and the id/position pair doesn't move when it does.
-        nextProps.issues === prevProps.issues,
+        nextProps.openIssues === prevProps.openIssues,
 );

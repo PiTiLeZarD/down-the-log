@@ -1,7 +1,16 @@
 import { DateTime } from "luxon";
 import { describe, expect, test } from "vitest";
 import { QSO } from "../app/lib/components/qso";
-import { getQsoIssues, hasIssues, resolveCountry } from "../app/lib/utils/qso-issues";
+import {
+    getQsoIssues,
+    hasIgnoredIssues,
+    hasIssues,
+    hasOpenIssues,
+    ignoreIssue,
+    issueKey,
+    resolveCountry,
+    restoreIssue,
+} from "../app/lib/utils/qso-issues";
 
 let counter = 0;
 const qso = (fields: Partial<QSO> = {}): QSO => ({
@@ -94,6 +103,62 @@ describe("bands", () => {
         expect(fields(qso({ band: "11m" as QSO["band"], frequency: 27.5 }))).toContain("band"));
 
     test("frequency with no band is not checked", () => expect(hasIssues(qso({ frequency: 7.074 }))).toBe(false));
+});
+
+describe("ignoring issues", () => {
+    const flagged = () => qso({ callsign: "ZL3JAS", country: "NZL", continent: "OC", dxcc: 150, locator: "RR73" });
+
+    test("an ignored issue is still reported, flagged", () => {
+        const q = flagged();
+        const ignored = ignoreIssue(undefined, getQsoIssues(q)[0]);
+        const q2 = { ...q, ignoredIssues: ignored };
+
+        expect(getQsoIssues(q2)).toHaveLength(getQsoIssues(q).length);
+        expect(getQsoIssues(q2).filter((i) => i.ignored)).toHaveLength(1);
+    });
+
+    test("a fully dismissed QSO still has issues, just no open ones", () => {
+        const q = flagged();
+        const q2 = { ...q, ignoredIssues: getQsoIssues(q).map(issueKey) };
+
+        expect(hasOpenIssues(q)).toBe(true);
+        expect(hasOpenIssues(q2)).toBe(false);
+        expect(hasIssues(q2)).toBe(true);
+        expect(hasIgnoredIssues(q2)).toBe(true);
+    });
+
+    test("ignoring one issue leaves the others alone", () => {
+        const q = flagged();
+        const dxccIssue = getQsoIssues(q).find((i) => i.field === "dxcc")!;
+        const q2 = { ...q, ignoredIssues: ignoreIssue(undefined, dxccIssue) };
+
+        expect(hasOpenIssues(q2)).toBe(true);
+        expect(fields(q2).filter((f) => f === "dxcc")).toHaveLength(1);
+        expect(getQsoIssues(q2).filter((i) => !i.ignored).map((i) => i.field)).toContain("locator");
+    });
+
+    test("the key survives the value changing, so a fix doesn't resurrect a dismissal", () => {
+        const q = flagged();
+        const issue = getQsoIssues(q).find((i) => i.field === "dxcc")!;
+        const ignoredIssues = ignoreIssue(undefined, issue);
+
+        // Same wrong DXCC, different everything else the description quotes.
+        const q2 = { ...q, callsign: "ZL2ABC", locator: "RE78", ignoredIssues };
+        expect(getQsoIssues(q2).find((i) => i.field === "dxcc")?.ignored).toBe(true);
+    });
+
+    test("restoring removes just that key", () => {
+        const q = flagged();
+        const [first, second] = getQsoIssues(q);
+        const both = ignoreIssue(ignoreIssue(undefined, first), second);
+
+        expect(restoreIssue(both, first)).toEqual([issueKey(second)]);
+    });
+
+    test("ignoring twice doesn't duplicate the key", () => {
+        const issue = getQsoIssues(flagged())[0];
+        expect(ignoreIssue(ignoreIssue(undefined, issue), issue)).toHaveLength(1);
+    });
 });
 
 test("issues are cached against the QSO", () => {
