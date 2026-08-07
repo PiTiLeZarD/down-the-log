@@ -116,7 +116,10 @@ export const callsigns: CallsignData[] = [
     {
         iso3: "AUS",
         dxcc: "150",
-        regexp: /^(AX|(V[H-NZ])).*/,
+        // VK9 is the external territories (Norfolk, Christmas, Cocos, Lord Howe), each its own DXCC
+        // entity further down this list. getCallsignData takes the first row that matches and the list
+        // is alphabetical, so without this VK9 never got past AUS. Same trick as NFK's own (?!X).
+        regexp: /^(AX|VK(?!9)|V[HIJLMNZ]).*/,
         gs: "PF26gj",
         ctn: "OC",
         states: {
@@ -1242,6 +1245,25 @@ export const callsigns: CallsignData[] = [
         dxcc: "269",
         regexp: /^(3Z|S[N-R]|HF(?!0)).*/,
         gs: "JO91mw",
+        ctn: "EU",
+    },
+    {
+        // ISO has no code for Madeira or the Azores, but DXCC counts them separately, so they share
+        // Portugal's iso3 across three rows the way RUS and USA do. Both sit above the mainland row
+        // because getCallsignData takes the first match and C[Q-U] covers their prefixes too.
+        // The digit is what separates them: 3 and 9 are Madeira, 8 and the CU block are the Azores,
+        // everything else on C[Q-U] is the mainland.
+        iso3: "PRT",
+        dxcc: "256",
+        regexp: /^C[QRST][39].*/,
+        gs: "IM12mq",
+        ctn: "EU",
+    },
+    {
+        iso3: "PRT",
+        dxcc: "149",
+        regexp: /^(CU|C[QRST]8).*/,
+        gs: "HM77dr",
         ctn: "EU",
     },
     {

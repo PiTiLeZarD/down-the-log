@@ -97,6 +97,26 @@ describe("getCallsignData", () => {
         expect(getCallsignData("VK4ALE/P")?.iso3).toBe("AUS");
     });
 
+    // The list is alphabetical and the first match wins, so the broad AUS row sits well above the
+    // external territories it would otherwise swallow.
+    test("the Australian external territories aren't swallowed by AUS", () => {
+        expect(getCallsignData("VK4ALE")?.iso3).toBe("AUS");
+        expect(getCallsignData("VK9PH")?.iso3).toBe("NFK");
+        expect(getCallsignData("VK9XY")?.iso3).toBe("CXR");
+        expect(getCallsignData("VK0AB")?.iso3).toBe("ATA");
+    });
+
+    // Madeira and the Azores are Portugal to ISO but their own DXCC entities, so they share PRT and
+    // are told apart by the digit.
+    test("Madeira and the Azores resolve to their own DXCC under PRT", () => {
+        expect(getCallsignData("CT1ABC")).toMatchObject({ iso3: "PRT", dxcc: "272" });
+        expect(getCallsignData("CS7ABC")).toMatchObject({ iso3: "PRT", dxcc: "272" });
+        expect(getCallsignData("CT3MD")).toMatchObject({ iso3: "PRT", dxcc: "256" });
+        expect(getCallsignData("CQ9K")).toMatchObject({ iso3: "PRT", dxcc: "256" });
+        expect(getCallsignData("CU2AA")).toMatchObject({ iso3: "PRT", dxcc: "149" });
+        expect(getCallsignData("CT8AA")).toMatchObject({ iso3: "PRT", dxcc: "149" });
+    });
+
     // On its own it answers for the home callsign; callers that care where the operator actually
     // is (CallsignAutofill, the issue checker) collapse first. Both directions are pinned here so
     // neither drifts.
