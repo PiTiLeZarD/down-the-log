@@ -1,6 +1,7 @@
 import { DateTime } from "luxon";
 import { describe, expect, test } from "vitest";
 import { QSO } from "../app/lib/components/qso";
+import { resolveCountry } from "../app/lib/data/countries";
 import {
     getQsoIssues,
     hasIgnoredIssues,
@@ -8,7 +9,6 @@ import {
     hasOpenIssues,
     ignoreIssue,
     issueKey,
-    resolveCountry,
     restoreIssue,
 } from "../app/lib/utils/qso-issues";
 

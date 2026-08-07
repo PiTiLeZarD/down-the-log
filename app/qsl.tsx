@@ -43,6 +43,12 @@ const Qsl = () => {
                     const content =
                         typeof fr.result == "string" ? fr.result : new TextDecoder("utf-8").decode(fr.result);
 
+                    // Read the log as it is now, not as it was when this page rendered: FileReader
+                    // callbacks land one after the other, so dropping two files at once used to
+                    // have the second one match against pre-import QSOs and overwrite the first
+                    // import's confirmations.
+                    const currentQsos = useStore.getState().qsos;
+
                     const updates = getFileApiFromFilename(file.name)
                         .parseFile(content)
                         .filter(
@@ -56,22 +62,24 @@ const Qsl = () => {
                         )
                         .map((r) => record2qso(r))
                         .filter((q) => !!q.callsign)
-                        .map((q) => {
-                            const matching = findMatchingQso(qsos, q);
-                            if (matching) {
-                                if ("app_lotw_owncall" in (q.honeypot || {})) {
-                                    matching.lotw_received = true;
-                                }
-                                if ("app_eqsl_ag" in (q.honeypot || {})) {
-                                    matching.eqsl_received = true;
-                                }
-                            }
-                            return [q, matching];
+                        // The matched QSO is copied rather than edited in place: the store's own
+                        // objects are what the rest of the app renders from, and mutating one
+                        // changes what is on screen without zustand ever hearing about it.
+                        .map((q): [QSO, QSO | null] => {
+                            const matching = findMatchingQso(currentQsos, q);
+                            if (!matching) return [q, null];
+                            const honeypot = q.honeypot || {};
+                            return [
+                                q,
+                                {
+                                    ...matching,
+                                    ...("app_lotw_owncall" in honeypot ? { lotw_received: true } : {}),
+                                    ...("app_eqsl_ag" in honeypot ? { eqsl_received: true } : {}),
+                                },
+                            ];
                         });
 
-                    const toImport = updates
-                        .filter(([q, matching]) => !!matching)
-                        .map(([q, matching]) => matching) as QSO[];
+                    const toImport = updates.map(([, matching]) => matching).filter((q): q is QSO => !!q);
                     log(toImport);
 
                     showDialog({
@@ -90,7 +98,7 @@ const Qsl = () => {
                         updates.forEach(([q, matching]) => {
                             if (!matching) {
                                 console.info(`Callsign: ${q?.callsign} Date: ${q?.date.toFormat("yyyy-MM-dd HH:mm")}`);
-                                qsos.filter(
+                                currentQsos.filter(
                                     (qq) => baseCallsign(qq.callsign) === baseCallsign(q?.callsign || ""),
                                 ).forEach((qq) =>
                                     console.info(

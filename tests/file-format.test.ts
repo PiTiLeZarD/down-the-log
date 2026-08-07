@@ -105,11 +105,20 @@ describe("qso2record", () => {
         expect(r.operator).toBe("G4ABC");
     });
 
-    test("writes the QSL flags as Y or N rather than leaving them out", () => {
+    test("writes the QSL flags we know, and nothing for the ones we don't", () => {
         const r = qso2record(qso);
         expect(r.eqsl_qsl_sent).toBe("Y");
         expect(r.eqsl_qsl_rcvd).toBe("N");
-        expect(r.lotw_qsl_sent).toBe("N");
+        expect(r.lotw_qsl_sent).toBeUndefined();
+        expect(r.lotw_qsl_rcvd).toBeUndefined();
+    });
+
+    test("writes COUNTRY as the DXCC entity name", () => {
+        expect(qso2record(qso).country).toBe("Australia");
+    });
+
+    test("passes a country it can't translate through as it stands", () => {
+        expect(qso2record({ ...qso, country: "Freedonia" }).country).toBe("Freedonia");
     });
 
     test("stringifies numbers", () => {
@@ -141,6 +150,19 @@ describe("record2qso", () => {
 
     test("reads COUNTRY back as written, not mangled", () => {
         expect(record2qso(qso2record(qso)).country).toBe("AUS");
+    });
+
+    test("reads another logger's COUNTRY name back as our iso3", () => {
+        expect(record2qso(record({ country: "australia" })).country).toBe("AUS");
+        // Files this app wrote before COUNTRY held the entity name still hold the code
+        expect(record2qso(record({ country: "AUS" })).country).toBe("AUS");
+        expect(record2qso(record({ country: "Freedonia" })).country).toBe("Freedonia");
+    });
+
+    test("leaves a QSL flag unset when the file doesn't carry the tag", () => {
+        expect(record2qso(record({})).lotw_sent).toBeUndefined();
+        expect(record2qso(record({ lotw_qsl_sent: "N" })).lotw_sent).toBe(false);
+        expect(record2qso(record({ lotw_qsl_sent: "Y" })).lotw_sent).toBe(true);
     });
 
     test("falls back to OPERATOR when STATION_CALLSIGN is missing", () => {

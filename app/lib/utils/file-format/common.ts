@@ -2,6 +2,7 @@ import { DateTime } from "luxon";
 import { QSO, newQsoID } from "../../components/qso";
 import { freq2band, resolveBand } from "../../data/bands";
 import { Continent, continents } from "../../data/callsigns";
+import { countryName, resolveCountry } from "../../data/countries";
 import { resolveMode } from "../../data/modes";
 import { normalise } from "../locator";
 
@@ -140,7 +141,14 @@ const field = <K extends keyof QSO>(qsoKey: K, adifKey: RecordField, codec: Fiel
     ({ qsoKey, adifKey, to: codec.to || defaultTo, from: codec.from || defaultFrom }) as FieldDescriptor;
 
 const number = { from: (v?: string) => int(v) };
-const boolean = { to: (v?: boolean) => (v ? "Y" : "N"), from: (v?: string) => v === "Y" };
+
+// "N" is a positive claim that the card was not sent, and we only get to make it about a QSO that
+// actually carries the flag. Writing it for every unset field told the receiving logbook we had
+// sent nothing, and reading a missing tag back as `false` made that state stick.
+const boolean = {
+    to: (v?: boolean) => (v === undefined ? undefined : v ? "Y" : "N"),
+    from: (v?: string) => (v === undefined ? undefined : v === "Y"),
+};
 
 export const fields: FieldDescriptor[] = [
     field("band", "band", {
@@ -154,7 +162,13 @@ export const fields: FieldDescriptor[] = [
     field("rst_received", "rst_rcvd"),
     field("callsign", "call"),
     field("prefix", "pfx"),
-    field("country", "country"),
+    // ADIF COUNTRY is the DXCC entity name; the QSO holds an iso3. Writing the code out made the
+    // file wrong for every other logger, and unknown names/codes pass through untouched rather
+    // than being dropped, so nothing is lost on a round trip we can't translate.
+    field("country", "country", {
+        to: (v?: string) => countryName(v) || v,
+        from: (v) => resolveCountry(v) || v,
+    }),
     field("state", "state"),
     field("name", "name"),
     field("distance", "distance", number),

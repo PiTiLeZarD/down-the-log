@@ -1,3 +1,15 @@
+// ADIF's COUNTRY field holds the DXCC entity name, never a code, so the file format has to
+// translate in both directions. The QSO itself keeps the iso3.
+export const countryName = (iso3?: string): string | undefined => (iso3 ? countries[iso3]?.name : undefined);
+
+// Keyed uppercase: the spelling that comes back from another logger is whatever casing it used.
+// Accepts an iso3 too, so QSOs written by older versions of this app still resolve.
+export const resolveCountry = (country?: string): string | undefined => {
+    if (!country) return undefined;
+    if (country in countries) return country;
+    return iso3ByName[country.toUpperCase().trim()];
+};
+
 export const countries: Record<string, { name: string; flag: string }> = {
     AFG: {
         name: "Afghanistan",
@@ -1004,3 +1016,8 @@ export const countries: Record<string, { name: string; flag: string }> = {
         flag: "🇿🇼",
     },
 };
+
+// Built once at module load, after the table above.
+const iso3ByName: Record<string, string> = Object.fromEntries(
+    Object.entries(countries).map(([iso3, { name }]) => [name.toUpperCase(), iso3]),
+);

@@ -1,7 +1,7 @@
 import { QSO } from "../components/qso";
 import { Band, bands } from "../data/bands";
 import { CallsignData, callsigns } from "../data/callsigns";
-import { countries } from "../data/countries";
+import { countries, resolveCountry } from "../data/countries";
 import { unique } from "./arrays";
 import { collapseCallsign, getCallsignData } from "./callsign";
 import { EventType, capitalise, eventDataMap, events } from "./event-rules";
@@ -66,15 +66,6 @@ const eventNames: Record<EventType, string> = {
 const sig2event = Object.fromEntries(events.map((e) => [eventNames[e], e])) as Record<string, EventType>;
 
 const refField = (event: EventType, mine: boolean) => (mine ? (`my${capitalise(event)}` as keyof QSO) : event);
-
-// QSOs we resolved ourselves hold our iso3 in `country`, but an ADIF import puts the DXCC entity
-// name in there instead, so both spellings have to resolve before anything can be called a mismatch.
-const iso3ByName = Object.fromEntries(Object.entries(countries).map(([iso3, { name }]) => [name.toUpperCase(), iso3]));
-export const resolveCountry = (country?: string): string | undefined => {
-    if (!country) return undefined;
-    if (country in countries) return country;
-    return iso3ByName[country.toUpperCase()];
-};
 
 // One iso3 can span several DXCC entities (RUS is European and Asiatic Russia, USA covers Hawaii),
 // so a country resolves to a list and anything matching any of them is fine. Keying a single entity

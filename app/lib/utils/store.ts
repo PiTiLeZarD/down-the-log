@@ -4,11 +4,13 @@ import { DateTime } from "luxon";
 import { Platform } from "react-native";
 import { create } from "zustand";
 import { combine, devtools, persist, PersistStorage } from "zustand/middleware";
-import { QsoFilter } from "../components/filters";
-import { QSO } from "../components/qso";
-import { Band } from "../data/bands";
-import { Mode } from "../data/modes";
-import { HamQTHSettingsType } from "./hamqth";
+// Types only, and deliberately spelled `import type`: a plain import of QsoFilter drags the whole
+// component tree in behind it, and the store is imported by just about everything.
+import type { QsoFilter } from "../components/filters";
+import type { QSO } from "../components/qso";
+import type { Band } from "../data/bands";
+import type { Mode } from "../data/modes";
+import type { HamQTHSettingsType } from "./hamqth";
 
 export type Settings = {
     myGridsquare?: string;
