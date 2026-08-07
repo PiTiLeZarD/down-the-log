@@ -46,6 +46,18 @@ describe("country, continent, dxcc and locator", () => {
     test("dxcc not matching the country", () =>
         expect(fields(qso({ country: "AUS", continent: "OC", dxcc: 227 }))).toContain("dxcc"));
 
+    // The form hands back whatever was typed, so a QSO edited on screen carries strings in the
+    // numeric fields. 170 and "170" are the same DXCC.
+    test("a dxcc typed into the form still matches", () =>
+        expect(hasIssues(qso({ callsign: "ZL3JAS", country: "NZL", continent: "OC", dxcc: "170" as never }))).toBe(
+            false,
+        ));
+
+    test("a frequency typed into the form is still range checked", () => {
+        expect(hasIssues(qso({ band: "20m", frequency: "14.074" as never }))).toBe(false);
+        expect(fields(qso({ band: "20m", frequency: "7.074" as never }))).toContain("frequency");
+    });
+
     test("malformed locator", () => expect(fields(qso({ locator: "nope" }))).toContain("locator"));
 
     test("locator on the wrong side of the planet", () =>

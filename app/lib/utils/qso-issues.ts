@@ -84,6 +84,15 @@ const entitiesByIso3 = callsigns.reduce<Map<string, CallsignData[]>>(
     new Map(),
 );
 
+// The numeric fields only hold numbers when the QSO came from an import: editing one on the form
+// hands react-hook-form the raw text, so `dxcc` becomes "170" and a strict compare against 170 says
+// New Zealand doesn't match New Zealand. Everything numeric is read through here.
+const num = (value: unknown): number | undefined => {
+    if (value === undefined || value === null || value === "") return undefined;
+    const parsed = Number(value);
+    return Number.isNaN(parsed) ? undefined : parsed;
+};
+
 // getCallsignData walks the 300-odd entity table matching regexps, and the list re-checks a QSO
 // whenever its row is rendered, so the answer is memoised on the callsign it came from.
 const csdataCache = new Map<string, ReturnType<typeof getCallsignData>>();
@@ -118,11 +127,12 @@ const countryIssues = (qso: QSO, issues: RawIssue[]) => {
             description: `Continent ${qso.continent} doesn't match ${name} (${unique(entities.map((e) => e.ctn)).join(", ")})`,
         });
 
-    if (qso.dxcc && !entities.some((e) => [e.dxcc, ...(e.dxccAlt || [])].some((d) => +d === qso.dxcc)))
+    const dxcc = num(qso.dxcc);
+    if (dxcc && !entities.some((e) => [e.dxcc, ...(e.dxccAlt || [])].some((d) => +d === dxcc)))
         issues.push({
             field: "dxcc",
             code: "dxcc-country",
-            description: `DXCC ${qso.dxcc} doesn't match ${name} (${entities.map((e) => +e.dxcc).join(", ")})`,
+            description: `DXCC ${dxcc} doesn't match ${name} (${entities.map((e) => +e.dxcc).join(", ")})`,
         });
 
     if (!qso.locator) return;
@@ -186,14 +196,15 @@ const bandIssues = (qso: QSO, issues: RawIssue[]) => {
         issues.push({ field: "band", code: "band-unknown", description: `Unknown band "${qso.band}"` });
         return;
     }
-    if (!qso.frequency || !qso.band) return;
+    const frequency = num(qso.frequency);
+    if (!frequency || !qso.band) return;
 
     const [low, high] = bands[qso.band as Band];
-    if (qso.frequency < low || qso.frequency > high)
+    if (frequency < low || frequency > high)
         issues.push({
             field: "frequency",
             code: "frequency-band",
-            description: `${qso.frequency}MHz is outside ${qso.band} (${low}-${high}MHz)`,
+            description: `${frequency}MHz is outside ${qso.band} (${low}-${high}MHz)`,
         });
 };
 
