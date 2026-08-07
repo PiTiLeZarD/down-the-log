@@ -1,5 +1,5 @@
 import { describe, expect, test } from "vitest";
-import { callsigns } from "../app/lib/data/callsigns";
+import { callsigns } from "../src/lib/data/callsigns";
 import {
     baseCallsign,
     collapseCallsign,
@@ -7,7 +7,7 @@ import {
     getCallsignData,
     parseCallsign,
     withState,
-} from "../app/lib/utils/callsign";
+} from "../src/lib/utils/callsign";
 
 describe("parseCallsign", () => {
     test("splits a plain callsign into prefix / index / delineation", () => {

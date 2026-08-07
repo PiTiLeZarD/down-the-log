@@ -6,7 +6,7 @@ module.exports = (api) => {
             [
                 "react-native-unistyles/plugin",
                 {
-                    root: "app",
+                    root: "src",
                     // Unistyles hides style properties behind non-enumerable descriptors, so a
                     // stylesheet handed to a component it hasn't processed silently renders unstyled.
                     // These libraries all forward our styles to a react-native primitive.

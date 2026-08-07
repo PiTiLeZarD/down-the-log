@@ -2,7 +2,7 @@
 
 import { parse } from "csv-parse";
 import { readFileSync, writeFileSync } from "node:fs";
-import { normalise } from "../app/lib/utils/locator";
+import { normalise } from "../src/lib/utils/locator";
 
 const data = readFileSync("./scripts/all_parks_ext.csv", "utf8");
 const parser = parse();
@@ -19,7 +19,7 @@ parser.on("readable", () => {
 });
 parser.on("end", () => {
     writeFileSync(
-        "./app/lib/data/pota.json",
+        "./src/lib/data/pota.json",
         JSON.stringify(
             Object.fromEntries(
                 records

@@ -8,7 +8,7 @@ import {
     unproject,
     unwrapLongitudes,
     zoomToFit,
-} from "../app/lib/components/osm-map/projection";
+} from "../src/lib/components/osm-map/projection";
 
 const BRISBANE = { latitude: -27.47, longitude: 153.03 };
 

@@ -1,19 +1,19 @@
 import { DateTime } from "luxon";
 import { View } from "react-native";
-import { styles } from "./lib/components/adif/import";
-import { Dropzone, FileWithPreview } from "./lib/components/dropzone";
-import { PageLayout } from "./lib/components/page-layout";
-import { QSO, findMatchingQso, useQsos } from "./lib/components/qso";
-import { Stack } from "./lib/components/stack";
-import { TabsLayout } from "./lib/components/tabs-layout";
-import { baseCallsign } from "./lib/utils/callsign";
-import { downloadQsos, getFileApiFromFilename, record2qso } from "./lib/utils/file-format";
-import { useStore } from "./lib/utils/store";
-import { Alert } from "./lib/ui/alert";
-import { Button } from "./lib/ui/button";
-import { Typography } from "./lib/ui/typography";
-import { showDialog } from "./lib/ui/dialog";
-import { useSettings } from "./lib/utils/use-settings";
+import { styles } from "../lib/components/adif/import";
+import { Dropzone, FileWithPreview } from "../lib/components/dropzone";
+import { PageLayout } from "../lib/components/page-layout";
+import { QSO, findMatchingQso, useQsos } from "../lib/components/qso";
+import { Stack } from "../lib/components/stack";
+import { TabsLayout } from "../lib/components/tabs-layout";
+import { baseCallsign } from "../lib/utils/callsign";
+import { downloadQsos, getFileApiFromFilename, record2qso } from "../lib/utils/file-format";
+import { useStore } from "../lib/utils/store";
+import { Alert } from "../lib/ui/alert";
+import { Button } from "../lib/ui/button";
+import { Typography } from "../lib/ui/typography";
+import { showDialog } from "../lib/ui/dialog";
+import { useSettings } from "../lib/utils/use-settings";
 
 const Qsl = () => {
     const qsos = useQsos();

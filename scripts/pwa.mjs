@@ -43,7 +43,7 @@ const block = `${START}
     <meta name="apple-mobile-web-app-title" content="DownTheLog" />
     <meta name="mobile-web-app-capable" content="yes" />
     <meta name="application-name" content="DownTheLog" />
-    <!-- Matches the light/dark backgrounds in app/lib/ui/colours.json (gray 100 / gray 900). -->
+    <!-- Matches the light/dark backgrounds in src/lib/ui/colours.json (gray 100 / gray 900). -->
     <meta name="theme-color" media="(prefers-color-scheme: light)" content="#f7fafc" />
     <meta name="theme-color" media="(prefers-color-scheme: dark)" content="#1a202c" />${isTauri ? "" : registration}
     ${END}`;

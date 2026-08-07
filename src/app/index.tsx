@@ -4,9 +4,9 @@ import { useEffect, useEffectEvent, useMemo } from "react";
 import { FormProvider, useForm, useWatch } from "react-hook-form";
 import { View } from "react-native";
 import { StyleSheet } from "react-native-unistyles";
-import { Beacons } from "./lib/components/beacons";
-import { Filters, useFilteredQsos } from "./lib/components/filters";
-import { CallsignInput } from "./lib/components/form/callsign-input";
+import { Beacons } from "../lib/components/beacons";
+import { Filters, useFilteredQsos } from "../lib/components/filters";
+import { CallsignInput } from "../lib/components/form/callsign-input";
 import {
     QSO,
     carryOver,
@@ -15,12 +15,12 @@ import {
     prefillMyStation,
     prefillOperating,
     useQsos,
-} from "./lib/components/qso";
-import { QsoList } from "./lib/components/qso/qso-list";
-import { useStore } from "./lib/utils/store";
-import { Alert } from "./lib/ui/alert";
-import { Typography } from "./lib/ui/typography";
-import { useSettings } from "./lib/utils/use-settings";
+} from "../lib/components/qso";
+import { QsoList } from "../lib/components/qso/qso-list";
+import { useStore } from "../lib/utils/store";
+import { Alert } from "../lib/ui/alert";
+import { Typography } from "../lib/ui/typography";
+import { useSettings } from "../lib/utils/use-settings";
 
 const styles = StyleSheet.create((theme) => ({
     container: {

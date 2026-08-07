@@ -1,6 +1,6 @@
 import { DateTime } from "luxon";
 import { describe, expect, test } from "vitest";
-import { QSO } from "../app/lib/components/qso";
+import { QSO } from "../src/lib/components/qso";
 import {
     EventType,
     allReferencesActivated,
@@ -11,8 +11,8 @@ import {
     events,
     getActivations,
     rules,
-} from "../app/lib/utils/event-rules";
-import { QSORecord } from "../app/lib/utils/file-format/common";
+} from "../src/lib/utils/event-rules";
+import { QSORecord } from "../src/lib/utils/file-format/common";
 
 let counter = 0;
 const qso = (iso: string, fields: Partial<QSO> = {}): QSO => ({

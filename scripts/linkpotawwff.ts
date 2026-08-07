@@ -1,14 +1,14 @@
 import { distance as editDistance } from "fastest-levenshtein";
 import { readFileSync, writeFileSync } from "node:fs";
-import { ReferenceDatum } from "../app/lib/components/reference-info";
-import { LatLng, distance, maidenhead2Latlong } from "../app/lib/utils/locator";
+import { ReferenceDatum } from "../src/lib/components/reference-info";
+import { LatLng, distance, maidenhead2Latlong } from "../src/lib/utils/locator";
 
 const MAX_KM = 25; // parks further apart than this are never the same park
 const MIN_SCORE = 0.6; // name similarity below this is a coincidence, not a match
 const CELL = 0.5; // spatial bucket size in degrees
 
-const pota: Record<string, ReferenceDatum> = JSON.parse(readFileSync("./app/lib/data/pota.json", "utf8"));
-const wwff: Record<string, ReferenceDatum> = JSON.parse(readFileSync("./app/lib/data/wwff.json", "utf8"));
+const pota: Record<string, ReferenceDatum> = JSON.parse(readFileSync("./src/lib/data/pota.json", "utf8"));
+const wwff: Record<string, ReferenceDatum> = JSON.parse(readFileSync("./src/lib/data/wwff.json", "utf8"));
 
 /** maidenhead2Latlong assumes a well formed locator and silently returns NaN otherwise, so
  * validate first. The wwff feed prefixes some locators with "-" or a space ("-Gj01pn",
@@ -213,4 +213,4 @@ console.log(
         `references (${candidates.length} candidate pairs)`,
 );
 
-writeFileSync("./app/lib/data/potawwfflinks.json", JSON.stringify(links));
+writeFileSync("./src/lib/data/potawwfflinks.json", JSON.stringify(links));

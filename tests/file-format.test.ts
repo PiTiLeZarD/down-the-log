@@ -1,9 +1,9 @@
 import { DateTime, Settings } from "luxon";
 import { describe, expect, test } from "vitest";
-import { QSO } from "../app/lib/components/qso";
-import { getFileApiFromFilename } from "../app/lib/utils/file-format";
-import { AdifAPI } from "../app/lib/utils/file-format/adif";
-import { AdxAPI } from "../app/lib/utils/file-format/adx";
+import { QSO } from "../src/lib/components/qso";
+import { getFileApiFromFilename } from "../src/lib/utils/file-format";
+import { AdifAPI } from "../src/lib/utils/file-format/adif";
+import { AdxAPI } from "../src/lib/utils/file-format/adx";
 import {
     QSORecord,
     castAs,
@@ -13,7 +13,7 @@ import {
     record2qso,
     sanitize,
     unsanitize,
-} from "../app/lib/utils/file-format/common";
+} from "../src/lib/utils/file-format/common";
 
 const qso: QSO = {
     id: "test-id",

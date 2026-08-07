@@ -1,7 +1,7 @@
 import { DateTime } from "luxon";
 import { describe, expect, test } from "vitest";
-import { QSO } from "../app/lib/components/qso";
-import { resolveCountry } from "../app/lib/data/countries";
+import { QSO } from "../src/lib/components/qso";
+import { resolveCountry } from "../src/lib/data/countries";
 import {
     getQsoIssues,
     hasIgnoredIssues,
@@ -10,7 +10,7 @@ import {
     ignoreIssue,
     issueKey,
     restoreIssue,
-} from "../app/lib/utils/qso-issues";
+} from "../src/lib/utils/qso-issues";
 
 let counter = 0;
 const qso = (fields: Partial<QSO> = {}): QSO => ({

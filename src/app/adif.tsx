@@ -1,18 +1,18 @@
 import React from "react";
 import { Pressable, View } from "react-native";
-import { Export } from "./lib/components/adif/export";
-import { Import } from "./lib/components/adif/import";
-import { PageLayout } from "./lib/components/page-layout";
-import { useQsos } from "./lib/components/qso";
-import { Stack } from "./lib/components/stack";
-import { TabsLayout } from "./lib/components/tabs-layout";
-import { unique } from "./lib/utils/arrays";
-import { useStore } from "./lib/utils/store";
-import { Alert } from "./lib/ui/alert";
-import { Button } from "./lib/ui/button";
-import { Icon } from "./lib/ui/icon";
-import { Typography } from "./lib/ui/typography";
-import { showDialog } from "./lib/ui/dialog";
+import { Export } from "../lib/components/adif/export";
+import { Import } from "../lib/components/adif/import";
+import { PageLayout } from "../lib/components/page-layout";
+import { useQsos } from "../lib/components/qso";
+import { Stack } from "../lib/components/stack";
+import { TabsLayout } from "../lib/components/tabs-layout";
+import { unique } from "../lib/utils/arrays";
+import { useStore } from "../lib/utils/store";
+import { Alert } from "../lib/ui/alert";
+import { Button } from "../lib/ui/button";
+import { Icon } from "../lib/ui/icon";
+import { Typography } from "../lib/ui/typography";
+import { showDialog } from "../lib/ui/dialog";
 
 const Adif = () => {
     const [showHoneypotDetails, setShowHoneypotDetails] = React.useState<boolean>(false);

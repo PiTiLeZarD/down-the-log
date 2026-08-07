@@ -9,7 +9,7 @@ import {
     maidenhead2Corners,
     maidenhead2Latlong,
     normalise,
-} from "../app/lib/utils/locator";
+} from "../src/lib/utils/locator";
 
 const BRISBANE: LatLng = { latitude: -27.47, longitude: 153.03 };
 const LONDON: LatLng = { latitude: 51.5, longitude: -0.13 };

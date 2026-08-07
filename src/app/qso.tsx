@@ -1,10 +1,10 @@
 import { useLocalSearchParams, useRouter } from "expo-router";
 import { useEffect, useEffectEvent } from "react";
 import { FormProvider, useForm } from "react-hook-form";
-import { FormFields } from "./lib/components/form/form-fields";
-import { QSO, useQsos } from "./lib/components/qso";
-import { useStore } from "./lib/utils/store";
-import { useAutoSave } from "./lib/utils/use-auto-save";
+import { FormFields } from "../lib/components/form/form-fields";
+import { QSO, useQsos } from "../lib/components/qso";
+import { useStore } from "../lib/utils/store";
+import { useAutoSave } from "../lib/utils/use-auto-save";
 
 const Qso = () => {
     const { navigate } = useRouter();

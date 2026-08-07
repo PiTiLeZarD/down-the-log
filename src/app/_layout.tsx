@@ -5,13 +5,13 @@ import React, { useCallback } from "react";
 import { Platform, View } from "react-native";
 import { SafeAreaProvider, SafeAreaView } from "react-native-safe-area-context";
 import { StyleSheet, useUnistyles } from "react-native-unistyles";
-import { LocationHeader } from "./lib/components/location-header";
-import { DialogHost } from "./lib/ui/dialog";
-import { latlong2Maidenhead } from "./lib/utils/locator";
-import { useStore } from "./lib/utils/store";
-import "./lib/ui";
-import { useLocation } from "./lib/utils/use-location";
-import { useSettings } from "./lib/utils/use-settings";
+import { LocationHeader } from "../lib/components/location-header";
+import { DialogHost } from "../lib/ui/dialog";
+import { latlong2Maidenhead } from "../lib/utils/locator";
+import { useStore } from "../lib/utils/store";
+import "../lib/ui";
+import { useLocation } from "../lib/utils/use-location";
+import { useSettings } from "../lib/utils/use-settings";
 
 export {
     // Catch any errors thrown by the Layout component.
@@ -31,7 +31,7 @@ SplashScreen.preventAutoHideAsync();
 
 const RootLayout = () => {
     const [fontsLoaded, fontError] = useFonts({
-        Quicksand: require("../assets/Quicksand-VariableFont_wght.ttf"),
+        Quicksand: require("../../assets/Quicksand-VariableFont_wght.ttf"),
     });
 
     // Every screen is painted on a react-navigation card, and its palette is independent of ours:

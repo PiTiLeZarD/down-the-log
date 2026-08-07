@@ -3,8 +3,8 @@
  * https://github.com/amazingproducer/dxcc-world-map
  */
 import { readFileSync, writeFileSync } from "node:fs";
-import { encode } from "../app/lib/utils/polydec";
-import { Polygon } from "../app/lib/utils/polygon";
+import { encode } from "../src/lib/utils/polydec";
+import { Polygon } from "../src/lib/utils/polygon";
 
 type GeoJSONProperties = {
     dxcc_prefix: string;
@@ -39,4 +39,4 @@ const dxccData = Object.fromEntries(
     ]),
 );
 
-writeFileSync("./app/lib/data/dxcc.json", JSON.stringify(dxccData), "utf8");
+writeFileSync("./src/lib/data/dxcc.json", JSON.stringify(dxccData), "utf8");

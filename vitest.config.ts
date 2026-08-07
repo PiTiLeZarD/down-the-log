@@ -3,7 +3,7 @@ import { defineConfig } from "vitest/config";
 
 const stub = (name: string) => fileURLToPath(new URL(`./tests/stubs/${name}.ts`, import.meta.url));
 
-// Tests live outside `app/` on purpose: expo-router turns every file under `app/` into a route.
+// Tests live outside `src/app/` on purpose: expo-router turns every file under `src/app/` into a route.
 export default defineConfig({
     test: {
         include: ["tests/**/*.test.ts"],

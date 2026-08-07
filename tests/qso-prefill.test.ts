@@ -15,7 +15,7 @@ import {
     prefillOperating,
     prefillSameCallsign,
     qsosByCallsign,
-} from "../app/lib/components/qso";
+} from "../src/lib/components/qso";
 
 const at = (iso: string) => DateTime.fromISO(iso, { zone: "utc" });
 const qso = (fields: Partial<QSO> = {}): QSO => ({

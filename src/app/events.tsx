@@ -1,17 +1,17 @@
 import React from "react";
 import { Switch } from "react-native-gesture-handler";
-import { MissingReferencesWarning } from "./lib/components/missing-references-warning";
-import { PageLayout } from "./lib/components/page-layout";
-import { useQsos } from "./lib/components/qso";
-import { Reference } from "./lib/components/reference";
-import { Stack } from "./lib/components/stack";
-import { TabsLayout } from "./lib/components/tabs-layout";
-import { unique } from "./lib/utils/arrays";
-import { EventType, eventDataMassageMap, events, getActivations } from "./lib/utils/event-rules";
-import { downloadQsos } from "./lib/utils/file-format";
-import { Button } from "./lib/ui/button";
-import { PaginatedList } from "./lib/ui/paginated-list";
-import { Typography } from "./lib/ui/typography";
+import { MissingReferencesWarning } from "../lib/components/missing-references-warning";
+import { PageLayout } from "../lib/components/page-layout";
+import { useQsos } from "../lib/components/qso";
+import { Reference } from "../lib/components/reference";
+import { Stack } from "../lib/components/stack";
+import { TabsLayout } from "../lib/components/tabs-layout";
+import { unique } from "../lib/utils/arrays";
+import { EventType, eventDataMassageMap, events, getActivations } from "../lib/utils/event-rules";
+import { downloadQsos } from "../lib/utils/file-format";
+import { Button } from "../lib/ui/button";
+import { PaginatedList } from "../lib/ui/paginated-list";
+import { Typography } from "../lib/ui/typography";
 
 const Events = () => {
     const qsos = useQsos();

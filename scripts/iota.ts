@@ -6,14 +6,14 @@
  * */
 import { XMLParser } from "fast-xml-parser";
 import { readFileSync, writeFileSync } from "node:fs";
-import { latlong2Maidenhead } from "../app/lib/utils/locator";
+import { latlong2Maidenhead } from "../src/lib/utils/locator";
 
 const data = readFileSync("./scripts/doc.kml", "utf8");
 const parser = new XMLParser();
 const doc = parser.parse(data);
 
 writeFileSync(
-    "./app/lib/data/iota.json",
+    "./src/lib/data/iota.json",
     JSON.stringify(
         Object.fromEntries(
             doc.kml.Document.Folder.Folder.map((o: any) =>

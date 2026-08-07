@@ -36,7 +36,7 @@ export const VERSIONED_FILES = [
     "app.json",
     "src-tauri/tauri.conf.json",
     "src-tauri/Cargo.toml",
-    "app/lib/utils/file-format/common.ts",
+    "src/lib/utils/file-format/common.ts",
 ];
 
 export const syncVersion = (tag) => {
@@ -48,7 +48,7 @@ export const syncVersion = (tag) => {
 
     patchSource("src-tauri/Cargo.toml", /^version = ".*"$/m, `version = "${version}"`);
     // ADIF header advertises the exporting program's version to whoever reads the file.
-    patchSource("app/lib/utils/file-format/common.ts", /^(\s*programversion: )".*",$/m, `$1"${version}",`);
+    patchSource("src/lib/utils/file-format/common.ts", /^(\s*programversion: )".*",$/m, `$1"${version}",`);
 
     return version;
 };

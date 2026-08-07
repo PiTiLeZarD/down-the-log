@@ -5,7 +5,7 @@ module.exports = defineConfig([
     expoConfig,
     {
         // Build output, the rust side and the generated data blobs aren't ours to lint.
-        ignores: ["down-the-log/**", "src-tauri/**", ".expo/**", "app/lib/data/*.json"],
+        ignores: ["down-the-log/**", "src-tauri/**", ".expo/**", "src/lib/data/*.json"],
     },
     {
         rules: {
