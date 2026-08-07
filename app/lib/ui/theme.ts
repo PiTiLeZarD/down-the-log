@@ -7,7 +7,7 @@ export type Colours = Record<
     Colour
 >;
 export type Shade = "lighter" | "light" | "main" | "dark" | "darker";
-export type ColourVariant = "primary" | "secondary" | "grey" | "success";
+export type ColourVariant = "primary" | "secondary" | "grey" | "success" | "danger";
 // Numeric keys plus the shade aliases resolved for the current light/dark mode.
 export type ShadedColour = Colour & Record<Shade, string>;
 
@@ -70,6 +70,7 @@ export const theme = (shade: "light" | "dark") =>
             secondary: withShades(colours.orange, shade),
             grey: withShades(colours.gray, shade),
             success: withShades(colours.green, shade),
+            danger: withShades(colours.red, shade),
         } as Record<ColourVariant, ShadedColour>,
         components: {
             typography: {

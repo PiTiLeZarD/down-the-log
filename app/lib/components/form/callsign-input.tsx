@@ -3,7 +3,7 @@ import { useFormContext } from "react-hook-form";
 import { View } from "react-native";
 import { StyleSheet } from "react-native-unistyles";
 import { baseCallsign } from "../../utils/callsign";
-import { useHamqth } from "../../utils/hamqth";
+import { HamQTHCallsignData, useHamqth } from "../../utils/hamqth";
 import { Button } from "../../ui/button";
 import { Input } from "../../ui/input";
 import { useSettings } from "../../utils/use-settings";
@@ -13,6 +13,7 @@ import { BandFreqInput } from "./band-freq-input";
 import { CallsignInputExtra } from "./callsign-input-extra";
 import { Events } from "./events";
 import { FormField } from "./form-field";
+import { HamQTHBadge } from "./hamqth-badge";
 import { ModeInput } from "./mode-input";
 import { Signal } from "./signal";
 
@@ -40,7 +41,8 @@ export const CallsignInput = ({ handleAdd }: CallsignInputProps) => {
 
     const callsign = watch("callsign");
     const previousQso = qsos.filter((q) => baseCallsign(q.callsign) === baseCallsign(callsign));
-    let hamqthCSData = useHamqth(callsign);
+    const hamqth = useHamqth(callsign);
+    let hamqthCSData: Partial<HamQTHCallsignData> | undefined = hamqth.data;
     if ((previousQso || []).length) {
         hamqthCSData = {
             callsign,
@@ -83,6 +85,9 @@ export const CallsignInput = ({ handleAdd }: CallsignInputProps) => {
                             if (e.keyCode === 13) handleAdd();
                         }}
                         placeholder="Callsign"
+                        // Undefined rather than an idle badge: any suffix at all makes `Input` draw
+                        // the chip chrome and flatten the field's right border.
+                        suffix={hamqth.status === "idle" ? undefined : <HamQTHBadge status={hamqth.status} />}
                     />
                 </View>
                 {inputBarConfig.includes("name") && <FormField name="name" style={styles.input} placeholder="Name" />}

@@ -1,7 +1,7 @@
 import axios from "axios";
 import { XMLParser } from "fast-xml-parser";
 import { DateTime } from "luxon";
-import { useEffect, useEffectEvent } from "react";
+import { useEffect, useEffectEvent, useState } from "react";
 import { useUnistyles } from "react-native-unistyles";
 import { baseCallsign, parseCallsign } from "./callsign";
 import { latlong2Maidenhead, normalise } from "./locator";
@@ -12,6 +12,30 @@ import { useSettings } from "./use-settings";
 import { useThrottle } from "./use-throttle";
 
 const ignoreErrors = ["Callsign not found", "timeout exceeded", "Network Error"];
+
+/**
+ * What the last lookup did, so the callsign input can badge it. `idle` covers both "no credentials
+ * configured" and "nothing worth looking up typed yet" — the badge hides for both.
+ */
+export type HamQTHStatus = "idle" | "loading" | "found" | "not-found" | "auth" | "offline" | "error";
+
+export type HamQTHResult = {
+    status: HamQTHStatus;
+    /** The base callsign this result describes, so a stale result can be told from a fresh one. */
+    callsign?: string;
+    data?: HamQTHCallsignData;
+};
+
+/**
+ * HamQTH reports everything as a free-text <error> tag, so the badge has to read the prose. Anything
+ * unrecognised stays `error` and still raises the modal.
+ */
+const classify = (message: string): HamQTHStatus => {
+    if (/not found/i.test(message)) return "not-found";
+    if (/wrong user|password|session does not exist|session id is missing|expired/i.test(message)) return "auth";
+    if (/network|timeout/i.test(message)) return "offline";
+    return "error";
+};
 
 export type HamQTHSettingsType = {
     user: string;
@@ -115,16 +139,28 @@ export const fetchCallsignData = async (sessionId: string, callsign: string) =>
         } as HamQTHCallsignData;
     });
 
-export const useHamqth = (callsign?: string) => {
+export const useHamqth = (callsign?: string): HamQTHResult => {
     const { theme } = useUnistyles();
     const settings = useSettings();
     const updateSetting = useStore((state) => state.updateSetting);
+    // Stamped with the credentials it happened under, so editing them in settings clears the badge
+    // without this needing a synchronous reset (which would just cascade renders from the effect).
+    const [sessionError, setSessionError] = useState<
+        { user?: string; password?: string; status: HamQTHStatus } | undefined
+    >(undefined);
 
     // The session id is an argument rather than something `launch` closes over, so that a session
     // refresh changes the throttled arguments and reschedules the lookup. Closing over it would
     // mean the same callsign never gets looked up again once the session it was typed under expired.
-    const launch = (cs: string, sessionId?: string) =>
-        cs && sessionId ? fetchCallsignData(sessionId, cs).catch((e) => swal(theme, e)) : undefined;
+    const launch = async (cs: string, sessionId?: string): Promise<HamQTHResult> => {
+        if (!cs || !sessionId) return { status: "idle" };
+        return fetchCallsignData(sessionId, cs)
+            .then((data) => ({ status: data ? "found" : "not-found", callsign: cs, data }) as HamQTHResult)
+            .catch((e) => {
+                swal(theme, e);
+                return { status: classify(e.message), callsign: cs };
+            });
+    };
     const throttled = useThrottle(launch, 500);
 
     // Sessions expire after an hour, so this has to follow the credentials and the validity of the
@@ -140,21 +176,39 @@ export const useHamqth = (callsign?: string) => {
         fetchSessionId(user, password)
             .then((sessionId) => {
                 if (sessionId) {
+                    setSessionError(undefined);
                     updateSetting("hamqth", newSessionId(settings.hamqth, sessionId));
-                }
+                } else setSessionError({ user, password, status: "error" });
             })
-            .catch((e) => swal(theme, e));
+            .catch((e) => {
+                swal(theme, e);
+                setSessionError({ user, password, status: classify(e.message) });
+            });
     });
     useEffect(() => refreshSession(), [user, password, sessionValid]);
+
+    // Derived rather than stored: only the failure needs remembering, and a stale one is discarded
+    // by the credential stamp instead of by resetting state from the effect.
+    const failure =
+        sessionError && sessionError.user === user && sessionError.password === password
+            ? sessionError.status
+            : undefined;
+    const sessionStatus: HamQTHStatus = !user || !password ? "idle" : sessionValid ? "found" : (failure ?? "loading");
 
     if (callsign) {
         const parsedCallsign = parseCallsign(callsign);
         const bcs = baseCallsign(callsign);
 
         if (bcs && (parsedCallsign?.delineation || "").length) {
-            return throttled(bcs, sessionValid ? settings.hamqth?.sessionId : undefined);
+            // A dead session is the reason no lookup will ever land, so it outranks whatever the
+            // throttle is still holding from before the credentials broke.
+            if (sessionStatus !== "found") return { status: sessionStatus };
+
+            const result = throttled(bcs, sessionValid ? settings.hamqth?.sessionId : undefined);
+            // The throttle hands back the previous callsign's result until the new one resolves.
+            return result && result.callsign === bcs ? result : { status: "loading" };
         }
     }
 
-    return undefined;
+    return { status: "idle" };
 };
