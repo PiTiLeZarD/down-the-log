@@ -148,7 +148,7 @@ const Settings = () => {
                     <Typography variant="h3">API's</Typography>
                     <Typography variant="subtitle">
                         All data is stored locally in your browser and is never sent anywhere (except for hamqth or
-                        google when using their api)
+                        geocode maps when using their api)
                     </Typography>
                     <Typography underline>HamQTH:</Typography>
                     {settings.hamqth && settings.hamqth.sessionId && (
@@ -188,24 +188,6 @@ const Settings = () => {
                                     ...(settings.hamqth || { user: "", password: "" }),
                                     password: v,
                                 })
-                            }
-                        />
-                    </Stack>
-                    <Typography underline>Google Static Maps:</Typography>
-                    <Stack direction="row">
-                        <Typography>Key:</Typography>
-                        <Input
-                            value={settings.google != undefined ? settings.google.key : ""}
-                            onChangeText={(v) =>
-                                updateSetting("google", { ...(settings.google || { key: "", secret: "" }), key: v })
-                            }
-                        />
-                        <Typography>Signing Secret:</Typography>
-                        <Input
-                            password
-                            value={settings.google != undefined ? settings.google.secret : ""}
-                            onChangeText={(v) =>
-                                updateSetting("google", { ...(settings.google || { key: "", secret: "" }), secret: v })
                             }
                         />
                     </Stack>

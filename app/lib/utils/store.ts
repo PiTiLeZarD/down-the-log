@@ -3,7 +3,6 @@ import { DateTime } from "luxon";
 import { create } from "zustand";
 import { combine, createJSONStorage, devtools, persist } from "zustand/middleware";
 import { QsoFilter } from "../components/filters";
-import { GoogleCredentials } from "../components/google-static-map/map";
 import { QSO } from "../components/qso";
 import { Band } from "../data/bands";
 import { Mode } from "../data/modes";
@@ -19,7 +18,6 @@ export type Settings = {
     timeoffThreshold: number;
     datemonth: boolean;
     hamqth?: HamQTHSettingsType;
-    google?: GoogleCredentials;
     geocodeMapsCoKey?: string;
     favouriteModes: Mode[];
     favouriteBands: Band[];

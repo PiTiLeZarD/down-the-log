@@ -3,7 +3,7 @@ import {
     LatLng,
     corners2Path,
     distance,
-    fixLatLngForStaticMaps,
+    fixLatLngForMercator,
     latlong2Maidenhead,
     maidenDistance,
     maidenhead2Corners,
@@ -136,14 +136,14 @@ describe("maidenDistance", () => {
     });
 });
 
-describe("fixLatLngForStaticMaps", () => {
+describe("fixLatLngForMercator", () => {
     test("pulls the poles back to what a Mercator tile can show", () => {
-        expect(fixLatLngForStaticMaps({ latitude: 90, longitude: 10 })).toEqual({ latitude: 85, longitude: 10 });
-        expect(fixLatLngForStaticMaps({ latitude: -90, longitude: 10 })).toEqual({ latitude: -85, longitude: 10 });
+        expect(fixLatLngForMercator({ latitude: 90, longitude: 10 })).toEqual({ latitude: 85, longitude: 10 });
+        expect(fixLatLngForMercator({ latitude: -90, longitude: 10 })).toEqual({ latitude: -85, longitude: 10 });
     });
 
     test("leaves everything else alone", () => {
-        expect(fixLatLngForStaticMaps(BRISBANE)).toBe(BRISBANE);
+        expect(fixLatLngForMercator(BRISBANE)).toBe(BRISBANE);
     });
 });
 

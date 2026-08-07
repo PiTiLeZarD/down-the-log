@@ -1,6 +1,6 @@
 import React from "react";
 import { LatLng } from "../../utils/locator";
-import { FeatureMarkerStyle, RenderFeature, latLngToPosition } from "./common";
+import { FeatureMarkerStyle, RenderFeature } from "./common";
 
 export type MarkerProps = {
     location: LatLng;
@@ -10,6 +10,6 @@ export type MarkerProps = {
 export const Marker: React.FC<MarkerProps> & RenderFeature<MarkerProps> = () => null;
 Marker.renderFeature = ({ location, style }) => ({
     type: "markers",
-    data: latLngToPosition(location),
+    points: [location],
     style,
 });

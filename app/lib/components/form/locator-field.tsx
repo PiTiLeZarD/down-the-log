@@ -5,7 +5,7 @@ import ituzones from "../../data/ituzones.json";
 import { maidenDistance, maidenhead2Latlong, normalise } from "../../utils/locator";
 import { findZone } from "../../utils/polydec";
 import { Typography } from "../../ui/typography";
-import { GmapsChip } from "../gmaps-chip";
+import { MapChip } from "../map-chip";
 import { QSO } from "../qso";
 import { Stack } from "../stack";
 import { FormField } from "./form-field";
@@ -44,7 +44,7 @@ export const LocatorField = ({ name, label }: LocatorFieldProps) => {
             label={
                 <Stack direction="row">
                     <Typography style={{ flexGrow: 1 }}>{label}</Typography>
-                    <GmapsChip locator={getValues().locator} />
+                    <MapChip locator={getValues().locator} />
                 </Stack>
             }
         />

@@ -68,9 +68,6 @@ importers:
       humanize-duration:
         specifier: ^3.32.1
         version: 3.34.0
-      jssha:
-        specifier: ^3.3.1
-        version: 3.3.2
       luxon:
         specifier: ^3.4.3
         version: 3.7.2
@@ -3583,9 +3580,6 @@ packages:
 
   jsonfile@6.2.1:
     resolution: {integrity: sha512-zwOTdL3rFQ/lRdBnntKVOX6k5cKJwEc1HdilT71BWEu7J41gXIB2MRp+vxduPSwZJPWBxEzv4yH1wYLJGUHX4Q==}
-
-  jssha@3.3.2:
-    resolution: {integrity: sha512-0RhFxzijV4W0qTXa97D5b6twAWXX7SEOpw8qzAZyZ+oeGOP9e84PnDSLjl7SBB1vBQ+chSUwsZR06i1AzA+nEA==}
 
   jsx-ast-utils@3.3.5:
     resolution: {integrity: sha512-ZZow9HBI5O6EPgSJLUb8n2NKgmVWTwCvHGwFuJlMjvLFqlGG6pjirPhtdsseaLZjSibD8eegzmYpUZwoIlj2cQ==}
@@ -9275,8 +9269,6 @@ snapshots:
       universalify: 2.0.1
     optionalDependencies:
       graceful-fs: 4.2.11
-
-  jssha@3.3.2: {}
 
   jsx-ast-utils@3.3.5:
     dependencies:

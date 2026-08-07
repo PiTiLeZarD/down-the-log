@@ -53,7 +53,7 @@ export const maidenhead2Latlong = (maidenhead: string): LatLng => {
     return latlng;
 };
 
-export const fixLatLngForStaticMaps = (latlng: LatLng): LatLng =>
+export const fixLatLngForMercator = (latlng: LatLng): LatLng =>
     Math.abs(latlng.latitude) == 90
         ? {
               latitude: latlng.latitude > 0 ? 85 : -85,

@@ -1,7 +1,7 @@
 import { EventType } from "../utils/event-rules";
 import { Button } from "../ui/button";
 import { Typography } from "../ui/typography";
-import { GmapsChip } from "./gmaps-chip";
+import { MapChip } from "./map-chip";
 
 export type ReferenceDatum = { name: string; locator?: string };
 
@@ -28,5 +28,5 @@ export const ReferenceInfo = ({ event, reference, data, info }: ReferenceInfoPro
     if (!data || !(reference in data)) return <Typography variant="subtitle">Unknown reference {reference}</Typography>;
     const { name, locator } = data[reference as keyof typeof data] as ReferenceDatum;
     if (event === "pota") return <Button variant="chip" text={name} url={`https://pota.app/#/park/${reference}`} />;
-    return <GmapsChip text={name} locator={locator} zoom={14} />;
+    return <MapChip text={name} locator={locator} zoom={14} />;
 };

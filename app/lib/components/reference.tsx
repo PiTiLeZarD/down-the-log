@@ -16,7 +16,7 @@ import { useStore } from "../utils/store";
 import { Button } from "../ui/button";
 import { Icon } from "../ui/icon";
 import { Typography } from "../ui/typography";
-import { GmapsChip } from "./gmaps-chip";
+import { MapChip } from "./map-chip";
 import { Grid } from "./grid";
 import { QSO } from "./qso";
 
@@ -71,7 +71,7 @@ export const Reference = ({ position, max, event, reference, activations }: Refe
                 <Grid item xs={["pota"].includes(event) ? 3 : 1}>
                     {eventData?.locator && (
                         <View>
-                            {event !== "pota" && <GmapsChip locator={eventData?.locator} zoom={10} />}
+                            {event !== "pota" && <MapChip locator={eventData?.locator} zoom={10} />}
                             {event === "pota" && (
                                 <Button variant="chip" text="pota" url={`https://pota.app/#/park/${reference}`} />
                             )}

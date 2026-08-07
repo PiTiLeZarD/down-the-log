@@ -2,19 +2,19 @@ import React from "react";
 import { maidenhead2Latlong } from "../utils/locator";
 import { Button } from "../ui/button";
 
-export type GmapsChipProps = {
+export type MapChipProps = {
     text?: string;
     locator?: string;
     zoom?: number;
 };
 
-export const GmapsChip = ({ text = "gmaps", locator, zoom = 4 }: GmapsChipProps) => {
+export const MapChip = ({ text = "map", locator, zoom = 4 }: MapChipProps) => {
     const [buttonText, setButtonText] = React.useState<string>(text);
 
     const latlng = locator ? maidenhead2Latlong(locator) : undefined;
     const url =
         latlng &&
-        `https://www.google.com/maps/place/${latlng.latitude}+${latlng.longitude}/@${latlng.latitude},${latlng.longitude},${zoom}z?entry=ttu`;
+        `https://www.openstreetmap.org/?mlat=${latlng.latitude}&mlon=${latlng.longitude}#map=${zoom}/${latlng.latitude}/${latlng.longitude}`;
     const onPress = () => {
         setButtonText("Missing Location!");
         setTimeout(() => setButtonText(text), 1500);

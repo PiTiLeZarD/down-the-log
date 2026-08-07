@@ -66,16 +66,6 @@ export const QsoListSectionHeader = ({ qsos }: QsoListSectionHeaderProps) => {
     const settings = useSettings();
     const text = `${qsos[0].date.toFormat(settings.datemonth ? "MM-dd-yyyy" : "dd/MM/yyyy")} (${qsos.length})`;
 
-    if (!settings.google || !settings.google.key || !settings.google.secret) {
-        return (
-            <View>
-                <View style={styles.sectionHeader}>
-                    <Typography style={styles.sectionHeaderText}>{text}</Typography>
-                </View>
-            </View>
-        );
-    }
-
     return (
         <Pressable onPress={() => setmapOpen(!mapOpen)}>
             <Stack style={styles.sectionHeader}>
