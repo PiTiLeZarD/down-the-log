@@ -6,13 +6,13 @@ import { Stack } from "./lib/components/stack";
 import { TabsLayout } from "./lib/components/tabs-layout";
 import { bands } from "./lib/data/bands";
 import { modes } from "./lib/data/modes";
+import { Button } from "./lib/ui/button";
+import { Input } from "./lib/ui/input";
+import { fireSwal } from "./lib/ui/swal";
+import { Typography } from "./lib/ui/typography";
 import { HamQTHSettingsType } from "./lib/utils/hamqth";
 import { normalise } from "./lib/utils/locator";
 import { useStore } from "./lib/utils/store";
-import { Button } from "./lib/ui/button";
-import { Input } from "./lib/ui/input";
-import { Typography } from "./lib/ui/typography";
-import { fireSwal } from "./lib/ui/swal";
 import { useSettings } from "./lib/utils/use-settings";
 
 const Settings = () => {
