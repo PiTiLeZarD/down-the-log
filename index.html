@@ -23,7 +23,26 @@
         flex: 1;
       }
     </style>
-  <link rel="icon" href="/down-the-log/favicon.ico"/></head>
+  <link rel="icon" href="/down-the-log/favicon.ico"/><!-- pwa:start -->
+    <link rel="manifest" href="/down-the-log/manifest.json" />
+    <link rel="apple-touch-icon" href="/down-the-log/icons/apple-touch-icon.png" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="default" />
+    <meta name="apple-mobile-web-app-title" content="DownTheLog" />
+    <meta name="mobile-web-app-capable" content="yes" />
+    <meta name="application-name" content="DownTheLog" />
+    <!-- Matches the light/dark backgrounds in src/lib/ui/colours.json (gray 100 / gray 900). -->
+    <meta name="theme-color" media="(prefers-color-scheme: light)" content="#f7fafc" />
+    <meta name="theme-color" media="(prefers-color-scheme: dark)" content="#1a202c" />
+    <script>
+        if ("serviceWorker" in navigator && (location.protocol === "https:" || location.hostname === "localhost")) {
+            window.addEventListener("load", function () {
+                navigator.serviceWorker.register("/down-the-log/sw.js", { scope: "/down-the-log/" }).catch(function () {});
+            });
+        }
+    </script>
+    <!-- pwa:end -->
+</head>
 
   <body>
     <!-- Use static rendering with Expo Router to support running without JavaScript. -->
@@ -32,6 +51,6 @@
     </noscript>
     <!-- The root element for your Expo app. -->
     <div id="root"></div>
-  <script src="/down-the-log/_expo/static/js/web/entry-90142ff546bee07172b470d7269f84f1.js" defer></script>
+  <script src="/down-the-log/_expo/static/js/web/entry-786054ba1399f0ff3679ec85a0852687.js" defer></script>
 </body>
 </html>

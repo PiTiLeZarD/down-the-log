@@ -1,0 +1,33 @@
+{
+    "name": "DownTheLog",
+    "short_name": "DownTheLog",
+    "description": "Amateur radio logbook — log QSOs, chase POTA/SOTA/WWFF activations, import and export ADIF.",
+    "id": "./",
+    "start_url": "./",
+    "scope": "./",
+    "display": "standalone",
+    "orientation": "portrait",
+    "background_color": "#f7fafc",
+    "theme_color": "#4299e1",
+    "categories": ["utilities", "productivity"],
+    "icons": [
+        {
+            "src": "./icons/icon-192.png",
+            "sizes": "192x192",
+            "type": "image/png",
+            "purpose": "any"
+        },
+        {
+            "src": "./icons/icon-512.png",
+            "sizes": "512x512",
+            "type": "image/png",
+            "purpose": "any"
+        },
+        {
+            "src": "./icons/maskable-512.png",
+            "sizes": "512x512",
+            "type": "image/png",
+            "purpose": "maskable"
+        }
+    ]
+}
