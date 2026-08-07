@@ -2,16 +2,11 @@ import axios from "axios";
 import { XMLParser } from "fast-xml-parser";
 import { DateTime } from "luxon";
 import { useEffect, useEffectEvent, useState } from "react";
-import { useUnistyles } from "react-native-unistyles";
 import { baseCallsign, parseCallsign } from "./callsign";
 import { latlong2Maidenhead, normalise } from "./locator";
 import { useStore } from "./store";
-import { fireSwal } from "../ui/swal";
-import { ThemeType } from "../ui/theme";
 import { useSettings } from "./use-settings";
 import { useThrottle } from "./use-throttle";
-
-const ignoreErrors = ["Callsign not found", "timeout exceeded", "Network Error"];
 
 /**
  * What the last lookup did, so the callsign input can badge it. `idle` covers both "no credentials
@@ -28,7 +23,7 @@ export type HamQTHResult = {
 
 /**
  * HamQTH reports everything as a free-text <error> tag, so the badge has to read the prose. Anything
- * unrecognised stays `error` and still raises the modal.
+ * unrecognised stays `error`, which the badge still surfaces in red.
  */
 const classify = (message: string): HamQTHStatus => {
     if (/not found/i.test(message)) return "not-found";
@@ -102,13 +97,6 @@ export const isSessionValid = (hamqth: HamQTHSettingsType | undefined) =>
 export const newSessionId = (hamqth: HamQTHSettingsType | undefined, newSession: string) =>
     ({ ...(hamqth || {}), sessionId: newSession, sessionStart: DateTime.now() }) as HamQTHSettingsType;
 
-const swal = (theme: ThemeType, error: Error) => {
-    if (!ignoreErrors.includes(error.message)) {
-        fireSwal({ theme, title: "HamQTH Error!", text: error.message, icon: "error", confirmButtonText: "Ok" });
-    }
-    return undefined;
-};
-
 export const fetchSessionId = async (user: string, password: string) =>
     fetchData({ u: user, p: password }).then((doc) => pickXML(doc, "session_id"));
 
@@ -140,7 +128,6 @@ export const fetchCallsignData = async (sessionId: string, callsign: string) =>
     });
 
 export const useHamqth = (callsign?: string): HamQTHResult => {
-    const { theme } = useUnistyles();
     const settings = useSettings();
     const updateSetting = useStore((state) => state.updateSetting);
     // Stamped with the credentials it happened under, so editing them in settings clears the badge
@@ -157,7 +144,7 @@ export const useHamqth = (callsign?: string): HamQTHResult => {
         return fetchCallsignData(sessionId, cs)
             .then((data) => ({ status: data ? "found" : "not-found", callsign: cs, data }) as HamQTHResult)
             .catch((e) => {
-                swal(theme, e);
+                console.warn("HamQTH lookup failed", e.message);
                 return { status: classify(e.message), callsign: cs };
             });
     };
@@ -181,7 +168,7 @@ export const useHamqth = (callsign?: string): HamQTHResult => {
                 } else setSessionError({ user, password, status: "error" });
             })
             .catch((e) => {
-                swal(theme, e);
+                console.warn("HamQTH session request failed", e.message);
                 setSessionError({ user, password, status: classify(e.message) });
             });
     });
