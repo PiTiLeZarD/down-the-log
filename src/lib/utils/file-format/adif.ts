@@ -73,21 +73,35 @@ export const AdifAPI: FileFormatAPI = {
             .flat()
             .join(" ") + "<EOR>",
 
+    // Grouping used to rebuild the whole accumulator array on every line (`[...records, record]`),
+    // which is quadratic in the number of QSOs: fine for a club log, minutes for a contest-sized
+    // one. Same grouping, done by pushing into the array we already have.
     parseFile: (fileContent) => {
         let lines = fileContent.replace(/(?:\\[r]|[\r]+)+/g, "").split("\n");
         const eoh = lines.findIndex((v) => v.toUpperCase().includes("<EOH>"));
         if (eoh !== -1) lines = lines.slice(eoh + 1);
-        return lines
-            .reduce<string[][]>((records, line) => {
-                const lastRecord = records.length ? records.splice(records.length - 1, 1)[0] : [];
-                if (!line.toUpperCase().includes("<EOR>")) {
-                    lastRecord.push(line);
-                    return [...records, lastRecord];
+
+        const records: string[][] = [];
+        let current: string[] = [];
+        lines.forEach((line) => {
+            if (!line.toUpperCase().includes("<EOR>")) {
+                current.push(line);
+                return;
+            }
+            // A line can hold several records, or end one and start the next.
+            const parts = line.split(/<[eE][oO][rR]>/);
+            parts.forEach((part, i) => {
+                current.push(part);
+                if (i < parts.length - 1) {
+                    records.push(current);
+                    current = [];
                 }
-                const [last, next] = line.split(/<[eE][oO][rR]>/);
-                return [...records, [...lastRecord, last], next.length ? [next] : []];
-            }, [])
-            .filter((record) => record.filter((l) => Boolean(l)).length > 0)
+            });
+        });
+        records.push(current);
+
+        return records
+            .filter((record) => record.some((l) => Boolean(l)))
             .map((record) => AdifAPI.toRecord(record.join("\n")));
     },
     generateFile: (qsos, header, massage = (r) => r) =>

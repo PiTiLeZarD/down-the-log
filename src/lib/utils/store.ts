@@ -97,12 +97,15 @@ const InitialStore: DTLStoreProps = {
 };
 
 const StoreActions: DTLStoreActionsMutatorProps = (set) => ({
+    // The bulk branch used to run `some()` over the incoming batch for every stored QSO, so an
+    // import cost stored × imported comparisons — the shape that makes a big ADIF look hung.
+    // A Set of the incoming ids answers the same question in one lookup.
     log: (qso) =>
-        set((state) =>
-            Array.isArray(qso)
-                ? { qsos: [...state.qsos.filter((q) => !qso.some((qq) => qq.id == q.id)), ...qso] }
-                : { qsos: [...state.qsos.filter((q) => q.id != qso.id), qso] },
-        ),
+        set((state) => {
+            if (!Array.isArray(qso)) return { qsos: [...state.qsos.filter((q) => q.id != qso.id), qso] };
+            const incoming = new Set(qso.map((q) => q.id));
+            return { qsos: [...state.qsos.filter((q) => !incoming.has(q.id)), ...qso] };
+        }),
     updateSetting: (field, value) => set((state) => ({ settings: { ...state.settings, [field]: value } })),
     updateFilters: (filters) =>
         set((state) => ({

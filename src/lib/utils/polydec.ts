@@ -1,18 +1,63 @@
 import { LatLng } from "./locator";
 import { roundTo } from "./math";
-import { Coord, Polygon, includes } from "./polygon";
+import { Coord, Polygon, coord2latlng, fixDateline, includes } from "./polygon";
 
 const DEFAULT_PRECISION: number = 5;
 
 export type Zones = Record<string, string>;
 export type MultiZones = Record<string, string[]>;
 
+type BoundingBox = { south: number; west: number; north: number; east: number };
+type PreparedZone = { id: string; polygons: { polygon: Polygon; box: BoundingBox }[] };
+
+const boundingBox = (polygon: Polygon): BoundingBox =>
+    polygon.reduce<BoundingBox>(
+        (box, [lat, lng]) => ({
+            south: Math.min(box.south, lat),
+            west: Math.min(box.west, lng),
+            north: Math.max(box.north, lat),
+            east: Math.max(box.east, lng),
+        }),
+        { south: 90, west: 180, north: -90, east: -180 }
+    );
+
+/**
+ * Decoding is the expensive half of a lookup — the CQ zone table alone is ~700kB of encoded
+ * polygons — and `findZone` used to redo all of it on every call, so an ADIF import paid for it
+ * three times per QSO. The zone tables are JSON modules with a stable identity, so the decoded
+ * form is cached against the object itself.
+ */
+const preparedZones = new WeakMap<object, PreparedZone[]>();
+
+const prepare = (zones: Zones | MultiZones): PreparedZone[] => {
+    const cached = preparedZones.get(zones);
+    if (cached) return cached;
+
+    const prepared = Object.entries(zones).map(([id, data]) => ({
+        id,
+        polygons: (Array.isArray(data) ? data : [data]).map((d) => {
+            const polygon = decode(d);
+            return { polygon, box: boundingBox(polygon) };
+        }),
+    }));
+    preparedZones.set(zones, prepared);
+    return prepared;
+};
+
+// The box test is what makes the cache pay off: a point is inside one zone and outside the
+// couple of hundred others, and rejecting those on four comparisons skips the ray casting.
+// It has to see the same point `includes` will, dateline shift included, or a zone across ±180
+// would be rejected on coordinates that were never compared to it.
+const inBox = (box: BoundingBox, polygon: Polygon, pos: LatLng): boolean => {
+    if (polygon.length === 0) return false;
+    const { latitude, longitude } = fixDateline(pos, coord2latlng(polygon[0]));
+    return latitude >= box.south && latitude <= box.north && longitude >= box.west && longitude <= box.east;
+};
+
 export const findZone = (zones: Zones | MultiZones, pos: LatLng): keyof typeof zones =>
-    (Object.entries(zones)
-        .map(([i, d]) => [i, Array.isArray(d) ? d.map((di) => decode(di)) : [decode(d)]])
-        .find(([id, zones]) =>
-            (zones as Polygon[]).reduce<boolean>((acc, z) => acc || includes(z as Polygon, pos), false)
-        ) || ["??"])[0] as keyof typeof zones;
+    (prepare(zones).find(({ polygons }) =>
+        polygons.some(({ polygon, box }) => inBox(box, polygon, pos) && includes(polygon, pos))
+    )?.id || "??") as keyof typeof zones;
 
 export const encodeValue = (cur: number, prev: number = 0, precision: number = DEFAULT_PRECISION): string => {
     const factor = Math.pow(10, precision);
