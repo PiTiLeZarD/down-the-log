@@ -91,12 +91,16 @@ export type TypographyProps = PropsWithChildren<{
     variant?: TypographyVariant;
     style?: Styles<TextStyle>;
     underline?: boolean;
+    numberOfLines?: number;
 }>;
 
-export const Typography = ({ style, underline, variant = "body", children }: TypographyProps) => {
+export const Typography = ({ style, underline, variant = "body", numberOfLines, children }: TypographyProps) => {
     const Comp = variantComponentMap[variant];
     return (
-        <Comp style={mergeStyles<TextStyle>(styles[variant], underline ? styles.underline : {}, style)}>
+        <Comp
+            style={mergeStyles<TextStyle>(styles[variant], underline ? styles.underline : {}, style)}
+            numberOfLines={numberOfLines}
+        >
             {children}
         </Comp>
     );

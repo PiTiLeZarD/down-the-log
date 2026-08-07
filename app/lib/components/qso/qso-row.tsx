@@ -23,6 +23,7 @@ export type QsoRowProps = {
     success?: boolean;
     lineHeight?: number;
     position: string;
+    hidePosition?: boolean;
     time: React.ReactNode;
     duration?: React.ReactNode;
     band: React.ReactNode;
@@ -37,23 +38,32 @@ export const QsoRow = ({
     success = false,
     lineHeight = 20,
     position,
+    hidePosition = false,
     time,
     duration,
     band,
     callsign,
     name,
 }: QsoRowProps) => {
-    const cellContent = (content: React.ReactNode, style: TextStyle) =>
-        typeof content === "string" ? <Typography style={style}>{content}</Typography> : content;
+    const cellContent = (content: React.ReactNode, style: TextStyle, numberOfLines?: number) =>
+        typeof content === "string" ? (
+            <Typography style={style} numberOfLines={numberOfLines}>
+                {content}
+            </Typography>
+        ) : (
+            content
+        );
     const cellStyle = header ? styles.header(lineHeight) : { lineHeight };
     return (
         <Pressable onPress={onPress}>
             <Grid container style={styles.row(+position % 2 === 0 || header, success)}>
-                <Grid item style={styles.cell} xs={1}>
-                    {cellContent(position, cellStyle)}
-                </Grid>
-                <Grid item style={styles.cell} xs={2} md={1}>
-                    {cellContent(time, cellStyle)}
+                {!hidePosition && (
+                    <Grid item style={styles.cell} xs={1}>
+                        {cellContent(position, cellStyle)}
+                    </Grid>
+                )}
+                <Grid item style={styles.cell} xs={hidePosition ? 3 : 2} md={hidePosition ? 2 : 1}>
+                    {cellContent(time, cellStyle, 1)}
                 </Grid>
                 <Grid item style={styles.cell} xs={-1} lg={1}>
                     {cellContent(duration, cellStyle)}

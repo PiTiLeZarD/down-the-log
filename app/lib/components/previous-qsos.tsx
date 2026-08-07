@@ -1,8 +1,8 @@
 import { useRouter } from "expo-router";
 import { useFormContext } from "react-hook-form";
-import { baseCallsign } from "../utils/callsign";
 import { PaginatedList } from "../ui/paginated-list";
 import { Typography } from "../ui/typography";
+import { baseCallsign } from "../utils/callsign";
 import { QSO, useQsos } from "./qso";
 import { QsoRow } from "./qso/qso-row";
 import { Stack } from "./stack";
@@ -21,9 +21,11 @@ export const PreviousQsos = () => {
 
     return (
         <Stack>
-            <Typography variant="h3">Other QSOs with {baseCallsign(callsign)}</Typography>
+            <Typography variant="h3">
+                Other QSOs with {baseCallsign(callsign)} ({qsos.length} total)
+            </Typography>
             <PaginatedList itemsPerPage={5}>
-                <QsoRow header position="ID" time="Date" callsign="Notes" name="Callsign" band="Band" />
+                <QsoRow header position="ID" time="Date" callsign="Notes" name="Callsign" band="Band" hidePosition />
                 {qsos.map((q, i) => (
                     <QsoRow
                         onPress={() => navigate(`/qso?qsoId=${q.id}`)}
@@ -33,6 +35,7 @@ export const PreviousQsos = () => {
                         callsign={q.note}
                         name={q.callsign}
                         band={`${q.band || "N/A"} (${q.mode || "N/A"})`}
+                        hidePosition
                     />
                 ))}
             </PaginatedList>
