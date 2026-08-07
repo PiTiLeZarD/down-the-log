@@ -1,9 +1,9 @@
 import { Platform, View } from "react-native";
-import { StyleSheet, useUnistyles } from "react-native-unistyles";
+import { StyleSheet } from "react-native-unistyles";
 import { getFileApiFromFilename, record2qso } from "../../utils/file-format";
 import { useStore } from "../../utils/store";
 import { Typography } from "../../ui/typography";
-import { fireSwal } from "../../ui/swal";
+import { showDialog } from "../../ui/dialog";
 import { useSettings } from "../../utils/use-settings";
 import { Dropzone, FileWithPreview } from "../dropzone";
 import { QSO, findMatchingQso, prefillLocation, prefillMyStation, useQsos } from "../qso";
@@ -28,7 +28,6 @@ export const styles = StyleSheet.create((theme) => ({
 }));
 
 export const Import = () => {
-    const { theme } = useUnistyles();
     const qsos = useQsos();
     const log = useStore((state) => state.log);
     const currentLocation = useStore((state) => state.currentLocation);
@@ -58,8 +57,7 @@ export const Import = () => {
                             return q;
                         });
                     log(toImport);
-                    fireSwal({
-                        theme,
+                    showDialog({
                         title: "Done!",
                         text: `All ${toImport.length} records have been imported!`,
                         icon: "success",

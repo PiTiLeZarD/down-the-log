@@ -3,7 +3,7 @@ import React, { useEffect } from "react";
 import { useFormContext } from "react-hook-form";
 import { Pressable, View } from "react-native";
 import { Switch } from "react-native-gesture-handler";
-import { StyleSheet, useUnistyles } from "react-native-unistyles";
+import { StyleSheet } from "react-native-unistyles";
 import { continents } from "../../data/callsigns";
 import { getCallsignData } from "../../utils/callsign";
 import { roundTo } from "../../utils/math";
@@ -12,7 +12,7 @@ import { useStore } from "../../utils/store";
 import { Alert } from "../../ui/alert";
 import { Button } from "../../ui/button";
 import { Typography } from "../../ui/typography";
-import { fireSwal } from "../../ui/swal";
+import { showDialog } from "../../ui/dialog";
 import { useGoBack } from "../../utils/use-go-back";
 import { useSettings } from "../../utils/use-settings";
 import { ButtonOffset } from "../button-offset";
@@ -73,7 +73,6 @@ const diffTimeInMinutes = (qso: QSO, dt: DateTime) => dt.diff(qso.date, ["minute
 export const FormFields = ({ qso }: FormFieldsProps) => {
     const isLastQso = useQsos()[0].id === qso.id;
     const [now, setNow] = React.useState<DateTime>(DateTime.utc());
-    const { theme } = useUnistyles();
     const [openTimeLocModal, setOpenTimeLocModal] = React.useState<boolean>(false);
     const deleteLog = useStore((state) => state.deleteLog);
     const settings = useSettings();
@@ -81,22 +80,21 @@ export const FormFields = ({ qso }: FormFieldsProps) => {
     const goBack = useGoBack();
     const csdata = getCallsignData(qso.callsign);
 
-    const onDelete = () => {
-        if (qso)
-            fireSwal({
-                title: `Delete QSO with ${qso.callsign}?`,
-                icon: "question",
-                text: "This action cannot be reverted!",
-                confirmButtonText: "Yes, Delete it!",
-                cancelButtonText: "Cancel",
-                theme,
-                onResult: (result) => {
-                    if (result.isConfirmed) {
-                        deleteLog(qso);
-                        goBack();
-                    }
-                },
-            });
+    const onDelete = async () => {
+        if (!qso) return;
+
+        const confirmed = await showDialog({
+            title: `Delete QSO with ${qso.callsign}?`,
+            icon: "question",
+            text: "This action cannot be reverted!",
+            confirmButtonText: "Yes, Delete it!",
+            cancelButtonText: "Cancel",
+            confirmColour: "danger",
+        });
+        if (!confirmed) return;
+
+        deleteLog(qso);
+        goBack();
     };
     const handleClipboard = () => {
         const msg: string[] = [];
@@ -119,10 +117,9 @@ export const FormFields = ({ qso }: FormFieldsProps) => {
         // POTA:AU-1234  SOTA:VK2/CT-003  WWFF:VKFF-1234
 
         navigator.clipboard.writeText(`\`\`\`${msg.join("\n")}\`\`\``);
-        fireSwal({
+        showDialog({
             title: "Clipboard",
             text: "QSO successfully copied to clipboard",
-            theme,
             icon: "success",
             confirmButtonText: "OK",
         });
@@ -139,8 +136,7 @@ export const FormFields = ({ qso }: FormFieldsProps) => {
     }, [isRunning]);
 
     const qslInfo = () => {
-        fireSwal({
-            theme,
+        showDialog({
             title: "eQSL/LoTW",
             text: "If you've received a qsl, the button will light up green, if you've sent it, it'll be blue and grey otherwise",
             icon: "info",

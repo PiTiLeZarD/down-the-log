@@ -1,6 +1,5 @@
 import React from "react";
 import { Pressable, View } from "react-native";
-import { useUnistyles } from "react-native-unistyles";
 import { Export } from "./lib/components/adif/export";
 import { Import } from "./lib/components/adif/import";
 import { PageLayout } from "./lib/components/page-layout";
@@ -13,10 +12,9 @@ import { Alert } from "./lib/ui/alert";
 import { Button } from "./lib/ui/button";
 import { Icon } from "./lib/ui/icon";
 import { Typography } from "./lib/ui/typography";
-import { fireSwal } from "./lib/ui/swal";
+import { showDialog } from "./lib/ui/dialog";
 
 const Adif = () => {
-    const { theme } = useUnistyles();
     const [showHoneypotDetails, setShowHoneypotDetails] = React.useState<boolean>(false);
     const resetStore = useStore((state) => state.resetStore);
     const qsos = useQsos();
@@ -27,26 +25,23 @@ const Adif = () => {
             .filter((e) => !!e),
     );
 
-    const handleErase = () => {
-        fireSwal({
+    const handleErase = async () => {
+        const confirmed = await showDialog({
             title: `Erase all QSOs?`,
             icon: "question",
             text: "This action cannot be reverted!",
             confirmButtonText: "Yes, Delete it!",
             cancelButtonText: "Cancel",
-            theme,
-            onResult: (result) => {
-                if (result.isConfirmed) {
-                    resetStore();
-                    fireSwal({
-                        theme,
-                        title: "Done!",
-                        text: "All records have been erased!",
-                        icon: "success",
-                        confirmButtonText: "Ok",
-                    });
-                }
-            },
+            confirmColour: "danger",
+        });
+        if (!confirmed) return;
+
+        resetStore();
+        showDialog({
+            title: "Done!",
+            text: "All records have been erased!",
+            icon: "success",
+            confirmButtonText: "Ok",
         });
     };
 

@@ -8,7 +8,7 @@ import { bands } from "./lib/data/bands";
 import { modes } from "./lib/data/modes";
 import { Button } from "./lib/ui/button";
 import { Input } from "./lib/ui/input";
-import { fireSwal } from "./lib/ui/swal";
+import { showDialog } from "./lib/ui/dialog";
 import { Typography } from "./lib/ui/typography";
 import { HamQTHSettingsType } from "./lib/utils/hamqth";
 import { normalise } from "./lib/utils/locator";
@@ -16,7 +16,7 @@ import { useStore } from "./lib/utils/store";
 import { useSettings } from "./lib/utils/use-settings";
 
 const Settings = () => {
-    const { theme, rt } = useUnistyles();
+    const { rt } = useUnistyles();
     const settings = useSettings();
     const currentLocation = useStore((state) => state.currentLocation);
     const updateSetting = useStore((state) => state.updateSetting);
@@ -161,8 +161,7 @@ const Settings = () => {
                                     sessionId: undefined,
                                     sessionStart: undefined,
                                 } as HamQTHSettingsType);
-                                fireSwal({
-                                    theme,
+                                showDialog({
                                     title: "HamQTH",
                                     text: "Session refreshed, a new one will be requested on next refresh",
                                     icon: "info",

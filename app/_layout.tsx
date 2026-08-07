@@ -6,6 +6,7 @@ import { Platform, View } from "react-native";
 import { SafeAreaProvider, SafeAreaView } from "react-native-safe-area-context";
 import { StyleSheet, useUnistyles } from "react-native-unistyles";
 import { LocationHeader } from "./lib/components/location-header";
+import { DialogHost } from "./lib/ui/dialog";
 import { latlong2Maidenhead } from "./lib/utils/locator";
 import { useStore } from "./lib/utils/store";
 import "./lib/ui";
@@ -91,6 +92,7 @@ const RootLayout = () => {
                             <Stack.Screen name="stats" />
                         </Stack>
                     </ThemeProvider>
+                    <DialogHost />
                 </View>
             </SafeAreaView>
         </SafeAreaProvider>

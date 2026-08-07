@@ -1,7 +1,7 @@
 import { useRouter } from "expo-router";
 import React from "react";
 import { View, useWindowDimensions } from "react-native";
-import { StyleSheet, useUnistyles } from "react-native-unistyles";
+import { StyleSheet } from "react-native-unistyles";
 import { callsigns } from "../data/callsigns";
 import { mostWanted } from "../data/clranks";
 import { countries } from "../data/countries";
@@ -16,7 +16,7 @@ import { Button } from "../ui/button";
 import { Input } from "../ui/input";
 import { PaginatedList } from "../ui/paginated-list";
 import { Typography } from "../ui/typography";
-import { fireSwal } from "../ui/swal";
+import { showDialog } from "../ui/dialog";
 import { QSO, findMatchingQsos, hasEvent, useQsos } from "./qso";
 import { Stack } from "./stack";
 
@@ -129,7 +129,6 @@ const castValue = (k: string, v: string) => {
 };
 
 export const Filters = ({ showTag }: FiltersProps) => {
-    const { theme } = useUnistyles();
     const filters = useStore((state) => state.filters);
     const qsos = useFilteredQsos();
     const { height } = useWindowDimensions();
@@ -163,8 +162,7 @@ export const Filters = ({ showTag }: FiltersProps) => {
         log(qsos.map((q) => ({ ...q, ...castedValues })));
         setTagValues({});
         setTagModal(false);
-        fireSwal({
-            theme,
+        showDialog({
             title: "Done!",
             text: `Updated ${qsos.length} QSOs`,
             icon: "success",

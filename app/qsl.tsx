@@ -1,6 +1,5 @@
 import { DateTime } from "luxon";
 import { View } from "react-native";
-import { useUnistyles } from "react-native-unistyles";
 import { styles } from "./lib/components/adif/import";
 import { Dropzone, FileWithPreview } from "./lib/components/dropzone";
 import { PageLayout } from "./lib/components/page-layout";
@@ -13,12 +12,11 @@ import { useStore } from "./lib/utils/store";
 import { Alert } from "./lib/ui/alert";
 import { Button } from "./lib/ui/button";
 import { Typography } from "./lib/ui/typography";
-import { fireSwal } from "./lib/ui/swal";
+import { showDialog } from "./lib/ui/dialog";
 import { useSettings } from "./lib/utils/use-settings";
 
 const Qsl = () => {
     const qsos = useQsos();
-    const { theme } = useUnistyles();
     const log = useStore((state) => state.log);
     const today = DateTime.local().toFormat("yyyyMMdd");
     const settings = useSettings();
@@ -76,8 +74,7 @@ const Qsl = () => {
                         .map(([q, matching]) => matching) as QSO[];
                     log(toImport);
 
-                    fireSwal({
-                        theme,
+                    showDialog({
                         title: "Done!",
                         text: `${toImport.length} records have been matched! ${
                             toImport.length !== updates.length
