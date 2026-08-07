@@ -19,6 +19,7 @@ export type Settings = {
     myGridsquare?: string;
     myCallsign: string;
     showBeacons: boolean;
+    showHeatmap: boolean;
     showFilters: boolean;
     contestMode: boolean;
     imperial: boolean;
@@ -35,6 +36,7 @@ export type Settings = {
 const defaultSettings: Settings = {
     myCallsign: "",
     showBeacons: false,
+    showHeatmap: false,
     imperial: false,
     datemonth: false,
     timeoffThreshold: 10,

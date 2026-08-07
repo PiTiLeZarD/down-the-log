@@ -18,6 +18,7 @@ import {
     prefillOperating,
     useQsos,
 } from "../lib/components/qso";
+import { QsoHeatmap } from "../lib/components/qso-heatmap";
 import { QsoList } from "../lib/components/qso/qso-list";
 import { useHydrated, useStore } from "../lib/utils/store";
 import { Alert } from "../lib/ui/alert";
@@ -105,6 +106,7 @@ const Index = () => {
                     </Alert>
                 )}
                 {settings.showBeacons && <Beacons />}
+                {settings.showHeatmap && <QsoHeatmap />}
                 {settings.showFilters && <Filters showTag />}
                 <QsoList
                     style={styles.list}

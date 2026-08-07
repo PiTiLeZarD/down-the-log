@@ -77,6 +77,11 @@ const Settings = () => {
                         value={settings.showBeacons != undefined ? settings.showBeacons : false}
                         onValueChange={(v) => updateSetting("showBeacons", v)}
                     />
+                    <Typography underline>Show QSO Heatmap:</Typography>
+                    <Switch
+                        value={settings.showHeatmap != undefined ? settings.showHeatmap : false}
+                        onValueChange={(v) => updateSetting("showHeatmap", v)}
+                    />
                     <Typography underline>Show Filters:</Typography>
                     <Switch
                         value={settings.showFilters != undefined ? settings.showFilters : false}
