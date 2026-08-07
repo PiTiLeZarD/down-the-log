@@ -1,7 +1,6 @@
 // https://storage.sota.org.uk/summitslist.csv
 
 import { parse } from "csv-parse";
-import { DateTime } from "luxon";
 import { readFileSync, writeFileSync } from "node:fs";
 import { latlong2Maidenhead } from "../src/lib/utils/locator";
 
@@ -23,15 +22,14 @@ parser.on("end", () => {
         "./src/lib/data/sota.json",
         JSON.stringify(
             Object.fromEntries(
-                records
-                    .filter((r) => DateTime.fromFormat(r.ValidTo, "dd/MM/yyyy") > DateTime.now())
-                    .map((r) => [
-                        r.SummitCode,
-                        {
-                            name: r.SummitName,
-                            locator: latlong2Maidenhead({ latitude: +r.Latitude, longitude: +r.Longitude }),
-                        },
-                    ]),
+                // Retired summits are kept so historical QSOs still resolve their reference.
+                records.map((r) => [
+                    r.SummitCode,
+                    {
+                        name: r.SummitName,
+                        locator: latlong2Maidenhead({ latitude: +r.Latitude, longitude: +r.Longitude }),
+                    },
+                ]),
             ),
         ),
     );
