@@ -1,11 +1,11 @@
 import { useEffect, useEffectEvent } from "react";
 import { useFormContext } from "react-hook-form";
 import { collapseCallsign, getCallsignData } from "../utils/callsign";
-import { Alert } from "../ui/alert";
-import { Typography } from "../ui/typography";
 import { QSO } from "./qso";
 
-export const CountryWarning = () => {
+// Renders nothing: mismatches between the callsign and what's in the form are reported once, at the
+// top of the page, by QsoIssues. This only carries the autofill that used to sit alongside them.
+export const CallsignAutofill = () => {
     const { watch, setValue, getValues } = useFormContext<QSO>();
     const callsign = watch("callsign");
     const country = watch("country");
@@ -25,21 +25,6 @@ export const CountryWarning = () => {
         if (csdata?.iso3 && csdata.iso3 != country) setValue("country", csdata.iso3);
     });
     useEffect(() => fillCountry(), [callsign]);
-
-    if (!csdata) return <></>;
-
-    if (csdata.iso3 !== country)
-        return (
-            <Alert severity="warning">
-                <Typography>The country selected doesn't match the callsign</Typography>
-            </Alert>
-        );
-    if (+csdata.dxcc !== getValues("dxcc"))
-        return (
-            <Alert severity="warning">
-                <Typography>The country selected doesn't match the dxcc</Typography>
-            </Alert>
-        );
 
     return <></>;
 };

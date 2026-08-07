@@ -16,8 +16,7 @@ import { fireSwal } from "../../ui/swal";
 import { useGoBack } from "../../utils/use-go-back";
 import { useSettings } from "../../utils/use-settings";
 import { ButtonOffset } from "../button-offset";
-import { ContinentWarning } from "../continent-warning";
-import { CountryWarning } from "../country-warning";
+import { CallsignAutofill } from "../callsign-autofill";
 import { DxccStats } from "../dxcc-stats";
 import { GeocodeButton } from "../geocode-button";
 import { Grid } from "../grid";
@@ -25,6 +24,7 @@ import { PageLayout } from "../page-layout";
 import { PreviousQsos } from "../previous-qsos";
 import { QrzChip } from "../qrz-chip";
 import { QSO, duration, useQsos } from "../qso";
+import { QsoIssues } from "../qso-issues";
 import { QsoMap } from "../qso/qso-map";
 import { Stack } from "../stack";
 import { BandFreqInput } from "./band-freq-input";
@@ -227,6 +227,7 @@ export const FormFields = ({ qso }: FormFieldsProps) => {
                     </Stack>
                 )}
             </Pressable>
+            <QsoIssues />
             <Modal open={openTimeLocModal} onClose={() => setOpenTimeLocModal(false)}>
                 <Stack>
                     <FormField role="date" name="date" label="Date:" />
@@ -347,14 +348,13 @@ export const FormFields = ({ qso }: FormFieldsProps) => {
                 <Grid item xs={12} md={6}>
                     <Stack>
                         <FormField role="country" name="country" label="Country:" />
-                        <CountryWarning />
+                        <CallsignAutofill />
                         <Grid container>
                             <Grid item xs={6}>
                                 <StateField name="state" />
                             </Grid>
                             <Grid item xs={6}>
                                 <FormField role="select" name="continent" label="Continent:" options={continents} />
-                                <ContinentWarning />
                             </Grid>
                         </Grid>
                         {qso.dxcc && <DxccStats dxcc={qso.dxcc} />}

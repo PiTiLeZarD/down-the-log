@@ -98,7 +98,8 @@ describe("getCallsignData", () => {
     });
 
     // On its own it answers for the home callsign; callers that care where the operator actually
-    // is (CountryWarning) collapse first. Both directions are pinned here so neither drifts.
+    // is (CallsignAutofill, the issue checker) collapse first. Both directions are pinned here so
+    // neither drifts.
     test("resolves the home country of a portable callsign", () => {
         expect(getCallsignData("F5/DL1ABC")?.iso3).toBe("DEU");
     });

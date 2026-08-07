@@ -9,6 +9,7 @@ import { isDigital } from "../data/modes";
 import { sortNumsAndAlpha, unique } from "../utils/arrays";
 import { normalise } from "../utils/locator";
 import { Modal } from "../utils/modal";
+import { hasIssues } from "../utils/qso-issues";
 import { useStore } from "../utils/store";
 import { Alert } from "../ui/alert";
 import { Button } from "../ui/button";
@@ -51,6 +52,7 @@ export const filterMap: Record<string, FilterFunction> = {
     myAntenna: (qso) => [qso.myAntenna || "N/A"],
     sig: (qso) => [qso.sig || "", qso.mySig || ""],
     hasEvent: (qso) => [hasEvent(qso) ? "Yes" : "No"],
+    hasIssues: (qso) => [hasIssues(qso) ? "Yes" : "No"],
     hasNote: (qso) => [qso.note ? "Yes" : "No"],
     hasDuration: (qso) => [qso.dateOff ? "Yes" : "No"],
     hasDuplicates: (qso, i, a) => [

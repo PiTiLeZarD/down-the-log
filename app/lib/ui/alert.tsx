@@ -6,12 +6,16 @@ import { ColourVariant } from "./theme";
 import { Icon, IconName } from "./icon";
 import { Styles, mergeStyles } from "./styles";
 
-type Severity = "info" | "warning" | "success";
+type Severity = "info" | "warning" | "success" | "danger";
 
 const styles = StyleSheet.create((theme) => ({
     container: (severity: Severity) => ({
         backgroundColor:
-            theme.colours[{ info: "primary", warning: "secondary", success: "success" }[severity] as ColourVariant].light,
+            theme.colours[
+                { info: "primary", warning: "secondary", success: "success", danger: "danger" }[
+                    severity
+                ] as ColourVariant
+            ].light,
         borderRadius: theme.margins.md,
         margin: theme.margins.md,
         paddingTop: theme.margins.lg,
@@ -36,6 +40,7 @@ export const Alert = ({ style, severity = "warning", children }: AlertProps) => 
                         info: "information-circle-outline",
                         warning: "warning-outline",
                         success: "checkmark-circle-outline",
+                        danger: "alert-circle-outline",
                     }[severity] as IconName
                 }
             />

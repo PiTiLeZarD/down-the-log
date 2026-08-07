@@ -1,6 +1,7 @@
 import React from "react";
 import { Pressable, TextStyle } from "react-native";
 import { StyleSheet } from "react-native-unistyles";
+import { ColourVariant } from "../../ui/theme";
 import { Typography } from "../../ui/typography";
 import { Grid } from "../grid";
 
@@ -13,14 +14,15 @@ const styles = StyleSheet.create((theme) => ({
         lineHeight,
         fontWeight: "bold",
     }),
-    row: (highlight: boolean, success: boolean) => ({
-        backgroundColor: theme.colours[success ? "success" : "grey"][theme.rowShade(highlight)],
+    row: (highlight: boolean, colour: ColourVariant) => ({
+        backgroundColor: theme.colours[colour][theme.rowShade(highlight)],
     }),
 }));
 
 export type QsoRowProps = {
     header?: boolean;
     success?: boolean;
+    danger?: boolean;
     lineHeight?: number;
     position: string;
     hidePosition?: boolean;
@@ -36,6 +38,7 @@ export const QsoRow = ({
     onPress,
     header = false,
     success = false,
+    danger = false,
     lineHeight = 20,
     position,
     hidePosition = false,
@@ -54,9 +57,11 @@ export const QsoRow = ({
             content
         );
     const cellStyle = header ? styles.header(lineHeight) : { lineHeight };
+    // Issues win over a confirmed QSL: a row the operator still has to fix shouldn't read as done.
+    const colour: ColourVariant = danger ? "danger" : success ? "success" : "grey";
     return (
         <Pressable onPress={onPress}>
-            <Grid container style={styles.row(+position % 2 === 0 || header, success)}>
+            <Grid container style={styles.row(+position % 2 === 0 || header, colour)}>
                 {!hidePosition && (
                     <Grid item style={styles.cell} xs={1}>
                         {cellContent(position, cellStyle)}
