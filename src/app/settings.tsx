@@ -4,6 +4,7 @@ import { DateFormatSetting, UnitsSetting } from "../lib/components/choice-settin
 import { PageLayout } from "../lib/components/page-layout";
 import { PickFavourite } from "../lib/components/pick-favourite";
 import { Stack } from "../lib/components/stack";
+import { StorageUsage } from "../lib/components/storage-usage";
 import { TabsLayout } from "../lib/components/tabs-layout";
 import { bands } from "../lib/data/bands";
 import { modes } from "../lib/data/modes";
@@ -57,6 +58,7 @@ const Settings = () => {
                         Your rig, antenna, QTH and country are set per QSO, under My Station on the QSO form — each new
                         QSO carries over what the last one used.
                     </Typography>
+                    <StorageUsage />
                 </Stack>
                 <Stack>
                     <Typography>Theme</Typography>
