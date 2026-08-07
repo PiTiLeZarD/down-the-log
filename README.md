@@ -12,6 +12,8 @@ So I'll try my own flavour, let's see if I get anywhere. My inspiration are QSOS
 
 Well, check out the [demo here](https://pitilezard.github.io/down-the-log/)
 
+The demo is an installable PWA — "Add to Home Screen" on iOS/Android or the install button in a desktop browser gets you a standalone window that works offline (your log lives in local storage; only callsign lookups, geocoding and the solar panel need the network).
+
 It also works on mobile as an app, ios and android (not deployed anywhere yet, I'm waiting until I have a finished product)
 It also works as a desktop app (windows/osx) (same deal, I can run it but I didn't build anything yet for the world)
 
