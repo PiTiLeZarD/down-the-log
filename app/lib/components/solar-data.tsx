@@ -15,6 +15,9 @@ import { Stack } from "./stack";
 
 const dtFormat = "yyyyMMddHHmm";
 type DataType = { date: DateTime; value: number };
+// The daily indices file gives us three series in one go, so they're fetched and cached together.
+type SolarType = { date: DateTime; sfi: number; sunspots: number; sunspotArea: number };
+const solarSeries = ["sfi", "sunspots", "sunspotArea"] as const;
 
 const serialise = (data: DataType[]) =>
     JSON.stringify(data.map(({ date, value }) => ({ date: date.toFormat(dtFormat), value: String(value) })));
@@ -22,6 +25,19 @@ const deserialise = (data: string) =>
     JSON.parse(data).map(({ date, value }: { date: string; value: string }) => ({
         date: DateTime.fromFormat(date, dtFormat),
         value: +value,
+    }));
+
+const serialiseSolar = (data: SolarType[]) =>
+    JSON.stringify(
+        data.map((e) => ({
+            date: e.date.toFormat(dtFormat),
+            ...Object.fromEntries(solarSeries.map((key) => [key, String(e[key])])),
+        })),
+    );
+const deserialiseSolar = (data: string): SolarType[] =>
+    JSON.parse(data).map((e: Record<string, string>) => ({
+        date: DateTime.fromFormat(e.date, dtFormat),
+        ...(Object.fromEntries(solarSeries.map((key) => [key, +e[key]])) as Omit<SolarType, "date">),
     }));
 
 const sirx =
@@ -39,13 +55,15 @@ const fetchSolarData = async () =>
                     if (d) {
                         return {
                             date: DateTime.fromFormat(d[1], "yyyy MM dd"),
-                            value: +d[2],
+                            sfi: +d[2],
+                            sunspots: +d[3],
+                            sunspotArea: +d[4],
                         };
                     }
                 })
                 .filter((e: any) => !!e),
         )
-        .then(serialise);
+        .then(serialiseSolar);
 
 const fetchMagneticData = async () =>
     axios
@@ -68,16 +86,30 @@ const coloursGradient = [
 ];
 const sfiCutoffs = [0, 50, 100, 150, 200, 250, 300];
 const kIndexCutoffs = [0, 8, 15, 30, 50, 100, 400];
+const sunspotCutoffs = [0, 20, 50, 90, 140, 200, 500];
+const sunspotAreaCutoffs = [0, 100, 300, 600, 1000, 1500, 5000];
+
+// One table drives both the header chips and the modal's tabs, so a label only ever lives in one place.
+type SeriesKey = "sfi" | "k" | "sp" | "sa";
+const seriesMeta: { key: SeriesKey; label: string; title: string; cutoffs: number[]; reverse?: boolean }[] = [
+    { key: "sfi", label: "SFI", title: "Solar flux index", cutoffs: sfiCutoffs },
+    { key: "k", label: "K", title: "K index", cutoffs: kIndexCutoffs, reverse: true },
+    { key: "sp", label: "SP", title: "Sunspot number", cutoffs: sunspotCutoffs },
+    { key: "sa", label: "SA", title: "Sunspot area, millionths of a hemisphere", cutoffs: sunspotAreaCutoffs },
+];
 const scaleColour = (value: number, cutoffs: number[], reverse: boolean = false): string => {
     if (cutoffs.length != 7) throw new Error("wrong cutoffs");
-    let status = cutoffs.findIndex((v, i) => value >= v && value < cutoffs[i + 1]);
-    if (reverse) status = cutoffs.length - status - 2;
+    // Anything off either end of the scale sticks to the nearest bucket rather than falling off the gradient.
+    const found = cutoffs.findIndex((v, i) => value >= v && value < cutoffs[i + 1]);
+    let status = found >= 0 ? found : value < cutoffs[0] ? 0 : coloursGradient.length - 1;
+    if (reverse) status = coloursGradient.length - status - 1;
     return coloursGradient[status];
 };
 
 export const SolarData = () => {
     const [modal, setModal] = React.useState<boolean>(false);
-    const [solarData, setSolarData] = React.useState<DataType[]>();
+    const [tab, setTab] = React.useState<SeriesKey>("sfi");
+    const [solarData, setSolarData] = React.useState<SolarType[]>();
     const [magneticData, setMagneticData] = React.useState<DataType[]>();
     const settings = useSettings();
     const currentLocation = useStore((state) => state.currentLocation);
@@ -86,7 +118,8 @@ export const SolarData = () => {
     const continent = getCallsignData(callsign)?.ctn?.toLowerCase();
 
     const updateCache = () => {
-        withCache("solarData", fetchSolarData, 60 * 60 * 3).then((data) => setSolarData(deserialise(data)));
+        // Key bumped from "solarData" because the cached shape now carries three series per row.
+        withCache("solarIndices", fetchSolarData, 60 * 60 * 3).then((data) => setSolarData(deserialiseSolar(data)));
         withCache("magneticData", fetchMagneticData, 60 * 60 * 3).then((data) => setMagneticData(deserialise(data)));
     };
 
@@ -95,50 +128,68 @@ export const SolarData = () => {
         const ts = setInterval(updateCache, 10 * 60 * 1000);
         return () => clearInterval(ts);
     }, []);
-    const solarValues = solarData ? solarData.map(({ value }) => value) : undefined;
-    const magneticValues = magneticData ? magneticData.map(({ value }) => value) : undefined;
+    const values: Record<SeriesKey, number[] | undefined> = {
+        sfi: solarData?.map(({ sfi }) => sfi),
+        k: magneticData?.map(({ value }) => value),
+        sp: solarData?.map(({ sunspots }) => sunspots),
+        sa: solarData?.map(({ sunspotArea }) => sunspotArea),
+    };
+    const series = seriesMeta.map((meta) => {
+        const data = values[meta.key];
+        return { ...meta, data, latest: data?.length ? data[data.length - 1] : undefined };
+    });
+    const selected = series.find(({ key }) => key == tab) as (typeof series)[number];
+
+    // Two pairs side by side: stacked into a 2x2 on wide screens, one flat row of four on narrow ones.
+    const pairDirection = useWidthMatches("md") ? "column" : "row";
+
+    const chip = ({ key, label, data, latest, cutoffs, reverse }: (typeof series)[number]) => (
+        <Button
+            key={key}
+            variant="chip"
+            colour="grey"
+            text={latest !== undefined ? `${label}: ${latest}` : "Fetching..."}
+            onPress={() => {
+                setTab(key);
+                setModal(true);
+            }}
+            style={{
+                backgroundColor: data ? scaleColour(latest as number, cutoffs, reverse) : undefined,
+            }}
+        />
+    );
 
     return (
-        <Stack direction={useWidthMatches("md") ? "column" : "row"}>
-            <Button
-                variant="chip"
-                colour="grey"
-                text={solarValues ? `SFI: ${solarValues[solarValues.length - 1]}` : "Fetching..."}
-                onPress={() => setModal(true)}
-                style={{
-                    backgroundColor: solarValues
-                        ? scaleColour(solarValues[solarValues.length - 1], sfiCutoffs)
-                        : undefined,
-                }}
-            />
-            <Button
-                variant="chip"
-                colour="grey"
-                style={{
-                    backgroundColor: magneticValues
-                        ? scaleColour(magneticValues[magneticValues.length - 1], kIndexCutoffs, true)
-                        : undefined,
-                }}
-                text={magneticValues ? `K: ${magneticValues[magneticValues.length - 1]}` : "Fetching..."}
-                onPress={() => setModal(true)}
-            />
+        <Stack direction="row">
+            <Stack direction={pairDirection}>{series.slice(0, 2).map(chip)}</Stack>
+            <Stack direction={pairDirection}>{series.slice(2).map(chip)}</Stack>
             <Modal wide open={modal} onClose={() => setModal(false)}>
                 <Stack gap="xxl">
                     <Typography variant="h2">Solar Data</Typography>
-                    {solarValues && (
-                        <Stack>
-                            <Typography>Solar flux index (Currently: {solarValues[solarValues.length - 1]})</Typography>
-                            <BarChart data={solarValues} />
+                    <Stack>
+                        {/* One chart at a time, picked by the pills, so the modal stays short enough to reach OK. */}
+                        <Stack direction="row">
+                            {series.map(({ key, label }) => (
+                                <Button
+                                    key={key}
+                                    variant="chip"
+                                    colour={key == tab ? "primary" : "grey"}
+                                    text={label}
+                                    onPress={() => setTab(key)}
+                                />
+                            ))}
                         </Stack>
-                    )}
-                    {!solarValues && <Typography>Looking for solar data...</Typography>}
-                    {magneticValues && (
-                        <Stack>
-                            <Typography>K index (Currently: {magneticValues[magneticValues.length - 1]})</Typography>
-                            <BarChart data={magneticValues} />
-                        </Stack>
-                    )}
-                    {!magneticValues && <Typography>Looking for magnetic data...</Typography>}
+                        {selected.data ? (
+                            <>
+                                <Typography>
+                                    {selected.title} (Currently: {selected.latest})
+                                </Typography>
+                                <BarChart data={selected.data} />
+                            </>
+                        ) : (
+                            <Typography>Looking for {selected.label} data...</Typography>
+                        )}
+                    </Stack>
                     <Button
                         url="https://prop.kc2g.com/renders/current/mufd-normal-now.svg"
                         text="MUF map"
