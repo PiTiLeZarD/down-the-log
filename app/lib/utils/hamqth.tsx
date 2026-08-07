@@ -58,7 +58,7 @@ const flatten = (node: unknown, into: XMLDoc = {}): XMLDoc => {
 const fetchData = async (params: Record<string, string>) => {
     const response = await axios.get(
         `https://www.hamqth.com/xml.php?${Object.entries(params)
-            .map(([k, v]) => `${k}=${v}`)
+            .map(([k, v]) => `${k}=${encodeURIComponent(v)}`)
             .join("&")}`,
     );
     const doc = flatten(parser.parse(response.data));

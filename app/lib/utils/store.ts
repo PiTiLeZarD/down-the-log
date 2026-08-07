@@ -1,7 +1,9 @@
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import * as SecureStore from "expo-secure-store";
 import { DateTime } from "luxon";
+import { Platform } from "react-native";
 import { create } from "zustand";
-import { combine, createJSONStorage, devtools, persist } from "zustand/middleware";
+import { combine, devtools, persist, PersistStorage } from "zustand/middleware";
 import { QsoFilter } from "../components/filters";
 import { QSO } from "../components/qso";
 import { Band } from "../data/bands";
@@ -109,6 +111,49 @@ const StoreActions: DTLStoreActionsMutatorProps = (set) => ({
 
 export type UseStorePropsType = DTLStoreProps & DTLStoreActionsProps;
 
+const reviveDate = (key: string, value: unknown) =>
+    (key === "date" || key === "dateOff" || key === "sessionStart") && typeof value === "string"
+        ? DateTime.fromISO(value, { setZone: true })
+        : value;
+
+// HamQTH password never touches AsyncStorage on native: it's spliced out before the blob is
+// written and stashed in the platform Keychain/Keystore instead, then merged back in on read.
+// Web has no equivalent secure store, so it falls back to the plain AsyncStorage blob there.
+const HAMQTH_PASSWORD_KEY = "dtl-hamqth-password";
+
+const secureStorage: PersistStorage<UseStorePropsType> = {
+    getItem: async (name) => {
+        const raw = await AsyncStorage.getItem(name);
+        if (!raw) return null;
+        const parsed = JSON.parse(raw, reviveDate) as { state: UseStorePropsType; version?: number };
+        if (Platform.OS !== "web" && parsed.state?.settings?.hamqth) {
+            const password = await SecureStore.getItemAsync(HAMQTH_PASSWORD_KEY);
+            if (password) parsed.state.settings.hamqth.password = password;
+        }
+        return parsed;
+    },
+    setItem: async (name, value) => {
+        let toStore = value;
+        if (Platform.OS !== "web" && value.state.settings?.hamqth) {
+            const { password, ...hamqthRest } = value.state.settings.hamqth;
+            if (password) await SecureStore.setItemAsync(HAMQTH_PASSWORD_KEY, password);
+            else await SecureStore.deleteItemAsync(HAMQTH_PASSWORD_KEY);
+            toStore = {
+                ...value,
+                state: {
+                    ...value.state,
+                    settings: { ...value.state.settings, hamqth: hamqthRest as HamQTHSettingsType },
+                },
+            };
+        }
+        await AsyncStorage.setItem(name, JSON.stringify(toStore));
+    },
+    removeItem: async (name) => {
+        await AsyncStorage.removeItem(name);
+        if (Platform.OS !== "web") await SecureStore.deleteItemAsync(HAMQTH_PASSWORD_KEY);
+    },
+};
+
 export const useStore = create<
     UseStorePropsType,
     [["zustand/devtools", never], ["zustand/persist", UseStorePropsType]]
@@ -123,12 +168,7 @@ export const useStore = create<
                 const merged = { ...current, ...(persisted as Partial<UseStorePropsType>) };
                 return { ...merged, settings: fixSettings(merged.settings || {}) };
             },
-            storage: createJSONStorage(() => AsyncStorage, {
-                reviver: (key, value) =>
-                    (key === "date" || key === "dateOff" || key === "sessionStart") && typeof value === "string"
-                        ? DateTime.fromISO(value, { setZone: true })
-                        : value,
-            }),
+            storage: secureStorage,
         }),
     ),
 );
