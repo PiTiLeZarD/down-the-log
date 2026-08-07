@@ -84,6 +84,19 @@ const entitiesByIso3 = callsigns.reduce<Map<string, CallsignData[]>>(
     new Map(),
 );
 
+// The other direction, and the reason it exists: this table is keyed by ISO country, and DXCC splits
+// islands ISO doesn't (Balearic, Canary, Lord Howe, Mellish...), so ~100 entity numbers appear in no
+// row at all. A DXCC we can't place is not evidence of a mismatch — only one we can place, somewhere
+// else, is. Without this every one of those entities reads as an error against its parent country.
+const iso3ByDxcc = callsigns.reduce<Map<number, Set<string>>>(
+    (map, entity) =>
+        [entity.dxcc, ...(entity.dxccAlt || [])].reduce(
+            (acc, d) => acc.set(+d, (acc.get(+d) || new Set<string>()).add(entity.iso3)),
+            map,
+        ),
+    new Map(),
+);
+
 // The numeric fields only hold numbers when the QSO came from an import: editing one on the form
 // hands react-hook-form the raw text, so `dxcc` becomes "170" and a strict compare against 170 says
 // New Zealand doesn't match New Zealand. Everything numeric is read through here.
@@ -128,11 +141,12 @@ const countryIssues = (qso: QSO, issues: RawIssue[]) => {
         });
 
     const dxcc = num(qso.dxcc);
-    if (dxcc && !entities.some((e) => [e.dxcc, ...(e.dxccAlt || [])].some((d) => +d === dxcc)))
+    const owners = dxcc ? iso3ByDxcc.get(dxcc) : undefined;
+    if (dxcc && owners && !owners.has(entities[0].iso3))
         issues.push({
             field: "dxcc",
             code: "dxcc-country",
-            description: `DXCC ${dxcc} doesn't match ${name} (${entities.map((e) => +e.dxcc).join(", ")})`,
+            description: `DXCC ${dxcc} belongs to ${unique([...owners].map((iso3) => countries[iso3]?.name || iso3)).join(", ")}, not ${name}`,
         });
 
     if (!qso.locator) return;

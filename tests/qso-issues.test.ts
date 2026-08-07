@@ -46,6 +46,11 @@ describe("country, continent, dxcc and locator", () => {
     test("dxcc not matching the country", () =>
         expect(fields(qso({ country: "AUS", continent: "OC", dxcc: 227 }))).toContain("dxcc"));
 
+    // ~100 DXCC entities are islands ISO gives no code to, so they sit in no row of the table. We
+    // can't place them, which is not the same as knowing they're wrong.
+    test("a dxcc we can't place is not called a mismatch", () =>
+        expect(fields(qso({ callsign: "EA6ABC", country: "ESP", continent: "EU", dxcc: 21 }))).not.toContain("dxcc"));
+
     // The form hands back whatever was typed, so a QSO edited on screen carries strings in the
     // numeric fields. 170 and "170" are the same DXCC.
     test("a dxcc typed into the form still matches", () =>
