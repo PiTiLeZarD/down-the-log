@@ -82,6 +82,16 @@ const Settings = () => {
                         value={settings.showHeatmap != undefined ? settings.showHeatmap : false}
                         onValueChange={(v) => updateSetting("showHeatmap", v)}
                     />
+                    <Typography underline>Show ParksnPeaks Spots:</Typography>
+                    <Switch
+                        value={settings.showSpots != undefined ? settings.showSpots : false}
+                        onValueChange={(v) => updateSetting("showSpots", v)}
+                    />
+                    <Typography variant="subtitle">
+                        Latest SOTA/WWFF/POTA spots from parksnpeaks.org, refreshed every minute. On the web build the
+                        request goes through a public relay, as ParksnPeaks doesn't allow browsers to call it directly —
+                        see Spots relay under APIs if you'd rather use your own.
+                    </Typography>
                     <Typography underline>Show Filters:</Typography>
                     <Switch
                         value={settings.showFilters != undefined ? settings.showFilters : false}
@@ -207,6 +217,20 @@ const Settings = () => {
                         <Input
                             value={settings.geocodeMapsCoKey || ""}
                             onChangeText={(v) => updateSetting("geocodeMapsCoKey", v)}
+                        />
+                    </Stack>
+                    <Typography underline>Spots relay:</Typography>
+                    <Typography variant="subtitle">
+                        ParksnPeaks blocks browsers from calling it, so on the web the spots go through a relay. Leave
+                        this empty to use the public ones, which are unreliable, or deploy scripts/cors-worker.js to
+                        Cloudflare and paste its URL here — use {"{url}"} where the spot URL should go. Native builds
+                        ignore this and call ParksnPeaks directly.
+                    </Typography>
+                    <Stack direction="row">
+                        <Typography>URL:</Typography>
+                        <Input
+                            value={settings.spotsProxy || ""}
+                            onChangeText={(v) => updateSetting("spotsProxy", v === "" ? undefined : v)}
                         />
                     </Stack>
                 </Stack>

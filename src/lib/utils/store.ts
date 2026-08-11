@@ -20,6 +20,7 @@ export type Settings = {
     myCallsign: string;
     showBeacons: boolean;
     showHeatmap: boolean;
+    showSpots: boolean;
     showFilters: boolean;
     contestMode: boolean;
     imperial: boolean;
@@ -27,6 +28,7 @@ export type Settings = {
     datemonth: boolean;
     hamqth?: HamQTHSettingsType;
     geocodeMapsCoKey?: string;
+    spotsProxy?: string;
     favouriteModes: Mode[];
     favouriteBands: Band[];
     inputBarConfig: (keyof QSO)[];
@@ -37,6 +39,7 @@ const defaultSettings: Settings = {
     myCallsign: "",
     showBeacons: false,
     showHeatmap: false,
+    showSpots: false,
     imperial: false,
     datemonth: false,
     timeoffThreshold: 10,
