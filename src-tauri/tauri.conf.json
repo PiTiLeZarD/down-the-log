@@ -57,7 +57,7 @@
       }
     ],
     "security": {
-      "csp": "default-src 'self'; connect-src 'self' https://services.swpc.noaa.gov https://www.hamqth.com https://geocode.maps.co; img-src 'self' data: https://tile.openstreetmap.org; style-src 'self' 'unsafe-inline'; script-src 'self'; font-src 'self' data:; object-src 'none'; base-uri 'self'"
+      "csp": "default-src 'self'; connect-src 'self' https://services.swpc.noaa.gov https://www.hamqth.com https://geocode.maps.co https://parksnpeaks.org https://r.jina.ai https://api.allorigins.win https://api.codetabs.com https://*.workers.dev; img-src 'self' data: https://tile.openstreetmap.org; style-src 'self' 'unsafe-inline'; script-src 'self'; font-src 'self' data:; object-src 'none'; base-uri 'self'"
     }
   }
 }
