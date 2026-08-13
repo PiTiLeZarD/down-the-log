@@ -1,6 +1,6 @@
 import { Image } from "expo-image";
 import React, { PropsWithChildren } from "react";
-import { LayoutChangeEvent, Pressable, Text, View } from "react-native";
+import { GestureResponderEvent, LayoutChangeEvent, Pressable, Text, View } from "react-native";
 import Svg, { Circle, Path as SvgPath, Text as SvgText } from "react-native-svg";
 import { LatLng } from "../../utils/locator";
 import { Feature, FeatureMarkerStyle, FeaturePathStyle, MarkerFeature, PathFeature, resolveColor } from "./common";
@@ -35,6 +35,12 @@ const EDGE = 28;
 const EDGE_SLOP = 8;
 // Square controls, comfortably past the point where a near miss is likely.
 const BUTTON = 40;
+
+// A double tap recentres on the tapped point, so it earns a bigger jump than the +/- buttons.
+const DOUBLE_TAP_ZOOM_STEP = 1;
+const DOUBLE_TAP_MS = 300;
+// Fingers move between the two taps; without this only a pixel-perfect repeat would register.
+const DOUBLE_TAP_SLOP = 20;
 
 const blurhash =
     "|rF?hV%2WCj[ayj[a|j[az_NaeWBj@ayfRayfQfQM{M|azj[azf6fQfQfQIpWXofj[ayj[j[fQayWCoeoeaya}j[ayfQa{oLj?j[WVj[ayayj[fQoff7azayj[ayj[j[ayofayayayj[fQj[ayayj[ayfjj[j[ayjuayj[";
@@ -211,6 +217,9 @@ export const Map = ({ width = "auto", height, padding = DEFAULT_PADDING, interac
     // null means "follow the fitted bounds", which is both the initial state and what the reset
     // button restores. Once set it is left alone, so adding a QSO doesn't yank the view back.
     const [view, setView] = React.useState<{ center: World; zoom: number } | null>(null);
+    // Pressable has no double press of its own, so the previous one is remembered and matched
+    // against the next on both time and distance.
+    const lastTap = React.useRef<{ at: number; x: number; y: number } | null>(null);
     const onLayout = React.useCallback(
         ({ nativeEvent }: LayoutChangeEvent) =>
             setMeasuredWidth((current) => (current === nativeEvent.layout.width ? current : nativeEvent.layout.width)),
@@ -253,6 +262,13 @@ export const Map = ({ width = "auto", height, padding = DEFAULT_PADDING, interac
     };
     const { center, zoom } = view ?? fit;
 
+    // Top-left of the viewport in pixels at the given zoom, which is what turns a press position on
+    // the map back into a world coordinate.
+    const originOf = (at: { center: World; zoom: number }): World => ({
+        x: at.center.x * 2 ** at.zoom - actualWidth / 2,
+        y: at.center.y * 2 ** at.zoom - actualHeight / 2,
+    });
+
     // Steps are a fraction of the viewport, so a tap moves the same visible distance at every zoom.
     const onPan = (dx: number, dy: number) =>
         setView((current) => {
@@ -275,11 +291,46 @@ export const Map = ({ width = "auto", height, padding = DEFAULT_PADDING, interac
             return { zoom: next, center: { ...from.center, y: clampCenterY(from.center.y, next, actualHeight) } };
         });
 
-    const scale = 2 ** zoom;
-    const origin: World = {
-        x: center.x * scale - actualWidth / 2,
-        y: center.y * scale - actualHeight / 2,
+    // Recentres on the tapped point, so the world coordinate under the finger is read at the zoom
+    // the map is currently at and simply becomes the new centre.
+    const onZoomAt = (x: number, y: number) =>
+        setView((current) => {
+            const from = current ?? fit;
+            const step = 2 ** from.zoom;
+            const at = originOf(from);
+            const next = Math.max(0, Math.min(MAX_ZOOM, from.zoom + DOUBLE_TAP_ZOOM_STEP));
+            return {
+                zoom: next,
+                center: { x: (at.x + x) / step, y: clampCenterY((at.y + y) / step, next, actualHeight) },
+            };
+        });
+
+    const onTap = ({ nativeEvent }: GestureResponderEvent) => {
+        // The event carries its own clock, which keeps this out of reach of the purity rule that a
+        // Date.now() here would trip.
+        const { locationX, locationY, timestamp } = nativeEvent;
+
+        // A missing field would otherwise reach the centre as NaN, and a NaN centre renders no
+        // tiles at all and survives every later zoom, leaving reset as the only way out.
+        if (![locationX, locationY, timestamp].every(Number.isFinite)) return;
+
+        const previous = lastTap.current;
+        lastTap.current = { at: timestamp, x: locationX, y: locationY };
+
+        if (
+            !previous ||
+            timestamp - previous.at > DOUBLE_TAP_MS ||
+            Math.hypot(locationX - previous.x, locationY - previous.y) > DOUBLE_TAP_SLOP
+        ) {
+            return;
+        }
+
+        // Cleared so a third tap starts a fresh pair rather than zooming again off the second.
+        lastTap.current = null;
+        onZoomAt(locationX, locationY);
     };
+
+    const origin = originOf({ center, zoom });
 
     // Tiles only exist at whole zooms, so the remainder of the fitted zoom is taken out by drawing
     // them up to 2x larger than their native size.
@@ -340,6 +391,19 @@ export const Map = ({ width = "auto", height, padding = DEFAULT_PADDING, interac
                         return <MarkerShape key={`marker-${i}`} x={point.x} y={point.y} style={marker.style} />;
                     })}
                 </Svg>
+                {interactive && (
+                    // Sits above the drawn features but below the controls and the attribution, so
+                    // those keep their presses. Marker taps will have to be hit-tested in here.
+                    //
+                    // Deliberately the responder system rather than a Pressable: on web
+                    // Pressable.onPress is dispatched from a DOM click, so its nativeEvent is a
+                    // MouseEvent with no locationX/locationY/timestamp on it at all.
+                    <View
+                        onStartShouldSetResponder={() => true}
+                        onResponderRelease={onTap}
+                        style={{ position: "absolute", left: 0, top: 0, right: 0, bottom: 0 }}
+                    />
+                )}
                 <View
                     style={{
                         position: "absolute",
