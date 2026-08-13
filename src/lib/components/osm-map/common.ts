@@ -1,6 +1,7 @@
 import { LatLng } from "../../utils/locator";
 
 export type FeatureSize = "tiny" | "mid" | "small";
+export type FeatureIcon = "tree";
 export type FeatureColor =
     | "black"
     | "brown"
@@ -18,6 +19,7 @@ export type FeatureMarkerStyle = {
     size: FeatureSize;
     color: FeatureColor;
     label: string;
+    icon: FeatureIcon;
 };
 export type FeaturePathStyle = {
     weight: number;
@@ -26,7 +28,12 @@ export type FeaturePathStyle = {
     geodesic: boolean;
 };
 
-export type MarkerFeature = { type: "markers"; style?: Partial<FeatureMarkerStyle>; points: LatLng[] };
+export type MarkerFeature = {
+    type: "markers";
+    style?: Partial<FeatureMarkerStyle>;
+    points: LatLng[];
+    onPress?: () => void;
+};
 export type PathFeature = { type: "path"; style?: Partial<FeaturePathStyle>; points: LatLng[] };
 export type Feature = MarkerFeature | PathFeature;
 

@@ -1,6 +1,6 @@
 import { Image } from "expo-image";
 import React, { PropsWithChildren } from "react";
-import { GestureResponderEvent, LayoutChangeEvent, Pressable, Text, View } from "react-native";
+import { GestureResponderEvent, LayoutChangeEvent, Platform, Pressable, Text, View, ViewStyle } from "react-native";
 import Svg, { Circle, Path as SvgPath, Text as SvgText } from "react-native-svg";
 import { LatLng } from "../../utils/locator";
 import { Feature, FeatureMarkerStyle, FeaturePathStyle, MarkerFeature, PathFeature, resolveColor } from "./common";
@@ -73,8 +73,46 @@ const toSvgPathData = (points: { x: number; y: number }[]) =>
 
 const MARKER_RADIUS: Record<string, number> = { tiny: 4, small: 6, mid: 8 };
 
+// Every marker shape is drawn standing on the point it marks, so the tap target reaches upwards
+// from it rather than being centred on it.
+const MARKER_HIT_WIDTH = 26;
+const MARKER_HIT_ABOVE = 37;
+const MARKER_HIT_BELOW = 4;
+
+// Centre of the pin's head, and the radius of the hole punched out of it.
+const PIN_HEAD = 24;
+const PIN_HOLE = 7.5;
+const TRUNK_COLOR = "#6b4423";
+const TREE_COLOR = "#2e7d32";
+
+// A teardrop pin with a tree standing in the hole, rather than the hole being left empty. The tree
+// keeps its own colours so the pin body stays free to carry state.
+const TreePin = ({ x, y, color }: { x: number; y: number; color: string }) => {
+    const cy = y - PIN_HEAD;
+    return (
+        <>
+            <SvgPath
+                d={`M${x},${y} L${x - 8},${y - 27} L${x + 8},${y - 27} Z`}
+                fill={color}
+                stroke="#ffffff"
+                strokeWidth={1.5}
+            />
+            <Circle cx={x} cy={cy} r={11} fill={color} stroke="#ffffff" strokeWidth={1.5} />
+            <Circle cx={x} cy={cy} r={PIN_HOLE} fill="#ffffff" />
+            <SvgPath
+                d={`M${x - 1},${cy + 5.5} L${x + 1},${cy + 5.5} L${x + 1},${cy + 1} L${x - 1},${cy + 1} Z`}
+                fill={TRUNK_COLOR}
+            />
+            <SvgPath d={`M${x - 5},${cy + 2.5} L${x + 5},${cy + 2.5} L${x},${cy - 2} Z`} fill={TREE_COLOR} />
+            <SvgPath d={`M${x - 4},${cy - 0.5} L${x + 4},${cy - 0.5} L${x},${cy - 6} Z`} fill={TREE_COLOR} />
+        </>
+    );
+};
+
 const MarkerShape = ({ x, y, style }: { x: number; y: number; style?: Partial<FeatureMarkerStyle> }) => {
-    const color = resolveColor(style?.color, "#ff0000");
+    const color = resolveColor(style?.color, style?.icon === "tree" ? "#2e7d32" : "#ff0000");
+
+    if (style?.icon === "tree") return <TreePin x={x} y={y} color={color} />;
 
     // Google only ever drew a label on the full-size pin; the smaller sizes were plain dots.
     if (style?.size) {
@@ -109,6 +147,11 @@ const clampCenterY = (y: number, zoom: number, height: number): number => {
 };
 
 const CONTROL_BACKGROUND = "rgba(255, 255, 255, 0.7)";
+
+// A double click on the web build otherwise lands as a text selection, which drags a highlight
+// across the whole map rather than zooming. react-native-web takes user-select on any node, the RN
+// types only declare it for Text, and native has no mouse to drag a selection with anyway.
+const NO_SELECT = (Platform.OS === "web" ? { userSelect: "none" } : null) as ViewStyle | null;
 
 const ControlButton = ({
     label,
@@ -248,6 +291,7 @@ export const Map = ({ width = "auto", height, padding = DEFAULT_PADDING, interac
         .map((f) => ({
             style: f.style as Partial<FeatureMarkerStyle> | undefined,
             point: project(shiftToReference(f.points, reference)[0]),
+            onPress: f.onPress,
         }));
 
     const bounds = boundsOf([...paths.flatMap((p) => p.points), ...markers.map((m) => m.point)]);
@@ -268,6 +312,8 @@ export const Map = ({ width = "auto", height, padding = DEFAULT_PADDING, interac
         x: at.center.x * 2 ** at.zoom - actualWidth / 2,
         y: at.center.y * 2 ** at.zoom - actualHeight / 2,
     });
+
+    const origin = originOf({ center, zoom });
 
     // Steps are a fraction of the viewport, so a tap moves the same visible distance at every zoom.
     const onPan = (dx: number, dy: number) =>
@@ -330,8 +376,6 @@ export const Map = ({ width = "auto", height, padding = DEFAULT_PADDING, interac
         onZoomAt(locationX, locationY);
     };
 
-    const origin = originOf({ center, zoom });
-
     // Tiles only exist at whole zooms, so the remainder of the fitted zoom is taken out by drawing
     // them up to 2x larger than their native size.
     const tileZoom = Math.floor(zoom);
@@ -356,7 +400,12 @@ export const Map = ({ width = "auto", height, padding = DEFAULT_PADDING, interac
     return (
         <>
             <View style={{ width: "100%", height: 0 }} onLayout={onLayout} />
-            <View style={{ width: actualWidth, height: actualHeight, overflow: "hidden", backgroundColor: "#aad3df" }}>
+            <View
+                style={[
+                    { width: actualWidth, height: actualHeight, overflow: "hidden", backgroundColor: "#aad3df" },
+                    NO_SELECT,
+                ]}
+            >
                 {tiles.map((tile) => (
                     <Image
                         key={tile.key}
@@ -393,7 +442,7 @@ export const Map = ({ width = "auto", height, padding = DEFAULT_PADDING, interac
                 </Svg>
                 {interactive && (
                     // Sits above the drawn features but below the controls and the attribution, so
-                    // those keep their presses. Marker taps will have to be hit-tested in here.
+                    // those keep their presses.
                     //
                     // Deliberately the responder system rather than a Pressable: on web
                     // Pressable.onPress is dispatched from a DOM click, so its nativeEvent is a
@@ -404,6 +453,30 @@ export const Map = ({ width = "auto", height, padding = DEFAULT_PADDING, interac
                         style={{ position: "absolute", left: 0, top: 0, right: 0, bottom: 0 }}
                     />
                 )}
+                {/* Above the pan overlay, so a press on a marker is the marker's and never also a
+                    half of a double tap. Real views rather than hit-testing inside the overlay,
+                    which is what earns them a pointer cursor of their own on web. Later markers
+                    are on top, matching the order they were drawn in. */}
+                {markers.map((marker, i) => {
+                    if (!marker.onPress) return null;
+                    const [point] = toSvgPoints([marker.point], zoom, origin);
+                    return (
+                        <Pressable
+                            key={`marker-hit-${i}`}
+                            accessibilityRole="button"
+                            accessibilityLabel={marker.style?.label || "Marker"}
+                            onPress={marker.onPress}
+                            style={{
+                                position: "absolute",
+                                left: point.x - MARKER_HIT_WIDTH / 2,
+                                top: point.y - MARKER_HIT_ABOVE,
+                                width: MARKER_HIT_WIDTH,
+                                height: MARKER_HIT_ABOVE + MARKER_HIT_BELOW,
+                                cursor: "pointer",
+                            }}
+                        />
+                    );
+                })}
                 <View
                     style={{
                         position: "absolute",

@@ -1,5 +1,6 @@
 import React from "react";
 import { Switch } from "react-native-gesture-handler";
+import { EventMap } from "../lib/components/event-map";
 import { MissingReferencesWarning } from "../lib/components/missing-references-warning";
 import { PageLayout } from "../lib/components/page-layout";
 import { useQsos } from "../lib/components/qso";
@@ -16,6 +17,7 @@ import { Typography } from "../lib/ui/typography";
 const Events = () => {
     const qsos = useQsos();
     const [wwffLocal, setWwffLocal] = React.useState<boolean>(false);
+    const [showMap, setShowMap] = React.useState<boolean>(false);
     const getMax = (event: EventType) => (event === "wwff" && wwffLocal ? 10 : undefined);
 
     const handleDownloadHunting = (event: EventType) => () =>
@@ -27,7 +29,18 @@ const Events = () => {
         );
 
     return (
-        <PageLayout title="Events">
+        <PageLayout
+            title={
+                <Stack direction="row">
+                    <Typography variant="h1" style={{ flexGrow: 1 }}>
+                        Events
+                    </Typography>
+                    <Typography>List</Typography>
+                    <Switch value={showMap} onValueChange={setShowMap} />
+                    <Typography>Map</Typography>
+                </Stack>
+            }
+        >
             <TabsLayout tabs={Array.from(events).map((t) => t.toUpperCase())}>
                 {Array.from(events).map((event) => (
                     <Stack key={event}>
@@ -51,20 +64,28 @@ const Events = () => {
                                 <Typography variant="h3">Activating</Typography>
                             </>
                         )}
-                        <PaginatedList itemsPerPage={6} whenEmpty={<Typography>No events available</Typography>}>
-                            {Object.entries(getActivations(event, qsos, getMax(event))).map(
-                                ([reference, activations], i) => (
-                                    <Reference
-                                        key={reference}
-                                        position={i}
-                                        event={event}
-                                        reference={reference}
-                                        activations={activations}
-                                        max={getMax(event)}
-                                    />
-                                ),
-                            )}
-                        </PaginatedList>
+                        {showMap ? (
+                            <EventMap
+                                event={event}
+                                activations={getActivations(event, qsos, getMax(event))}
+                                max={getMax(event)}
+                            />
+                        ) : (
+                            <PaginatedList itemsPerPage={6} whenEmpty={<Typography>No events available</Typography>}>
+                                {Object.entries(getActivations(event, qsos, getMax(event))).map(
+                                    ([reference, activations], i) => (
+                                        <Reference
+                                            key={reference}
+                                            position={i}
+                                            event={event}
+                                            reference={reference}
+                                            activations={activations}
+                                            max={getMax(event)}
+                                        />
+                                    ),
+                                )}
+                            </PaginatedList>
+                        )}
                     </Stack>
                 ))}
             </TabsLayout>
