@@ -61,9 +61,11 @@ export const QsoListItem = React.memo(
             />
         );
     },
+    // Identity, not id/position: the store replaces QSOs rather than mutating them, so a new object
+    // is exactly "this row's data changed". Comparing id/position instead kept editing a QSO — an
+    // added dateOff, say — from ever repainting its row, since neither field moves on an edit.
     (prevProps, nextProps) =>
-        nextProps.item.id === prevProps.item.id &&
-        nextProps.item.position === prevProps.item.position &&
-        // Fixing a QSO has to clear its red line, and the id/position pair doesn't move when it does.
-        nextProps.openIssues === prevProps.openIssues,
+        nextProps.item === prevProps.item &&
+        nextProps.openIssues === prevProps.openIssues &&
+        nextProps.imperial === prevProps.imperial,
 );
