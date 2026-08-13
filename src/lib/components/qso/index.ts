@@ -171,16 +171,23 @@ export const prefillOperating = (
         mode: Mode;
         band: Band;
     }>,
-): QSO => ({
-    ...qso,
-    frequency: qso.frequency || operating.frequency || band2freq(operating.band),
-    mode: qso.mode || operating.mode,
-    band: qso.band || operating.band || freq2band(operating.frequency) || "20m",
-    // The ternary needs the parens: || binds tighter, so without them an already-filled
-    // report would make the whole condition truthy and get overwritten with "-1".
-    rst_received: qso.rst_received || (isDigital(operating.mode) ? "-1" : "59"),
-    rst_sent: qso.rst_sent || (isDigital(operating.mode) ? "-1" : "59"),
-});
+): QSO => {
+    // The report scale follows whatever mode the QSO ends up on, not what the caller passed as the
+    // operating default: a carried-over mode wins over it, and reading `operating.mode` here logged
+    // FT8 QSOs with a 59.
+    const mode = qso.mode || operating.mode;
+    const defaultRst = isDigital(mode) ? "-1" : "59";
+    return {
+        ...qso,
+        frequency: qso.frequency || operating.frequency || band2freq(operating.band),
+        mode,
+        band: qso.band || operating.band || freq2band(operating.frequency) || "20m",
+        // The ternary needs the parens: || binds tighter, so without them an already-filled
+        // report would make the whole condition truthy and get overwritten with "-1".
+        rst_received: qso.rst_received || defaultRst,
+        rst_sent: qso.rst_sent || defaultRst,
+    };
+};
 
 export const prefillLocation = (qso: QSO) => {
     const parsed = parseCallsign(qso.callsign);
