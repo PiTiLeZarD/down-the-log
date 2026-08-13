@@ -49,6 +49,8 @@ type Spot = {
 const API = "https://parksnpeaks.org/api/ALL";
 const REFRESH_MS = 60 * 1000;
 const MAX_SPOTS = 40;
+// A spot older than this says nothing about who's on air now, so it never reaches the bar.
+const MAX_AGE_MINUTES = 60;
 const TIMEOUT_MS = 12000;
 
 // ParksnPeaks serves no `access-control-allow-origin`, so anything running in a browser engine —
@@ -175,9 +177,12 @@ export const ParksNPeaks = () => {
             fetchSpots(proxy)
                 .then((raw) => {
                     if (!live) return;
+                    const cutoff = DateTime.utc().minus({ minutes: MAX_AGE_MINUTES });
                     setSpots(
                         raw
                             .map(parseSpot)
+                            // An unparseable time can't be shown to be recent, so it goes with the stale ones.
+                            .filter((spot) => spot.date.isValid && spot.date > cutoff)
                             .sort((a, b) => b.date.toMillis() - a.date.toMillis())
                             .slice(0, MAX_SPOTS),
                     );
@@ -194,7 +199,8 @@ export const ParksNPeaks = () => {
         };
     }, [proxy]);
 
-    const status = spots === undefined ? (failed ? "Spots unavailable" : "Fetching spots...") : "No spots right now";
+    const status =
+        spots === undefined ? (failed ? "Spots unavailable" : "Fetching spots...") : "No spots in the last hour";
 
     return (
         <Stack style={styles.container}>
