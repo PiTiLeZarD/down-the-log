@@ -9,7 +9,7 @@ export const GridMap = () => {
     const qsos = useFilteredQsos();
 
     return (
-        <Map height={400} width={640}>
+        <Map height={400} width={640} interactive>
             {unique(qsos.filter((q) => !!q.locator).map((q) => q.locator?.substring(0, 2))).map((loc) => {
                 const [c1, c2] = maidenhead2Corners(loc as string, 2);
                 return (

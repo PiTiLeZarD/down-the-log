@@ -73,7 +73,7 @@ export const QsoListSectionHeader = ({ qsos }: QsoListSectionHeaderProps) => {
                 <Typography style={styles.sectionHeaderText}>{text}</Typography>
                 <Modal wide open={mapOpen} onClose={() => setmapOpen(false)}>
                     <Stack gap="xl">
-                        <QsoMap qsos={qsos} width={640} height={640} />
+                        <QsoMap qsos={qsos} height={640} interactive />
                         <Button text="Ok" colour="success" onPress={() => setmapOpen(false)} />
                     </Stack>
                 </Modal>

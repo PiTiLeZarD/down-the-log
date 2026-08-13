@@ -11,6 +11,7 @@ export type QsoMapProps = {
     qsos?: QSO[];
     width?: "auto" | number;
     height?: number;
+    interactive?: boolean;
 };
 
 // Pastel enough to read as a wash over the tiles rather than as another route line.
@@ -31,7 +32,7 @@ const gridSquare = (locator: string, colour: string) => {
     );
 };
 
-export const QsoMap = ({ qso, qsos, width = "auto", height = 200 }: QsoMapProps) => {
+export const QsoMap = ({ qso, qsos, width = "auto", height = 200, interactive = false }: QsoMapProps) => {
     if (!qso && !qsos) {
         throw new Error("Incorrect use of QSO Map");
     }
@@ -44,7 +45,7 @@ export const QsoMap = ({ qso, qsos, width = "auto", height = 200 }: QsoMapProps)
     const theirLocators = Object.keys(groupBy(toDisplay, (q) => q.locator as string));
 
     return (
-        <Map width={width} height={height}>
+        <Map width={width} height={height} interactive={interactive}>
             {myLocators.map((l) => gridSquare(l, MY_GRID))}
             {theirLocators.map((l) => gridSquare(l, THEIR_GRID))}
 

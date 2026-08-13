@@ -1,17 +1,19 @@
 import { Image } from "expo-image";
 import React, { PropsWithChildren } from "react";
-import { LayoutChangeEvent, Text, View } from "react-native";
+import { LayoutChangeEvent, Pressable, Text, View } from "react-native";
 import Svg, { Circle, Path as SvgPath, Text as SvgText } from "react-native-svg";
 import { LatLng } from "../../utils/locator";
+import { Feature, FeatureMarkerStyle, FeaturePathStyle, MarkerFeature, PathFeature, resolveColor } from "./common";
 import {
-    Feature,
-    FeatureMarkerStyle,
-    FeaturePathStyle,
-    MarkerFeature,
-    PathFeature,
-    resolveColor,
-} from "./common";
-import { TILE_SIZE, World, boundsOf, geodesicPoints, project, unwrapLongitudes, zoomToFit } from "./projection";
+    MAX_ZOOM,
+    TILE_SIZE,
+    World,
+    boundsOf,
+    geodesicPoints,
+    project,
+    unwrapLongitudes,
+    zoomToFit,
+} from "./projection";
 
 const TILE_URL = "https://tile.openstreetmap.org";
 // The OSM tile usage policy wants a real identifying User-Agent. Browsers set their own and ignore
@@ -19,6 +21,15 @@ const TILE_URL = "https://tile.openstreetmap.org";
 const TILE_HEADERS = { "User-Agent": "down-the-log (https://github.com/PiTiLeZarD/down-the-log)" };
 // Enough room for the tallest pin to stay inside the viewport once the bounds are fitted.
 const DEFAULT_PADDING = 32;
+
+// Panning and zooming happen in discrete steps off buttons rather than off gestures, so a pan
+// never has to be arbitrated against the scroll views these maps are embedded in.
+const PAN_STEP = 0.25;
+// Fractional zoom is already handled downstream: whole zooms pick the tile level and the remainder
+// scales the tiles, so a half step is as valid as a whole one.
+const ZOOM_STEP = 0.5;
+// Thin enough to leave the map readable, wide enough to stay a usable touch target on mobile.
+const EDGE = 24;
 
 const blurhash =
     "|rF?hV%2WCj[ayj[a|j[az_NaeWBj@ayfRayfQfQM{M|azj[azf6fQfQfQIpWXofj[ayj[j[fQayWCoeoeaya}j[ayfQa{oLj?j[WVj[ayayj[fQoff7azayj[ayj[j[ayofayayayj[fQj[ayayj[ayfjj[j[ayjuayj[";
@@ -28,9 +39,7 @@ const blurhash =
 const pathPoints = (feature: PathFeature): LatLng[] => {
     const style = (feature.style || {}) as Partial<FeaturePathStyle>;
     const points = style.geodesic
-        ? feature.points.flatMap((point, i, all) =>
-              i === 0 ? [point] : geodesicPoints(all[i - 1], point).slice(1),
-          )
+        ? feature.points.flatMap((point, i, all) => (i === 0 ? [point] : geodesicPoints(all[i - 1], point).slice(1)))
         : feature.points;
     return unwrapLongitudes(points);
 };
@@ -81,16 +90,115 @@ const MarkerShape = ({ x, y, style }: { x: number; y: number; style?: Partial<Fe
     );
 };
 
+// Keeps the viewport inside the world vertically; there is no map above 85°N or below 85°S to pan
+// into. Longitude is deliberately not clamped, the tile loop already wraps it.
+const clampCenterY = (y: number, zoom: number, height: number): number => {
+    const half = height / 2 / 2 ** zoom;
+    return half * 2 >= TILE_SIZE ? TILE_SIZE / 2 : Math.max(half, Math.min(TILE_SIZE - half, y));
+};
+
+const CONTROL_BACKGROUND = "rgba(255, 255, 255, 0.7)";
+
+const ControlButton = ({
+    label,
+    accessibilityLabel,
+    onPress,
+    style,
+}: {
+    label: string;
+    accessibilityLabel: string;
+    onPress: () => void;
+    style?: object;
+}) => (
+    <Pressable
+        accessibilityRole="button"
+        accessibilityLabel={accessibilityLabel}
+        onPress={onPress}
+        style={[
+            {
+                alignItems: "center",
+                justifyContent: "center",
+                backgroundColor: CONTROL_BACKGROUND,
+                cursor: "pointer",
+            },
+            style,
+        ]}
+    >
+        <Text style={{ fontSize: 12, lineHeight: 14, color: "#222222" }}>{label}</Text>
+    </Pressable>
+);
+
+type MapControlsProps = {
+    onPan: (dx: number, dy: number) => void;
+    onZoom: (delta: number) => void;
+    onReset: () => void;
+};
+
+// The horizontal strips run the full width and the vertical ones are inset between them, so the
+// four corners belong to exactly one button each.
+const MapControls = ({ onPan, onZoom, onReset }: MapControlsProps) => (
+    <>
+        <ControlButton
+            label="▲"
+            accessibilityLabel="Pan north"
+            onPress={() => onPan(0, -1)}
+            style={{ position: "absolute", left: 0, right: 0, top: 0, height: EDGE }}
+        />
+        <ControlButton
+            label="▼"
+            accessibilityLabel="Pan south"
+            onPress={() => onPan(0, 1)}
+            style={{ position: "absolute", left: 0, right: 0, bottom: 0, height: EDGE }}
+        />
+        <ControlButton
+            label="◀"
+            accessibilityLabel="Pan west"
+            onPress={() => onPan(-1, 0)}
+            style={{ position: "absolute", left: 0, top: EDGE, bottom: EDGE, width: EDGE }}
+        />
+        <ControlButton
+            label="▶"
+            accessibilityLabel="Pan east"
+            onPress={() => onPan(1, 0)}
+            style={{ position: "absolute", right: 0, top: EDGE, bottom: EDGE, width: EDGE }}
+        />
+        <View style={{ position: "absolute", left: EDGE + 4, bottom: EDGE + 4, gap: 4 }}>
+            <ControlButton
+                label="+"
+                accessibilityLabel="Zoom in"
+                onPress={() => onZoom(ZOOM_STEP)}
+                style={{ width: 28, height: 28, borderRadius: 4 }}
+            />
+            <ControlButton
+                label="−"
+                accessibilityLabel="Zoom out"
+                onPress={() => onZoom(-ZOOM_STEP)}
+                style={{ width: 28, height: 28, borderRadius: 4 }}
+            />
+            <ControlButton
+                label="⤢"
+                accessibilityLabel="Reset view"
+                onPress={onReset}
+                style={{ width: 28, height: 28, borderRadius: 4 }}
+            />
+        </View>
+    </>
+);
+
 export type MapProps = PropsWithChildren<{
     width?: number | "auto";
     height: number;
     padding?: number;
+    interactive?: boolean;
 }>;
 
-export const Map = ({ width = "auto", height, padding = DEFAULT_PADDING, children }: MapProps) => {
+export const Map = ({ width = "auto", height, padding = DEFAULT_PADDING, interactive = false, children }: MapProps) => {
     // "auto" is measured from a zero-height probe view rather than read off a ref during render,
     // which only ever produced a width because some parent happened to re-render us.
     const [measuredWidth, setMeasuredWidth] = React.useState<number | null>(null);
+    // null means "follow the fitted bounds", which is both the initial state and what the reset
+    // button restores. Once set it is left alone, so adding a QSO doesn't yank the view back.
+    const [view, setView] = React.useState<{ center: World; zoom: number } | null>(null);
     const onLayout = React.useCallback(
         ({ nativeEvent }: LayoutChangeEvent) =>
             setMeasuredWidth((current) => (current === nativeEvent.layout.width ? current : nativeEvent.layout.width)),
@@ -127,11 +235,38 @@ export const Map = ({ width = "auto", height, padding = DEFAULT_PADDING, childre
         return <View style={{ width: "100%", height: 0 }} onLayout={onLayout} />;
     }
 
-    const zoom = zoomToFit(bounds, actualWidth, actualHeight, padding);
+    const fit = {
+        center: { x: (bounds.min.x + bounds.max.x) / 2, y: (bounds.min.y + bounds.max.y) / 2 },
+        zoom: zoomToFit(bounds, actualWidth, actualHeight, padding),
+    };
+    const { center, zoom } = view ?? fit;
+
+    // Steps are a fraction of the viewport, so a tap moves the same visible distance at every zoom.
+    const onPan = (dx: number, dy: number) =>
+        setView((current) => {
+            const from = current ?? fit;
+            const step = 2 ** from.zoom;
+            return {
+                zoom: from.zoom,
+                center: {
+                    x: from.center.x + (dx * actualWidth * PAN_STEP) / step,
+                    y: clampCenterY(from.center.y + (dy * actualHeight * PAN_STEP) / step, from.zoom, actualHeight),
+                },
+            };
+        });
+
+    // Anchored on the viewport centre, which is the centre of the state, so it needs no correction.
+    const onZoom = (delta: number) =>
+        setView((current) => {
+            const from = current ?? fit;
+            const next = Math.max(0, Math.min(MAX_ZOOM, from.zoom + delta));
+            return { zoom: next, center: { ...from.center, y: clampCenterY(from.center.y, next, actualHeight) } };
+        });
+
     const scale = 2 ** zoom;
     const origin: World = {
-        x: ((bounds.min.x + bounds.max.x) / 2) * scale - actualWidth / 2,
-        y: ((bounds.min.y + bounds.max.y) / 2) * scale - actualHeight / 2,
+        x: center.x * scale - actualWidth / 2,
+        y: center.y * scale - actualHeight / 2,
     };
 
     // Tiles only exist at whole zooms, so the remainder of the fitted zoom is taken out by drawing
@@ -197,13 +332,15 @@ export const Map = ({ width = "auto", height, padding = DEFAULT_PADDING, childre
                     style={{
                         position: "absolute",
                         right: 0,
-                        bottom: 0,
+                        // Rides above the southward pan strip, which would otherwise cover it.
+                        bottom: interactive ? EDGE : 0,
                         paddingHorizontal: 4,
-                        backgroundColor: "rgba(255, 255, 255, 0.7)",
+                        backgroundColor: CONTROL_BACKGROUND,
                     }}
                 >
                     <Text style={{ fontSize: 9, color: "#222222" }}>© OpenStreetMap contributors</Text>
                 </View>
+                {interactive && <MapControls onPan={onPan} onZoom={onZoom} onReset={() => setView(null)} />}
             </View>
         </>
     );
