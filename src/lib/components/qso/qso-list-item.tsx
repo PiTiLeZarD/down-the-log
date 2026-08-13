@@ -2,6 +2,7 @@ import React, { Fragment } from "react";
 import { QSO, duration, hasEvent } from ".";
 import { countries } from "../../data/countries";
 import { roundTo } from "../../utils/math";
+import { useWidthMatches } from "../../ui/breakpoints";
 import { Icon } from "../../ui/icon";
 import { Typography } from "../../ui/typography";
 import { Stack } from "../stack";
@@ -19,12 +20,17 @@ export type QsoListItemProps = {
 
 export const QsoListItem = React.memo(
     ({ item: qso, index, lineHeight, onQsoPress, imperial, openIssues }: QsoListItemProps) => {
-        const icons = [
-            qso.note ? <Icon name="chatbox-ellipses-outline" /> : null,
-            hasEvent(qso) ? <Icon name="earth" /> : null,
-            (qso.pota && qso.myPota) || (qso.wwff && qso.myWwff) ? <Icon name="swap-horizontal" /> : null,
-            openIssues ? <Icon name="warning-outline" colour="danger" /> : null,
-        ].filter((e) => !!e);
+        // A phone only has room for one line per QSO, so the icons and the distance — both of which
+        // pushed their cell onto a second line — are left to the wider layouts and the QSO itself.
+        const smallScreen = useWidthMatches(undefined, "md");
+        const icons = smallScreen
+            ? []
+            : [
+                  qso.note ? <Icon name="chatbox-ellipses-outline" /> : null,
+                  hasEvent(qso) ? <Icon name="earth" /> : null,
+                  (qso.pota && qso.myPota) || (qso.wwff && qso.myWwff) ? <Icon name="swap-horizontal" /> : null,
+                  openIssues ? <Icon name="warning-outline" colour="danger" /> : null,
+              ].filter((e) => !!e);
 
         return (
             <QsoRow
@@ -35,10 +41,10 @@ export const QsoListItem = React.memo(
                 time={qso.date.toFormat("HH:mm")}
                 duration={duration(qso)}
                 callsign={
-                    <Stack direction="row" style={{ flexWrap: "wrap" }}>
+                    <Stack direction="row" style={{ flexWrap: smallScreen ? "nowrap" : "wrap" }}>
                         <Typography>{qso.country ? countries[qso.country]?.flag : ""}</Typography>
-                        <Typography>{qso.callsign}</Typography>
-                        {qso.distance !== undefined && (
+                        <Typography numberOfLines={smallScreen ? 1 : undefined}>{qso.callsign}</Typography>
+                        {!smallScreen && qso.distance !== undefined && (
                             <Typography>
                                 ({imperial ? roundTo(qso.distance / 1.6, 2) : qso.distance}
                                 {imperial ? "mi" : "km"})
@@ -50,8 +56,10 @@ export const QsoListItem = React.memo(
                 band={
                     // Wraps rather than overflows: band, mode and up to four icons don't fit on one
                     // line in a phone-width column.
-                    <Stack direction="row" style={{ flexWrap: "wrap" }}>
-                        <Typography>{[qso.band, qso.mode].filter((e) => !!e).join("/")}</Typography>
+                    <Stack direction="row" style={{ flexWrap: smallScreen ? "nowrap" : "wrap" }}>
+                        <Typography numberOfLines={smallScreen ? 1 : undefined}>
+                            {[qso.band, qso.mode].filter((e) => !!e).join("/")}
+                        </Typography>
                         {icons.map((icon, i) => (
                             <Fragment key={i}>{icon}</Fragment>
                         ))}

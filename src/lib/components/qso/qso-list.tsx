@@ -107,7 +107,22 @@ export const QsoList = ({ style, filters, qsos, onQsoPress }: QsoListProps) => {
         // The wrapper carries the theming: FlatList isn't processed by unistyles, so a stylesheet handed
         // straight to it would arrive empty.
         <View style={mergeStyles<ViewStyle>(styles.list, style)}>
+            {/* A sibling of the list rather than its ListHeaderComponent, so the column titles stay
+                put and the rows scroll under them. */}
+            <QsoRow
+                header
+                lineHeight={LINEHEIGHT}
+                position="ID"
+                time="Time"
+                duration="Duration"
+                callsign="Callsign"
+                name="Name"
+                band="Band"
+            />
             <FlatList
+                // Plain object, not a unistyles sheet: FlatList isn't processed, so a sheet arrives
+                // empty here. Takes whatever height the pinned header leaves.
+                style={{ flex: 1 }}
                 data={rows}
                 extraData={settings.imperial}
                 keyExtractor={(row) => row.key}
@@ -127,18 +142,6 @@ export const QsoList = ({ style, filters, qsos, onQsoPress }: QsoListProps) => {
                             }}
                         />
                     )
-                }
-                ListHeaderComponent={
-                    <QsoRow
-                        header
-                        lineHeight={LINEHEIGHT}
-                        position="ID"
-                        time="Time"
-                        duration="Duration"
-                        callsign="Callsign"
-                        name="Name"
-                        band="Band"
-                    />
                 }
             />
         </View>

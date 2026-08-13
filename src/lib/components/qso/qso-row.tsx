@@ -63,8 +63,10 @@ export const QsoRow = ({
         <Pressable onPress={onPress}>
             <Grid container style={styles.row(+position % 2 === 0 || header, colour)}>
                 {!hidePosition && (
-                    <Grid item style={styles.cell} xs={1}>
-                        {cellContent(position, cellStyle)}
+                    // Four-figure ids wrap at one column on a phone, so the id gets a second one
+                    // there and hands it back once there's room for the wider columns.
+                    <Grid item style={styles.cell} xs={2} md={1}>
+                        {cellContent(position, cellStyle, 1)}
                     </Grid>
                 )}
                 <Grid item style={styles.cell} xs={hidePosition ? 3 : 2} md={hidePosition ? 2 : 1}>
@@ -73,7 +75,7 @@ export const QsoRow = ({
                 <Grid item style={styles.cell} xs={-1} lg={1}>
                     {cellContent(duration, cellStyle)}
                 </Grid>
-                <Grid item style={styles.cell} xs={6} md={5}>
+                <Grid item style={styles.cell} xs={hidePosition ? 6 : 5} md={5}>
                     {cellContent(callsign, cellStyle)}
                 </Grid>
                 <Grid item style={styles.cell} xs={-1} md={2}>

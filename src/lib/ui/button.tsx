@@ -78,6 +78,8 @@ export type ButtonProps = PropsWithChildren<Omit<PressableProps, "style"> & {
     variant?: ButtonVariants;
     colour?: ColourVariant;
     url?: string;
+    // Caps the label's height; 1 keeps a squeezed button on a single line rather than wrapping it.
+    numberOfLines?: number;
 }>;
 
 export const Button = ({
@@ -89,6 +91,7 @@ export const Button = ({
     url,
     startIcon,
     endIcon,
+    numberOfLines,
     children,
     ...otherProps
 }: ButtonProps) => {
@@ -110,7 +113,12 @@ export const Button = ({
                     </ButtonText>
                 )}
                 {text !== undefined ? (
-                    <ButtonText style={textStyle} variant={variant} colour={colour}>
+                    <ButtonText
+                        style={textStyle}
+                        variant={variant}
+                        colour={colour}
+                        numberOfLines={numberOfLines}
+                    >
                         {String(text)}
                     </ButtonText>
                 ) : (

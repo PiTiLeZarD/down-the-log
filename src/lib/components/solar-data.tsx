@@ -141,20 +141,28 @@ export const SolarData = () => {
     const selected = series.find(({ key }) => key == tab) as (typeof series)[number];
 
     // Two pairs side by side: stacked into a 2x2 on wide screens, one flat row of four on narrow ones.
-    const pairDirection = useWidthMatches("md") ? "column" : "row";
+    const wideScreen = useWidthMatches("md");
+    const pairDirection = wideScreen ? "column" : "row";
 
     const chip = ({ key, label, data, latest, cutoffs, reverse }: (typeof series)[number]) => (
         <Button
             key={key}
             variant="chip"
             colour="grey"
-            text={latest !== undefined ? `${label}: ${latest}` : "Fetching..."}
+            // Buttons flex to equal widths by default, which squeezes the longer readings onto a
+            // second line once four of them share a phone's width: on narrow screens they keep
+            // their natural size and the label is tightened instead.
+            numberOfLines={1}
+            text={latest !== undefined ? `${label}${wideScreen ? ": " : ":"}${latest}` : "Fetching..."}
             onPress={() => {
                 setTab(key);
                 setModal(true);
             }}
             style={{
                 backgroundColor: data ? scaleColour(latest as number, cutoffs, reverse) : undefined,
+                // flex: 0, not flexGrow/flexShrink: the base button's `flex: 1` also sets a 0%
+                // basis, which survives those two and collapses the chip to its padding.
+                ...(wideScreen ? {} : { flex: 0, flexBasis: "auto" as const, paddingLeft: 6, paddingRight: 6 }),
             }}
         />
     );
