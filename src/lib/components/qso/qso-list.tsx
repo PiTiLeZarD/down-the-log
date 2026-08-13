@@ -67,18 +67,23 @@ export const QsoListSectionHeader = ({ qsos }: QsoListSectionHeaderProps) => {
     const settings = useSettings();
     const text = `${qsos[0].date.toFormat(settings.datemonth ? "MM-dd-yyyy" : "dd/MM/yyyy")} (${qsos.length})`;
 
+    // The modal is deliberately a sibling of the Pressable, not a child. RN renders it through a
+    // portal, but presses still bubble up the React tree, so nesting it made every press inside the
+    // modal that no control claimed toggle the header and close it again.
     return (
-        <Pressable onPress={() => setmapOpen(!mapOpen)}>
-            <Stack style={styles.sectionHeader}>
-                <Typography style={styles.sectionHeaderText}>{text}</Typography>
-                <Modal wide open={mapOpen} onClose={() => setmapOpen(false)}>
-                    <Stack gap="xl">
-                        <QsoMap qsos={qsos} height={640} interactive />
-                        <Button text="Ok" colour="success" onPress={() => setmapOpen(false)} />
-                    </Stack>
-                </Modal>
-            </Stack>
-        </Pressable>
+        <>
+            <Pressable onPress={() => setmapOpen(true)}>
+                <Stack style={styles.sectionHeader}>
+                    <Typography style={styles.sectionHeaderText}>{text}</Typography>
+                </Stack>
+            </Pressable>
+            <Modal wide open={mapOpen} onClose={() => setmapOpen(false)}>
+                <Stack gap="xl">
+                    <QsoMap qsos={qsos} height={640} interactive />
+                    <Button text="Ok" colour="success" onPress={() => setmapOpen(false)} />
+                </Stack>
+            </Modal>
+        </>
     );
 };
 

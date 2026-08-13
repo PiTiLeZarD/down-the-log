@@ -29,7 +29,12 @@ const PAN_STEP = 0.25;
 // scales the tiles, so a half step is as valid as a whole one.
 const ZOOM_STEP = 0.5;
 // Thin enough to leave the map readable, wide enough to stay a usable touch target on mobile.
-const EDGE = 24;
+const EDGE = 28;
+// The pan strips are as thin as they are on purpose, so the shortfall against the 44px touch target
+// guidance is taken up by hitSlop rather than by eating more of the map.
+const EDGE_SLOP = 8;
+// Square controls, comfortably past the point where a near miss is likely.
+const BUTTON = 40;
 
 const blurhash =
     "|rF?hV%2WCj[ayj[a|j[az_NaeWBj@ayfRayfQfQM{M|azj[azf6fQfQfQIpWXofj[ayj[j[fQayWCoeoeaya}j[ayfQa{oLj?j[WVj[ayayj[fQoff7azayj[ayj[j[ayofayayayj[fQj[ayayj[ayfjj[j[ayjuayj[";
@@ -103,17 +108,20 @@ const ControlButton = ({
     label,
     accessibilityLabel,
     onPress,
+    hitSlop,
     style,
 }: {
     label: string;
     accessibilityLabel: string;
     onPress: () => void;
+    hitSlop?: number;
     style?: object;
 }) => (
     <Pressable
         accessibilityRole="button"
         accessibilityLabel={accessibilityLabel}
         onPress={onPress}
+        hitSlop={hitSlop}
         style={[
             {
                 alignItems: "center",
@@ -142,44 +150,48 @@ const MapControls = ({ onPan, onZoom, onReset }: MapControlsProps) => (
             label="▲"
             accessibilityLabel="Pan north"
             onPress={() => onPan(0, -1)}
+            hitSlop={EDGE_SLOP}
             style={{ position: "absolute", left: 0, right: 0, top: 0, height: EDGE }}
         />
         <ControlButton
             label="▼"
             accessibilityLabel="Pan south"
             onPress={() => onPan(0, 1)}
+            hitSlop={EDGE_SLOP}
             style={{ position: "absolute", left: 0, right: 0, bottom: 0, height: EDGE }}
         />
         <ControlButton
             label="◀"
             accessibilityLabel="Pan west"
             onPress={() => onPan(-1, 0)}
+            hitSlop={EDGE_SLOP}
             style={{ position: "absolute", left: 0, top: EDGE, bottom: EDGE, width: EDGE }}
         />
         <ControlButton
             label="▶"
             accessibilityLabel="Pan east"
             onPress={() => onPan(1, 0)}
+            hitSlop={EDGE_SLOP}
             style={{ position: "absolute", right: 0, top: EDGE, bottom: EDGE, width: EDGE }}
         />
-        <View style={{ position: "absolute", left: EDGE + 4, bottom: EDGE + 4, gap: 4 }}>
+        <View style={{ position: "absolute", left: EDGE + 6, bottom: EDGE + 6, gap: 6 }}>
             <ControlButton
                 label="+"
                 accessibilityLabel="Zoom in"
                 onPress={() => onZoom(ZOOM_STEP)}
-                style={{ width: 28, height: 28, borderRadius: 4 }}
+                style={{ width: BUTTON, height: BUTTON, borderRadius: 4 }}
             />
             <ControlButton
                 label="−"
                 accessibilityLabel="Zoom out"
                 onPress={() => onZoom(-ZOOM_STEP)}
-                style={{ width: 28, height: 28, borderRadius: 4 }}
+                style={{ width: BUTTON, height: BUTTON, borderRadius: 4 }}
             />
             <ControlButton
                 label="⤢"
                 accessibilityLabel="Reset view"
                 onPress={onReset}
-                style={{ width: 28, height: 28, borderRadius: 4 }}
+                style={{ width: BUTTON, height: BUTTON, borderRadius: 4 }}
             />
         </View>
     </>
