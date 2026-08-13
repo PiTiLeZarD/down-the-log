@@ -23,6 +23,9 @@ export type Settings = {
     showSpots: boolean;
     showFilters: boolean;
     contestMode: boolean;
+    // Events list/map choice. It lives here rather than in the page's state so the view survives
+    // navigating away; the toggle itself is only rendered on the Events page.
+    eventsMap: boolean;
     imperial: boolean;
     timeoffThreshold: number;
     datemonth: boolean;
@@ -45,6 +48,7 @@ const defaultSettings: Settings = {
     timeoffThreshold: 10,
     showFilters: false,
     contestMode: false,
+    eventsMap: false,
     favouriteBands: [],
     favouriteModes: [],
     inputBarConfig: [],

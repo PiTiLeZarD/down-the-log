@@ -10,6 +10,8 @@ import { TabsLayout } from "../lib/components/tabs-layout";
 import { unique } from "../lib/utils/arrays";
 import { EventType, eventDataMassageMap, events, getActivations } from "../lib/utils/event-rules";
 import { downloadQsos } from "../lib/utils/file-format";
+import { useStore } from "../lib/utils/store";
+import { useSettings } from "../lib/utils/use-settings";
 import { Button } from "../lib/ui/button";
 import { PaginatedList } from "../lib/ui/paginated-list";
 import { Typography } from "../lib/ui/typography";
@@ -17,7 +19,8 @@ import { Typography } from "../lib/ui/typography";
 const Events = () => {
     const qsos = useQsos();
     const [wwffLocal, setWwffLocal] = React.useState<boolean>(false);
-    const [showMap, setShowMap] = React.useState<boolean>(false);
+    const showMap = useSettings().eventsMap;
+    const updateSetting = useStore((state) => state.updateSetting);
     const getMax = (event: EventType) => (event === "wwff" && wwffLocal ? 10 : undefined);
 
     const handleDownloadHunting = (event: EventType) => () =>
@@ -36,7 +39,7 @@ const Events = () => {
                         Events
                     </Typography>
                     <Typography>List</Typography>
-                    <Switch value={showMap} onValueChange={setShowMap} />
+                    <Switch value={showMap} onValueChange={(v) => updateSetting("eventsMap", v)} />
                     <Typography>Map</Typography>
                 </Stack>
             }
