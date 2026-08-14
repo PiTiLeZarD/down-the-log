@@ -7,7 +7,7 @@ import { Continent } from "../../data/callsigns";
 import cqzones from "../../data/cqzones.json";
 import dxcc from "../../data/dxcc.json";
 import ituzones from "../../data/ituzones.json";
-import { Mode, isDigital } from "../../data/modes";
+import { Mode, defaultRst } from "../../data/modes";
 import { baseCallsign, getCallsignData, parseCallsign } from "../../utils/callsign";
 import { maidenDistance, maidenhead2Latlong } from "../../utils/locator";
 import { findZone } from "../../utils/polydec";
@@ -125,11 +125,26 @@ export const createQso = (callsign: string): QSO => ({
     honeypot: {},
 });
 
-// Values are copied as they are: running them through String() turned a carried power or frequency
-// into "5" / "14.2", which then no longer matched the number the rest of the QSO type expects.
-export const carryOver = (qso: QSO, previousQSO: QSO, carryOver: (keyof QSO)[] = []): QSO => ({
+/**
+ * Values are copied as they are: running them through String() turned a carried power or frequency
+ * into "5" / "14.2", which then no longer matched the number the rest of the QSO type expects.
+ *
+ * "override" is the reset path, where the QSO is a blank the previous one seeds. "fill" is the log
+ * path: by then the operator has retuned, changed mode or started a session on the form being typed,
+ * and copying the previous QSO over that logged the contact on the band the *last* one was on.
+ */
+export const carryOver = (
+    qso: QSO,
+    previousQSO: QSO,
+    fields: (keyof QSO)[] = [],
+    mode: "override" | "fill" = "override",
+): QSO => ({
     ...qso,
-    ...Object.fromEntries(carryOver.map((f) => [f, previousQSO[f]]).filter(([, v]) => v !== undefined)),
+    ...Object.fromEntries(
+        fields
+            .map((f) => [f, previousQSO[f]] as const)
+            .filter(([f, v]) => v !== undefined && (mode === "override" || qso[f] === undefined || qso[f] === "")),
+    ),
 });
 
 /**
@@ -150,17 +165,43 @@ export const prefillSession = (qso: QSO, session?: Session, mode: "override" | "
         ),
     );
 
-    return {
-        ...qso,
-        ...defaults,
-        sessionId: session.id,
-        ...(session.contest
-            ? {
-                  contestId: session.contest.contestId || qso.contestId,
-                  stxString: session.contest.exchangeSent || qso.stxString,
-              }
-            : {}),
-    };
+    const merged = { ...qso, ...defaults, sessionId: session.id };
+
+    // A contest is an activity like any other as far as ADIF is concerned, so it goes in the SIG
+    // pair too: the contest as the activity, the serial being sent as what identifies this contact
+    // within it. What the session was set up with still wins — an operator who typed a SIG of their
+    // own meant it — and on the reset path the carried-over pair is ignored, or the serial would
+    // stick on the number the previous QSO sent.
+    // Fill mode is the log path: whatever is on the QSO by then was put there deliberately.
+    const stamped = session.contest
+        ? {
+              ...merged,
+              contestId: session.contest.contestId || merged.contestId,
+              stxString: session.contest.exchangeSent || merged.stxString,
+              mySig:
+                  mode === "override"
+                      ? (defaults.mySig as string) || session.contest.contestId || merged.mySig
+                      : merged.mySig || session.contest.contestId,
+              mySigInfo:
+                  mode === "override"
+                      ? (defaults.mySigInfo as string) || String(session.contest.serial)
+                      : merged.mySigInfo || String(session.contest.serial),
+          }
+        : merged;
+
+    // Frequency and band are one setting in two fields, and a session can hold either without the
+    // other. Whichever the session actually wrote wins, and the other follows it: a session on 20m
+    // with the frequency left off used to log its QSOs on the 7.074 the last one carried in.
+    if (defaults.frequency !== undefined && defaults.band === undefined)
+        return { ...stamped, band: freq2band(stamped.frequency) || stamped.band };
+    if (
+        defaults.band !== undefined &&
+        defaults.frequency === undefined &&
+        freq2band(stamped.frequency) !== stamped.band
+    )
+        return { ...stamped, frequency: band2freq(stamped.band, stamped.mode) };
+
+    return stamped;
 };
 
 export const prefillSameCallsign = (qso: QSO, previousQSO: QSO): QSO => ({
@@ -217,16 +258,22 @@ export const prefillOperating = (
     // operating default: a carried-over mode wins over it, and reading `operating.mode` here logged
     // FT8 QSOs with a 59.
     const mode = qso.mode || operating.mode;
-    const defaultRst = isDigital(mode) ? "-1" : "59";
+    const rst = defaultRst(mode);
+    const band = qso.band || operating.band || freq2band(operating.frequency) || "20m";
+    const frequency = qso.frequency || operating.frequency || band2freq(band, mode);
+    // The band is the one the operator or the session named, so a frequency that belongs to another
+    // band is a leftover from the last QSO — carrying it logged 20m SSB contacts on 7.074. Fall back
+    // to the mode's usual corner of the band. A frequency in no band at all is left alone: it's an
+    // out-of-band contact the operator entered on purpose, and the QSO issues flag it already.
+    const frequencyBand = freq2band(frequency);
+    const onBand = frequencyBand === band || frequencyBand === null;
     return {
         ...qso,
-        frequency: qso.frequency || operating.frequency || band2freq(operating.band),
+        frequency: onBand ? frequency : band2freq(band, mode),
         mode,
-        band: qso.band || operating.band || freq2band(operating.frequency) || "20m",
-        // The ternary needs the parens: || binds tighter, so without them an already-filled
-        // report would make the whole condition truthy and get overwritten with "-1".
-        rst_received: qso.rst_received || defaultRst,
-        rst_sent: qso.rst_sent || defaultRst,
+        band,
+        rst_received: qso.rst_received || rst,
+        rst_sent: qso.rst_sent || rst,
     };
 };
 
@@ -257,7 +304,9 @@ export const prefillLocation = (qso: QSO) => {
 };
 
 export const extrapolate = (qso: QSO, qsos: QSO[], carryOverFields: (keyof QSO)[], session?: Session): QSO => {
-    if (qsos.length) qso = carryOver(qso, qsos[0], carryOverFields);
+    // Fill only: the form was already seeded from the previous QSO when it was reset, so anything
+    // that differs now — a new band, a new mode, a session's values — is deliberate.
+    if (qsos.length) qso = carryOver(qso, qsos[0], carryOverFields, "fill");
 
     const lastQsoWithCallsign = qsos.filter((q) => baseCallsign(q.callsign) === baseCallsign(qso.callsign));
     if (lastQsoWithCallsign.length) qso = prefillSameCallsign(qso, lastQsoWithCallsign[0]);

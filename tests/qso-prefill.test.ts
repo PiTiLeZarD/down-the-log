@@ -17,6 +17,7 @@ import {
     prefillSession,
     qsosByCallsign,
 } from "../src/lib/components/qso";
+import { freq2band } from "../src/lib/data/bands";
 import { newSession } from "../src/lib/utils/session";
 
 const at = (iso: string) => DateTime.fromISO(iso, { zone: "utc" });
@@ -87,6 +88,21 @@ describe("carryOver", () => {
 
     test("carries nothing when no fields are configured", () => {
         expect(carryOver(createQso("A"), qso({ band: "40m" }), []).band).toBeUndefined();
+    });
+
+    test("in fill mode leaves what the new QSO already has", () => {
+        const next = carryOver(
+            qso({ band: "20m", mode: "SSB" }),
+            qso({ band: "40m", mode: "FT8" }),
+            ["band", "mode"],
+            "fill",
+        );
+        expect(next).toMatchObject({ band: "20m", mode: "SSB" });
+    });
+
+    test("in fill mode still fills the blanks", () => {
+        const next = carryOver(createQso("A"), qso({ band: "40m", power: 5 }), ["band", "power"], "fill");
+        expect(next).toMatchObject({ band: "40m", power: 5 });
     });
 });
 
@@ -175,6 +191,12 @@ describe("prefillOperating", () => {
     test("keeps reports the operator already entered", () => {
         const filled = prefillOperating(qso({ rst_sent: "599", rst_received: "339" }), { mode: "FT8" });
         expect(filled).toMatchObject({ rst_sent: "599", rst_received: "339" });
+    });
+
+    test("drops a frequency left over from another band", () => {
+        const filled = prefillOperating(qso({ band: "20m", mode: "SSB", frequency: 7.074 }), {});
+        expect(filled.band).toBe("20m");
+        expect(freq2band(filled.frequency)).toBe("20m");
     });
 
     test("keeps the band and mode the QSO already carries", () => {
@@ -270,6 +292,16 @@ describe("extrapolate", () => {
         expect(extrapolate(typed, [], [], session).power).toBe(100);
     });
 
+    test("keeps the band and mode on the form over the previous QSO's", () => {
+        const previous = qso({ band: "40m", mode: "FT8", frequency: 7.074 });
+        const typed = { ...createQso("G4ABC"), band: "20m" as const, mode: "SSB" as const, frequency: 14.2 };
+        expect(extrapolate(typed, [previous], ["band", "mode", "frequency"])).toMatchObject({
+            band: "20m",
+            mode: "SSB",
+            frequency: 14.2,
+        });
+    });
+
     test("a carried-over value beats the session's, having been logged on this QSO already", () => {
         const session = newSession("pota", { power: 5 });
         const previous = qso({ power: 100 });
@@ -306,12 +338,71 @@ describe("prefillSession", () => {
         expect(prefillSession(qso({ myRig: "FT-817" }), cleared).myRig).toBe("FT-817");
     });
 
+    test("a session band drops a frequency carried in from another band", () => {
+        const onTwenty = newSession("casual", { band: "20m" });
+        const filled = prefillSession(qso({ band: "40m", mode: "SSB", frequency: 7.074 }), onTwenty);
+        expect(filled.band).toBe("20m");
+        expect(freq2band(filled.frequency)).toBe("20m");
+    });
+
+    test("a session frequency pulls the band along with it", () => {
+        const onFrequency = newSession("casual", { frequency: 14.175 });
+        const filled = prefillSession(qso({ band: "40m", mode: "SSB", frequency: 7.074 }), onFrequency);
+        expect(filled).toMatchObject({ frequency: 14.175, band: "20m" });
+    });
+
+    test("leaves the pair alone when the session names both", () => {
+        const both = newSession("casual", { band: "20m", frequency: 14.175 });
+        expect(prefillSession(qso({ band: "40m", frequency: 7.074 }), both)).toMatchObject({
+            band: "20m",
+            frequency: 14.175,
+        });
+    });
+
     test("carries the contest's id and sent exchange", () => {
         const contest = {
             ...newSession("contest"),
             contest: { contestId: "CQ-WW-SSB", serial: 7, exchangeSent: "30" },
         };
         expect(prefillSession(qso(), contest)).toMatchObject({ contestId: "CQ-WW-SSB", stxString: "30" });
+    });
+
+    describe("a contest's SIG pair", () => {
+        const contestSession = (defaults = {}) => ({
+            ...newSession("contest", defaults),
+            contest: { contestId: "CQ-WW-SSB", serial: 7 },
+        });
+
+        test("is the contest and the serial being sent", () => {
+            expect(prefillSession(qso(), contestSession())).toMatchObject({
+                mySig: "CQ-WW-SSB",
+                mySigInfo: "7",
+            });
+        });
+
+        test("keeps a SIG the session was set up with", () => {
+            const filled = prefillSession(qso(), contestSession({ mySig: "FIELD DAY" }));
+            expect(filled).toMatchObject({ mySig: "FIELD DAY", mySigInfo: "7" });
+        });
+
+        test("follows the serial rather than the one carried over on reset", () => {
+            const carried = qso({ mySig: "CQ-WW-SSB", mySigInfo: "6" });
+            expect(prefillSession(carried, contestSession()).mySigInfo).toBe("7");
+        });
+
+        test("leaves what the operator typed on this QSO alone when logging", () => {
+            const typed = qso({ mySig: "FIELD DAY", mySigInfo: "12" });
+            expect(prefillSession(typed, contestSession(), "fill")).toMatchObject({
+                mySig: "FIELD DAY",
+                mySigInfo: "12",
+            });
+        });
+
+        test("is left off a session that isn't a contest", () => {
+            const filled = prefillSession(qso(), newSession("pota", { myPota: "VK-0001" }));
+            expect(filled.mySig).toBeUndefined();
+            expect(filled.mySigInfo).toBeUndefined();
+        });
     });
 });
 
@@ -320,11 +411,11 @@ describe("the reset chain", () => {
     const reset = (previous: QSO, session: ReturnType<typeof newSession>) =>
         prefillOperating(
             prefillSession(
-                carryOver(
-                    prefillMyStation(createQso(""), { myCallsign: "VK4ALE" }),
-                    previous,
-                    ["power", "myPota", "band"],
-                ),
+                carryOver(prefillMyStation(createQso(""), { myCallsign: "VK4ALE" }), previous, [
+                    "power",
+                    "myPota",
+                    "band",
+                ]),
                 session,
             ),
             { mode: "SSB", band: "20m" },

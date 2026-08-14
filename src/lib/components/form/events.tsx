@@ -5,9 +5,13 @@ import { Badge } from "../../ui/badge";
 import { Button } from "../../ui/button";
 import { Input } from "../../ui/input";
 import { Typography } from "../../ui/typography";
+import { sessionLabel } from "../../utils/session";
+import { useStore } from "../../utils/store";
+import { useActiveSession } from "../../utils/use-session";
 import { Grid } from "../grid";
 import { QSO, allEvents } from "../qso";
 import { Stack } from "../stack";
+import { FormField } from "./form-field";
 import { ParkReferenceInput } from "./park-reference-input";
 import { SiginfoReferenceInput } from "./siginfo-reference-input";
 
@@ -15,6 +19,15 @@ export const Events = () => {
     const [open, setOpen] = React.useState<boolean>(false);
     const { getValues, setValue } = useFormContext<QSO>();
     const qso = getValues();
+
+    // The session and the contest exchange have no box anywhere else on the QSO page — the input bar
+    // shows them while the session runs and nothing shows them afterwards. This is where a QSO's
+    // own copy of them is read and corrected.
+    const sessions = useStore((state) => state.sessions);
+    const session = sessions.find((s) => s.id === qso.sessionId);
+    const activeSession = useActiveSession();
+    const showContest =
+        !!activeSession?.contest || !!qso.contestId || !!qso.stx || !!qso.srx || !!qso.stxString || !!qso.srxString;
     return (
         <>
             <Badge count={allEvents(qso).length} colour="secondary">
@@ -105,6 +118,55 @@ export const Events = () => {
                             <SiginfoReferenceInput mine />
                         </Grid>
                     </Grid>
+                    {(session || showContest) && (
+                        <>
+                            <Typography variant="em">Session</Typography>
+                            {session && (
+                                <Grid container>
+                                    <Grid item xs={2}>
+                                        <Typography variant="em">Logged in</Typography>
+                                    </Grid>
+                                    <Grid item xs={10}>
+                                        <Typography>{sessionLabel(session)}</Typography>
+                                    </Grid>
+                                </Grid>
+                            )}
+                            {showContest && (
+                                <>
+                                    <Grid container>
+                                        <Grid item xs={2}>
+                                            <Typography variant="em">Contest</Typography>
+                                        </Grid>
+                                        <Grid item xs={10}>
+                                            <FormField name="contestId" />
+                                        </Grid>
+                                    </Grid>
+                                    <Grid container>
+                                        <Grid item xs={2}>
+                                            <Typography variant="em">Serial</Typography>
+                                        </Grid>
+                                        <Grid item xs={5}>
+                                            <FormField name="srx" numeric />
+                                        </Grid>
+                                        <Grid item xs={5}>
+                                            <FormField name="stx" numeric />
+                                        </Grid>
+                                    </Grid>
+                                    <Grid container>
+                                        <Grid item xs={2}>
+                                            <Typography variant="em">Exchange</Typography>
+                                        </Grid>
+                                        <Grid item xs={5}>
+                                            <FormField name="srxString" />
+                                        </Grid>
+                                        <Grid item xs={5}>
+                                            <FormField name="stxString" />
+                                        </Grid>
+                                    </Grid>
+                                </>
+                            )}
+                        </>
+                    )}
                     <Button colour="success" text="OK" onPress={() => setOpen(false)} />
                 </Stack>
             </Modal>

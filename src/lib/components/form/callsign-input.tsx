@@ -9,6 +9,7 @@ import { Alert } from "../../ui/alert";
 import { Button } from "../../ui/button";
 import { Input } from "../../ui/input";
 import { Typography } from "../../ui/typography";
+import { useWidthMatches } from "../../ui/breakpoints";
 import { useActiveSession } from "../../utils/use-session";
 import { useSettings } from "../../utils/use-settings";
 import { QSO, useQsos } from "../qso";
@@ -22,6 +23,7 @@ import { FormField } from "./form-field";
 import { HamQTHBadge } from "./hamqth-badge";
 import { ModeInput } from "./mode-input";
 import { Signal } from "./signal";
+import { useRstDefaults } from "./use-rst-defaults";
 
 const styles = StyleSheet.create((theme) => ({
     inputBox: {
@@ -34,6 +36,19 @@ const styles = StyleSheet.create((theme) => ({
     input: {
         backgroundColor: theme.background,
     },
+    // A phone can't hold the whole bar on one line: without this the reports and the add button run
+    // off the right edge. The callsign keeps a floor width so it doesn't end up a sliver.
+    wrappedRow: {
+        flexWrap: "wrap",
+    },
+    callsign: {
+        flexGrow: 1,
+        minWidth: 140,
+    },
+    // A report is four characters at most, so it doesn't get a share of the bar the callsign needs.
+    report: {
+        width: 90,
+    },
 }));
 
 export type CallsignInputProps = {
@@ -45,6 +60,14 @@ export const CallsignInput = ({ handleAdd }: CallsignInputProps) => {
     const { watch, setValue } = useFormContext<QSO>();
     const { inputBarConfig } = useSettings();
     const session = useActiveSession();
+    const narrow = useWidthMatches(undefined, "md");
+    useRstDefaults();
+
+    // Enter logs the QSO from any box in the bar, not just the callsign: filling in a report and
+    // hitting return is the same intent as pressing add.
+    const submitOnEnter = (e: any) => {
+        if (e.keyCode === 13 || e.key === "Enter" || e.nativeEvent?.key === "Enter") handleAdd();
+    };
 
     const callsign = watch("callsign");
     const band = watch("band");
@@ -105,7 +128,7 @@ export const CallsignInput = ({ handleAdd }: CallsignInputProps) => {
                     </Typography>
                 </Alert>
             )}
-            <Stack direction="row" gap="xxl">
+            <Stack direction="row" gap="xxl" style={narrow ? styles.wrappedRow : undefined}>
                 <SessionStartButton />
                 {inputBarConfig.includes("sig") && (
                     <View>
@@ -114,52 +137,84 @@ export const CallsignInput = ({ handleAdd }: CallsignInputProps) => {
                 )}
                 {inputBarConfig.includes("mode") && <ModeInput noLabel />}
                 {inputBarConfig.includes("frequency") && <BandFreqInput noLabel />}
-                <View style={{ flexGrow: 1 }}>
+                <View style={styles.callsign}>
                     <Input
                         ref={inputRef}
                         value={callsign}
                         style={styles.input}
                         transformValue={(v) => v.toUpperCase()}
                         onChangeText={(v) => setValue("callsign", v)}
-                        onKeyPress={(e: any) => {
-                            if (e.keyCode === 13) handleAdd();
-                        }}
+                        onKeyPress={submitOnEnter}
                         placeholder="Callsign"
                         // Undefined rather than an idle badge: any suffix at all makes `Input` draw
                         // the chip chrome and flatten the field's right border.
                         suffix={hamqth.status === "idle" ? undefined : <HamQTHBadge status={hamqth.status} />}
                     />
                 </View>
-                {inputBarConfig.includes("name") && <FormField name="name" style={styles.input} placeholder="Name" />}
-                {inputBarConfig.includes("qth") && <FormField name="qth" style={styles.input} placeholder="QTH" />}
-                {inputBarConfig.includes("rst_received") && (
-                    <View>
-                        {session?.plainRst && (
-                            <FormField name="rst_received" style={styles.input} placeholder="RST rcvd" />
-                        )}
-                        {!session?.plainRst && <Signal field="rst_received" />}
-                    </View>
+                {inputBarConfig.includes("name") && (
+                    <FormField name="name" style={styles.input} placeholder="Name" onKeyPress={submitOnEnter} />
                 )}
-                {inputBarConfig.includes("rst_sent") && (
-                    <View>
-                        {session?.plainRst && <FormField name="rst_sent" style={styles.input} placeholder="RST sent" />}
-                        {!session?.plainRst && <Signal field="rst_sent" />}
-                    </View>
+                {inputBarConfig.includes("qth") && (
+                    <FormField name="qth" style={styles.input} placeholder="QTH" onKeyPress={submitOnEnter} />
                 )}
                 {/* The exchange isn't part of the customisable input bar: in a contest it's the whole
-                    point of the QSO, and outside one there's nothing to show. */}
+                    point of the QSO, and outside one there's nothing to show. It sits ahead of the
+                    reports because that's the order it's passed in: serial, exchange, then the
+                    report — which is the one part that rarely moves off 59. */}
                 {session?.contest && (
                     <>
                         <View>
                             <Typography variant="em">#{String(session.contest.serial).padStart(3, "0")}</Typography>
                         </View>
                         <View>
-                            <FormField name="srx" style={styles.input} placeholder="Serial rcvd" numeric />
+                            <FormField
+                                name="srx"
+                                style={styles.input}
+                                placeholder="Serial rcvd"
+                                numeric
+                                onKeyPress={submitOnEnter}
+                            />
                         </View>
                         <View>
-                            <FormField name="srxString" style={styles.input} placeholder="Exch rcvd" />
+                            <FormField
+                                name="srxString"
+                                style={styles.input}
+                                placeholder="Exch rcvd"
+                                onKeyPress={submitOnEnter}
+                            />
                         </View>
                     </>
+                )}
+                {/* A plain-report session — a contest — puts the reports on screen whether or not the
+                    operator has them in their input bar: 59 is half of what's being exchanged, so
+                    it has to be visible and correctable without opening the QSO. */}
+                {(inputBarConfig.includes("rst_received") || session?.plainRst) && (
+                    <View style={session?.plainRst ? styles.report : undefined}>
+                        {session?.plainRst ? (
+                            <FormField
+                                name="rst_received"
+                                style={styles.input}
+                                placeholder="RST rcvd"
+                                onKeyPress={submitOnEnter}
+                            />
+                        ) : (
+                            <Signal field="rst_received" />
+                        )}
+                    </View>
+                )}
+                {(inputBarConfig.includes("rst_sent") || session?.plainRst) && (
+                    <View style={session?.plainRst ? styles.report : undefined}>
+                        {session?.plainRst ? (
+                            <FormField
+                                name="rst_sent"
+                                style={styles.input}
+                                placeholder="RST sent"
+                                onKeyPress={submitOnEnter}
+                            />
+                        ) : (
+                            <Signal field="rst_sent" />
+                        )}
+                    </View>
                 )}
                 <View>
                     <Button onPress={() => handleAdd()} startIcon="add" />

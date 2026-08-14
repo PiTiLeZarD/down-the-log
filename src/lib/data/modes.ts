@@ -101,3 +101,7 @@ export const resolveMode = (value?: string): Mode | undefined => {
 
 export const isDigital = (mode?: Mode) =>
     ["JT4", "JT6M", "JT9", "JT44", "JT65", "FT8", "WSPR", "MFSK", "MSK144", "FSK441"].includes(mode || "");
+
+// The report a QSO starts on: 59 everywhere except the weak-signal digital modes, which are reported
+// in dB. One definition so the form, the Signal picker and the log path can't disagree.
+export const defaultRst = (mode?: Mode): string => (isDigital(mode) ? "-1" : "59");

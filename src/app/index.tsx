@@ -20,6 +20,7 @@ import {
     prefillSession,
     useQsos,
 } from "../lib/components/qso";
+import { useCallsignFocus } from "../lib/components/form/callsign-focus";
 import { QsoHeatmap } from "../lib/components/qso-heatmap";
 import { QsoList } from "../lib/components/qso/qso-list";
 import { SessionBar } from "../lib/components/session/session-bar";
@@ -58,6 +59,7 @@ const Index = () => {
     const log = useStore((state) => state.log);
     const session = useActiveSession();
     const bumpSerial = useStore((state) => state.bumpSerial);
+    const requestCallsignFocus = useCallsignFocus((state) => state.request);
     const listQsos = useFilteredQsos();
     const methods = useForm<QSO>({ defaultValues: {} });
     const { navigate } = useRouter();
@@ -73,10 +75,7 @@ const Index = () => {
     // `useWatch` rather than `methods.watch()`: the latter can't be memoised, which made React
     // Compiler skip this whole file.
     const callsign = useWatch({ control: methods.control, name: "callsign" });
-    const listFilters = useMemo(
-        () => (callsign ? [(q: QSO) => q.callsign.includes(callsign)] : undefined),
-        [callsign],
-    );
+    const listFilters = useMemo(() => (callsign ? [(q: QSO) => q.callsign.includes(callsign)] : undefined), [callsign]);
     const resetQso = (previousQso?: QSO) => {
         let qso = prefillMyStation(createQso(""), myStationFromSettings(settings, currentLocation));
         if (previousQso || lastQso) qso = carryOver(qso, previousQso || (lastQso as QSO), settings.carryOver);
@@ -106,15 +105,16 @@ const Index = () => {
         log(qso);
         if (!session?.quickLog) navigate(`/qso?qsoId=${qso.id}`);
         resetQso(qso);
+        // Logging from the keyboard has to leave the cursor where the next callsign goes: the reset
+        // rebuilds the field's value and whatever was typed into loses focus. The QSO page asks for
+        // the cursor back itself on the way out, so it's only the stay-put path that requests here.
+        if (session?.quickLog) requestCallsignFocus();
     };
 
     return (
         <View style={styles.container}>
             <View style={styles.content}>
-                <FirstRunSetup
-                    open={needsSetup && !setupDismissed}
-                    onClose={() => setSetupDismissed(true)}
-                />
+                <FirstRunSetup open={needsSetup && !setupDismissed} onClose={() => setSetupDismissed(true)} />
                 {needsSetup && setupDismissed && (
                     <Alert severity="warning">
                         <Typography style={{ flexGrow: 1 }}>Your callsign isn't set yet.</Typography>

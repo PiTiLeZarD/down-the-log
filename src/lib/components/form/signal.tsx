@@ -1,6 +1,6 @@
-import React, { useEffect, useEffectEvent, useRef } from "react";
+import React, { useEffect, useEffectEvent } from "react";
 import { useFormContext } from "react-hook-form";
-import { isDigital } from "../../data/modes";
+import { defaultRst, isDigital } from "../../data/modes";
 import { Modal } from "../../utils/modal";
 import { Button } from "../../ui/button";
 import { Input } from "../../ui/input";
@@ -19,7 +19,7 @@ export const Signal = ({ field }: SignalProps) => {
     const signal = watch(field);
     const mode = watch("mode");
 
-    const defaultValue = isDigital(mode) ? "-1" : "59";
+    const defaultValue = defaultRst(mode);
 
     const applyDefault = useEffectEvent(() => setValue(field, defaultValue));
     const applyDefaultIfUnset = useEffectEvent(() => {
@@ -28,14 +28,9 @@ export const Signal = ({ field }: SignalProps) => {
 
     useEffect(() => applyDefaultIfUnset(), []);
 
-    // Switching mode swaps the report scale, so the default follows. The mount run is skipped, or
-    // opening an existing QSO would overwrite the report it was logged with.
-    const previousMode = useRef(mode);
-    useEffect(() => {
-        if (previousMode.current === mode) return;
-        previousMode.current = mode;
-        applyDefault();
-    }, [mode]);
+    // Following a mode change is the form's job now — see `useRstDefaults`. Doing it here only
+    // worked while the reports were on screen, and on an already-logged QSO it rewrote the report
+    // that was actually exchanged.
 
     const [readability, strength] = signal && !isDigital(mode) ? String(signal).split("") : [5, 9];
     return (
