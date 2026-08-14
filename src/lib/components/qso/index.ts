@@ -11,7 +11,7 @@ import { Mode, defaultRst } from "../../data/modes";
 import { baseCallsign, getCallsignData, parseCallsign } from "../../utils/callsign";
 import { maidenDistance, maidenhead2Latlong } from "../../utils/locator";
 import { findZone } from "../../utils/polydec";
-import type { Session } from "../../utils/session";
+import { type Session, carryOverFields } from "../../utils/session";
 import { Settings, useStore } from "../../utils/store";
 
 // sort() is in-place, so sorting the array zustand handed us would reorder the store itself.
@@ -189,11 +189,10 @@ export const prefillSession = (qso: QSO, session?: Session, mode: "override" | "
           }
         : merged;
 
-    // Frequency and band are one setting in two fields, and a session can hold either without the
-    // other. Whichever the session actually wrote wins, and the other follows it: a session on 20m
-    // with the frequency left off used to log its QSOs on the 7.074 the last one carried in.
-    if (defaults.frequency !== undefined && defaults.band === undefined)
-        return { ...stamped, band: freq2band(stamped.frequency) || stamped.band };
+    // Sessions hold a frequency and the band follows from it, so there's nothing to reconcile — bar
+    // one case. A session saved before that was true holds a band and no frequency, and the QSO
+    // being stamped is on whatever the last one carried in: jump to the band the way the old picker
+    // did, or a 20m session logs its QSOs on the 7.074 it inherited.
     if (
         defaults.band !== undefined &&
         defaults.frequency === undefined &&
@@ -246,6 +245,18 @@ export const myStationFromSettings = (settings: Settings, currentLocation?: stri
     myCountry: getCallsignData(settings.myCallsign)?.iso3,
 });
 
+/**
+ * The band a QSO goes into the log on. Derived from the frequency, because that's the field the
+ * operator sets; the stored band is the fallback for the two cases derivation can't cover — a
+ * frequency in no band at all, which is an out-of-band contact the QSO issues already flag, and an
+ * import that carried BAND with no FREQ. It stays a real field on the QSO: the exports, the filters,
+ * the stats and the session dupe key all read it, and none of them should have to derive it again.
+ */
+export const qsoBand = (qso: Pick<QSO, "frequency" | "band">): Band | undefined =>
+    freq2band(qso.frequency) || qso.band;
+
+export const withBand = (qso: QSO): QSO => ({ ...qso, band: qsoBand(qso) });
+
 export const prefillOperating = (
     qso: QSO,
     operating: Partial<{
@@ -259,19 +270,16 @@ export const prefillOperating = (
     // FT8 QSOs with a 59.
     const mode = qso.mode || operating.mode;
     const rst = defaultRst(mode);
-    const band = qso.band || operating.band || freq2band(operating.frequency) || "20m";
-    const frequency = qso.frequency || operating.frequency || band2freq(band, mode);
-    // The band is the one the operator or the session named, so a frequency that belongs to another
-    // band is a leftover from the last QSO — carrying it logged 20m SSB contacts on 7.074. Fall back
-    // to the mode's usual corner of the band. A frequency in no band at all is left alone: it's an
-    // out-of-band contact the operator entered on purpose, and the QSO issues flag it already.
-    const frequencyBand = freq2band(frequency);
-    const onBand = frequencyBand === band || frequencyBand === null;
+    // `band2freq` is the last resort and nothing else: it answers "put me somewhere on 20m" for a
+    // QSO that has no frequency to start from — the first of a fresh log, or one whose carry-over
+    // brought a band across on its own. Everything after it reads the frequency, so the pair can no
+    // longer disagree, which is what the old repair pass in here existed to patch up.
+    const frequency = qso.frequency || operating.frequency || band2freq(qso.band || operating.band || "20m", mode);
     return {
         ...qso,
-        frequency: onBand ? frequency : band2freq(band, mode),
+        frequency,
         mode,
-        band,
+        band: freq2band(frequency) || qso.band || operating.band,
         rst_received: qso.rst_received || rst,
         rst_sent: qso.rst_sent || rst,
     };
@@ -303,10 +311,12 @@ export const prefillLocation = (qso: QSO) => {
     };
 };
 
-export const extrapolate = (qso: QSO, qsos: QSO[], carryOverFields: (keyof QSO)[], session?: Session): QSO => {
+export const extrapolate = (qso: QSO, qsos: QSO[], fields: (keyof QSO)[], session?: Session): QSO => {
     // Fill only: the form was already seeded from the previous QSO when it was reset, so anything
-    // that differs now — a new band, a new mode, a session's values — is deliberate.
-    if (qsos.length) qso = carryOver(qso, qsos[0], carryOverFields, "fill");
+    // that differs now — a new band, a new mode, a session's values — is deliberate. The previous
+    // QSO's activity fields are dropped when it belongs to another session, or filling the blanks
+    // the reset deliberately left would put the finished activation's park back on.
+    if (qsos.length) qso = carryOver(qso, qsos[0], carryOverFields(fields, qsos[0], session), "fill");
 
     const lastQsoWithCallsign = qsos.filter((q) => baseCallsign(q.callsign) === baseCallsign(qso.callsign));
     if (lastQsoWithCallsign.length) qso = prefillSameCallsign(qso, lastQsoWithCallsign[0]);
@@ -316,7 +326,8 @@ export const extrapolate = (qso: QSO, qsos: QSO[], carryOverFields: (keyof QSO)[
     // this pass is what stamps the session id and catches fields the carry-over left empty.
     qso = prefillSession(qso, session, "fill");
 
-    return prefillLocation(qso);
+    // Last word on the band, after every pass that could have moved the frequency.
+    return prefillLocation(withBand(qso));
 };
 
 const dt2mn = (dt1: DateTime, dt2: DateTime) => Math.abs(dt1.diff(dt2, ["minutes"]).toObject().minutes as number);

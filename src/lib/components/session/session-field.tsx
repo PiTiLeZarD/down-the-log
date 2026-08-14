@@ -22,9 +22,12 @@ const parkFields: Partial<Record<keyof QSO, EventType>> = {
 
 export type SessionFieldProps = {
     field: keyof QSO;
+    // A park that is also in another programme offers to fill that reference in too, which only
+    // means anything if the session picks the field up — see the chip in `ParkReferenceInput`.
+    onCrossFill?: (source: keyof QSO, filled: keyof QSO) => void;
 };
 
-export const SessionField = ({ field }: SessionFieldProps) => {
+export const SessionField = ({ field, onCrossFill }: SessionFieldProps) => {
     const label = sessionFieldLabel(field);
     const park = parkFields[field];
 
@@ -32,7 +35,7 @@ export const SessionField = ({ field }: SessionFieldProps) => {
         return (
             <Stack>
                 <Typography>{label}:</Typography>
-                <ParkReferenceInput event={park} mine />
+                <ParkReferenceInput event={park} mine onCrossFill={(filled) => onCrossFill?.(field, filled)} />
             </Stack>
         );
 

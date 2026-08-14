@@ -2,10 +2,12 @@ import React, { useEffectEvent } from "react";
 import { FormProvider, useForm } from "react-hook-form";
 import { ScrollView, View, useWindowDimensions } from "react-native";
 import { StyleSheet } from "react-native-unistyles";
+import { band2freq } from "../../data/bands";
 import { Modal } from "../../utils/modal";
 import {
     Session,
     SessionTemplate,
+    carryOverFields,
     newSession,
     resumedSession,
     sessionFieldLabel,
@@ -42,14 +44,28 @@ const styles = StyleSheet.create((theme) => ({
 // Room for the header row and the body's own padding, so the scroll area stops short of the edge.
 const HEADER_ALLOWANCE = 100;
 
-// The frequency input writes both halves of the pair, so a session holding band and frequency would
-// otherwise draw two identical controls.
-const drawnFields = (fields: (keyof QSO)[]) =>
-    fields.filter((f) => !(f === "frequency" && fields.includes("band")));
+/**
+ * Band was the field a session held before the frequency became the thing you set, and sessions
+ * saved back then still list it. One control covers both, so a session naming both would draw it
+ * twice; swapping band out for frequency as the session is saved is what eventually retires it.
+ */
+const migrateFields = (fields: (keyof QSO)[]): (keyof QSO)[] =>
+    fields.includes("band")
+        ? Array.from(new Set(fields.map((f) => (f === "band" ? "frequency" : f))))
+        : fields;
 
-// Band and frequency share one control with three boxes in it, which is unreadable squeezed into
-// half a column — the band picker was down to a couple of characters. It gets a row to itself.
-const fieldSpan = (field: keyof QSO) => (field === "band" || field === "frequency" ? 12 : 6);
+const drawnFields = (fields: (keyof QSO)[]) => migrateFields(fields);
+
+// The frequency box carries the band in front of it and the unit behind it, so it reads badly
+// squeezed into half a column. It gets a row to itself.
+const fieldSpan = (field: keyof QSO) => (field === "frequency" ? 12 : 6);
+
+// A session saved before frequency was the field holds a band and no frequency, and the box would
+// open empty on it. Start it where that band starts, the way the old picker would have.
+const seedFrequency = (defaults: Partial<QSO>): Partial<QSO> =>
+    defaults.band && defaults.frequency === undefined
+        ? { ...defaults, frequency: band2freq(defaults.band, defaults.mode) }
+        : defaults;
 
 export type SessionModalProps = {
     open: boolean;
@@ -77,9 +93,13 @@ export const SessionModal = ({ open, session, onClose }: SessionModalProps) => {
     // A new session opens on what the operator is already using — their settings, and the last QSO's
     // carried-over values — so the common case is picking a template, typing the reference, Start.
     const seed = (): Partial<QSO> => {
-        if (session) return session.defaults;
+        if (session) return seedFrequency(session.defaults);
         const base = prefillMyStation({} as QSO, myStationFromSettings(settings, currentLocation));
-        return qsos.length ? carryOver(base, qsos[0], settings.carryOver) : base;
+        // Minus what the last QSO's own session was activating: a new session starts on a new park,
+        // and seeding it with the one just finished is worse than seeding it with nothing.
+        return seedFrequency(
+            qsos.length ? carryOver(base, qsos[0], carryOverFields(settings.carryOver, qsos[0])) : base,
+        );
     };
 
     const methods = useForm<QSO>({ defaultValues: seed() as QSO });
@@ -115,10 +135,20 @@ export const SessionModal = ({ open, session, onClose }: SessionModalProps) => {
     const toggleField = (field: keyof QSO) =>
         setFields(fields.includes(field) ? fields.filter((f) => f !== field) : [...fields, field]);
 
+    // Taking up the cross reference offered next to a park adds its field to the session, right
+    // below the one that offered it: the value is already in the form, but a field the session
+    // doesn't hold is neither drawn nor collected, so the press looked like it did nothing.
+    const addCrossField = (source: keyof QSO, filled: keyof QSO) =>
+        setFields((current) =>
+            current.includes(filled)
+                ? current
+                : current.flatMap((f) => (f === source ? [f, filled] : [f])),
+        );
+
     const collect = (): Partial<QSO> => {
         const values = methods.getValues();
         return Object.fromEntries(
-            fields
+            migrateFields(fields)
                 .map((f) => [f, values[f]])
                 .filter(([, v]) => v !== undefined && v !== "" && v !== null),
         );
@@ -130,8 +160,11 @@ export const SessionModal = ({ open, session, onClose }: SessionModalProps) => {
             : {};
 
     const handleSubmit = () => {
-        if (session) updateSession(session.id, { name, fields, defaults: collect(), ...contestPart() });
-        else startSession({ ...newSession(template, collect()), name, fields, ...contestPart() });
+        // Saved with the migrated list, not the one that was loaded: a session that still named
+        // `band` would otherwise show a chip for a field nothing writes any more.
+        const saved = migrateFields(fields);
+        if (session) updateSession(session.id, { name, fields: saved, defaults: collect(), ...contestPart() });
+        else startSession({ ...newSession(template, collect()), name, fields: saved, ...contestPart() });
         onClose();
     };
 
@@ -235,7 +268,7 @@ export const SessionModal = ({ open, session, onClose }: SessionModalProps) => {
                             <Grid container>
                                 {drawnFields(fields).map((field) => (
                                     <Grid item xs={12} md={fieldSpan(field)} key={field}>
-                                        <SessionField field={field} />
+                                        <SessionField field={field} onCrossFill={addCrossField} />
                                     </Grid>
                                 ))}
                             </Grid>

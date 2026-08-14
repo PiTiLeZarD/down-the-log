@@ -2,7 +2,7 @@ import { useLocalSearchParams, useRouter } from "expo-router";
 import { useEffect, useEffectEvent } from "react";
 import { FormProvider, useForm } from "react-hook-form";
 import { FormFields } from "../lib/components/form/form-fields";
-import { QSO, useQsos } from "../lib/components/qso";
+import { QSO, useQsos, withBand } from "../lib/components/qso";
 import { useStore } from "../lib/utils/store";
 import { useAutoSave } from "../lib/utils/use-auto-save";
 
@@ -18,7 +18,9 @@ const Qso = () => {
     // Only navigating to another QSO reloads the form; edits to the one on screen must not.
     const loadQso = useEffectEvent(() => methods.reset(qso));
     useEffect(() => loadQso(), [qsoId]);
-    useAutoSave(methods.control, log);
+    // Retuning this QSO moves its band with it: the form only sets a frequency now, so the band is
+    // caught up on the way to the store rather than being a second field to keep in step.
+    useAutoSave(methods.control, (edited: QSO) => log(withBand(edited)));
 
     if (!qso) {
         navigate("/");

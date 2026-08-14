@@ -24,7 +24,7 @@ import { Grid } from "../grid";
 import { PageLayout } from "../page-layout";
 import { PreviousQsos } from "../previous-qsos";
 import { QrzChip } from "../qrz-chip";
-import { QSO, duration, useQsos } from "../qso";
+import { QSO, duration, useQsos, withBand } from "../qso";
 import { QsoIgnoredIssues, QsoIssues } from "../qso-issues";
 import { QsoMap } from "../qso/qso-map";
 import { Stack } from "../stack";
@@ -156,7 +156,7 @@ export const FormFields = ({ qso }: FormFieldsProps) => {
             if (isRunning) {
                 const dateOff = DateTime.utc();
                 setValue("dateOff", dateOff);
-                log({ ...getValues(), dateOff });
+                log(withBand({ ...getValues(), dateOff }));
             }
             requestCallsignFocus();
             goBack();

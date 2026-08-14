@@ -3,6 +3,7 @@ import uuid from "react-native-uuid";
 // Type only: the QSO module pulls the store in behind it, and the store imports this file.
 import type { QSO } from "../components/qso";
 import type { IconName } from "../ui/icon";
+import { freq2band } from "../data/bands";
 import { baseCallsign } from "./callsign";
 import { EventStatus, EventType, capitalise, rules, targets } from "./event-rules";
 
@@ -51,7 +52,8 @@ export type TemplateDef = {
     contest: boolean;
 };
 
-const station: (keyof QSO)[] = ["power", "myRig", "myAntenna", "band", "mode"];
+// Frequency, not band: the session holds what the radio is set to, and the band reads off it.
+const station: (keyof QSO)[] = ["power", "myRig", "myAntenna", "frequency", "mode"];
 
 export const templates: Record<SessionTemplate, TemplateDef> = {
     pota: {
@@ -93,7 +95,7 @@ export const templates: Record<SessionTemplate, TemplateDef> = {
     contest: {
         label: "Contest",
         icon: "trophy",
-        fields: ["contestId", "band", "mode", "power", "myLocator", "myCallsign"],
+        fields: ["contestId", "frequency", "mode", "power", "myLocator", "myCallsign"],
         quickLog: true,
         plainRst: true,
         contest: true,
@@ -188,10 +190,10 @@ export const sessionDupeKey = (qso: Pick<QSO, "callsign" | "band" | "mode">): st
 export const sessionDupeKeys = (qsos: QSO[]): Set<string> => new Set(qsos.map(sessionDupeKey));
 
 // Fields a session can hold defaults for. Same list as the carry-over setting — a session is the
-// same idea made explicit and time-boxed — plus what only a contest needs.
+// same idea made explicit and time-boxed — plus what only a contest needs. No `band`: it isn't a
+// field anyone sets, it's what the frequency works out to.
 export const sessionFields: (keyof QSO)[] = [
     "frequency",
-    "band",
     "mode",
     "power",
     "myQth",
@@ -210,6 +212,33 @@ export const sessionFields: (keyof QSO)[] = [
     "contestId",
     "stxString",
 ];
+
+/**
+ * The fields that only mean anything while one particular session runs: the reference it activates,
+ * the contest it's in, and the SIG pair those go out in. Everything else a session holds — rig,
+ * antenna, power, band, QTH — is ambient and outlives the outing, so it keeps carrying over.
+ */
+export const sessionActivityFields: (keyof QSO)[] = [
+    "myPota",
+    "myWwff",
+    "mySota",
+    "myIota",
+    "mySig",
+    "mySigInfo",
+    "contestId",
+    "stxString",
+];
+
+// Carry-over minus the activity fields when the QSO being copied from belongs to a session this one
+// doesn't: ending a POTA activation and logging the next QSO used to leave it in the same park.
+export const carryOverFields = (
+    fields: (keyof QSO)[],
+    previousQso?: Pick<QSO, "sessionId">,
+    session?: Session,
+): (keyof QSO)[] =>
+    previousQso?.sessionId && previousQso.sessionId !== session?.id
+        ? fields.filter((f) => !sessionActivityFields.includes(f))
+        : fields;
 
 export const sessionFieldLabels: Partial<Record<keyof QSO, string>> = {
     frequency: "Frequency",
@@ -240,6 +269,7 @@ export const sessionFieldLabel = (field: keyof QSO): string => sessionFieldLabel
 export const sessionChipLabel = (field: keyof QSO, value: unknown): string => {
     if (value === undefined || value === "") return sessionFieldLabel(field);
     if (field === "power") return `${value}W`;
-    if (field === "frequency") return `${value}MHz`;
+    // Both halves on the one chip, since the band no longer has a chip of its own to sit on.
+    if (field === "frequency") return `${freq2band(value as number) || "?"} ${value}MHz`;
     return String(value);
 };

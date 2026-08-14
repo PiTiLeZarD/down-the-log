@@ -210,6 +210,13 @@ describe("record2qso", () => {
         expect(record2qso(record({ band: "40M", freq: "14.2" })).band).toBe("40m");
     });
 
+    // Nothing sets the band by hand any more, so the export is the last chance to work one out —
+    // and plenty of logbooks read BAND rather than FREQ.
+    test("writes a BAND even for a QSO that never stored one", () => {
+        expect(qso2record({ ...qso, band: undefined }).band).toBe("20m");
+        expect(qso2record({ ...qso, band: undefined, frequency: undefined }).band).toBeUndefined();
+    });
+
     test("normalises the grid squares", () => {
         const q = record2qso(record({ gridsquare: "qg62NL", my_gridsquare: "io91WM" }));
         expect(q.locator).toBe("QG62nl");

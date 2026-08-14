@@ -181,7 +181,10 @@ describe("sessionDupeKey", () => {
 describe("sessionChipLabel", () => {
     test("carries the unit where the number alone wouldn't say", () => {
         expect(sessionChipLabel("power", 5)).toBe("5W");
-        expect(sessionChipLabel("frequency", 14.244)).toBe("14.244MHz");
+        // The band rides along on the frequency chip: it has no chip of its own to sit on now that
+        // it isn't a field a session holds.
+        expect(sessionChipLabel("frequency", 14.244)).toBe("20m 14.244MHz");
+        expect(sessionChipLabel("frequency", 13.5)).toBe("? 13.5MHz");
     });
 
     test("shows the value where it speaks for itself", () => {

@@ -28,6 +28,7 @@ import { useHydrated, useStore } from "../lib/utils/store";
 import { Alert } from "../lib/ui/alert";
 import { Button } from "../lib/ui/button";
 import { Typography } from "../lib/ui/typography";
+import { carryOverFields } from "../lib/utils/session";
 import { useActiveSession } from "../lib/utils/use-session";
 import { useSettings } from "../lib/utils/use-settings";
 
@@ -77,8 +78,11 @@ const Index = () => {
     const callsign = useWatch({ control: methods.control, name: "callsign" });
     const listFilters = useMemo(() => (callsign ? [(q: QSO) => q.callsign.includes(callsign)] : undefined), [callsign]);
     const resetQso = (previousQso?: QSO) => {
+        const previous = previousQso || lastQso;
         let qso = prefillMyStation(createQso(""), myStationFromSettings(settings, currentLocation));
-        if (previousQso || lastQso) qso = carryOver(qso, previousQso || (lastQso as QSO), settings.carryOver);
+        // The park, summit or contest the previous QSO was worked in doesn't follow the operator out
+        // of that session: ending an activation and logging again kept them in the same park.
+        if (previous) qso = carryOver(qso, previous, carryOverFields(settings.carryOver, previous, session));
         // After the carry-over: the session is the authority on the fields it holds, and going last
         // is what stops the previous QSO's values from winning over the ones the operator just set.
         qso = prefillSession(qso, session);

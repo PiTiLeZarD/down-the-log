@@ -1,3 +1,4 @@
+import { qsoBand } from "../../components/qso";
 import { unique } from "../arrays";
 import { roundTo } from "../math";
 import { FileFormatAPI, QSORecord, qso2record } from "./common";
@@ -92,7 +93,12 @@ export const CabrilloAPI: FileFormatAPI = {
             tag("START-OF-LOG", "3.0"),
             ...((contest) => (contest ? [tag("CONTEST", contest)] : []))(qsos[0].contestId || qsos[0].sig),
             tag("callsign", qsos[0].myCallsign),
-            tag("CATEGORY-BAND", unique(qsos.map((q) => q.band)).filter((e) => !!e).length > 1 ? "ALL" : qsos[0].band),
+            // Derived rather than read off the QSO: the band is a view of the frequency now, and a
+            // row that never got one stored would have declared the whole log's category empty.
+            tag(
+                "CATEGORY-BAND",
+                unique(qsos.map(qsoBand)).filter((e) => !!e).length > 1 ? "ALL" : qsoBand(qsos[0]),
+            ),
             tag(
                 "CATEGORY-MODE",
                 unique(qsos.map((q) => q.mode)).filter((e) => !!e).length > 1 ? "MIXED" : qsos[0].mode,

@@ -11,13 +11,17 @@ import { Stack } from "../stack";
 export type ParkReferenceInputProps = {
     event: EventType;
     mine?: boolean;
+    // Told which field the cross reference was just written into. The QSO form draws every programme
+    // already, but a session only draws the fields it holds — activating a park that is also a WWFF
+    // has to add that field to the session or the value has nowhere to live.
+    onCrossFill?: (field: keyof QSO) => void;
 };
 
 const flip = (obj: Record<string, string>): Record<string, string> =>
     Object.fromEntries(Object.entries(obj).map((a) => a.reverse()));
 const linksFlipped = flip(links);
 
-export const ParkReferenceInput = ({ event, mine = false }: ParkReferenceInputProps) => {
+export const ParkReferenceInput = ({ event, mine = false, onCrossFill }: ParkReferenceInputProps) => {
     const { getValues, setValue, watch } = useFormContext<QSO>();
     const key = (mine ? `my${capitalise(event)}` : event) as keyof QSO;
     const value = watch(key) as string;
@@ -43,7 +47,10 @@ export const ParkReferenceInput = ({ event, mine = false }: ParkReferenceInputPr
         if (qso[locatorKey] != locator) setValue(locatorKey, locator);
     }, [value, event, mine, getValues, setValue]);
 
-    const handleHintClick = () => setValue(otherKey, hint);
+    const handleHintClick = () => {
+        setValue(otherKey, hint);
+        onCrossFill?.(otherKey);
+    };
 
     return (
         <Stack>
@@ -52,8 +59,10 @@ export const ParkReferenceInput = ({ event, mine = false }: ParkReferenceInputPr
             {hint && (
                 <Button
                     variant="chip"
-                    colour="secondary"
-                    text={`Match found for ${otherEvent}`}
+                    colour="primary"
+                    startIcon="add"
+                    text={`Also ${otherEvent.toUpperCase()} ${hint}`}
+                    numberOfLines={1}
                     onPress={handleHintClick}
                 />
             )}

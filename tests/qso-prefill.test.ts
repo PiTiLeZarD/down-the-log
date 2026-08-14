@@ -16,6 +16,7 @@ import {
     prefillSameCallsign,
     prefillSession,
     qsosByCallsign,
+    withBand,
 } from "../src/lib/components/qso";
 import { freq2band } from "../src/lib/data/bands";
 import { newSession } from "../src/lib/utils/session";
@@ -193,10 +194,23 @@ describe("prefillOperating", () => {
         expect(filled).toMatchObject({ rst_sent: "599", rst_received: "339" });
     });
 
-    test("drops a frequency left over from another band", () => {
+    // The old rule was the other way round and it's what made the pair drift: a band the operator
+    // never set beat the frequency they did, so a QSO typed on 7.074 was logged as 20m.
+    test("lets the frequency decide the band", () => {
         const filled = prefillOperating(qso({ band: "20m", mode: "SSB", frequency: 7.074 }), {});
-        expect(filled.band).toBe("20m");
-        expect(freq2band(filled.frequency)).toBe("20m");
+        expect(filled.band).toBe("40m");
+        expect(filled.frequency).toBe(7.074);
+    });
+
+    test("falls back to the band's own corner when there's no frequency to go on", () => {
+        const filled = prefillOperating(qso({ band: "40m", mode: "FT8" }), {});
+        expect(filled.frequency).toBe(7.074);
+        expect(filled.band).toBe("40m");
+    });
+
+    test("keeps a frequency that belongs to no band, and the band that explains it", () => {
+        const filled = prefillOperating(qso({ band: "20m", mode: "SSB", frequency: 13.5 }), {});
+        expect(filled).toMatchObject({ frequency: 13.5, band: "20m" });
     });
 
     test("keeps the band and mode the QSO already carries", () => {
@@ -345,10 +359,19 @@ describe("prefillSession", () => {
         expect(freq2band(filled.frequency)).toBe("20m");
     });
 
+    // The session sets the frequency and nothing else; the band catches up when the QSO is written,
+    // which is the one place it's derived.
     test("a session frequency pulls the band along with it", () => {
         const onFrequency = newSession("casual", { frequency: 14.175 });
         const filled = prefillSession(qso({ band: "40m", mode: "SSB", frequency: 7.074 }), onFrequency);
-        expect(filled).toMatchObject({ frequency: 14.175, band: "20m" });
+        expect(filled.frequency).toBe(14.175);
+        expect(withBand(filled).band).toBe("20m");
+    });
+
+    test("a session saved with a band and no frequency still jumps to it", () => {
+        const onBand = newSession("casual", { band: "20m" });
+        const filled = prefillSession(qso({ band: "40m", mode: "SSB", frequency: 7.074 }), onBand);
+        expect(freq2band(filled.frequency)).toBe("20m");
     });
 
     test("leaves the pair alone when the session names both", () => {

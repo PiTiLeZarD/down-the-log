@@ -158,6 +158,11 @@ const boolean = {
 
 export const fields: FieldDescriptor[] = [
     field("band", "band", {
+        // BAND is written whatever happens: the QSO's own band, and failing that the one its
+        // frequency works out to. Nothing sets the band by hand any more, so a row that reached the
+        // store without one — an old import, a hand-edited record — would otherwise export a QSO
+        // with no band at all, and plenty of logbooks read BAND rather than FREQ.
+        to: (v, qso) => v || freq2band(qso.frequency) || undefined,
         from: (v, record) =>
             resolveBand(v) || (record.freq ? freq2band(+(record.freq as string)) : undefined) || undefined,
     }),
