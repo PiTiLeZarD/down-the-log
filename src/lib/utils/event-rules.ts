@@ -46,11 +46,21 @@ const grouping = {
     sig: groupByActivation,
 };
 
+// How many QSOs an activation needs. Named separately from the rules so a progress display can show
+// what it's counting towards — the rules only ever answer with a status.
+export const targets: Record<EventType, number | undefined> = {
+    wwff: 44,
+    pota: 10,
+    sota: 4,
+    iota: undefined,
+    sig: undefined,
+};
+
 export type EventRule = (qsos: QSO[], max?: number) => EventStatus;
 export const rules: Record<EventType, EventRule> = {
-    wwff: (qsos: QSO[], max = 44) => (qsos.length >= max ? "Activated" : "WIP"),
-    pota: (qsos: QSO[]) => (qsos.length >= 10 ? "Activated" : "Incomplete"),
-    sota: (qsos: QSO[]) => (qsos.length >= 4 ? "Activated" : "WIP"),
+    wwff: (qsos: QSO[], max = targets.wwff as number) => (qsos.length >= max ? "Activated" : "WIP"),
+    pota: (qsos: QSO[]) => (qsos.length >= (targets.pota as number) ? "Activated" : "Incomplete"),
+    sota: (qsos: QSO[]) => (qsos.length >= (targets.sota as number) ? "Activated" : "WIP"),
     iota: (qsos: QSO[]) => (qsos.length >= 0 ? "Activated" : "WIP"),
     sig: (qsos: QSO[]) => (qsos.length >= 0 ? "Activated" : "WIP"),
 };

@@ -14,8 +14,10 @@ import {
     prefillMyStation,
     prefillOperating,
     prefillSameCallsign,
+    prefillSession,
     qsosByCallsign,
 } from "../src/lib/components/qso";
+import { newSession } from "../src/lib/utils/session";
 
 const at = (iso: string) => DateTime.fromISO(iso, { zone: "utc" });
 const qso = (fields: Partial<QSO> = {}): QSO => ({
@@ -254,6 +256,89 @@ describe("extrapolate", () => {
 
     test("still fills the location on an empty log", () => {
         expect(extrapolate(createQso("VK4ALE"), [], [])).toMatchObject({ country: "AUS", continent: "OC" });
+    });
+
+    test("stamps the running session and fills what the carry-over left empty", () => {
+        const session = newSession("pota", { myPota: "VK-0001", power: 5 });
+        const logged = extrapolate(createQso("G4ABC"), [], [], session);
+        expect(logged).toMatchObject({ sessionId: session.id, myPota: "VK-0001", power: 5 });
+    });
+
+    test("leaves a value the operator typed over the session's alone", () => {
+        const session = newSession("pota", { myPota: "VK-0001", power: 5 });
+        const typed = { ...createQso("G4ABC"), power: 100 };
+        expect(extrapolate(typed, [], [], session).power).toBe(100);
+    });
+
+    test("a carried-over value beats the session's, having been logged on this QSO already", () => {
+        const session = newSession("pota", { power: 5 });
+        const previous = qso({ power: 100 });
+        expect(extrapolate(createQso("G4ABC"), [previous], ["power"], session).power).toBe(100);
+    });
+});
+
+describe("prefillSession", () => {
+    const session = newSession("pota", { myPota: "VK-0001", power: 5, myRig: "FT-891" });
+
+    test("does nothing without a session", () => {
+        expect(prefillSession(qso())).toEqual(qso());
+    });
+
+    test("overrides by default: the session is the authority on its own fields", () => {
+        expect(prefillSession(qso({ power: 100 }), session)).toMatchObject({
+            power: 5,
+            myPota: "VK-0001",
+            myRig: "FT-891",
+            sessionId: session.id,
+        });
+    });
+
+    test("in fill mode only patches blanks", () => {
+        expect(prefillSession(qso({ power: 100 }), session, "fill")).toMatchObject({ power: 100, myPota: "VK-0001" });
+    });
+
+    test("stamps the session id in either mode", () => {
+        expect(prefillSession(qso(), session, "fill").sessionId).toBe(session.id);
+    });
+
+    test("skips defaults that were cleared rather than writing empties over the QSO", () => {
+        const cleared = { ...newSession("casual", { myRig: "" }), id: "s" };
+        expect(prefillSession(qso({ myRig: "FT-817" }), cleared).myRig).toBe("FT-817");
+    });
+
+    test("carries the contest's id and sent exchange", () => {
+        const contest = {
+            ...newSession("contest"),
+            contest: { contestId: "CQ-WW-SSB", serial: 7, exchangeSent: "30" },
+        };
+        expect(prefillSession(qso(), contest)).toMatchObject({ contestId: "CQ-WW-SSB", stxString: "30" });
+    });
+});
+
+describe("the reset chain", () => {
+    // What src/app/index.tsx does on every new QSO: station, then carry-over, then the session.
+    const reset = (previous: QSO, session: ReturnType<typeof newSession>) =>
+        prefillOperating(
+            prefillSession(
+                carryOver(
+                    prefillMyStation(createQso(""), { myCallsign: "VK4ALE" }),
+                    previous,
+                    ["power", "myPota", "band"],
+                ),
+                session,
+            ),
+            { mode: "SSB", band: "20m" },
+        );
+
+    test("the session wins over what the last QSO was logged with", () => {
+        const previous = qso({ power: 100, myPota: "VK-9999", band: "40m" });
+        const session = newSession("pota", { myPota: "VK-0001", power: 5 });
+        expect(reset(previous, session)).toMatchObject({ myPota: "VK-0001", power: 5, sessionId: session.id });
+    });
+
+    test("fields the session doesn't hold still carry over", () => {
+        const previous = qso({ power: 100, myPota: "VK-9999", band: "40m" });
+        expect(reset(previous, newSession("pota", { myPota: "VK-0001" })).band).toBe("40m");
     });
 });
 

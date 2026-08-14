@@ -17,14 +17,17 @@ import {
     myStationFromSettings,
     prefillMyStation,
     prefillOperating,
+    prefillSession,
     useQsos,
 } from "../lib/components/qso";
 import { QsoHeatmap } from "../lib/components/qso-heatmap";
 import { QsoList } from "../lib/components/qso/qso-list";
+import { SessionBar } from "../lib/components/session/session-bar";
 import { useHydrated, useStore } from "../lib/utils/store";
 import { Alert } from "../lib/ui/alert";
 import { Button } from "../lib/ui/button";
 import { Typography } from "../lib/ui/typography";
+import { useActiveSession } from "../lib/utils/use-session";
 import { useSettings } from "../lib/utils/use-settings";
 
 const styles = StyleSheet.create((theme) => ({
@@ -53,6 +56,8 @@ const Index = () => {
     const currentLocation = useStore((state) => state.currentLocation);
     const settings = useSettings();
     const log = useStore((state) => state.log);
+    const session = useActiveSession();
+    const bumpSerial = useStore((state) => state.bumpSerial);
     const listQsos = useFilteredQsos();
     const methods = useForm<QSO>({ defaultValues: {} });
     const { navigate } = useRouter();
@@ -75,6 +80,9 @@ const Index = () => {
     const resetQso = (previousQso?: QSO) => {
         let qso = prefillMyStation(createQso(""), myStationFromSettings(settings, currentLocation));
         if (previousQso || lastQso) qso = carryOver(qso, previousQso || (lastQso as QSO), settings.carryOver);
+        // After the carry-over: the session is the authority on the fields it holds, and going last
+        // is what stops the previous QSO's values from winning over the ones the operator just set.
+        qso = prefillSession(qso, session);
         methods.reset(prefillOperating(qso, { mode: "SSB", band: "20m" }));
     };
     // Resetting reads the settings and the current location, but only a new QSO in the log or an
@@ -84,12 +92,19 @@ const Index = () => {
     useEffect(() => {
         if (callsign === "") resetForm();
     }, [callsign]);
+    // Starting, stopping or retuning a session applies to the QSO being typed, not just the next
+    // one. Keyed on the defaults rather than the session itself so a serial bump doesn't reset.
+    useEffect(() => resetForm(), [session?.id, session?.defaults]);
 
     const handleAdd = () => {
-        const qso: QSO = extrapolate(methods.getValues(), qsos, settings.carryOver);
+        const qso: QSO = extrapolate(methods.getValues(), qsos, settings.carryOver, session);
         qso.date = DateTime.utc();
+        if (session?.contest) {
+            qso.stx = session.contest.serial;
+            bumpSerial(session.id);
+        }
         log(qso);
-        if (!settings.contestMode) navigate(`/qso?qsoId=${qso.id}`);
+        if (!session?.quickLog) navigate(`/qso?qsoId=${qso.id}`);
         resetQso(qso);
     };
 
@@ -118,6 +133,7 @@ const Index = () => {
                 />
             </View>
             <View style={styles.inputs}>
+                <SessionBar />
                 <FormProvider {...methods}>
                     <CallsignInput handleAdd={handleAdd} />
                 </FormProvider>

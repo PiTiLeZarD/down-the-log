@@ -11,6 +11,7 @@ import { Mode, isDigital } from "../../data/modes";
 import { baseCallsign, getCallsignData, parseCallsign } from "../../utils/callsign";
 import { maidenDistance, maidenhead2Latlong } from "../../utils/locator";
 import { findZone } from "../../utils/polydec";
+import type { Session } from "../../utils/session";
 import { Settings, useStore } from "../../utils/store";
 
 // sort() is in-place, so sorting the array zustand handed us would reorder the store itself.
@@ -67,6 +68,15 @@ export type QSO = {
     myAntenna?: string;
     myState?: string;
     myCountry?: string;
+    // Which operating session logged this. See utils/session.
+    sessionId?: string;
+    contestId?: string;
+    // Contest exchange. The serials are the numbered ones; the strings carry anything else — a
+    // section, a zone, an age — and either pair may be used on its own.
+    stx?: number;
+    srx?: number;
+    stxString?: string;
+    srxString?: string;
     // `field:code` keys of the data issues the operator has decided are fine on this QSO. See qso-issues.
     ignoredIssues?: string[];
     honeypot?: Record<string, string>;
@@ -121,6 +131,37 @@ export const carryOver = (qso: QSO, previousQSO: QSO, carryOver: (keyof QSO)[] =
     ...qso,
     ...Object.fromEntries(carryOver.map((f) => [f, previousQSO[f]]).filter(([, v]) => v !== undefined)),
 });
+
+/**
+ * Stamps the running session onto a QSO.
+ *
+ * "override" is the reset path: the session is the authority for the fields it holds, so it runs
+ * after `carryOver` and beats whatever the last QSO dragged in. "fill" is the log path — by then the
+ * operator may have deliberately changed one of those fields on this QSO and that has to survive, so
+ * only blanks are patched. Either way the QSO comes out stamped with the session id.
+ */
+export const prefillSession = (qso: QSO, session?: Session, mode: "override" | "fill" = "override"): QSO => {
+    if (!session) return qso;
+
+    const defaults = Object.fromEntries(
+        Object.entries(session.defaults).filter(
+            ([field, value]) =>
+                value !== undefined && value !== "" && (mode === "override" || qso[field as keyof QSO] === undefined),
+        ),
+    );
+
+    return {
+        ...qso,
+        ...defaults,
+        sessionId: session.id,
+        ...(session.contest
+            ? {
+                  contestId: session.contest.contestId || qso.contestId,
+                  stxString: session.contest.exchangeSent || qso.stxString,
+              }
+            : {}),
+    };
+};
 
 export const prefillSameCallsign = (qso: QSO, previousQSO: QSO): QSO => ({
     ...qso,
@@ -215,11 +256,16 @@ export const prefillLocation = (qso: QSO) => {
     };
 };
 
-export const extrapolate = (qso: QSO, qsos: QSO[], carryOverFields: (keyof QSO)[]): QSO => {
+export const extrapolate = (qso: QSO, qsos: QSO[], carryOverFields: (keyof QSO)[], session?: Session): QSO => {
     if (qsos.length) qso = carryOver(qso, qsos[0], carryOverFields);
 
     const lastQsoWithCallsign = qsos.filter((q) => baseCallsign(q.callsign) === baseCallsign(qso.callsign));
     if (lastQsoWithCallsign.length) qso = prefillSameCallsign(qso, lastQsoWithCallsign[0]);
+
+    // Last, and only filling blanks. The form was already reset with the session's values in
+    // "override" mode, so anything different in here is something the operator typed on purpose;
+    // this pass is what stamps the session id and catches fields the carry-over left empty.
+    qso = prefillSession(qso, session, "fill");
 
     return prefillLocation(qso);
 };

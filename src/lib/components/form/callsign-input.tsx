@@ -1,13 +1,18 @@
-import { useEffect, useEffectEvent } from "react";
+import React, { useEffect, useEffectEvent } from "react";
 import { useFormContext } from "react-hook-form";
 import { View } from "react-native";
 import { StyleSheet } from "react-native-unistyles";
 import { baseCallsign } from "../../utils/callsign";
 import { HamQTHCallsignData, useHamqth } from "../../utils/hamqth";
+import { sessionDupeKey, sessionDupeKeys, sessionQsos } from "../../utils/session";
+import { Alert } from "../../ui/alert";
 import { Button } from "../../ui/button";
 import { Input } from "../../ui/input";
+import { Typography } from "../../ui/typography";
+import { useActiveSession } from "../../utils/use-session";
 import { useSettings } from "../../utils/use-settings";
 import { QSO, useQsos } from "../qso";
+import { SessionStartButton } from "../session/session-start-button";
 import { Stack } from "../stack";
 import { BandFreqInput } from "./band-freq-input";
 import { CallsignInputExtra } from "./callsign-input-extra";
@@ -37,9 +42,17 @@ export type CallsignInputProps = {
 export const CallsignInput = ({ handleAdd }: CallsignInputProps) => {
     const qsos = useQsos();
     const { watch, setValue } = useFormContext<QSO>();
-    const { inputBarConfig, contestMode } = useSettings();
+    const { inputBarConfig } = useSettings();
+    const session = useActiveSession();
 
     const callsign = watch("callsign");
+    const band = watch("band");
+    const mode = watch("mode");
+
+    // Worked-before is only interesting within the session that's running — the same station on the
+    // same band and mode. Indexed once per session so typing a callsign isn't a scan of the log.
+    const dupeKeys = React.useMemo(() => sessionDupeKeys(sessionQsos(qsos, session)), [qsos, session]);
+    const isDupe = !!session && !!callsign && dupeKeys.has(sessionDupeKey({ callsign, band, mode }));
     const previousQso = qsos.filter((q) => baseCallsign(q.callsign) === baseCallsign(callsign));
     const hamqth = useHamqth(callsign);
     let hamqthCSData: Partial<HamQTHCallsignData> | undefined = hamqth.data;
@@ -67,7 +80,17 @@ export const CallsignInput = ({ handleAdd }: CallsignInputProps) => {
     return (
         <Stack style={styles.inputBox}>
             <CallsignInputExtra value={callsign} hamqthCSData={hamqthCSData} />
+            {/* A warning, never a block: a second contact can be perfectly valid, and the operator
+                is the one who knows the rules of what they're in. */}
+            {isDupe && (
+                <Alert severity="warning">
+                    <Typography>
+                        {callsign} already worked in this session on {band} {mode}
+                    </Typography>
+                </Alert>
+            )}
             <Stack direction="row" gap="xxl">
+                <SessionStartButton />
                 {inputBarConfig.includes("sig") && (
                     <View>
                         <Events />
@@ -94,15 +117,32 @@ export const CallsignInput = ({ handleAdd }: CallsignInputProps) => {
                 {inputBarConfig.includes("qth") && <FormField name="qth" style={styles.input} placeholder="QTH" />}
                 {inputBarConfig.includes("rst_received") && (
                     <View>
-                        {contestMode && <FormField name="rst_received" style={styles.input} placeholder="RST rcvd" />}
-                        {!contestMode && <Signal field="rst_received" />}
+                        {session?.plainRst && (
+                            <FormField name="rst_received" style={styles.input} placeholder="RST rcvd" />
+                        )}
+                        {!session?.plainRst && <Signal field="rst_received" />}
                     </View>
                 )}
                 {inputBarConfig.includes("rst_sent") && (
                     <View>
-                        {contestMode && <FormField name="rst_sent" style={styles.input} placeholder="RST sent" />}
-                        {!contestMode && <Signal field="rst_sent" />}
+                        {session?.plainRst && <FormField name="rst_sent" style={styles.input} placeholder="RST sent" />}
+                        {!session?.plainRst && <Signal field="rst_sent" />}
                     </View>
+                )}
+                {/* The exchange isn't part of the customisable input bar: in a contest it's the whole
+                    point of the QSO, and outside one there's nothing to show. */}
+                {session?.contest && (
+                    <>
+                        <View>
+                            <Typography variant="em">#{String(session.contest.serial).padStart(3, "0")}</Typography>
+                        </View>
+                        <View>
+                            <FormField name="srx" style={styles.input} placeholder="Serial rcvd" numeric />
+                        </View>
+                        <View>
+                            <FormField name="srxString" style={styles.input} placeholder="Exch rcvd" />
+                        </View>
+                    </>
                 )}
                 <View>
                     <Button onPress={() => handleAdd()} startIcon="add" />

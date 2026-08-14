@@ -89,6 +89,7 @@ const RootLayout = () => {
                             <Stack.Screen name="settings" />
                             <Stack.Screen name="events" />
                             <Stack.Screen name="qsl" />
+                            <Stack.Screen name="sessions" />
                             <Stack.Screen name="stats" />
                         </Stack>
                     </ThemeProvider>

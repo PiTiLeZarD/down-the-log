@@ -111,11 +111,8 @@ const Settings = () => {
                     </Typography>
                     <UnitsSetting />
                     <DateFormatSetting />
-                    <Typography underline>Contest Mode:</Typography>
-                    <Switch
-                        value={settings.contestMode != undefined ? settings.contestMode : false}
-                        onValueChange={(v) => updateSetting("contestMode", v)}
-                    />
+                    {/* Contest mode used to be a switch here. It's a session template now — start one
+                        from the bar above the input box on the log screen. */}
                 </Stack>
                 <Stack>
                     <Typography underline>Favourite Bands:</Typography>

@@ -4,6 +4,7 @@ import { QSO } from "../src/lib/components/qso";
 import { getFileApiFromFilename } from "../src/lib/utils/file-format";
 import { AdifAPI } from "../src/lib/utils/file-format/adif";
 import { AdxAPI } from "../src/lib/utils/file-format/adx";
+import { CabrilloAPI } from "../src/lib/utils/file-format/cabrillo";
 import {
     QSORecord,
     castAs,
@@ -43,6 +44,16 @@ const qso: QSO = {
     myPota: "VK-0001",
     pota: "VK-0002",
     honeypot: { weird_field: "keepme" },
+};
+
+const contestQso: QSO = {
+    ...qso,
+    sessionId: "session-1",
+    contestId: "CQ-WW-SSB",
+    stx: 7,
+    srx: 42,
+    stxString: "30",
+    srxString: "14",
 };
 
 const record = (fields: Partial<Record<string, string>>): QSORecord =>
@@ -135,6 +146,19 @@ describe("qso2record", () => {
     test("carries the honeypot across", () => {
         expect(qso2record(qso).honeypot).toEqual({ weird_field: "keepme" });
         expect(qso2record({ ...qso, honeypot: undefined }).honeypot).toEqual({});
+    });
+
+    test("writes the contest exchange to its own ADIF fields", () => {
+        const r = qso2record(contestQso);
+        expect(r.contest_id).toBe("CQ-WW-SSB");
+        expect(r.stx).toBe("7");
+        expect(r.srx).toBe("42");
+        expect(r.stx_string).toBe("30");
+        expect(r.srx_string).toBe("14");
+    });
+
+    test("writes the session id under APP_, where other loggers will leave it alone", () => {
+        expect(qso2record(contestQso)["app_down-the-log_session_id"]).toBe("session-1");
     });
 });
 
@@ -408,6 +432,55 @@ describe("ADX", () => {
         const fromAdif = record2qso(AdifAPI.parseFile(AdifAPI.generateFile([qso], header()))[0]);
         const fromAdx = record2qso(AdxAPI.parseFile(AdxAPI.generateFile([qso], header()))[0]);
         expect({ ...fromAdx, id: "" }).toEqual({ ...fromAdif, id: "" });
+    });
+});
+
+describe("Cabrillo", () => {
+    const line = (q: QSO) => CabrilloAPI.fromRecord(qso2record(q));
+
+    test("writes the serials into the exchange columns, zero padded", () => {
+        expect(line({ ...contestQso, stxString: undefined, srxString: undefined })).toContain(" 007 ");
+        expect(line({ ...contestQso, stxString: undefined, srxString: undefined })).toContain(" 042 ");
+    });
+
+    test("writes a serial and the rest of the exchange together", () => {
+        expect(line(contestQso)).toContain("007 30");
+        expect(line(contestQso)).toContain("042 14");
+    });
+
+    test("falls back to the reference for an activation with no exchange", () => {
+        const activation = { ...qso, myPota: undefined, mySigInfo: "VKFF-0123", sigInfo: "VKFF-0456" };
+        expect(line(activation)).toContain("VKFF-0123");
+        expect(line(activation)).toContain("VKFF-0456");
+    });
+
+    test("reads a serial exchange back off its own line", () => {
+        const back = CabrilloAPI.toRecord(line(contestQso));
+        expect(back).toMatchObject({ stx: "007", srx: "042", stx_string: "30", srx_string: "14", call: "VK4ALE" });
+    });
+
+    test("reads a reference exchange back as the reference, not as an exchange", () => {
+        const activation = { ...qso, mySigInfo: "VKFF-0123", sigInfo: "VKFF-0456" };
+        const back = CabrilloAPI.toRecord(line(activation));
+        expect(back).toMatchObject({ my_sig_info: "VKFF-0123", sig_info: "VKFF-0456", call: "VK4ALE" });
+        expect(back.stx).toBeUndefined();
+    });
+
+    test("keeps the fixed fields in place whatever the exchange is worth", () => {
+        expect(CabrilloAPI.toRecord(line(contestQso))).toMatchObject({
+            mode: "SSB",
+            qso_date: "20240101",
+            time_on: "101500",
+            operator: "G4ABC",
+            rst_sent: "59",
+            rst_rcvd: "57",
+        });
+    });
+
+    test("names the contest from CONTEST_ID, falling back to SIG", () => {
+        expect(CabrilloAPI.generateFile([contestQso], header())).toContain("CONTEST: CQ-WW-SSB");
+        expect(CabrilloAPI.generateFile([{ ...qso, sig: "POTA" }], header())).toContain("CONTEST: POTA");
+        expect(CabrilloAPI.generateFile([qso], header())).not.toContain("CONTEST:");
     });
 });
 

@@ -12,6 +12,7 @@ import type { QSO } from "../components/qso";
 import type { Band } from "../data/bands";
 import type { Mode } from "../data/modes";
 import type { HamQTHSettingsType } from "./hamqth";
+import type { Session } from "./session";
 
 // Only the operator's identity lives here. The rest of the station — rig, antenna, QTH, country —
 // is per-QSO: there's rarely just one of each, so it's set on the QSO and carried over from there.
@@ -22,7 +23,6 @@ export type Settings = {
     showHeatmap: boolean;
     showSpots: boolean;
     showFilters: boolean;
-    contestMode: boolean;
     // Events list/map choice. It lives here rather than in the page's state so the view survives
     // navigating away; the toggle itself is only rendered on the Events page.
     eventsMap: boolean;
@@ -47,7 +47,6 @@ const defaultSettings: Settings = {
     datemonth: false,
     timeoffThreshold: 10,
     showFilters: false,
-    contestMode: false,
     eventsMap: false,
     favouriteBands: [],
     favouriteModes: [],
@@ -71,9 +70,14 @@ const defaultSettings: Settings = {
     ],
 };
 
+// Settings that no longer exist, dropped on the way out of storage. `contestMode` became a session:
+// it only ever drove two bits of UI, so there is nothing to migrate — the operator starts a contest
+// session instead. See utils/session.
+const legacySettings = ["contestMode"];
+
 export const fixSettings = (settings: Partial<Settings>): Settings =>
     ({
-        ...settings,
+        ...Object.fromEntries(Object.entries(settings).filter(([k]) => !legacySettings.includes(k))),
         ...Object.fromEntries(Object.entries(defaultSettings).filter(([k, v]) => !(k in settings))),
     }) as Settings;
 
@@ -82,6 +86,10 @@ type DTLStoreProps = {
     filters: QsoFilter[];
     settings: Settings;
     currentLocation: string;
+    // Every session ever run, newest last. The active one is the one `activeSessionId` points at and
+    // it's held by id rather than by value so ending it is a one-field write.
+    sessions: Session[];
+    activeSessionId?: string;
 };
 
 type DTLStoreActionsProps = {
@@ -91,6 +99,11 @@ type DTLStoreActionsProps = {
     deleteLog: (qso: QSO) => void;
     resetStore: () => void;
     setCurrentLocation: (location: string) => void;
+    startSession: (session: Session) => void;
+    updateSession: (id: string, patch: Partial<Session>) => void;
+    endSession: (id: string) => void;
+    deleteSession: (id: string) => void;
+    bumpSerial: (id: string) => void;
 };
 
 type DTLStoreActionsMutatorProps = (
@@ -103,6 +116,7 @@ const InitialStore: DTLStoreProps = {
     filters: [],
     settings: defaultSettings,
     currentLocation: "",
+    sessions: [],
 };
 
 const StoreActions: DTLStoreActionsMutatorProps = (set) => ({
@@ -124,14 +138,45 @@ const StoreActions: DTLStoreActionsMutatorProps = (set) => ({
     deleteLog: (qso) => set((state) => ({ qsos: [...state.qsos.filter((q) => q.id != qso.id)] })),
     resetStore: () => set(() => ({ qsos: [] })),
     setCurrentLocation: (location) => set(() => ({ currentLocation: location })),
+    // Starting a session ends whatever was running: two at once would leave it ambiguous which one
+    // owns the next QSO.
+    startSession: (session) =>
+        set((state) => ({
+            sessions: [
+                ...state.sessions.map((s) =>
+                    s.id === state.activeSessionId && !s.endedAt ? { ...s, endedAt: DateTime.utc() } : s,
+                ),
+                session,
+            ],
+            activeSessionId: session.id,
+        })),
+    updateSession: (id, patch) =>
+        set((state) => ({ sessions: state.sessions.map((s) => (s.id === id ? { ...s, ...patch } : s)) })),
+    endSession: (id) =>
+        set((state) => ({
+            sessions: state.sessions.map((s) => (s.id === id ? { ...s, endedAt: DateTime.utc() } : s)),
+            activeSessionId: state.activeSessionId === id ? undefined : state.activeSessionId,
+        })),
+    // The QSOs it logged keep their sessionId and stay in the log: deleting a session forgets the
+    // outing's settings, not the contacts.
+    deleteSession: (id) =>
+        set((state) => ({
+            sessions: state.sessions.filter((s) => s.id !== id),
+            activeSessionId: state.activeSessionId === id ? undefined : state.activeSessionId,
+        })),
+    bumpSerial: (id) =>
+        set((state) => ({
+            sessions: state.sessions.map((s) =>
+                s.id === id && s.contest ? { ...s, contest: { ...s.contest, serial: s.contest.serial + 1 } } : s,
+            ),
+        })),
 });
 
 export type UseStorePropsType = DTLStoreProps & DTLStoreActionsProps;
 
+const dateKeys = ["date", "dateOff", "sessionStart", "startedAt", "endedAt"];
 const reviveDate = (key: string, value: unknown) =>
-    (key === "date" || key === "dateOff" || key === "sessionStart") && typeof value === "string"
-        ? DateTime.fromISO(value, { setZone: true })
-        : value;
+    dateKeys.includes(key) && typeof value === "string" ? DateTime.fromISO(value, { setZone: true }) : value;
 
 // HamQTH password never touches AsyncStorage on native: it's spliced out before the blob is
 // written and stashed in the platform Keychain/Keystore instead, then merged back in on read.
