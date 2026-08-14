@@ -4,7 +4,10 @@ import { StyleSheet } from "react-native-unistyles";
 import { QSO } from ".";
 import { Modal } from "../../utils/modal";
 import { hasOpenIssues } from "../../utils/qso-issues";
+import { sessionLabels } from "../../utils/session";
+import { SpineInfo, sessionSpines } from "../../utils/session-spine";
 import { useStore } from "../../utils/store";
+import { useWidthMatches } from "../../ui/breakpoints";
 import { Button } from "../../ui/button";
 import { mergeStyles } from "../../ui/styles";
 import { Typography } from "../../ui/typography";
@@ -13,6 +16,7 @@ import { Stack } from "../stack";
 import { QsoListItem } from "./qso-list-item";
 import { QsoMap } from "./qso-map";
 import { QsoRow } from "./qso-row";
+import { SessionSpine } from "./session-spine";
 
 // position is a display concern, so it goes on a copy: writing it onto the QSO itself would
 // stamp a render-order field onto the persisted store.
@@ -35,6 +39,15 @@ const sections2rows = (sections: QSO[][]): Row[] =>
         { kind: "section" as const, key: `section-${section}`, qsos },
         ...qsos.map((qso, index) => ({ kind: "qso" as const, key: qso.id, qso, index })),
     ]);
+
+// The spine logic works off the rendered row order alone, so the rows are handed over as the two
+// things it needs to know about each one: whether it's a QSO, and which session it belongs to.
+const rows2spineRows = (rows: Row[]) =>
+    rows.map((row) => ({
+        key: row.key,
+        qso: row.kind === "qso",
+        sessionId: row.kind === "qso" ? row.qso.sessionId : undefined,
+    }));
 
 const LINEHEIGHT = 28;
 
@@ -60,9 +73,11 @@ const styles = StyleSheet.create((theme) => ({
 
 export type QsoListSectionHeaderProps = {
     qsos: QSO[];
+    spine?: SpineInfo;
+    onSpinePress?: (sessionId: string) => void;
 };
 
-export const QsoListSectionHeader = ({ qsos }: QsoListSectionHeaderProps) => {
+export const QsoListSectionHeader = ({ qsos, spine, onSpinePress }: QsoListSectionHeaderProps) => {
     const [mapOpen, setmapOpen] = React.useState<boolean>(false);
     const settings = useSettings();
     const text = `${qsos[0].date.toFormat(settings.datemonth ? "MM-dd-yyyy" : "dd/MM/yyyy")} (${qsos.length})`;
@@ -76,6 +91,7 @@ export const QsoListSectionHeader = ({ qsos }: QsoListSectionHeaderProps) => {
                 <Stack style={styles.sectionHeader}>
                     <Typography style={styles.sectionHeaderText}>{text}</Typography>
                 </Stack>
+                {spine && <SessionSpine spine={spine} onPress={onSpinePress} />}
             </Pressable>
             <Modal wide open={mapOpen} onClose={() => setmapOpen(false)}>
                 <Stack gap="xl">
@@ -103,6 +119,27 @@ export const QsoList = ({ style, filters, qsos, onQsoPress }: QsoListProps) => {
     // re-runs the grouping over the whole log.
     const rows = React.useMemo(() => sections2rows(qsos2sections(applyFilters(qsos, filters))), [qsos, filters]);
 
+    // A phone row is already one line of callsign, band and icons with nothing to spare, so the
+    // bracket and the gutter it needs are left to the screens with room for them.
+    const wide = useWidthMatches("md");
+    const spines: Record<string, SpineInfo> = React.useMemo(
+        () => (wide ? sessionSpines(rows2spineRows(rows)) : {}),
+        [rows, wide],
+    );
+    const gutter = Object.keys(spines).length > 0;
+    const extraData = React.useMemo(() => ({ imperial: settings.imperial, spines }), [settings.imperial, spines]);
+
+    // Pressing a bracket filters the log down to its session. Replaces any session filter already
+    // set rather than adding to it — two sessions at once is what the filter modal is for. Read off
+    // the store at press time rather than subscribed: the rows are memoised, so a handler closing
+    // over the filters would keep whichever ones were set when the row last rendered.
+    const handleSpinePress = React.useCallback((sessionId: string) => {
+        const { sessions, filters: current, updateFilters } = useStore.getState();
+        const label = sessionLabels(sessions)[sessionId];
+        if (!label) return;
+        updateFilters([...current.filter((f) => f.name !== "session"), { name: "session", values: [label] }]);
+    }, []);
+
     return (
         // The wrapper carries the theming: FlatList isn't processed by unistyles, so a stylesheet handed
         // straight to it would arrive empty.
@@ -111,6 +148,7 @@ export const QsoList = ({ style, filters, qsos, onQsoPress }: QsoListProps) => {
                 put and the rows scroll under them. */}
             <QsoRow
                 header
+                gutter={gutter}
                 lineHeight={LINEHEIGHT}
                 position="ID"
                 time="Time"
@@ -124,12 +162,15 @@ export const QsoList = ({ style, filters, qsos, onQsoPress }: QsoListProps) => {
                 // empty here. Takes whatever height the pinned header leaves.
                 style={{ flex: 1 }}
                 data={rows}
-                extraData={settings.imperial}
+                // The spines belong in here as well as the units: they can change while the row
+                // list itself doesn't — resizing the window past `md` is exactly that — and the
+                // FlatList would otherwise have no reason to ask for the rows again.
+                extraData={extraData}
                 keyExtractor={(row) => row.key}
                 initialNumToRender={40}
                 renderItem={({ item: row }) =>
                     row.kind === "section" ? (
-                        <QsoListSectionHeader qsos={row.qsos} />
+                        <QsoListSectionHeader qsos={row.qsos} spine={spines[row.key]} onSpinePress={handleSpinePress} />
                     ) : (
                         <QsoListItem
                             {...{
@@ -139,6 +180,9 @@ export const QsoList = ({ style, filters, qsos, onQsoPress }: QsoListProps) => {
                                 openIssues: hasOpenIssues(row.qso),
                                 lineHeight: LINEHEIGHT,
                                 imperial: settings.imperial,
+                                gutter,
+                                spine: spines[row.key],
+                                onSpinePress: handleSpinePress,
                             }}
                         />
                     )

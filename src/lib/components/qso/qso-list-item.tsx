@@ -8,6 +8,7 @@ import { Typography } from "../../ui/typography";
 import { Stack } from "../stack";
 import { QsoListProps } from "./qso-list";
 import { QsoRow } from "./qso-row";
+import { SpineInfo, sameSpine } from "../../utils/session-spine";
 
 export type QsoListItemProps = {
     item: QSO;
@@ -16,10 +17,23 @@ export type QsoListItemProps = {
     onQsoPress: QsoListProps["onQsoPress"];
     imperial: boolean;
     openIssues: boolean;
+    gutter?: boolean;
+    spine?: SpineInfo;
+    onSpinePress?: (sessionId: string) => void;
 };
 
 export const QsoListItem = React.memo(
-    ({ item: qso, index, lineHeight, onQsoPress, imperial, openIssues }: QsoListItemProps) => {
+    ({
+        item: qso,
+        index,
+        lineHeight,
+        onQsoPress,
+        imperial,
+        openIssues,
+        gutter,
+        spine,
+        onSpinePress,
+    }: QsoListItemProps) => {
         // A phone only has room for one line per QSO, so the icons and the distance — both of which
         // pushed their cell onto a second line — are left to the wider layouts and the QSO itself.
         const smallScreen = useWidthMatches(undefined, "md");
@@ -35,6 +49,9 @@ export const QsoListItem = React.memo(
         return (
             <QsoRow
                 lineHeight={lineHeight}
+                gutter={gutter}
+                spine={spine}
+                onSpinePress={onSpinePress}
                 danger={openIssues}
                 success={qso.lotw_received || qso.eqsl_received}
                 position={String((qso.position === undefined ? index : qso.position) + 1)}
@@ -72,8 +89,12 @@ export const QsoListItem = React.memo(
     // Identity, not id/position: the store replaces QSOs rather than mutating them, so a new object
     // is exactly "this row's data changed". Comparing id/position instead kept editing a QSO — an
     // added dateOff, say — from ever repainting its row, since neither field moves on an edit.
+    // The spine is compared by value, not identity: it's rebuilt with the row list, so comparing the
+    // objects would repaint every row of the log whenever any one QSO changed.
     (prevProps, nextProps) =>
         nextProps.item === prevProps.item &&
         nextProps.openIssues === prevProps.openIssues &&
-        nextProps.imperial === prevProps.imperial,
+        nextProps.imperial === prevProps.imperial &&
+        nextProps.gutter === prevProps.gutter &&
+        sameSpine(nextProps.spine, prevProps.spine),
 );

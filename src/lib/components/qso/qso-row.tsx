@@ -4,6 +4,8 @@ import { StyleSheet } from "react-native-unistyles";
 import { ColourVariant } from "../../ui/theme";
 import { Typography } from "../../ui/typography";
 import { Grid } from "../grid";
+import { SpineInfo } from "../../utils/session-spine";
+import { SPINE_GUTTER, SessionSpine } from "./session-spine";
 
 const styles = StyleSheet.create((theme) => ({
     cell: {
@@ -14,8 +16,11 @@ const styles = StyleSheet.create((theme) => ({
         lineHeight,
         fontWeight: "bold",
     }),
-    row: (highlight: boolean, colour: ColourVariant) => ({
+    // The gutter goes on every row of the list, header included, or the columns stop lining up with
+    // their titles the moment a session appears in the log.
+    row: (highlight: boolean, colour: ColourVariant, gutter: boolean) => ({
         backgroundColor: theme.colours[colour][theme.rowShade(highlight)],
+        paddingLeft: gutter ? SPINE_GUTTER : 0,
     }),
 }));
 
@@ -31,6 +36,9 @@ export type QsoRowProps = {
     band: React.ReactNode;
     callsign: React.ReactNode;
     name: React.ReactNode;
+    gutter?: boolean;
+    spine?: SpineInfo;
+    onSpinePress?: (sessionId: string) => void;
     onPress?: () => void;
 };
 
@@ -47,6 +55,9 @@ export const QsoRow = ({
     band,
     callsign,
     name,
+    gutter = false,
+    spine,
+    onSpinePress,
 }: QsoRowProps) => {
     const cellContent = (content: React.ReactNode, style: TextStyle, numberOfLines?: number) =>
         typeof content === "string" ? (
@@ -61,7 +72,7 @@ export const QsoRow = ({
     const colour: ColourVariant = danger ? "danger" : success ? "success" : "grey";
     return (
         <Pressable onPress={onPress}>
-            <Grid container style={styles.row(+position % 2 === 0 || header, colour)}>
+            <Grid container style={styles.row(+position % 2 === 0 || header, colour, gutter)}>
                 {!hidePosition && (
                     // Four-figure ids wrap at one column on a phone, so the id gets a second one
                     // there and hands it back once there's room for the wider columns.
@@ -87,6 +98,9 @@ export const QsoRow = ({
                     {cellContent(band, cellStyle)}
                 </Grid>
             </Grid>
+            {/* Outside the grid and after it: inside, the gutter padding would push it back over
+                the id column, and before it, the row's own background would cover it on native. */}
+            {spine && <SessionSpine spine={spine} onPress={onSpinePress} />}
         </Pressable>
     );
 };
