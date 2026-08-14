@@ -47,6 +47,9 @@ const styles = StyleSheet.create((theme) => ({
 }));
 
 export type InputProps = TextInputProps & {
+    // Spread onto the TextInput with the rest of the props — declared only because TextInputProps
+    // doesn't carry a ref, and React 19 types the JSX `ref` attribute off the props type.
+    ref?: React.Ref<TextInput>;
     numeric?: boolean;
     password?: boolean;
     textStyle?: TextStyle;

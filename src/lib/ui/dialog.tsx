@@ -57,6 +57,9 @@ const useDialogStore = create<{
 export const showDialog = (dialog: DialogProps) =>
     new Promise<boolean>((resolve) => useDialogStore.getState().push({ ...dialog, resolve }));
 
+/** Whether a dialog is currently up — for keyboard shortcuts that must let it have the key first. */
+export const useDialogOpen = () => useDialogStore((state) => state.queue.length > 0);
+
 const styles = StyleSheet.create((theme) => ({
     centre: {
         flex: 1,

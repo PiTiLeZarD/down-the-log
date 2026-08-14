@@ -1,6 +1,6 @@
 import React, { useEffect, useEffectEvent } from "react";
 import { useFormContext } from "react-hook-form";
-import { View } from "react-native";
+import { TextInput, View } from "react-native";
 import { StyleSheet } from "react-native-unistyles";
 import { baseCallsign } from "../../utils/callsign";
 import { HamQTHCallsignData, useHamqth } from "../../utils/hamqth";
@@ -15,6 +15,7 @@ import { QSO, useQsos } from "../qso";
 import { SessionStartButton } from "../session/session-start-button";
 import { Stack } from "../stack";
 import { BandFreqInput } from "./band-freq-input";
+import { useCallsignFocus } from "./callsign-focus";
 import { CallsignInputExtra } from "./callsign-input-extra";
 import { Events } from "./events";
 import { FormField } from "./form-field";
@@ -77,6 +78,21 @@ export const CallsignInput = ({ handleAdd }: CallsignInputProps) => {
     });
     useEffect(() => fillFromLookup(), [hamqthCSData]);
 
+    // Coming back from a QSO page, this screen is still being brought forward when the request
+    // lands, and focusing a card that isn't visible yet does nothing — hence the frame of slack.
+    const inputRef = React.useRef<TextInput>(null);
+    const focusRequest = useCallsignFocus((state) => state.requested);
+    useEffect(() => {
+        if (!focusRequest) return;
+        const timer = setTimeout(() => {
+            inputRef.current?.focus();
+            // Selecting what's there means the next callsign typed replaces a carried-over one
+            // instead of appending to it. DOM-only, hence the guarded call.
+            (inputRef.current as any)?.select?.();
+        }, 50);
+        return () => clearTimeout(timer);
+    }, [focusRequest]);
+
     return (
         <Stack style={styles.inputBox}>
             <CallsignInputExtra value={callsign} hamqthCSData={hamqthCSData} />
@@ -100,6 +116,7 @@ export const CallsignInput = ({ handleAdd }: CallsignInputProps) => {
                 {inputBarConfig.includes("frequency") && <BandFreqInput noLabel />}
                 <View style={{ flexGrow: 1 }}>
                     <Input
+                        ref={inputRef}
                         value={callsign}
                         style={styles.input}
                         transformValue={(v) => v.toUpperCase()}

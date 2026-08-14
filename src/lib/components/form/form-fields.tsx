@@ -12,8 +12,9 @@ import { useStore } from "../../utils/store";
 import { Alert } from "../../ui/alert";
 import { Button } from "../../ui/button";
 import { Typography } from "../../ui/typography";
-import { showDialog } from "../../ui/dialog";
+import { showDialog, useDialogOpen } from "../../ui/dialog";
 import { useGoBack } from "../../utils/use-go-back";
+import { useKeyPress } from "../../utils/use-key-press";
 import { useSettings } from "../../utils/use-settings";
 import { ButtonOffset } from "../button-offset";
 import { CallsignAutofill } from "../callsign-autofill";
@@ -28,6 +29,7 @@ import { QsoIgnoredIssues, QsoIssues } from "../qso-issues";
 import { QsoMap } from "../qso/qso-map";
 import { Stack } from "../stack";
 import { BandFreqInput } from "./band-freq-input";
+import { useCallsignFocus } from "./callsign-focus";
 import { Events } from "./events";
 import { FormField } from "./form-field";
 import { LocatorField } from "./locator-field";
@@ -81,9 +83,12 @@ export const FormFields = ({ qso }: FormFieldsProps) => {
     const [now, setNow] = React.useState<DateTime>(DateTime.utc());
     const [openTimeLocModal, setOpenTimeLocModal] = React.useState<boolean>(false);
     const deleteLog = useStore((state) => state.deleteLog);
+    const log = useStore((state) => state.log);
     const settings = useSettings();
-    const { setValue } = useFormContext<QSO>();
+    const { setValue, getValues } = useFormContext<QSO>();
     const goBack = useGoBack();
+    const dialogOpen = useDialogOpen();
+    const requestCallsignFocus = useCallsignFocus((state) => state.request);
     const csdata = getCallsignData(qso.callsign);
 
     const onDelete = async () => {
@@ -140,6 +145,24 @@ export const FormFields = ({ qso }: FormFieldsProps) => {
         const timer = setInterval(() => setNow(DateTime.utc()), 1000);
         return () => clearInterval(timer);
     }, [isRunning]);
+
+    // Escape is "done with this contact": it ends the QSO at the moment the key went down and puts
+    // the operator back on the log, typing the next callsign. Written straight to the store rather
+    // than left to the auto-save, which wouldn't get its effect in before the screen unmounts.
+    // Stands down while a modal or a dialog is up — the key belongs to whatever is on top.
+    useKeyPress(
+        "Escape",
+        () => {
+            if (isRunning) {
+                const dateOff = DateTime.utc();
+                setValue("dateOff", dateOff);
+                log({ ...getValues(), dateOff });
+            }
+            requestCallsignFocus();
+            goBack();
+        },
+        !openTimeLocModal && !dialogOpen,
+    );
 
     const qslInfo = () => {
         showDialog({
