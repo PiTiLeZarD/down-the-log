@@ -45,12 +45,12 @@ const Menu = () => {
                     <MenuButton icon="earth" navigateTo="/events" text="Events" />
                 </Grid>
                 <Grid item xs={6}>
-                    <MenuButton icon="albums" navigateTo="/qsl" text="QSLs" />
+                    <MenuButton icon="time" navigateTo="/sessions" text="Sessions" />
                 </Grid>
             </Grid>
             <Grid container>
                 <Grid item xs={6}>
-                    <MenuButton icon="time" navigateTo="/sessions" text="Sessions" />
+                    <MenuButton icon="albums" navigateTo="/qsl" text="QSLs" />
                 </Grid>
                 <Grid item xs={6}>
                     <MenuButton icon="stats-chart" navigateTo="/stats" text="Stats" />
