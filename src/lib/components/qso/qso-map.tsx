@@ -42,7 +42,15 @@ export const QsoMap = ({ qso, qsos, width = "auto", height = 200, interactive = 
     if (!toDisplay.length) return <></>;
 
     const myLocators = Object.keys(groupBy(toDisplay, (q) => q.myLocator as string));
-    const theirLocators = Object.keys(groupBy(toDisplay, (q) => q.locator as string));
+    const theirGroups = groupBy(toDisplay, (q) => q.locator as string);
+    const theirLocators = Object.keys(theirGroups);
+
+    // A locator square is bigger than a station, so several callsigns can land on the same pin. The
+    // count stands in for the rest rather than stacking boxes on top of each other.
+    const captionFor = (locator: string) => {
+        const callsigns = [...new Set(theirGroups[locator].map((q) => q.callsign))];
+        return callsigns.length === 1 ? callsigns[0] : `${callsigns[0]} +${callsigns.length - 1}`;
+    };
 
     return (
         <Map width={width} height={height} interactive={interactive}>
@@ -56,7 +64,11 @@ export const QsoMap = ({ qso, qsos, width = "auto", height = 200, interactive = 
                 <Marker
                     key={l}
                     location={maidenhead2Latlong(l)}
-                    style={{ label: "B", ...(toDisplay.length === 1 ? {} : { size: "tiny" }) }}
+                    style={{
+                        label: "B",
+                        caption: captionFor(l),
+                        ...(toDisplay.length === 1 ? {} : { size: "tiny" }),
+                    }}
                 />
             ))}
 

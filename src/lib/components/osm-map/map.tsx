@@ -1,7 +1,7 @@
 import { Image } from "expo-image";
 import React, { PropsWithChildren } from "react";
 import { GestureResponderEvent, LayoutChangeEvent, Platform, Pressable, Text, View, ViewStyle } from "react-native";
-import Svg, { Circle, Path as SvgPath, Text as SvgText } from "react-native-svg";
+import Svg, { Circle, Path as SvgPath, Rect, Text as SvgText } from "react-native-svg";
 import { LatLng } from "../../utils/locator";
 import { Feature, FeatureMarkerStyle, FeaturePathStyle, MarkerFeature, PathFeature, resolveColor } from "./common";
 import {
@@ -135,6 +135,46 @@ const MarkerShape = ({ x, y, style }: { x: number; y: number; style?: Partial<Fe
                     {style.label.substring(0, 1).toUpperCase()}
                 </SvgText>
             )}
+        </>
+    );
+};
+
+// A caption is measured rather than laid out, so its box needs a width from the string alone. The
+// factor is the widest the bold face gets for the uppercase alphanumerics callsigns are made of.
+const CAPTION_FONT = 11;
+const CAPTION_CHAR = 7;
+const CAPTION_PAD = 5;
+const CAPTION_HEIGHT = 16;
+// Clear of the point itself, so the box reads as hanging off the marker rather than covering it.
+const CAPTION_GAP = 4;
+
+// Captions are drawn as their own layer above every pin, so a box is never half-hidden behind the
+// marker that happens to come after it.
+const MarkerCaption = ({ x, y, text }: { x: number; y: number; text: string }) => {
+    const width = text.length * CAPTION_CHAR + CAPTION_PAD * 2;
+    return (
+        <>
+            <Rect
+                x={x - width / 2}
+                y={y + CAPTION_GAP}
+                width={width}
+                height={CAPTION_HEIGHT}
+                rx={2}
+                fill="#ffffff"
+                fillOpacity={0.9}
+                stroke="#222222"
+                strokeWidth={1}
+            />
+            <SvgText
+                x={x}
+                y={y + CAPTION_GAP + CAPTION_HEIGHT - 4.5}
+                fontSize={CAPTION_FONT}
+                fontWeight="bold"
+                fill="#222222"
+                textAnchor="middle"
+            >
+                {text}
+            </SvgText>
         </>
     );
 };
@@ -438,6 +478,18 @@ export const Map = ({ width = "auto", height, padding = DEFAULT_PADDING, interac
                     {markers.map((marker, i) => {
                         const [point] = toSvgPoints([marker.point], zoom, origin);
                         return <MarkerShape key={`marker-${i}`} x={point.x} y={point.y} style={marker.style} />;
+                    })}
+                    {markers.map((marker, i) => {
+                        if (!marker.style?.caption) return null;
+                        const [point] = toSvgPoints([marker.point], zoom, origin);
+                        return (
+                            <MarkerCaption
+                                key={`caption-${i}`}
+                                x={point.x}
+                                y={point.y}
+                                text={marker.style.caption}
+                            />
+                        );
                     })}
                 </Svg>
                 {interactive && (

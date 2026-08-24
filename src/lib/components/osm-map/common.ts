@@ -19,6 +19,8 @@ export type FeatureMarkerStyle = {
     size: FeatureSize;
     color: FeatureColor;
     label: string;
+    // Drawn in a box under the point, unabbreviated, whatever the marker's size is.
+    caption: string;
     icon: FeatureIcon;
 };
 export type FeaturePathStyle = {
