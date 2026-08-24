@@ -7,33 +7,59 @@ import { useQsos } from "../lib/components/qso";
 import { Stack } from "../lib/components/stack";
 import { TotaActivationRow } from "../lib/components/tota-activation";
 import { TotaMap } from "../lib/components/tota-map";
+import { TotaRegistration, TotaRegistrationChip, readableDate } from "../lib/components/tota-registration";
 import { unique } from "../lib/utils/arrays";
 import { useStore } from "../lib/utils/store";
-import { activationKey, getTotaActivations, qsosMissingTile, uploadedAt } from "../lib/utils/tota";
+import {
+    activationKey,
+    getTotaActivations,
+    isQsoUploadable,
+    isUploadable,
+    qsosMissingTile,
+    totaCutoff,
+    uploadedAt,
+} from "../lib/utils/tota";
 import { useSettings } from "../lib/utils/use-settings";
 import { Alert } from "../lib/ui/alert";
 import { Button } from "../lib/ui/button";
 import { PaginatedList } from "../lib/ui/paginated-list";
 import { Typography } from "../lib/ui/typography";
 
-// Nothing is filtered out. TOTA puts every inch of the planet in a tile — a backyard is as valid an
-// activation as a summit, it just scores its QSOs with no distance behind them — so the log has no
-// business deciding which of the operator's days are worth uploading. The one toggle hides the days
-// already sent, which is bookkeeping rather than a judgement about the activation.
+// Nothing is filtered out on merit. TOTA puts every inch of the planet in a tile — a backyard is as
+// valid an activation as a summit, it just scores its QSOs with no distance behind them — so the log
+// has no business deciding which of the operator's days are worth uploading. The two things hidden
+// are the days already sent, which is bookkeeping, and the days before TOTA's backdating window,
+// which their uploader would refuse anyway. That window is measured from the registration date, so
+// the page asks for it before it can show anything.
 const Tota = () => {
     const qsos = useQsos();
-    const showMap = useSettings().totaMap;
+    const settings = useSettings();
+    const { totaMap: showMap, totaRegistered: registered } = settings;
     const updateSetting = useStore((state) => state.updateSetting);
     const updateFilters = useStore((state) => state.updateFilters);
     const { navigate } = useRouter();
     const [hideUploaded, setHideUploaded] = React.useState<boolean>(false);
 
-    const all = React.useMemo(() => getTotaActivations(qsos), [qsos]);
-    const missing = React.useMemo(() => qsosMissingTile(qsos), [qsos]);
+    // Everything the log knows about first, then the window TOTA will actually take. Both are
+    // memoised on the log alone: the registration date is a string compare on top, too cheap to
+    // widen the dependency for.
+    const everything = React.useMemo(() => getTotaActivations(qsos), [qsos]);
+    const allMissing = React.useMemo(() => qsosMissingTile(qsos), [qsos]);
+
+    const all = registered ? everything.filter((a) => isUploadable(a, registered)) : everything;
+    const missing = registered ? allMissing.filter((q) => isQsoUploadable(q, registered)) : allMissing;
+    const tooOld = everything.length - all.length;
 
     const uploaded = all.filter((a) => !!uploadedAt(a)).length;
     const activations = hideUploaded ? all.filter((a) => !uploadedAt(a)) : all;
     const tiles = unique(activations.map((a) => a.tile));
+
+    if (!registered)
+        return (
+            <PageLayout title="Tiles">
+                <TotaRegistration />
+            </PageLayout>
+        );
 
     return (
         <PageLayout
@@ -69,8 +95,11 @@ const Tota = () => {
                 only — there is no submission API — so downloading an activation ticks it off here and the chip toggles
                 by hand.
             </Typography>
-            {!!uploaded && (
-                <Stack direction="row" gap="md">
+            <Stack direction="row" gap="md">
+                <View>
+                    <TotaRegistrationChip />
+                </View>
+                {!!uploaded && (
                     <View>
                         <Button
                             variant="chip"
@@ -80,7 +109,13 @@ const Tota = () => {
                             onPress={() => setHideUploaded(!hideUploaded)}
                         />
                     </View>
-                </Stack>
+                )}
+            </Stack>
+            {!!tooOld && (
+                <Typography variant="subtitle">
+                    {tooOld} older activation{tooOld === 1 ? " is" : "s are"} not listed: TOTA only accepts logs from{" "}
+                    {readableDate(totaCutoff(registered), settings.datemonth)} onwards, 30 days before you registered.
+                </Typography>
             )}
             {!!missing.length && (
                 <Alert severity="warning">

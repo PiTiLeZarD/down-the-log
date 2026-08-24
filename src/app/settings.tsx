@@ -6,6 +6,7 @@ import { PickFavourite } from "../lib/components/pick-favourite";
 import { Stack } from "../lib/components/stack";
 import { StorageUsage } from "../lib/components/storage-usage";
 import { TabsLayout } from "../lib/components/tabs-layout";
+import { TotaRegistrationSetting } from "../lib/components/tota-registration";
 import { bands } from "../lib/data/bands";
 import { modes } from "../lib/data/modes";
 import { Button } from "../lib/ui/button";
@@ -58,6 +59,7 @@ const Settings = () => {
                         Your rig, antenna, QTH and country are set per QSO, under My Station on the QSO form — each new
                         QSO carries over what the last one used.
                     </Typography>
+                    <TotaRegistrationSetting />
                     <StorageUsage />
                 </Stack>
                 <Stack>

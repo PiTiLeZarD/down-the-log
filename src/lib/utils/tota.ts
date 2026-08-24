@@ -89,3 +89,21 @@ export const totaMassage: RecordMassageFn = (r) => ({
     ...r,
     my_gridsquare: r.my_gridsquare?.substring(0, TILE_LENGTH),
 });
+
+// Their uploader won't take an activation dated more than 30 days before the day the account was
+// registered, so anything older is a file that would bounce off the form. Registration day isn't
+// anywhere in a log — the operator tells us once, on the Tiles page — and everything before the
+// cutoff is left out of the page rather than offered as a download that can't be used.
+export const TOTA_BACKDATE_DAYS = 30;
+
+// First day TOTA will accept, dtFormat. Same format both sides, so the comparisons below are
+// string comparisons and there's no timezone to get wrong: the log's day is already UTC.
+export const totaCutoff = (registered: string): string =>
+    DateTime.fromFormat(registered, dtFormat, { zone: "utc" }).minus({ days: TOTA_BACKDATE_DAYS }).toFormat(dtFormat);
+
+export const isUploadable = ({ date }: TotaActivation, registered: string): boolean => date >= totaCutoff(registered);
+
+// The same question for a QSO that has no tile yet: no point warning about a missing gridsquare on
+// a day TOTA would refuse anyway.
+export const isQsoUploadable = (qso: QSO, registered: string): boolean =>
+    qso.date.toFormat(dtFormat) >= totaCutoff(registered);

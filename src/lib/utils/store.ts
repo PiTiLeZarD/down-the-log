@@ -28,6 +28,10 @@ export type Settings = {
     eventsMap: boolean;
     // Same idea for the Tiles on the Air page.
     totaMap: boolean;
+    // The day the operator registered with tilesontheair.com, yyyyMMdd. Nothing in a log says it,
+    // and their uploader refuses an activation more than 30 days older than it, so the Tiles page
+    // asks for it once and hides what the site would never take. See utils/tota.
+    totaRegistered?: string;
     imperial: boolean;
     timeoffThreshold: number;
     datemonth: boolean;

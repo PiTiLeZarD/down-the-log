@@ -8,7 +8,10 @@ import {
     markUploaded,
     uploadedAt,
     isQrpActivation,
+    isQsoUploadable,
+    isUploadable,
     qsosMissingTile,
+    totaCutoff,
     tileOf,
     totaFileName,
     totaMassage,
@@ -153,4 +156,41 @@ test("totaMassage sends the tile as MY_GRIDSQUARE and leaves the sig fields alon
     expect(totaMassage(record({ my_gridsquare: "IN78rj37", my_sig: "POTA", my_sig_info: "FF-0001" }))).toEqual(
         record({ my_gridsquare: "IN78rj", my_sig: "POTA", my_sig_info: "FF-0001" }),
     );
+});
+
+describe("totaCutoff", () => {
+    test("is 30 days before the registration day", () => {
+        expect(totaCutoff("20260201")).toBe("20260102");
+    });
+
+    test("crosses a leap day like any other", () => {
+        expect(totaCutoff("20240315")).toBe("20240214");
+    });
+});
+
+describe("isUploadable", () => {
+    const activation = (date: string) => getTotaActivations([qso(date)])[0];
+
+    test("takes an activation inside the backdating window", () => {
+        expect(isUploadable(activation("2026-01-02T09:00:00Z"), "20260201")).toBe(true);
+    });
+
+    test("takes the cutoff day itself", () => {
+        expect(isUploadable(activation("2026-01-02T00:00:00Z"), "20260201")).toBe(true);
+    });
+
+    test("refuses the day before the cutoff", () => {
+        expect(isUploadable(activation("2026-01-01T23:59:00Z"), "20260201")).toBe(false);
+    });
+
+    test("takes an activation after the registration day", () => {
+        expect(isUploadable(activation("2026-03-01T09:00:00Z"), "20260201")).toBe(true);
+    });
+});
+
+describe("isQsoUploadable", () => {
+    test("asks the same question of a QSO with no tile", () => {
+        expect(isQsoUploadable(qso("2026-01-02T09:00:00Z", { myLocator: "IN78" }), "20260201")).toBe(true);
+        expect(isQsoUploadable(qso("2026-01-01T09:00:00Z", { myLocator: "IN78" }), "20260201")).toBe(false);
+    });
 });
