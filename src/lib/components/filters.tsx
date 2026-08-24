@@ -11,6 +11,7 @@ import { normalise } from "../utils/locator";
 import { Modal } from "../utils/modal";
 import { hasIgnoredIssues, hasIssues, hasOpenIssues } from "../utils/qso-issues";
 import { sessionLabels } from "../utils/session";
+import { tileOf } from "../utils/tota";
 import { useStore } from "../utils/store";
 import { Alert } from "../ui/alert";
 import { Button } from "../ui/button";
@@ -52,6 +53,9 @@ export const filterMap: Record<string, FilterFunction> = {
     myRig: (qso) => [qso.myRig || "N/A"],
     myAntenna: (qso) => [qso.myAntenna || "N/A"],
     sig: (qso) => [qso.sig || "", qso.mySig || ""],
+    // Tiles on the Air: the tile is derived, not logged, so an empty value picks out the QSOs
+    // whose own gridsquare is too coarse to name one.
+    tile: (qso) => [tileOf(qso) || ""],
     // Read off the store rather than a hook: filterMap is a plain object of pure functions, called
     // from outside React as often as from inside it.
     session: (qso) => [(qso.sessionId && sessionLabels(useStore.getState().sessions)[qso.sessionId]) || ""],

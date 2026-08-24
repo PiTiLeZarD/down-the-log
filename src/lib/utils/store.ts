@@ -26,6 +26,8 @@ export type Settings = {
     // Events list/map choice. It lives here rather than in the page's state so the view survives
     // navigating away; the toggle itself is only rendered on the Events page.
     eventsMap: boolean;
+    // Same idea for the Tiles on the Air page.
+    totaMap: boolean;
     imperial: boolean;
     timeoffThreshold: number;
     datemonth: boolean;
@@ -48,6 +50,7 @@ const defaultSettings: Settings = {
     timeoffThreshold: 10,
     showFilters: false,
     eventsMap: false,
+    totaMap: false,
     favouriteBands: [],
     favouriteModes: [],
     inputBarConfig: [],
