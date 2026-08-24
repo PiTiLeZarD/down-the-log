@@ -2,7 +2,7 @@ import React from "react";
 import { unique } from "../utils/arrays";
 import { corners2Path, fixLatLngForMercator, maidenhead2Corners, maidenhead2Latlong } from "../utils/locator";
 import { latlng2coord } from "../utils/polygon";
-import { TILE_LENGTH, TotaActivation } from "../utils/tota";
+import { TILE_LENGTH, TotaActivation, activationKey } from "../utils/tota";
 import { Typography } from "../ui/typography";
 import { Map } from "./osm-map/map";
 import { Marker } from "./osm-map/marker";
@@ -63,11 +63,7 @@ export const TotaMap = ({ activations }: TotaMapProps) => {
                 activations
                     .filter((a) => a.tile === current)
                     .map((activation, i) => (
-                        <TotaActivationRow
-                            key={`${activation.tile}/${activation.date}`}
-                            position={i}
-                            activation={activation}
-                        />
+                        <TotaActivationRow key={activationKey(activation)} position={i} activation={activation} />
                     ))
             ) : (
                 <Typography>Tap a tile to see its activations</Typography>

@@ -77,6 +77,11 @@ export type QSO = {
     srx?: number;
     stxString?: string;
     srxString?: string;
+    // When the Tiles on the Air activation this QSO belongs to was uploaded to their site, ISO.
+    // TOTA takes logs through a form and has no submission API, so nothing tells us it happened:
+    // the mark is ours. It lives on the QSO rather than in our own storage so it survives an
+    // export and comes back with the import. See utils/tota.
+    totaUploaded?: string;
     // `field:code` keys of the data issues the operator has decided are fine on this QSO. See qso-issues.
     ignoredIssues?: string[];
     honeypot?: Record<string, string>;

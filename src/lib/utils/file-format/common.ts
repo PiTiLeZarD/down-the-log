@@ -65,6 +65,7 @@ export const allFields = [
     // alone, and listing it here keeps it out of the honeypot, which reports fields we don't handle.
     "app_down-the-log_ignored_issues",
     "app_down-the-log_session_id",
+    "app_down-the-log_tota_uploaded",
 ] as const;
 
 export type RecordField = (typeof allFields)[number];
@@ -223,6 +224,9 @@ export const fields: FieldDescriptor[] = [
     field("srxString", "srx_string"),
     // Which of our own sessions logged it. Meaningless to another logger, so it goes under APP_.
     field("sessionId", "app_down-the-log_session_id"),
+    // Our own Tiles on the Air upload mark. Another logger has no use for it, hence APP_, but it
+    // rides along with the log rather than being lost the moment it leaves us.
+    field("totaUploaded", "app_down-the-log_tota_uploaded"),
     field("ignoredIssues", "app_down-the-log_ignored_issues", {
         to: (v?: string[]) => (v?.length ? v.join(",") : undefined),
         from: (v?: string) =>

@@ -1,3 +1,4 @@
+import { DateTime } from "luxon";
 import { QSO } from "../components/qso";
 import { Band } from "../data/bands";
 import { groupBy } from "./arrays";
@@ -32,7 +33,8 @@ export type TotaActivation = {
     qsos: QSO[];
 };
 
-const activationKey = (tile: string, date: string) => `${tile}/${date}`;
+// Names the outing rather than the QSOs in it, so it stays put as the log around it is edited.
+export const activationKey = ({ tile, date }: TotaActivation): string => `${tile}/${date}`;
 
 // One activation per tile per UTC day. Moving between tiles in a single outing is several
 // activations to TOTA, and an overnight stay in one tile is two, which falls out of the grouping.
@@ -40,7 +42,7 @@ export const getTotaActivations = (qsos: QSO[]): TotaActivation[] =>
     Object.entries(
         groupBy(
             qsos.filter((q) => !!tileOf(q)),
-            (q) => activationKey(tileOf(q) as string, q.date.toFormat(dtFormat)),
+            (q) => `${tileOf(q)}/${q.date.toFormat(dtFormat)}`,
         ),
     )
         .map(([, activationQsos]) => ({
@@ -62,6 +64,20 @@ export const isQrpActivation = ({ qsos }: TotaActivation): boolean =>
     qsos.length > 0 &&
     qsos.every((q) => q.power !== undefined && q.power <= 10) &&
     qsos.some((q) => !!q.band && HF_BANDS.includes(q.band));
+
+// When the activation was uploaded to their site, or nothing if it hasn't been. The mark is per
+// QSO, so an outing only counts as uploaded once every QSO in it carries one: log a late contact
+// into a day already sent and the activation goes back to unsent, which is the truth — the file
+// they hold is missing it. The oldest mark is the answer, that's when the outing first went up.
+export const uploadedAt = ({ qsos }: TotaActivation): string | undefined => {
+    const marks = qsos.map((q) => q.totaUploaded);
+    return qsos.length > 0 && marks.every((m) => !!m) ? (marks as string[]).sort()[0] : undefined;
+};
+
+// The QSOs of the activation with the mark set or cleared, ready to go back into the log. Every
+// QSO carries it so the answer survives filtering the log down to any part of the outing.
+export const markUploaded = ({ qsos }: TotaActivation, uploaded: boolean, at: DateTime = DateTime.utc()): QSO[] =>
+    qsos.map((q) => ({ ...q, totaUploaded: uploaded ? (at.toISO() as string) : undefined }));
 
 export const totaFileName = ({ tile, date, qsos }: TotaActivation): string =>
     `${qsos[0].myCallsign || "log"}@${tile}_${date}.adif`;

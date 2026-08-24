@@ -1,9 +1,12 @@
 import { DateTime } from "luxon";
 import { describe, expect, test } from "vitest";
 import { QSO } from "../src/lib/components/qso";
-import { QSORecord } from "../src/lib/utils/file-format/common";
+import { QSORecord, qso2record, record2qso } from "../src/lib/utils/file-format/common";
 import {
+    activationKey,
     getTotaActivations,
+    markUploaded,
+    uploadedAt,
     isQrpActivation,
     qsosMissingTile,
     tileOf,
@@ -100,6 +103,44 @@ describe("isQrpActivation", () => {
     test("is not claimed when we don't know the power", () => {
         expect(isQrpActivation(activation([qso("2026-01-01T09:00:00Z", { band: "40m" })]))).toBe(false);
     });
+});
+
+describe("the upload mark", () => {
+    const activation = (qsos: QSO[]) => ({ tile: "IN78rj", date: "20260101", qsos });
+    const at = DateTime.fromISO("2026-01-03T12:00:00Z", { zone: "utc" });
+
+    test("goes on every QSO of the activation, and comes back off", () => {
+        const marked = markUploaded(activation([qso("2026-01-01T09:00:00Z"), qso("2026-01-01T09:30:00Z")]), true, at);
+
+        expect(marked.map((q) => q.totaUploaded)).toEqual([at.toISO(), at.toISO()]);
+        expect(uploadedAt(activation(marked))).toBe(at.toISO());
+        expect(markUploaded(activation(marked), false).map((q) => q.totaUploaded)).toEqual([undefined, undefined]);
+    });
+
+    test("is not claimed for an activation a later QSO joined after the upload", () => {
+        const marked = markUploaded(activation([qso("2026-01-01T09:00:00Z")]), true, at);
+
+        expect(uploadedAt(activation([...marked, qso("2026-01-01T10:00:00Z")]))).toBeUndefined();
+    });
+
+    test("reports when the outing first went up, not the latest re-upload", () => {
+        const first = markUploaded(activation([qso("2026-01-01T09:00:00Z")]), true, at);
+        const later = markUploaded(activation([qso("2026-01-01T09:30:00Z")]), true, at.plus({ days: 1 }));
+
+        expect(uploadedAt(activation([...first, ...later]))).toBe(at.toISO());
+    });
+
+    test("survives a trip through an ADIF, which is why it lives on the QSO", () => {
+        const marked = markUploaded(activation([qso("2026-01-01T09:00:00Z")]), true, at);
+        const record = qso2record(marked[0]);
+
+        expect(record["app_down-the-log_tota_uploaded"]).toBe(at.toISO());
+        expect(record2qso(record).totaUploaded).toBe(at.toISO());
+    });
+});
+
+test("activationKey names the outing rather than its QSOs", () => {
+    expect(activationKey({ tile: "IN78rj", date: "20260101", qsos: [] })).toBe("IN78rj/20260101");
 });
 
 test("totaFileName names the file after the station, the tile and the day", () => {
