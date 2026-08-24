@@ -107,6 +107,7 @@ type DTLStoreActionsProps = {
     endSession: (id: string) => void;
     deleteSession: (id: string) => void;
     bumpSerial: (id: string) => void;
+    adoptSessions: (sessions: Session[], qsos: QSO[]) => void;
 };
 
 type DTLStoreActionsMutatorProps = (
@@ -173,6 +174,17 @@ const StoreActions: DTLStoreActionsMutatorProps = (set) => ({
                 s.id === id && s.contest ? { ...s, contest: { ...s.contest, serial: s.contest.serial + 1 } } : s,
             ),
         })),
+    // Sessions worked out from QSOs already in the log, stored alongside the QSOs they now own. One
+    // write for both halves: a session pointing at QSOs that never got their `sessionId` would show
+    // up empty everywhere. Nothing becomes active — these are outings that are already over.
+    adoptSessions: (sessions, qsos) =>
+        set((state) => {
+            const adopted = new Set(qsos.map((q) => q.id));
+            return {
+                sessions: [...state.sessions, ...sessions],
+                qsos: [...state.qsos.filter((q) => !adopted.has(q.id)), ...qsos],
+            };
+        }),
 });
 
 export type UseStorePropsType = DTLStoreProps & DTLStoreActionsProps;

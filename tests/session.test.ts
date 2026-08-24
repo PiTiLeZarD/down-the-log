@@ -5,6 +5,7 @@ import { targets } from "../src/lib/utils/event-rules";
 import {
     Session,
     activationProgress,
+    backfillSessions,
     newSession,
     resumedSession,
     sessionChipLabel,
@@ -133,8 +134,7 @@ describe("sessionQsos", () => {
 
 describe("activationProgress", () => {
     const session = newSession("pota", { myPota: "VK-0001" });
-    const logged = (n: number) =>
-        Array.from({ length: n }, (_, i) => qso({ id: String(i), sessionId: session.id }));
+    const logged = (n: number) => Array.from({ length: n }, (_, i) => qso({ id: String(i), sessionId: session.id }));
 
     test("counts towards the program's target", () => {
         expect(activationProgress(session, logged(3))).toEqual({
@@ -194,5 +194,61 @@ describe("sessionChipLabel", () => {
     test("names the field when it has no value, so the chip is still worth pressing", () => {
         expect(sessionChipLabel("myRig", undefined)).toBe("My Rig");
         expect(sessionChipLabel("myRig", "")).toBe("My Rig");
+    });
+});
+
+describe("backfillSessions", () => {
+    const parkQso = (id: string, iso: string, fields: Partial<QSO> = {}) =>
+        qso({ id, date: at(iso), myPota: "VK-0001", power: 10, myRig: "IC-705", ...fields });
+
+    test("makes one session per activation, dated when it happened", () => {
+        const qsos = [
+            parkQso("a", "2024-01-01T09:00:00Z"),
+            parkQso("b", "2024-01-01T11:00:00Z"),
+            parkQso("c", "2024-03-05T09:00:00Z"),
+        ];
+        const { sessions, qsos: updated } = backfillSessions(qsos);
+
+        expect(sessions).toHaveLength(2);
+        const [first] = sessions;
+        expect(first.template).toBe("pota");
+        expect(first.startedAt.toISO()).toBe(at("2024-01-01T09:00:00Z").toISO());
+        expect(first.endedAt?.toISO()).toBe(at("2024-01-01T11:00:00Z").toISO());
+        expect(first.defaults).toEqual({ myPota: "VK-0001", power: 10, myRig: "IC-705" });
+        expect(updated.filter((q) => q.sessionId === first.id).map((q) => q.id)).toEqual(["a", "b"]);
+    });
+
+    test("leaves QSOs that already belong to a session alone", () => {
+        const { sessions, qsos: updated } = backfillSessions([
+            parkQso("a", "2024-01-01T09:00:00Z", { sessionId: "existing" }),
+            parkQso("b", "2024-01-01T11:00:00Z", { sessionId: "existing" }),
+        ]);
+        expect(sessions).toHaveLength(0);
+        expect(updated).toHaveLength(0);
+    });
+
+    test("claims a QSO once when it counts towards two programs", () => {
+        const { sessions, qsos: updated } = backfillSessions([
+            parkQso("a", "2024-01-01T09:00:00Z", { myWwff: "VKFF-0001" }),
+        ]);
+        expect(sessions).toHaveLength(1);
+        expect(sessions[0].template).toBe("pota");
+        expect(updated).toHaveLength(1);
+        expect(updated[0].sessionId).toBe(sessions[0].id);
+    });
+
+    test("splits IOTA by outing rather than lumping a reference's whole history together", () => {
+        const { sessions } = backfillSessions([
+            qso({ id: "a", date: at("2024-01-01T09:00:00Z"), myIota: "OC-001" }),
+            qso({ id: "b", date: at("2025-06-01T09:00:00Z"), myIota: "OC-001" }),
+        ]);
+        expect(sessions).toHaveLength(2);
+        expect(sessions.every((s) => s.template === "iota")).toBe(true);
+    });
+
+    test("ignores QSOs with no activation reference at all", () => {
+        const { sessions, qsos: updated } = backfillSessions([qso({ id: "a" })]);
+        expect(sessions).toHaveLength(0);
+        expect(updated).toHaveLength(0);
     });
 });

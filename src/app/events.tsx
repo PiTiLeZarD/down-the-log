@@ -10,11 +10,46 @@ import { TabsLayout } from "../lib/components/tabs-layout";
 import { unique } from "../lib/utils/arrays";
 import { EventType, eventDataMassageMap, events, getActivations } from "../lib/utils/event-rules";
 import { downloadQsos } from "../lib/utils/file-format";
+import { backfillSessions } from "../lib/utils/session";
 import { useStore } from "../lib/utils/store";
 import { useSettings } from "../lib/utils/use-settings";
 import { Button } from "../lib/ui/button";
+import { showDialog } from "../lib/ui/dialog";
 import { PaginatedList } from "../lib/ui/paginated-list";
 import { Typography } from "../lib/ui/typography";
+
+// Turns the activations on this page into real sessions. The screen works them out from the QSOs
+// every render, but only a session shows up on the sessions list, exports as one, or can be picked
+// up again — so a log that predates sessions gets nothing from them until it's been through here.
+const BackfillButton = () => {
+    const qsos = useQsos();
+    const adoptSessions = useStore((state) => state.adoptSessions);
+    // The whole log walked per event; worth memoising, since it recomputes on any tab or toggle press.
+    const pending = React.useMemo(() => backfillSessions(qsos), [qsos]);
+
+    if (!pending.sessions.length) return null;
+
+    const handlePress = async () => {
+        const confirmed = await showDialog({
+            title: `Make ${pending.sessions.length} sessions?`,
+            icon: "question",
+            text: `${pending.qsos.length} QSOs from past activations aren't in a session yet. Each activation becomes one, dated when it happened. Nothing is logged or changed beyond that.`,
+            confirmButtonText: "Make them",
+            cancelButtonText: "Cancel",
+        });
+        if (confirmed) adoptSessions(pending.sessions, pending.qsos);
+    };
+
+    return (
+        <Button
+            variant="chip"
+            colour="secondary"
+            startIcon="albums"
+            text={`Sessions (${pending.sessions.length})`}
+            onPress={handlePress}
+        />
+    );
+};
 
 const Events = () => {
     const qsos = useQsos();
@@ -38,6 +73,7 @@ const Events = () => {
                     <Typography variant="h1" style={{ flexGrow: 1 }}>
                         Events
                     </Typography>
+                    <BackfillButton />
                     <Typography>List</Typography>
                     <Switch value={showMap} onValueChange={(v) => updateSetting("eventsMap", v)} />
                     <Typography>Map</Typography>

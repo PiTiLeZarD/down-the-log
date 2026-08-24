@@ -46,6 +46,11 @@ const grouping = {
     sig: groupByActivation,
 };
 
+// What a backfilled session groups by. Sessions are outings, so they follow the activation clusters
+// even where the program itself doesn't count that way: IOTA scores a reference over a lifetime, and
+// lumping every island QSO into one session would claim years of log as a single afternoon.
+export const sessionGrouping: Record<EventType, EventGrouping> = { ...grouping, iota: groupByActivation };
+
 // How many QSOs an activation needs. Named separately from the rules so a progress display can show
 // what it's counting towards — the rules only ever answer with a status.
 export const targets: Record<EventType, number | undefined> = {

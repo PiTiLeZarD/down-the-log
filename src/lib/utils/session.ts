@@ -5,7 +5,15 @@ import type { QSO } from "../components/qso";
 import type { IconName } from "../ui/icon";
 import { freq2band } from "../data/bands";
 import { baseCallsign } from "./callsign";
-import { EventStatus, EventType, capitalise, rules, targets } from "./event-rules";
+import {
+    EventStatus,
+    EventType,
+    allReferencesActivated,
+    capitalise,
+    rules,
+    sessionGrouping,
+    targets,
+} from "./event-rules";
 
 /**
  * A session is one outing: a park activation, a summit, a contest, or just an afternoon at the desk.
@@ -180,6 +188,59 @@ export const activationProgress = (session: Session, qsos: QSO[]): SessionProgre
     const { event } = templates[session.template];
     if (!event) return { count: sessionsQsos.length };
     return { count: sessionsQsos.length, target: targets[event], status: rules[event](sessionsQsos) };
+};
+
+/**
+ * Every past activation that predates sessions, turned into one.
+ *
+ * Sessions arrived after years of logging, so the old outings are only visible as clusters of QSOs
+ * sharing a reference — the Events screen works them out on the fly. This walks the same clusters
+ * and gives each one a real session, so it shows up on the sessions list and can be exported or
+ * resumed like anything logged since.
+ *
+ * A QSO already carrying a `sessionId` is left alone, and one that qualifies under two programs at
+ * once — a park inside a WWFF reference — is claimed by the first template that sees it rather than
+ * split across two sessions. Nothing is written here: the caller gets the new sessions and the QSOs
+ * to store back, so an empty result costs nothing.
+ */
+export const backfillSessions = (qsos: QSO[]): { sessions: Session[]; qsos: QSO[] } => {
+    const claimedBy = new Map<string, string>();
+    const sessions: Session[] = [];
+
+    for (const template of sessionTemplates) {
+        const { event, fields } = templates[template];
+        if (!event) continue;
+
+        for (const refQsos of Object.values(allReferencesActivated(qsos, event))) {
+            for (const group of Object.values(sessionGrouping[event](refQsos))) {
+                const orphans = group
+                    .filter((q) => !q.sessionId && !claimedBy.has(q.id))
+                    .sort((q1, q2) => q1.date.toMillis() - q2.date.toMillis());
+                if (!orphans.length) continue;
+
+                // The outing's own clock, not now: a backfilled session sorts and reads as the day
+                // it happened. The first QSO stands in for the setup, being the only record of it.
+                const defaults = Object.fromEntries(
+                    fields
+                        .map((field) => [field, orphans[0][field]] as const)
+                        .filter(([, value]) => value !== undefined && value !== ""),
+                ) as Partial<QSO>;
+                const session: Session = {
+                    ...newSession(template, defaults),
+                    startedAt: orphans[0].date,
+                    endedAt: orphans[orphans.length - 1].date,
+                };
+
+                sessions.push(session);
+                orphans.forEach((q) => claimedBy.set(q.id, session.id));
+            }
+        }
+    }
+
+    return {
+        sessions,
+        qsos: qsos.filter((q) => claimedBy.has(q.id)).map((q) => ({ ...q, sessionId: claimedBy.get(q.id) })),
+    };
 };
 
 // Band and mode are part of the key: the same station worked again on another band isn't a dupe in
