@@ -4,7 +4,8 @@ import { DateTime } from "luxon";
 import React from "react";
 import { Platform } from "react-native";
 import { create } from "zustand";
-import { combine, devtools, persist, PersistStorage } from "zustand/middleware";
+import { combine, devtools, persist, PersistStorage, StorageValue } from "zustand/middleware";
+import { IdbOp, META_STORE, QSO_STORE, idbAvailable, idbBatch, idbGet, idbValues, requestPersistence } from "./idb";
 // Types only, and deliberately spelled `import type`: a plain import of QsoFilter drags the whole
 // component tree in behind it, and the store is imported by just about everything.
 import type { QsoFilter } from "../components/filters";
@@ -239,6 +240,88 @@ const secureStorage: PersistStorage<UseStorePropsType> = {
     },
 };
 
+// IndexedDB keeps structured clones, so a QSO goes in as it is — no stringifying the log on every
+// keystroke. The one thing that doesn't survive the trip is Luxon's DateTime: it is a class
+// instance, and a structured clone would hand back a prototype-less bag of its internals. Those go
+// in as ISO strings, the same shape the JSON path wrote, and come back through the same reviver.
+const toStorable = (value: unknown): unknown => {
+    if (DateTime.isDateTime(value)) return value.toISO();
+    if (Array.isArray(value)) return value.map(toStorable);
+    if (value && typeof value === "object")
+        return Object.fromEntries(Object.entries(value).map(([key, entry]) => [key, toStorable(entry)]));
+    return value;
+};
+
+const fromStorable = (value: unknown, key = ""): unknown => {
+    if (Array.isArray(value)) return value.map((entry) => fromStorable(entry));
+    if (value && typeof value === "object")
+        return Object.fromEntries(Object.entries(value).map(([field, entry]) => [field, fromStorable(entry, field)]));
+    return reviveDate(key, value);
+};
+
+// zustand hands the storage the live state, actions included. JSON dropped the functions on its own;
+// structured clone throws a DataCloneError on them, so they come off explicitly.
+const dataOnly = (state: UseStorePropsType): DTLStoreProps =>
+    Object.fromEntries(Object.entries(state).filter(([, value]) => typeof value !== "function")) as DTLStoreProps;
+
+// The QSOs as last written, by id. The actions keep the reference of every QSO they didn't touch, so
+// identity is enough to tell what actually changed: logging one contact costs one small put instead
+// of rewriting the whole log, which is the difference that makes a six-figure log usable.
+let persistedQsos = new Map<string, QSO>();
+
+const qsoOps = (qsos: QSO[]): IdbOp[] => {
+    const next = new Map(qsos.map((qso) => [qso.id, qso]));
+    const ops: IdbOp[] = qsos
+        .filter((qso) => persistedQsos.get(qso.id) !== qso)
+        .map((qso) => ({ store: QSO_STORE, key: qso.id, value: toStorable(qso) }));
+    persistedQsos.forEach((_, id) => !next.has(id) && ops.push({ store: QSO_STORE, key: id }));
+    persistedQsos = next;
+    return ops;
+};
+
+const writeState = (name: string, value: StorageValue<UseStorePropsType>): Promise<boolean> => {
+    const { qsos, ...rest } = dataOnly(value.state);
+    const ops = qsoOps(qsos);
+    ops.push({ store: META_STORE, key: name, value: { state: toStorable(rest), version: value.version } });
+    return idbBatch(ops);
+};
+
+// Nothing in IndexedDB yet means either a first run or a log still sitting in the localStorage that
+// AsyncStorage writes on web. It moves over whole, and the old copy is only dropped once the new one
+// is safely written — until then it is the only copy there is.
+const migrateFromLocalStorage = async (name: string): Promise<StorageValue<UseStorePropsType> | null> => {
+    const raw = await AsyncStorage.getItem(name);
+    if (!raw) return null;
+    const parsed = JSON.parse(raw, reviveDate) as StorageValue<UseStorePropsType>;
+    if (await writeState(name, parsed)) await AsyncStorage.removeItem(name);
+    return parsed;
+};
+
+const indexedStorage: PersistStorage<UseStorePropsType> = {
+    getItem: async (name) => {
+        void requestPersistence();
+        const meta = await idbGet<StorageValue<DTLStoreProps>>(META_STORE, name);
+        if (!meta) return migrateFromLocalStorage(name);
+        const qsos = (await idbValues<unknown>(QSO_STORE)).map((qso) => fromStorable(qso) as QSO);
+        // Seeded here as well as on write: the objects just handed to the store are the ones it
+        // holds, so the first save after a launch has nothing to re-write.
+        persistedQsos = new Map(qsos.map((qso) => [qso.id, qso]));
+        const state = { ...(fromStorable(meta.state) as DTLStoreProps), qsos };
+        return { state, version: meta.version } as StorageValue<UseStorePropsType>;
+    },
+    setItem: async (name, value) => {
+        await writeState(name, value);
+    },
+    removeItem: async (name) => {
+        await idbBatch([...qsoOps([]), { store: META_STORE, key: name }]);
+    },
+};
+
+// Native stays on AsyncStorage: it is SQLite-backed there, with no quota to escape and a Keychain to
+// keep the HamQTH password out of the blob. Web moves to IndexedDB, minus the profiles that have
+// none — and node under test — which fall back to the localStorage behind AsyncStorage.
+const storage = Platform.OS === "web" && idbAvailable() ? indexedStorage : secureStorage;
+
 export const useStore = create<
     UseStorePropsType,
     [["zustand/devtools", never], ["zustand/persist", UseStorePropsType]]
@@ -253,7 +336,7 @@ export const useStore = create<
                 const merged = { ...current, ...(persisted as Partial<UseStorePropsType>) };
                 return { ...merged, settings: fixSettings(merged.settings || {}) };
             },
-            storage: secureStorage,
+            storage,
         }),
     ),
 );

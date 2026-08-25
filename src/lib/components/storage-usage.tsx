@@ -61,9 +61,10 @@ export const StorageUsage = () => {
             </Stack>
             {quota != undefined && (
                 <Typography variant="subtitle">
-                    Your log, settings and cached reference data live in this browser&apos;s storage, which is capped at
-                    around {formatBytes(quota)}. Once it is full, new QSOs stop being saved — export your log to ADIF
-                    regularly, and delete QSOs you no longer need if you get close.
+                    Your log, settings and cached reference data live in this browser&apos;s storage. It grants this
+                    site a share of the free disk — around {formatBytes(quota)} right now — and that figure moves as
+                    the disk does. Once it is full, new QSOs stop being saved, and a browser short on space can clear
+                    the lot: export your log to ADIF regularly whatever the gauge says.
                 </Typography>
             )}
             {quota == undefined && (
