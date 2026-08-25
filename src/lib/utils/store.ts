@@ -13,6 +13,7 @@ import type { Band } from "../data/bands";
 import type { Mode } from "../data/modes";
 import type { HamQTHSettingsType } from "./hamqth";
 import type { Session } from "./session";
+import type { TotaView } from "./tota";
 
 // Only the operator's identity lives here. The rest of the station — rig, antenna, QTH, country —
 // is per-QSO: there's rarely just one of each, so it's set on the QSO and carried over from there.
@@ -26,8 +27,8 @@ export type Settings = {
     // Events list/map choice. It lives here rather than in the page's state so the view survives
     // navigating away; the toggle itself is only rendered on the Events page.
     eventsMap: boolean;
-    // Same idea for the Tiles on the Air page.
-    totaMap: boolean;
+    // Same idea for the Tiles on the Air page, whose second view is the progress poster.
+    totaView: TotaView;
     // The day the operator registered with tilesontheair.com, yyyyMMdd. Nothing in a log says it,
     // and their uploader refuses an activation more than 30 days older than it, so the Tiles page
     // asks for it once and hides what the site would never take. See utils/tota.
@@ -54,7 +55,7 @@ const defaultSettings: Settings = {
     timeoffThreshold: 10,
     showFilters: false,
     eventsMap: false,
-    totaMap: false,
+    totaView: "list",
     favouriteBands: [],
     favouriteModes: [],
     inputBarConfig: [],
@@ -80,7 +81,10 @@ const defaultSettings: Settings = {
 // Settings that no longer exist, dropped on the way out of storage. `contestMode` became a session:
 // it only ever drove two bits of UI, so there is nothing to migrate — the operator starts a contest
 // session instead. See utils/session.
-const legacySettings = ["contestMode"];
+// `totaMap` was the Tiles page's list/map boolean. The poster replaced that map — it says which
+// tiles are covered, which is what the map was being read for — and the list is still the default,
+// so a stored `false` needs nothing carried over and a stored `true` has nowhere to go.
+const legacySettings = ["contestMode", "totaMap"];
 
 export const fixSettings = (settings: Partial<Settings>): Settings =>
     ({

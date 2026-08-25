@@ -16,6 +16,10 @@ import { normalise } from "./locator";
 // their ADIF import reads back out (MY_GRIDSQUARE / STATION_CALLSIGN, plus date, time and count).
 export const TILE_LENGTH = 6;
 
+// The Tiles page shows the same activations two ways: the list that hands out ADIFs, and the poster
+// of which tiles are covered. The choice is a setting so it survives navigating away. See app/tota.
+export type TotaView = "list" | "poster";
+
 export const dtFormat = "yyyyMMdd";
 
 // TOTA has no reference field of its own: the tile is wherever the station was, so it comes off

@@ -1,16 +1,16 @@
 import { useRouter } from "expo-router";
 import React from "react";
 import { View } from "react-native";
-import { Switch } from "react-native-gesture-handler";
 import { PageLayout } from "../lib/components/page-layout";
 import { useQsos } from "../lib/components/qso";
 import { Stack } from "../lib/components/stack";
 import { TotaActivationRow } from "../lib/components/tota-activation";
-import { TotaMap } from "../lib/components/tota-map";
+import { TotaPoster } from "../lib/components/tota-poster";
 import { TotaRegistration, TotaRegistrationChip, readableDate } from "../lib/components/tota-registration";
 import { unique } from "../lib/utils/arrays";
 import { useStore } from "../lib/utils/store";
 import {
+    TotaView,
     activationKey,
     getTotaActivations,
     isQsoUploadable,
@@ -22,8 +22,14 @@ import {
 import { useSettings } from "../lib/utils/use-settings";
 import { Alert } from "../lib/ui/alert";
 import { Button } from "../lib/ui/button";
+import { IconName } from "../lib/ui/icon";
 import { PaginatedList } from "../lib/ui/paginated-list";
 import { Typography } from "../lib/ui/typography";
+
+const views: { value: TotaView; label: string; icon: IconName }[] = [
+    { value: "list", label: "List", icon: "list" },
+    { value: "poster", label: "Poster", icon: "grid-outline" },
+];
 
 // Nothing is filtered out on merit. TOTA puts every inch of the planet in a tile — a backyard is as
 // valid an activation as a summit, it just scores its QSOs with no distance behind them — so the log
@@ -34,7 +40,9 @@ import { Typography } from "../lib/ui/typography";
 const Tota = () => {
     const qsos = useQsos();
     const settings = useSettings();
-    const { totaMap: showMap, totaRegistered: registered } = settings;
+    const { totaView: stored, totaRegistered: registered } = settings;
+    // A view that no longer exists — the map the poster took over from — falls back to the list.
+    const view = views.some((v) => v.value === stored) ? stored : "list";
     const updateSetting = useStore((state) => state.updateSetting);
     const updateFilters = useStore((state) => state.updateFilters);
     const { navigate } = useRouter();
@@ -51,8 +59,17 @@ const Tota = () => {
     const tooOld = everything.length - all.length;
 
     const uploaded = all.filter((a) => !!uploadedAt(a)).length;
+    // Hiding the uploaded ones is a view of the same log, not a smaller log, so the counts above
+    // stay counts of everything TOTA would take.
     const activations = hideUploaded ? all.filter((a) => !uploadedAt(a)) : all;
-    const tiles = unique(activations.map((a) => a.tile));
+    const tiles = unique(all.map((a) => a.tile));
+    // The poster draws the same activations the rest of the page does, so it stops at the same
+    // cutoff: a tile only reached on a day TOTA won't accept isn't progress it will ever hold.
+    const posterTiles = unique(all.map((a) => a.tile));
+    // Nothing to hand out isn't the same thing as nothing logged, and the empty view should say so.
+    const whenEmpty = (
+        <Typography>{hideUploaded ? "Every activation here is uploaded" : "No tile activations yet"}</Typography>
+    );
 
     if (!registered)
         return (
@@ -64,13 +81,21 @@ const Tota = () => {
     return (
         <PageLayout
             title={
-                <Stack direction="row">
+                <Stack direction="row" gap="md">
                     <Typography variant="h1" style={{ flexGrow: 1 }}>
                         Tiles
                     </Typography>
-                    <Typography>List</Typography>
-                    <Switch value={showMap} onValueChange={(v) => updateSetting("totaMap", v)} />
-                    <Typography>Map</Typography>
+                    {views.map(({ value, label, icon }) => (
+                        <View key={value}>
+                            <Button
+                                variant="chip"
+                                colour={view === value ? "primary" : "grey"}
+                                startIcon={icon}
+                                text={label}
+                                onPress={() => updateSetting("totaView", value)}
+                            />
+                        </View>
+                    ))}
                 </Stack>
             }
         >
@@ -99,7 +124,7 @@ const Tota = () => {
                 <View>
                     <TotaRegistrationChip />
                 </View>
-                {!!uploaded && (
+                {!!uploaded && view !== "poster" && (
                     <View>
                         <Button
                             variant="chip"
@@ -136,10 +161,9 @@ const Tota = () => {
                     </Stack>
                 </Alert>
             )}
-            {showMap ? (
-                <TotaMap activations={activations} />
-            ) : (
-                <PaginatedList itemsPerPage={8} whenEmpty={<Typography>No tile activations yet</Typography>}>
+            {view === "poster" && <TotaPoster tiles={posterTiles} />}
+            {view === "list" && (
+                <PaginatedList itemsPerPage={8} whenEmpty={whenEmpty}>
                     {activations.map((activation, i) => (
                         <TotaActivationRow key={activationKey(activation)} position={i} activation={activation} />
                     ))}
