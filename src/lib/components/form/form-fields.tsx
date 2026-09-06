@@ -9,6 +9,7 @@ import { getCallsignData } from "../../utils/callsign";
 import { roundTo } from "../../utils/math";
 import { Modal } from "../../utils/modal";
 import { useStore } from "../../utils/store";
+import { useWidthMatches } from "../../ui/breakpoints";
 import { Alert } from "../../ui/alert";
 import { Button } from "../../ui/button";
 import { Typography } from "../../ui/typography";
@@ -88,6 +89,9 @@ export const FormFields = ({ qso }: FormFieldsProps) => {
     const { setValue, getValues } = useFormContext<QSO>();
     const goBack = useGoBack();
     const dialogOpen = useDialogOpen();
+    // Narrow screens: the date row already carries date, QSL chips and clock — the duration
+    // suffix wraps and squashes the lot, so drop it there (still visible in the time/loc modal).
+    const showDuration = useWidthMatches("md");
     const requestCallsignFocus = useCallsignFocus((state) => state.request);
     const csdata = getCallsignData(qso.callsign);
 
@@ -236,7 +240,9 @@ export const FormFields = ({ qso }: FormFieldsProps) => {
                                         <Typography variant="h6">
                                             {qso.dateOff ? qso.date.toFormat("HH:mm") : qso.date.toFormat("HH:mm:ss")}
                                         </Typography>
-                                        {qso.dateOff && <Typography variant="subtitle">({duration(qso)})</Typography>}
+                                        {qso.dateOff && showDuration && (
+                                            <Typography variant="subtitle">({duration(qso)})</Typography>
+                                        )}
                                     </>
                                 )}
                             </Stack>

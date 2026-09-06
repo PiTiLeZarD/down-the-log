@@ -110,3 +110,9 @@ export const maidenDistance = (m1: string, m2: string, imperial?: boolean): numb
 
 export const normalise = (grid: string | undefined) =>
     grid ? grid.substring(0, 2).toUpperCase() + grid.substring(2).toLocaleLowerCase() : undefined;
+
+export const locatorRegexp = /^[A-R]{2}[0-9]{2}([A-X]{2}([0-9]{2})?)?$/i;
+
+// A half typed grid is neither valid nor an error: it's what every locator box holds between the
+// first keystroke and the last one, so anything that reformats or measures has to wait for this.
+export const isLocator = (grid: string | undefined): boolean => !!grid && locatorRegexp.test(grid);

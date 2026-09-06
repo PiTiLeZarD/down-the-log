@@ -117,7 +117,11 @@ export const QsoList = ({ style, filters, qsos, onQsoPress }: QsoListProps) => {
     const settings = useStore((state) => state.settings);
     // Both props have to be referentially stable for this to hold: a fresh row array on every render
     // re-runs the grouping over the whole log.
-    const rows = React.useMemo(() => sections2rows(qsos2sections(applyFilters(qsos, filters))), [qsos, filters]);
+    console.log("[DTL-DEBUG] QsoList render, first qso mode=", qsos[0]?.id, qsos[0]?.mode);
+    const rows = React.useMemo(() => {
+        console.log("[DTL-DEBUG] rows RECOMPUTED, first mode=", qsos[0]?.mode);
+        return sections2rows(qsos2sections(applyFilters(qsos, filters)));
+    }, [qsos, filters]);
 
     // A phone row is already one line of callsign, band and icons with nothing to spare, so the
     // bracket and the gutter it needs are left to the screens with room for them.

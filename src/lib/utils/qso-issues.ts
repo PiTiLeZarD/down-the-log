@@ -5,7 +5,7 @@ import { countries, resolveCountry } from "../data/countries";
 import { unique } from "./arrays";
 import { collapseCallsign, getCallsignData } from "./callsign";
 import { EventType, capitalise, eventDataMap, events } from "./event-rules";
-import { maidenDistance } from "./locator";
+import { locatorRegexp, maidenDistance } from "./locator";
 
 // The description quotes the offending values, so it moves as soon as the QSO is edited and can't
 // identify anything. Dismissals are keyed on field + code instead: an operator who accepts that our
@@ -54,7 +54,6 @@ export const issueFieldLabel = (field: keyof QSO): string => fieldLabels[field] 
 // cover the biggest ones (Russia, Antarctica) or every QSO with them would be flagged. It still
 // catches the mistake that actually happens: a grid on the wrong side of the planet.
 const MAX_ENTITY_RADIUS_KM = 5000;
-const locatorRegexp = /^[A-R]{2}[0-9]{2}([A-X]{2}([0-9]{2})?)?$/i;
 
 const eventNames: Record<EventType, string> = {
     pota: "POTA",

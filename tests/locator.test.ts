@@ -4,6 +4,7 @@ import {
     corners2Path,
     distance,
     fixLatLngForMercator,
+    isLocator,
     latlong2Maidenhead,
     maidenDistance,
     maidenhead2Corners,
@@ -160,5 +161,26 @@ describe("normalise", () => {
     test("passes undefined through", () => {
         expect(normalise(undefined)).toBeUndefined();
         expect(normalise("")).toBeUndefined();
+    });
+});
+
+describe("isLocator", () => {
+    test("accepts a field, square and subsquare", () => {
+        expect(isLocator("QG62")).toBe(true);
+        expect(isLocator("qg62nl")).toBe(true);
+        expect(isLocator("QG62NL33")).toBe(true);
+    });
+
+    test("rejects what a half typed grid looks like", () => {
+        expect(isLocator("Q")).toBe(false);
+        expect(isLocator("QG6")).toBe(false);
+        expect(isLocator("QG62N")).toBe(false);
+        expect(isLocator("")).toBe(false);
+        expect(isLocator(undefined)).toBe(false);
+    });
+
+    test("rejects fields and subsquares outside the grid", () => {
+        expect(isLocator("ZZ62")).toBe(false);
+        expect(isLocator("QG62zz")).toBe(false);
     });
 });

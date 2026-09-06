@@ -138,6 +138,7 @@ const StoreActions: DTLStoreActionsMutatorProps = (set) => ({
     // A Set of the incoming ids answers the same question in one lookup.
     log: (qso) =>
         set((state) => {
+            if (!Array.isArray(qso)) console.log("[DTL-DEBUG] store.log", qso.id, "mode=", qso.mode);
             if (!Array.isArray(qso)) return { qsos: [...state.qsos.filter((q) => q.id != qso.id), qso] };
             const incoming = new Set(qso.map((q) => q.id));
             return { qsos: [...state.qsos.filter((q) => !incoming.has(q.id)), ...qso] };

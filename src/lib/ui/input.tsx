@@ -100,12 +100,17 @@ export const Input = ({
     const handleChange = (ev: NativeSyntheticEvent<TextInputChangeEventData>) => {
         const elt = ev.target as any as HTMLInputElement;
         const caret = elt.selectionStart;
+        // Typing at the end stays at the end. A transform that inserts characters — the SOTA mask
+        // writing the slash of W7A/ — makes the new value longer than the caret this keystroke left
+        // behind, and restoring that number verbatim would drop the cursor before the inserted text.
+        const atEnd = caret === elt.value.length;
         const newValue = transformValue(elt.value);
+        const position = atEnd ? newValue.length : caret;
         setValue(newValue);
         throttled(ev, newValue);
         requestAnimationFrame(() => {
-            elt.selectionStart = caret;
-            elt.selectionEnd = caret;
+            elt.selectionStart = position;
+            elt.selectionEnd = position;
         });
     };
 
