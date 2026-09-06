@@ -92,6 +92,9 @@ export const FormFields = ({ qso }: FormFieldsProps) => {
     // Narrow screens: the date row already carries date, QSL chips and clock — the duration
     // suffix wraps and squashes the lot, so drop it there (still visible in the time/loc modal).
     const showDuration = useWidthMatches("md");
+    // Single column: the note is a tall block, and leaving it where the two-column layout puts it
+    // would push QTH/gridsquare/country far down the scroll. Move it below them instead.
+    const twoColumns = useWidthMatches("md");
     const requestCallsignFocus = useCallsignFocus((state) => state.request);
     const csdata = getCallsignData(qso.callsign);
 
@@ -330,49 +333,30 @@ export const FormFields = ({ qso }: FormFieldsProps) => {
                 </Stack>
             </Modal>
             <Grid container>
-                <Grid item xs={12} md={6} xxl={6}>
-                    <FormField name="name" label="Name:" />
-                </Grid>
-                <Grid item xs={4} md={2} xxl={2} style={{ justifyContent: "center" }}>
-                    <View>
-                        <Signal field="rst_received" />
-                    </View>
-                </Grid>
-                <Grid item xs={4} md={2} xxl={2} style={{ justifyContent: "center" }}>
-                    <View>
-                        <Signal field="rst_sent" />
-                    </View>
-                </Grid>
-                <Grid item xs={4} md={2} xxl={2} style={{ justifyContent: "center" }}>
-                    <View>
-                        <Events />
-                    </View>
-                </Grid>
-            </Grid>
-            <Grid container>
-                <Grid item xs={7} xl={5}>
-                    <FormField name="qth" label="QTH:" />
-                </Grid>
-                {settings.geocodeMapsCoKey && (
-                    <Grid item xs={1}>
-                        <ButtonOffset>
-                            <GeocodeButton />
-                        </ButtonOffset>
-                    </Grid>
-                )}
-                <Grid item xs={settings.geocodeMapsCoKey ? 4 : 5}>
-                    <LocatorField name="locator" label="Gridsquare:" />
-                </Grid>
-                <Grid item xs={12} xl={2}>
-                    <ButtonOffset>
-                        <MyStation />
-                    </ButtonOffset>
-                </Grid>
-            </Grid>
-            <Grid container>
+                {/* Left column is the operating side of the contact (who/what/how), right column is
+                    the location side. On narrow screens the right column drops under the left, so the
+                    operating fields stay above the fold. */}
                 <Grid item xs={12} md={6}>
                     <Stack>
+                        <FormField name="name" label="Name:" />
                         <BandFreqInput />
+                        <Grid container>
+                            <Grid item xs={4} style={{ justifyContent: "center" }}>
+                                <View>
+                                    <Signal field="rst_received" />
+                                </View>
+                            </Grid>
+                            <Grid item xs={4} style={{ justifyContent: "center" }}>
+                                <View>
+                                    <Signal field="rst_sent" />
+                                </View>
+                            </Grid>
+                            <Grid item xs={4} style={{ justifyContent: "center" }}>
+                                <View>
+                                    <Events />
+                                </View>
+                            </Grid>
+                        </Grid>
                         <Grid container>
                             <Grid item xs={8}>
                                 <ModeInput />
@@ -381,11 +365,33 @@ export const FormFields = ({ qso }: FormFieldsProps) => {
                                 <FormField name="power" label="Power:" />
                             </Grid>
                         </Grid>
-                        <FormField role="textarea" name="note" label="Note:" numberOfLines={7} />
+                        {twoColumns && <FormField role="textarea" name="note" label="Note:" numberOfLines={7} />}
                     </Stack>
                 </Grid>
                 <Grid item xs={12} md={6}>
                     <Stack>
+                        <Grid container>
+                            <Grid item xs={settings.geocodeMapsCoKey ? 10 : 12}>
+                                <FormField name="qth" label="QTH:" />
+                            </Grid>
+                            {settings.geocodeMapsCoKey && (
+                                <Grid item xs={2}>
+                                    <ButtonOffset>
+                                        <GeocodeButton />
+                                    </ButtonOffset>
+                                </Grid>
+                            )}
+                        </Grid>
+                        <Grid container>
+                            <Grid item xs={8}>
+                                <LocatorField name="locator" label="Gridsquare:" />
+                            </Grid>
+                            <Grid item xs={4}>
+                                <ButtonOffset>
+                                    <MyStation />
+                                </ButtonOffset>
+                            </Grid>
+                        </Grid>
                         <FormField role="country" name="country" label="Country:" />
                         <CallsignAutofill />
                         <Grid container>
@@ -399,6 +405,11 @@ export const FormFields = ({ qso }: FormFieldsProps) => {
                         {qso.dxcc && <DxccStats dxcc={qso.dxcc} />}
                     </Stack>
                 </Grid>
+                {!twoColumns && (
+                    <Grid item xs={12}>
+                        <FormField role="textarea" name="note" label="Note:" numberOfLines={7} />
+                    </Grid>
+                )}
             </Grid>
 
             <View style={{ alignItems: "center" }}>
