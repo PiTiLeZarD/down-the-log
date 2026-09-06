@@ -1,5 +1,5 @@
 import React, { useEffect } from "react";
-import { useFormContext } from "react-hook-form";
+import { useFormContext, useWatch } from "react-hook-form";
 import { callsigns } from "../../data/callsigns";
 import { states } from "../../data/states";
 import { withState } from "../../utils/callsign";
@@ -11,20 +11,20 @@ export type StateFieldProps = {
 };
 
 export const StateField = ({ name }: StateFieldProps) => {
-    const { watch, setValue, getValues } = useFormContext<QSO>();
-    const value = watch(name);
-    const callsign = watch("callsign");
-    const country = watch(name == "state" ? "country" : "myCountry");
+    const { control, setValue, getValues } = useFormContext<QSO>();
+    // `useWatch` rather than `watch()`: the latter only re-renders through the component that owns
+    // the form, and this one is handed to a memoised parent as an element with constant props — the
+    // render gets skipped, and the box goes on showing whatever the field held when it mounted.
+    const value = useWatch({ control, name }) as string | undefined;
+    const callsign = useWatch({ control, name: "callsign" });
+    const country = useWatch({ control, name: name == "state" ? "country" : "myCountry" });
     const stateName =
         country && value && country in states && value in states[country] ? states[country][value] : undefined;
-    const [inputValue, setInputValue] = React.useState<string>(stateName || value || "");
 
-    // The box mirrors the form field, so it resyncs during render instead of from an effect.
-    const [renderedFor, setRenderedFor] = React.useState<string | undefined>(value);
-    if (renderedFor !== value) {
-        setRenderedFor(value);
-        if (value != inputValue) setInputValue(value || "");
-    }
+    // Only the display is derived. What's typed goes straight into the form field, so there is one
+    // copy of the string rather than a box mirroring a mirror: the full state name is a label put
+    // over the code while the box is idle, and typing in it gets the code back.
+    const [focused, setFocused] = React.useState<boolean>(false);
 
     useEffect(() => {
         // Only the worked station's state can be read off a callsign. `myState` comes from the
@@ -42,9 +42,10 @@ export const StateField = ({ name }: StateFieldProps) => {
         <FormField
             name={name}
             label={name === "state" ? "State:" : "My State:"}
-            value={inputValue}
-            onFocus={() => setInputValue(value || "")}
-            onBlur={() => setInputValue(stateName || value || "")}
+            value={focused ? value || "" : stateName || value || ""}
+            onChangeText={(v: string) => setValue(name, v)}
+            onFocus={() => setFocused(true)}
+            onBlur={() => setFocused(false)}
         />
     );
 };

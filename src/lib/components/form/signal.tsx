@@ -32,19 +32,27 @@ export const Signal = ({ field }: SignalProps) => {
     // worked while the reports were on screen, and on an already-logged QSO it rewrote the report
     // that was actually exchanged.
 
+    const received = field.includes("received");
     const [readability, strength] = signal && !isDigital(mode) ? String(signal).split("") : [5, 9];
     return (
         <>
+            {/* Only the arrow says which way the report goes: the buttons sit in a third of the
+                frequency row now, and "Rx: "/"Tx: " left no room for the report itself. The modal
+                spells the direction out. */}
             <Button
-                startIcon={field.includes("received") ? "arrow-down" : "arrow-up"}
-                text={`${field.includes("received") ? "Rx" : "Tx"}: ${signal || defaultValue}${
-                    isDigital(mode) ? "dB" : ""
-                }`}
+                startIcon={received ? "arrow-down" : "arrow-up"}
+                text={`${signal || defaultValue}${isDigital(mode) ? "dB" : ""}`}
+                // No `numberOfLines` here: in a sixth of a row the clamp clipped "59" down to "5"
+                // rather than shrinking it. The report never wraps — there is nothing to break on.
+                textStyle={{ flexShrink: 0 }}
                 variant="outlined"
                 onPress={() => setOpen(true)}
             />
             <Modal open={open} onClose={() => setOpen(false)}>
                 <Stack>
+                    <Typography variant="h2" style={{ textAlign: "center" }}>
+                        {received ? "Received" : "Sent"}
+                    </Typography>
                     {!isDigital(mode) && (
                         <Grid container>
                             <Grid item xs={6}>
