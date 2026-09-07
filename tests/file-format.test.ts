@@ -5,6 +5,7 @@ import { getFileApiFromFilename } from "../src/lib/utils/file-format";
 import { AdifAPI } from "../src/lib/utils/file-format/adif";
 import { AdxAPI } from "../src/lib/utils/file-format/adx";
 import { CabrilloAPI } from "../src/lib/utils/file-format/cabrillo";
+import { WsjtxAPI } from "../src/lib/utils/file-format/wsjtx";
 import {
     QSORecord,
     castAs,
@@ -500,6 +501,18 @@ describe("Cabrillo", () => {
         expect(CabrilloAPI.generateFile([contestQso], header())).toContain("CONTEST: CQ-WW-SSB");
         expect(CabrilloAPI.generateFile([{ ...qso, sig: "POTA" }], header())).toContain("CONTEST: POTA");
         expect(CabrilloAPI.generateFile([qso], header())).not.toContain("CONTEST:");
+    });
+});
+
+describe("WSJT-X", () => {
+    test("falls back to time_on when the QSO has no dateOff", () => {
+        const line = WsjtxAPI.fromRecord(qso2record({ ...qso, dateOff: undefined }));
+        expect(line).not.toContain("Invalid DateTime");
+        expect(line.split(",").slice(0, 4)).toEqual(["2024-01-01", "10:15:00", "2024-01-01", "10:15:00"]);
+    });
+
+    test("keeps the real time_off when there is one", () => {
+        expect(WsjtxAPI.fromRecord(qso2record(qso)).split(",")[3]).toBe("10:25:00");
     });
 });
 

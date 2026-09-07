@@ -50,7 +50,10 @@ export const WsjtxAPI: FileFormatAPI = {
             DateTime.fromFormat(record.qso_date as string, "yyyyMMdd").toFormat("yyyy-MM-dd"),
             DateTime.fromFormat(record.time_on as string, "HHmmss").toFormat("HH:mm:ss"),
             DateTime.fromFormat((record.qso_date_off || record.qso_date) as string, "yyyyMMdd").toFormat("yyyy-MM-dd"),
-            DateTime.fromFormat((record.time_off || record.qso_date) as string, "HHmmss").toFormat("HH:mm:ss"),
+            // Falls back to time_on, mirroring qso_date_off || qso_date above: most QSOs have no
+            // dateOff, so qso2record emits no time_off, and a yyyyMMdd date read as HHmmss is an
+            // invalid time — which is what used to land in this column.
+            DateTime.fromFormat((record.time_off || record.time_on) as string, "HHmmss").toFormat("HH:mm:ss"),
             record.call,
             normalise(record.gridsquare)?.substring(0, 4),
             record.freq,
