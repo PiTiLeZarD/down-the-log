@@ -35,3 +35,6 @@ jobs:
             # Warnings are the backlog in TODO.md, so only errors fail the build for now.
             - name: Lint
               run: pnpm lint
+
+            - name: Test
+              run: pnpm test
