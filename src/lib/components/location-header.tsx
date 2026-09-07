@@ -10,6 +10,7 @@ import { useStore } from "../utils/store";
 import { useWidthMatches } from "../ui/breakpoints";
 import { Button } from "../ui/button";
 import { Typography } from "../ui/typography";
+import { useLocationError } from "../utils/use-location";
 import { useSettings } from "../utils/use-settings";
 import { Clocks } from "./clocks";
 import { SolarData } from "./solar-data";
@@ -33,6 +34,9 @@ export const LocationHeader = () => {
     const { navigate } = useRouter();
     const currentLocation = useStore((state) => state.currentLocation);
     const settings = useSettings();
+    // A denied or failed GPS fix used to leave "Looking for your location..." up for good. Say what
+    // went wrong instead, and point at the setting that makes the app work without a fix at all.
+    const locationError = useLocationError((state) => state.error);
     // A QSO form is already tall on a phone; the solar chips push the fields off the first screen.
     const hideSolar = usePathname().startsWith("/qso");
 
@@ -43,9 +47,14 @@ export const LocationHeader = () => {
                     <Stack direction="row">
                         <Typography>My gridsquare: </Typography>
                         <Typography variant="em">
-                            {currentLocation ? currentLocation : "Looking for your location..."}
+                            {currentLocation || (locationError ? "unknown" : "Looking for your location...")}
                         </Typography>
                     </Stack>
+                    {!currentLocation && locationError ? (
+                        <Typography variant="subtitle">
+                            {locationError}. Set a gridsquare in Settings to work without a fix.
+                        </Typography>
+                    ) : null}
                     {currentLocation ? (
                         <Typography variant="subtitle">
                             (CQ: {findZone(cqzones, maidenhead2Latlong(currentLocation))}, ITU:{" "}
