@@ -20,7 +20,6 @@ export const useAutoSave: UseAutoSaveType<QSO> = (control, save) => {
             loadedId.current = data.id;
             return;
         }
-        console.log("[DTL-DEBUG] autosave persist", data.id, "mode=", (data as QSO).mode);
         persist(data as QSO);
     }, [data]);
 };
