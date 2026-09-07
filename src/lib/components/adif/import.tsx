@@ -27,6 +27,17 @@ export const styles = StyleSheet.create((theme) => ({
     },
 }));
 
+// Everything below runs inside a FileReader callback, where a throw goes nowhere: no dialog, no
+// message, and the drop looks to the operator exactly like it never registered. An unknown extension
+// and a malformed file both throw by design, so both have to come back out as a dialog.
+export const showImportError = (filename: string, e: unknown) =>
+    showDialog({
+        title: "Import failed",
+        text: `${filename} could not be imported: ${e instanceof Error ? e.message : String(e)}`,
+        icon: "error",
+        confirmButtonText: "Ok",
+    });
+
 export const Import = () => {
     const qsos = useQsos();
     const log = useStore((state) => state.log);
@@ -34,10 +45,12 @@ export const Import = () => {
     const settings = useSettings();
 
     const handleImport = (files: FileWithPreview[]) => {
-        files.map((file) => {
+        files.forEach((file) => {
             const fr = new FileReader();
+            fr.onerror = () => showImportError(file.name, fr.error);
             fr.onload = () => {
-                if (fr.result) {
+                try {
+                    if (!fr.result) return;
                     const content =
                         typeof fr.result == "string" ? fr.result : new TextDecoder("utf-8").decode(fr.result);
 
@@ -66,6 +79,8 @@ export const Import = () => {
                         icon: "success",
                         confirmButtonText: "Ok",
                     });
+                } catch (e) {
+                    showImportError(file.name, e);
                 }
             };
 

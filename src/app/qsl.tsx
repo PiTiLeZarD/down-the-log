@@ -1,6 +1,6 @@
 import { DateTime } from "luxon";
 import { View } from "react-native";
-import { styles } from "../lib/components/adif/import";
+import { showImportError, styles } from "../lib/components/adif/import";
 import { Dropzone, FileWithPreview } from "../lib/components/dropzone";
 import { PageLayout } from "../lib/components/page-layout";
 import { QSO, findMatchingQso, useQsos } from "../lib/components/qso";
@@ -36,10 +36,12 @@ const Qsl = () => {
         downloadQsos(`${today}_${type}.adif`, qslQsos);
     };
     const handleQSLImport = (files: FileWithPreview[]) => {
-        files.map((file) => {
+        files.forEach((file) => {
             const fr = new FileReader();
+            fr.onerror = () => showImportError(file.name, fr.error);
             fr.onload = () => {
-                if (fr.result) {
+                try {
+                    if (!fr.result) return;
                     const content =
                         typeof fr.result == "string" ? fr.result : new TextDecoder("utf-8").decode(fr.result);
 
@@ -109,6 +111,8 @@ const Qsl = () => {
                         });
                         console.groupEnd();
                     }
+                } catch (e) {
+                    showImportError(file.name, e);
                 }
             };
 
