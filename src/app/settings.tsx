@@ -163,8 +163,11 @@ const Settings = () => {
                 <Stack>
                     <Typography variant="h3">API's</Typography>
                     <Typography variant="subtitle">
-                        All data is stored locally in your browser and is never sent anywhere (except for hamqth or
-                        geocode maps when using their api)
+                        Your log is stored locally and never leaves this device. Other things do reach the
+                        network: callsign lookups go to hamqth.com, QTH lookups to geocode.maps.co, spots to
+                        parksnpeaks via one of three public relays (r.jina.ai, api.allorigins.win,
+                        api.codetabs.com) or your own if you set one, solar data to services.swpc.noaa.gov, and
+                        map tiles to tile.openstreetmap.org — which sees the areas you look at.
                     </Typography>
                     <Typography underline>HamQTH:</Typography>
                     {settings.hamqth && settings.hamqth.sessionId && (
