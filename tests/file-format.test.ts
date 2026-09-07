@@ -313,6 +313,11 @@ describe("ADIF", () => {
         expect(records[0]).toMatchObject({ call: "VK4ALE", band: "20m" });
     });
 
+    test("skips text sitting in front of the first tag", () => {
+        const [r] = AdifAPI.parseFile("junk <CALL:6>VK4ALE<EOR>");
+        expect(r.call).toBe("VK4ALE");
+    });
+
     test("accepts lower case tags and EOR", () => {
         const [r] = AdifAPI.parseFile("<call:6>VK4ALE<eor>");
         expect(r.call).toBe("VK4ALE");

@@ -23,9 +23,13 @@ const parseAdifField = (adif: string): string[] => {
         console.error(remaining);
         return [];
     }
-    const [, tagName, tagLength, , tagType] = match;
+    const [, tagName, tagLength] = match;
 
-    remaining = remaining.slice(`<${tagName}:${tagLength}${tagType ? `:${tagType}` : ""}>`.length);
+    // The match can start anywhere — a stray comment or a partially-consumed value ahead of the
+    // first tag is not unheard of in third-party exports. Cutting a fixed tag-width off position 0
+    // instead of cutting from the match shifted every following field by the length of that text,
+    // which broke the next match and dropped the whole record with only a console.error to show.
+    remaining = remaining.slice((match.index ?? 0) + match[0].length);
     const value = remaining.slice(0, +tagLength);
     const nextIndex = remaining.search(regexp);
     remaining = remaining.slice(nextIndex == -1 ? +tagLength : nextIndex).trim();
