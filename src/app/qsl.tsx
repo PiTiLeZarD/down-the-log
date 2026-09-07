@@ -28,12 +28,25 @@ const Qsl = () => {
         }
     ).date;
 
+    // The download is the only part of the upload we can see happen, so it is what ticks the QSOs
+    // off — same order as the TOTA activation flow. Marking first meant a download the browser
+    // refused left the log permanently claiming those QSOs were sent, with no way to clear the flag.
     const handleQslDownload = (type: "lotw" | "eqsl") => () => {
-        const qslQsos = qsos
-            .filter((q) => (type === "lotw" ? !q.lotw_sent : !q.eqsl_sent))
-            .map((q): QSO => ({ ...q, ...(type === "lotw" ? { lotw_sent: true } : { eqsl_sent: true }) }));
-        log(qslQsos);
-        downloadQsos(`${today}_${type}.adif`, qslQsos);
+        const toSend = qsos.filter((q) => (type === "lotw" ? !q.lotw_sent : !q.eqsl_sent));
+        try {
+            downloadQsos(`${today}_${type}.adif`, toSend);
+        } catch (e) {
+            showDialog({
+                title: "Download failed",
+                text: `The ${type.toUpperCase()} file could not be created, so nothing has been marked as sent: ${
+                    e instanceof Error ? e.message : String(e)
+                }`,
+                icon: "error",
+                confirmButtonText: "Ok",
+            });
+            return;
+        }
+        log(toSend.map((q): QSO => ({ ...q, ...(type === "lotw" ? { lotw_sent: true } : { eqsl_sent: true }) })));
     };
     const handleQSLImport = (files: FileWithPreview[]) => {
         files.forEach((file) => {
