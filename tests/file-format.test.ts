@@ -511,6 +511,12 @@ describe("WSJT-X", () => {
         expect(line.split(",").slice(0, 4)).toEqual(["2024-01-01", "10:15:00", "2024-01-01", "10:15:00"]);
     });
 
+    test("drops blank lines rather than turning them into records", () => {
+        const file = `${WsjtxAPI.generateFile([qso], header())}\n`;
+        expect(WsjtxAPI.parseFile(file)).toHaveLength(1);
+        expect(WsjtxAPI.parseFile("\n \n\n")).toEqual([]);
+    });
+
     test("keeps the real time_off when there is one", () => {
         expect(WsjtxAPI.fromRecord(qso2record(qso)).split(",")[3]).toBe("10:25:00");
     });

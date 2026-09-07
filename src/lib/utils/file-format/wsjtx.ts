@@ -66,7 +66,14 @@ export const WsjtxAPI: FileFormatAPI = {
             "",
         ].join(","),
 
-    parseFile: (fileContent) => fileContent.split("\n").map((l) => WsjtxAPI.toRecord(l)),
+    // Blank lines are dropped before parsing: every text file ends in a newline, and an empty line
+    // destructures to undefined for every field but the first, which used to arrive as a phantom QSO
+    // with no callsign and an unsortable date.
+    parseFile: (fileContent) =>
+        fileContent
+            .split("\n")
+            .filter((l) => l.trim().length > 0)
+            .map((l) => WsjtxAPI.toRecord(l)),
     generateFile: (qsos, header, massage = (r) => r) =>
         qsos.map((q) => WsjtxAPI.fromRecord(massage(qso2record(q)))).join("\n"),
 };

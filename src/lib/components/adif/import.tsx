@@ -44,6 +44,9 @@ export const Import = () => {
                     const toImport: QSO[] = getFileApiFromFilename(file.name)
                         .parseFile(content)
                         .map((r) => record2qso(r))
+                        // A record with no callsign is not a QSO: importing one puts a blank row in
+                        // the log that nothing can match or sort.
+                        .filter((q) => !!q.callsign)
                         .map((q) =>
                             prefillLocation(
                                 prefillMyStation(q, { myCallsign: settings.myCallsign, myLocator: currentLocation }),
