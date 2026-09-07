@@ -86,7 +86,10 @@ export type QsoFilter = { name: FilterName; values: unknown[] };
 export const filterQsos = (qsos: QSO[], qsosFilters: QsoFilter[]) =>
     qsos.filter((q, i, a) =>
         qsosFilters.reduce(
-            (acc, { name, values }) => acc && filterMap[name](q, i, a).some((f) => values.includes(f)),
+            // A filter name that has since been dropped from filterMap — `totaMap` and `contestMode`
+            // are precedent — is still sitting in the persisted filters, and calling `undefined`
+            // here crashed the log screen on every reload. An unknown filter matches nothing.
+            (acc, { name, values }) => acc && (filterMap[name]?.(q, i, a) ?? []).some((f) => values.includes(f)),
             true,
         ),
     );
