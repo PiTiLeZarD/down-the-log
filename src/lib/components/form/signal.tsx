@@ -1,5 +1,6 @@
 import React, { useEffect, useEffectEvent } from "react";
 import { useFormContext } from "react-hook-form";
+import { StyleSheet } from "react-native-unistyles";
 import { defaultRst, isDigital } from "../../data/modes";
 import { Modal } from "../../utils/modal";
 import { Button } from "../../ui/button";
@@ -9,11 +10,24 @@ import { Grid } from "../grid";
 import { QSO } from "../qso";
 import { Stack } from "../stack";
 
+const styles = StyleSheet.create((theme) => ({
+    // A report is two or three characters in a sixth of a row. The default button padding is wider
+    // than the label it wraps at that size, which is what pushed "-11" out through the border.
+    compact: {
+        paddingLeft: theme.margins.md,
+        paddingRight: theme.margins.md,
+    },
+}));
+
 export type SignalProps = {
     field: keyof QSO;
+    // In the form the button sits under a label, so the direction is spelled out there and the
+    // arrow comes off — the arrow alone is wider than the space left for a digital report. The
+    // input bar has no room for a label and keeps the arrow instead.
+    labelled?: boolean;
 };
 
-export const Signal = ({ field }: SignalProps) => {
+export const Signal = ({ field, labelled = false }: SignalProps) => {
     const [open, setOpen] = React.useState<boolean>(false);
     const { watch, setValue } = useFormContext<QSO>();
     const signal = watch(field);
@@ -34,20 +48,30 @@ export const Signal = ({ field }: SignalProps) => {
 
     const received = field.includes("received");
     const [readability, strength] = signal && !isDigital(mode) ? String(signal).split("") : [5, 9];
+    const button = (
+        <Button
+            {...(labelled ? {} : { startIcon: received ? "arrow-down" : "arrow-up" })}
+            // No unit on the label: "-11dB" does not fit the column, and a digital report is in dB
+            // by definition. The mode is on the next row and the modal names the unit.
+            text={String(signal || defaultValue)}
+            // No `numberOfLines` here: in a sixth of a row the clamp clipped "59" down to "5"
+            // rather than shrinking it. The report never wraps — there is nothing to break on.
+            textStyle={{ flexShrink: 0 }}
+            style={labelled ? styles.compact : undefined}
+            variant="outlined"
+            onPress={() => setOpen(true)}
+        />
+    );
     return (
         <>
-            {/* Only the arrow says which way the report goes: the buttons sit in a third of the
-                frequency row now, and "Rx: "/"Tx: " left no room for the report itself. The modal
-                spells the direction out. */}
-            <Button
-                startIcon={received ? "arrow-down" : "arrow-up"}
-                text={`${signal || defaultValue}${isDigital(mode) ? "dB" : ""}`}
-                // No `numberOfLines` here: in a sixth of a row the clamp clipped "59" down to "5"
-                // rather than shrinking it. The report never wraps — there is nothing to break on.
-                textStyle={{ flexShrink: 0 }}
-                variant="outlined"
-                onPress={() => setOpen(true)}
-            />
+            {labelled ? (
+                <Stack>
+                    <Typography>{received ? "Rx:" : "Tx:"}</Typography>
+                    {button}
+                </Stack>
+            ) : (
+                button
+            )}
             <Modal open={open} onClose={() => setOpen(false)}>
                 <Stack>
                     <Typography variant="h2" style={{ textAlign: "center" }}>

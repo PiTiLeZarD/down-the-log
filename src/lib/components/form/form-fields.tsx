@@ -347,20 +347,16 @@ export const FormFields = ({ qso }: FormFieldsProps) => {
                         <FormField name="name" label="Name:" />
                         <Grid container>
                             {/* The reports ride alongside the frequency rather than under it: they
-                                are two digits each, and a full row of their own pushed mode and
-                                power off the fold on a phone. */}
+                                are three characters at most, and a full row of their own pushed
+                                mode and power off the fold on a phone. */}
                             <Grid item xs={8}>
                                 <BandFreqInput />
                             </Grid>
                             <Grid item xs={2}>
-                                <ButtonOffset>
-                                    <Signal field="rst_received" />
-                                </ButtonOffset>
+                                <Signal field="rst_received" labelled />
                             </Grid>
                             <Grid item xs={2}>
-                                <ButtonOffset>
-                                    <Signal field="rst_sent" />
-                                </ButtonOffset>
+                                <Signal field="rst_sent" labelled />
                             </Grid>
                         </Grid>
                         <Grid container>
