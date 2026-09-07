@@ -3,6 +3,7 @@ import { UnistylesRuntime, useUnistyles } from "react-native-unistyles";
 import { DateFormatSetting, UnitsSetting } from "../lib/components/choice-setting";
 import { PageLayout } from "../lib/components/page-layout";
 import { PickFavourite } from "../lib/components/pick-favourite";
+import { SpotAlertSettings } from "../lib/components/spots";
 import { Stack } from "../lib/components/stack";
 import { StorageUsage } from "../lib/components/storage-usage";
 import { TabsLayout } from "../lib/components/tabs-layout";
@@ -37,7 +38,9 @@ const Settings = () => {
                     <Typography underline>My Gridsquare:</Typography>
                     <Stack direction="row" gap="xxl">
                         <Typography>Currently:</Typography>
-                        {settings.myGridsquare && <Typography variant="em">Static:</Typography>}
+                        {/* Coerced, not just truthy-tested: a stored empty string renders as an empty
+                            text node, which react-native-web refuses as a child of a View. */}
+                        {!!settings.myGridsquare && <Typography variant="em">Static:</Typography>}
                         {!settings.myGridsquare && <Typography variant="em">Dynamic</Typography>}
                         <Input
                             value={settings.myGridsquare != undefined ? settings.myGridsquare : ""}
@@ -45,7 +48,7 @@ const Settings = () => {
                                 updateSetting("myGridsquare", newCallsign === "" ? undefined : normalise(newCallsign))
                             }
                         />
-                        {!settings.myGridsquare && currentLocation && (
+                        {!settings.myGridsquare && !!currentLocation && (
                             <Button
                                 text={`Set ${currentLocation} as static`}
                                 onPress={() => updateSetting("myGridsquare", currentLocation)}
@@ -97,6 +100,7 @@ const Settings = () => {
                         through a relay — see Spots relay under APIs if you'd rather use your own. SOTAwatch isn't
                         included yet: their API terms require the app to be approved before it may connect.
                     </Typography>
+                    <SpotAlertSettings />
                     <Typography underline>Show Filters:</Typography>
                     <Switch
                         value={settings.showFilters != undefined ? settings.showFilters : false}
@@ -175,7 +179,7 @@ const Settings = () => {
                         whichever of those two networks you pick, and your ParksnPeaks key with it.
                     </Typography>
                     <Typography underline>HamQTH:</Typography>
-                    {settings.hamqth && settings.hamqth.sessionId && (
+                    {!!settings.hamqth?.sessionId && (
                         <Button
                             text="Refresh HamQTH Session"
                             variant="outlined"

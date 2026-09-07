@@ -40,7 +40,7 @@ const programmeLabels: Partial<Record<EventType, string>> = {
 
 // A chip is on when it's picked, and a row with nothing picked means "no opinion" rather than
 // "nothing" — otherwise switching a filter on for the first time empties the list.
-const toggle = <T,>(values: T[], value: T): T[] =>
+export const toggle = <T,>(values: T[], value: T): T[] =>
     values.includes(value) ? values.filter((v) => v !== value) : [...values, value];
 
 export type FilterRowProps<T extends string> = {
@@ -52,7 +52,7 @@ export type FilterRowProps<T extends string> = {
     onToggle: (option: T) => void;
 };
 
-const FilterRow = <T extends string>({
+export const FilterRow = <T extends string>({
     label,
     options,
     selected,

@@ -85,3 +85,34 @@ export const defaultSpotFilter: SpotFilter = {
     maxAgeMinutes: 60,
     search: "",
 };
+
+// What the app is allowed to interrupt the operator for. Deliberately not the same object as
+// `SpotFilter`: that one changes every time a chip on the Spots page is poked, and quietly
+// rewriting the notification rules because somebody widened the list to look a callsign up is the
+// kind of surprise that gets notifications switched off for good.
+//
+// Every field is an AND, and an empty list still means "no opinion" — same reading as the page
+// filter, so `watch` with nothing else set is "only these callsigns", and nothing set at all is
+// "every spot", which is what the wording on the settings screen promises.
+export type SpotAlert = {
+    enabled: boolean;
+    programmes: EventType[];
+    bands: Band[];
+    modeGroups: SpotModeGroup[];
+    // Only references the log has never worked.
+    newOnly: boolean;
+    // Drop RBN-relayed spots, which are frequency-accurate and otherwise uninformative.
+    hideAutomatic: boolean;
+    // Callsigns to watch for, compared on the base call so a /P or a DL/ prefix still matches.
+    watch: string[];
+};
+
+export const defaultSpotAlert: SpotAlert = {
+    enabled: false,
+    programmes: [],
+    bands: [],
+    modeGroups: [],
+    newOnly: false,
+    hideAutomatic: true,
+    watch: [],
+};

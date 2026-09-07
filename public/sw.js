@@ -95,3 +95,21 @@ self.addEventListener("fetch", (event) => {
 self.addEventListener("message", (event) => {
     if (event.data === "SKIP_WAITING") self.skipWaiting();
 });
+
+// A tapped notification has to land somewhere. The spots poller only runs in the page, so there is
+// almost always a window already open — focus that rather than opening a second copy of the app.
+self.addEventListener("notificationclick", (event) => {
+    event.notification.close();
+    const target = new URL(event.notification.data?.url || "./", scope).href;
+    event.waitUntil(
+        self.clients.matchAll({ type: "window", includeUncontrolled: true }).then(async (clients) => {
+            const open = clients.find((client) => client.url.startsWith(shell));
+            if (!open) return self.clients.openWindow(target);
+            await open.focus();
+            // `navigate` is refused for a client the worker doesn't control, and an operator who
+            // tapped the alert while already on another page is better served focused than not at
+            // all — so a refusal is not worth failing the whole handler for.
+            if (open.url !== target) await open.navigate(target).catch(() => undefined);
+        }),
+    );
+});

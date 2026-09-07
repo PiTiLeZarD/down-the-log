@@ -1,3 +1,4 @@
+export * from "./spot-alerts";
 export * from "./spot-filters";
 export * from "./spot-list";
 export * from "./spot-modal";

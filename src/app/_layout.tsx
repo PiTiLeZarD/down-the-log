@@ -10,6 +10,7 @@ import { DialogHost } from "../lib/ui/dialog";
 import { latlong2Maidenhead } from "../lib/utils/locator";
 import { useStore } from "../lib/utils/store";
 import "../lib/ui";
+import { useSpotConfig } from "../lib/utils/spots";
 import { useLocation } from "../lib/utils/use-location";
 import { useSettings } from "../lib/utils/use-settings";
 
@@ -30,6 +31,10 @@ const styles = StyleSheet.create((theme) => ({
 SplashScreen.preventAutoHideAsync();
 
 const RootLayout = () => {
+    // Mounted here rather than only behind the spots bar: spot alerts have to keep polling from
+    // whatever screen the operator is on, and this is the one component that is always up.
+    useSpotConfig();
+
     const [fontsLoaded, fontError] = useFonts({
         Quicksand: require("../../assets/Quicksand-VariableFont_wght.ttf"),
     });

@@ -16,7 +16,14 @@ import type { HamQTHSettingsType } from "./hamqth";
 import type { Session } from "./session";
 // Runtime import, but a deliberately light one: `spots/types` holds no reference data and pulls in
 // nothing but Luxon. The rest of the spots code hangs off ./spots/status, which does.
-import { defaultSpotFilter, type SelfSpotTarget, type SpotFilter, type SpotSource } from "./spots/types";
+import {
+    defaultSpotAlert,
+    defaultSpotFilter,
+    type SelfSpotTarget,
+    type SpotAlert,
+    type SpotFilter,
+    type SpotSource,
+} from "./spots/types";
 import type { TotaView } from "./tota";
 
 // Only the operator's identity lives here. The rest of the station — rig, antenna, QTH, country —
@@ -46,6 +53,9 @@ export type Settings = {
     // Which spot networks are polled. SOTAwatch isn't among them yet — see utils/spots/sota.
     spotSources: SpotSource[];
     spotFilter: SpotFilter;
+    // What the app may raise a notification for. Separate from `spotFilter` on purpose — see
+    // utils/spots/types.
+    spotAlerts: SpotAlert;
     // Where "Spot me" posts. Empty means the button asks before it can do anything.
     selfSpotTargets: SelfSpotTarget[];
     // ParksnPeaks account, needed only to post spots. The key is treated as a credential: on native
@@ -65,6 +75,7 @@ const defaultSettings: Settings = {
     showSpots: false,
     spotSources: ["pota", "pnp"],
     spotFilter: defaultSpotFilter,
+    spotAlerts: defaultSpotAlert,
     selfSpotTargets: [],
     imperial: false,
     datemonth: false,

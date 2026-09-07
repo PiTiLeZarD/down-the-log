@@ -1,12 +1,19 @@
 import { DateTime } from "luxon";
 import { describe, expect, test } from "vitest";
+import {
+    alertKey,
+    matchesSpotAlert,
+    newSpotAlerts,
+    rememberSpots,
+    spotAlertNotification,
+} from "../src/lib/utils/spots/alerts";
 import { applySpotFilter } from "../src/lib/utils/spots/filter";
 import { mergeSpots, sameActivation, spotBadges } from "../src/lib/utils/spots/merge";
 import { parsePnpSpot } from "../src/lib/utils/spots/parksnpeaks";
 import { parsePotaSpot } from "../src/lib/utils/spots/pota";
 import { spotDistance, spotLocator, spotStatus } from "../src/lib/utils/spots/status";
 import { qsoFromSpot, spotReferences } from "../src/lib/utils/spots/to-qso";
-import { MergedSpot, Spot, defaultSpotFilter, isQrt } from "../src/lib/utils/spots/types";
+import { MergedSpot, Spot, defaultSpotAlert, defaultSpotFilter, isQrt } from "../src/lib/utils/spots/types";
 import { QSO } from "../src/lib/components/qso";
 import { fixSettings } from "../src/lib/utils/store";
 
@@ -238,5 +245,83 @@ describe("logging from a spot", () => {
         });
         expect(qso.sigInfo).toBe("AS3");
         expect(qso.sig).toBe("SHIRES");
+    });
+});
+
+describe("alerts", () => {
+    const on = { ...defaultSpotAlert, enabled: true, hideAutomatic: false };
+    const now = at("2024-01-01T10:05:00Z");
+
+    test("nothing is announced while the switch is off", () => {
+        expect(matchesSpotAlert(merged(), defaultSpotAlert, [])).toBe(false);
+    });
+
+    test("an empty rule announces every spot", () => {
+        expect(matchesSpotAlert(merged({ band: "40m", mode: "CW" }), on, [])).toBe(true);
+    });
+
+    test("a station that has said QRT is never announced", () => {
+        expect(matchesSpotAlert(merged({ comments: "QRT thanks all" }), on, [])).toBe(false);
+    });
+
+    test("every row is an AND: the band has to match and so does the mode", () => {
+        const alert = { ...on, bands: ["40m" as const], modeGroups: ["CW" as const] };
+        expect(matchesSpotAlert(merged({ band: "40m", mode: "CW" }), alert, [])).toBe(true);
+        expect(matchesSpotAlert(merged({ band: "20m", mode: "CW" }), alert, [])).toBe(false);
+        expect(matchesSpotAlert(merged({ band: "40m", mode: "FT8" }), alert, [])).toBe(false);
+    });
+
+    test("the watchlist matches the base call, so /P and a prefix still count", () => {
+        const alert = { ...on, watch: ["VK6MB"] };
+        expect(matchesSpotAlert(merged({ callsign: "VK6MB/P" }), alert, [])).toBe(true);
+        expect(matchesSpotAlert(merged({ callsign: "VK6ABC" }), alert, [])).toBe(false);
+    });
+
+    test("hiding RBN needs every source behind the row to be automatic", () => {
+        const alert = { ...on, hideAutomatic: true };
+        const relayed = mergeSpots([spot({ automatic: true, frequency: 7.032 })])[0];
+        const heard = mergeSpots([
+            spot({ id: "pota-1", automatic: true, frequency: 7.032 }),
+            spot({ id: "pnp-1", source: "pnp", programme: "wwff", frequency: 7.032 }),
+        ])[0];
+        expect(matchesSpotAlert(relayed, alert, [])).toBe(false);
+        expect(matchesSpotAlert(heard, alert, [])).toBe(true);
+    });
+
+    test("newOnly asks the log, and a worked reference stops the alert", () => {
+        const alert = { ...on, newOnly: true };
+        const worked = [{ callsign: "VK9XYZ", pota: "US-0001" } as QSO];
+        expect(matchesSpotAlert(merged({ reference: "US-0001" }), alert, [])).toBe(true);
+        expect(matchesSpotAlert(merged({ reference: "US-0001" }), alert, worked)).toBe(false);
+    });
+
+    test("the same activation re-spotted on the same band is announced once, a band change again", () => {
+        const first = merged({ reference: "US-0001", band: "40m" });
+        const reSpot = merged({ id: "pota-2", reference: "US-0001", band: "40m", date: at("2024-01-01T10:04:00Z") });
+        const moved = merged({ id: "pota-3", reference: "US-0001", band: "20m", date: at("2024-01-01T10:04:00Z") });
+
+        const seen = rememberSpots(new Set(), [first]);
+        expect(newSpotAlerts([reSpot], on, [], seen, now)).toEqual([]);
+        expect(newSpotAlerts([moved], on, [], seen, now)).toHaveLength(1);
+    });
+
+    test("a spot older than the window is history, not news", () => {
+        const stale = merged({ date: at("2024-01-01T09:00:00Z") });
+        expect(newSpotAlerts([stale], on, [], new Set(), now)).toEqual([]);
+    });
+
+    test("the seen set holds spots the rules rejected, so widening them later announces nothing old", () => {
+        const quiet = merged({ band: "20m" });
+        const seen = rememberSpots(new Set(), [quiet]);
+        expect(seen.has(alertKey(quiet))).toBe(true);
+        expect(newSpotAlerts([quiet], { ...on, bands: [] }, [], seen, now)).toEqual([]);
+    });
+
+    test("the notification says who, where on the dial and what the reference is", () => {
+        const notification = spotAlertNotification(
+            merged({ frequency: 7.032, mode: "CW", reference: "US-0001", referenceName: "Acadia" }),
+        );
+        expect(notification.title).toBe("VK6MB · 7.032 MHz · CW");
+        expect(notification.body).toBe("US-0001 Acadia");
     });
 });
