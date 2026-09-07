@@ -29,7 +29,7 @@ const Adif = () => {
         const confirmed = await showDialog({
             title: `Erase all QSOs?`,
             icon: "question",
-            text: "This action cannot be reverted!",
+            text: "Your sessions and any active filters go with them. This action cannot be reverted!",
             confirmButtonText: "Yes, Delete it!",
             cancelButtonText: "Cancel",
             confirmColour: "danger",
@@ -39,7 +39,7 @@ const Adif = () => {
         resetStore();
         showDialog({
             title: "Done!",
-            text: "All records have been erased!",
+            text: "All QSOs and sessions have been erased!",
             icon: "success",
             confirmButtonText: "Ok",
         });

@@ -149,7 +149,10 @@ const StoreActions: DTLStoreActionsMutatorProps = (set) => ({
             settings: { ...state.settings, showFilters: filters.length ? true : state.settings.showFilters },
         })),
     deleteLog: (qso) => set((state) => ({ qsos: [...state.qsos.filter((q) => q.id != qso.id)] })),
-    resetStore: () => set(() => ({ qsos: [] })),
+    // Sessions and filters are only ever about QSOs, so leaving them behind left the Sessions page
+    // listing outings that contain nothing, an activeSessionId naming a session with no contacts,
+    // and filters still narrowing an empty log.
+    resetStore: () => set(() => ({ qsos: [], sessions: [], activeSessionId: undefined, filters: [] })),
     setCurrentLocation: (location) => set(() => ({ currentLocation: location })),
     // Starting a session ends whatever was running: two at once would leave it ambiguous which one
     // owns the next QSO.
