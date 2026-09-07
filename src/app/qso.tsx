@@ -22,10 +22,15 @@ const Qso = () => {
     // caught up on the way to the store rather than being a second field to keep in step.
     useAutoSave(methods.control, (edited: QSO) => log(withBand(edited)));
 
-    if (!qso) {
-        navigate("/");
-        return <></>;
-    }
+    // Deep-linking a stale qsoId, or having this QSO deleted from under the page, leaves nothing to
+    // edit. Bouncing back to the log is a router write, so it belongs in an effect: done in the
+    // render body it warns about updating a component mid-render and can fire twice under Strict
+    // Mode.
+    useEffect(() => {
+        if (!qso) navigate("/");
+    }, [qso, navigate]);
+
+    if (!qso) return <></>;
     return (
         <FormProvider {...methods}>
             <FormFields qso={qso} />
