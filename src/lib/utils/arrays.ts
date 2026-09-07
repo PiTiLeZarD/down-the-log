@@ -1,21 +1,28 @@
 import { DateTime } from "luxon";
 import { isNumber } from "./math";
 
+// Filled in place rather than by spreading the accumulator: the copying version spread the whole
+// groups object and rebuilt the target array once per element, which is the shape that makes the
+// Stats and Tiles pages freeze on a six-figure log. Groups still come out in first-seen order, and
+// an element listed under several keys is still shared, not copied.
 export const groupBy = <T extends object, K extends string>(
     a: T[],
     f: (o: T, i: number, a: T[]) => K | K[],
-): Record<K, T[]> =>
-    a.reduce<Record<K, T[]>>(
-        (groups, elt, i, aa) => ({
-            ...groups,
-            ...((vs) => Object.fromEntries(vs.map((v) => [v, [...(groups[v] || []), elt]])))(
-                ((v) => (Array.isArray(v) ? v : [v]))(f(elt, i, aa)),
-            ),
-        }),
-        {} as Record<K, T[]>,
-    );
+): Record<K, T[]> => {
+    const groups = {} as Record<K, T[]>;
+    a.forEach((elt, i) => {
+        const value = f(elt, i, a);
+        (Array.isArray(value) ? value : [value]).forEach((v) => {
+            if (!groups[v]) groups[v] = [];
+            groups[v].push(elt);
+        });
+    });
+    return groups;
+};
 
-export const unique: <T>(a: Array<T>) => Array<T> = (a) => a.filter((v, i, aa) => aa.indexOf(v) === i);
+// A Set round trip rather than an indexOf scan per element, for the same reason: unique runs over
+// the whole log on the export and filter paths.
+export const unique: <T>(a: Array<T>) => Array<T> = (a) => Array.from(new Set(a));
 
 export const sortNumsAndAlpha = (r1: string, r2: string) => {
     if (isNumber(r1) && isNumber(r2)) return +r1 - +r2;
