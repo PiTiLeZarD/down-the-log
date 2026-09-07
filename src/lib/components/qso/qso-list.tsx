@@ -25,7 +25,7 @@ const qsos2sections = (qsos: QSO[]): QSO[][] =>
         qsos.reduce<Record<string, QSO[]>>((sections, qso, index) => {
             const positioned = { ...qso, position: qsos.length - index - 1 };
             const title = positioned.date.toFormat("dd/MM/yyyy");
-            sections[title] = [...(sections[title] || []), positioned];
+            (sections[title] ??= []).push(positioned);
             return sections;
         }, {}),
     );
