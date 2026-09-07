@@ -22,10 +22,12 @@ export type SpotListProps = {
     spots: MergedSpot[];
     qsos: QSO[];
     emptyMessage: string;
+    // Tapping the row logs the QSO; tapping its megaphone spots the station on air.
     onSpotPress: (spot: MergedSpot) => void;
+    onRespotPress: (spot: MergedSpot) => void;
 };
 
-export const SpotList = ({ spots, qsos, emptyMessage, onSpotPress }: SpotListProps) => {
+export const SpotList = ({ spots, qsos, emptyMessage, onSpotPress, onRespotPress }: SpotListProps) => {
     const settings = useSettings();
 
     if (!spots.length)
@@ -48,6 +50,7 @@ export const SpotList = ({ spots, qsos, emptyMessage, onSpotPress }: SpotListPro
                     distance={spotDistance(spot, settings.myGridsquare, settings.imperial)}
                     imperial={settings.imperial}
                     onPress={onSpotPress}
+                    onSpotPress={onRespotPress}
                 />
             ))}
         </Stack>

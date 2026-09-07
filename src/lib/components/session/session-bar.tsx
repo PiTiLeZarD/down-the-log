@@ -10,7 +10,7 @@ import { Icon } from "../../ui/icon";
 import { Typography } from "../../ui/typography";
 import { useActiveSession } from "../../utils/use-session";
 import { QSO, useQsos } from "../qso";
-import { SpotMeButton } from "../spots/spot-me";
+import { SpotMeButton } from "../spots/spot-modal";
 import { Stack } from "../stack";
 import { SessionFieldModal } from "./session-field-modal";
 import { SessionModal } from "./session-modal";

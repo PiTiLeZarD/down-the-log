@@ -1,12 +1,13 @@
 import { DateTime } from "luxon";
 import React from "react";
-import { Pressable, View } from "react-native";
+import { GestureResponderEvent, Pressable, View } from "react-native";
 import { StyleSheet } from "react-native-unistyles";
 import { roundTo } from "../../utils/math";
 import { EventType } from "../../utils/event-rules";
 import { MergedSpot, SpotStatus, isQrt, spotBadges, spotSourceLabels } from "../../utils/spots";
 import { useWidthMatches } from "../../ui/breakpoints";
 import { ColourVariant } from "../../ui/theme";
+import { Button } from "../../ui/button";
 import { Typography } from "../../ui/typography";
 import { Stack } from "../stack";
 
@@ -80,9 +81,10 @@ export type SpotRowProps = {
     distance?: number;
     imperial: boolean;
     onPress: (spot: MergedSpot) => void;
+    onSpotPress: (spot: MergedSpot) => void;
 };
 
-export const SpotRow = React.memo(({ spot, index, status, distance, imperial, onPress }: SpotRowProps) => {
+export const SpotRow = React.memo(({ spot, index, status, distance, imperial, onPress, onSpotPress }: SpotRowProps) => {
     const smallScreen = useWidthMatches(undefined, "md");
     const badges = spotBadges(spot);
     const qrt = isQrt(spot);
@@ -149,6 +151,20 @@ export const SpotRow = React.memo(({ spot, index, status, distance, imperial, on
                         {imperial ? "mi" : "km"}
                     </Typography>
                 )}
+                {/* Re-spot rather than log: the QSY nobody posts, or a stale spot refreshed. The
+                    press is stopped here so it doesn't also fall through to the row and log a QSO. */}
+                <View>
+                    <Button
+                        variant="chip"
+                        colour="secondary"
+                        startIcon="megaphone"
+                        aria-label={`Spot ${spot.callsign}`}
+                        onPress={(event?: GestureResponderEvent) => {
+                            event?.stopPropagation?.();
+                            onSpotPress(spot);
+                        }}
+                    />
+                </View>
             </Stack>
         </Pressable>
     );

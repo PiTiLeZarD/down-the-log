@@ -28,6 +28,7 @@ import { QrzChip } from "../qrz-chip";
 import { QSO, duration, useQsos, withBand } from "../qso";
 import { QsoIgnoredIssues, QsoIssues } from "../qso-issues";
 import { QsoMap } from "../qso/qso-map";
+import { SpotStationButton } from "../spots/spot-modal";
 import { Stack } from "../stack";
 import { BandFreqInput } from "./band-freq-input";
 import { useCallsignFocus } from "./callsign-focus";
@@ -196,6 +197,8 @@ export const FormFields = ({ qso }: FormFieldsProps) => {
                             transformValue={(v: string) => v.toUpperCase()}
                         />
                     </View>
+                    {/* Only shows up when the QSO carries their park or summit — see SpotStationButton. */}
+                    <SpotStationButton qso={qso} />
                     <View>
                         <QrzChip callsign={qso.callsign} />
                     </View>

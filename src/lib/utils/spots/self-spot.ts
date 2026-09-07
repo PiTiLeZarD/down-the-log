@@ -9,8 +9,11 @@ export const POTA_SPOT_POST_API = "https://api.pota.app/spot";
 
 export const selfSpotTargets: SelfSpotTarget[] = ["pota", "pnp"];
 
-export type SelfSpotRequest = {
+export type SpotRequest = {
+    // Who is on air. Not necessarily the operator: a chaser spotting the activator they just worked
+    // is the commoner kind of spot, and both networks model the two callsigns separately.
     callsign: string;
+    spotter: string;
     programme: EventType;
     reference: string;
     // MHz, as everywhere else in the app.
@@ -19,19 +22,19 @@ export type SelfSpotRequest = {
     comments: string;
 };
 
-export type SelfSpotResult = { target: SelfSpotTarget; ok: boolean; error?: string };
+export type SpotResult = { target: SelfSpotTarget; ok: boolean; error?: string };
 
 // pota.app takes kHz, as a number rather than the string it hands back.
 const mhz2khz = (frequency: number) => Math.round(frequency * 1000);
 
-const postPotaSpot = async (request: SelfSpotRequest): Promise<void> => {
+const postPotaSpot = async (request: SpotRequest): Promise<void> => {
     if (request.programme !== "pota")
         throw new Error("POTA only takes spots for a POTA reference — start a POTA session or set one.");
     const { data, status } = await axios.post(
         POTA_SPOT_POST_API,
         {
             activator: request.callsign,
-            spotter: request.callsign,
+            spotter: request.spotter,
             frequency: String(mhz2khz(request.frequency)),
             reference: request.reference,
             mode: request.mode,
@@ -51,7 +54,9 @@ const pnpCredentials = (settings: Settings): PnpCredentials => {
     return { userID: settings.pnpUserId, apiKey: settings.pnpApiKey };
 };
 
-const postToPnp = async (request: SelfSpotRequest, settings: Settings): Promise<void> => {
+// ParksnPeaks has no spotter field: the account the key belongs to is the spotter, and actCallsign
+// is whoever is being spotted.
+const postToPnp = async (request: SpotRequest, settings: Settings): Promise<void> => {
     const actClass = pnpSpotClasses[request.programme];
     if (!actClass) throw new Error(`ParksnPeaks doesn't take ${request.programme.toUpperCase()} spots from the API.`);
     await postPnpSpot(
@@ -68,21 +73,20 @@ const postToPnp = async (request: SelfSpotRequest, settings: Settings): Promise<
     );
 };
 
-const posters: Record<SelfSpotTarget, (request: SelfSpotRequest, settings: Settings) => Promise<void>> = {
+const posters: Record<SelfSpotTarget, (request: SpotRequest, settings: Settings) => Promise<void>> = {
     pota: (request) => postPotaSpot(request),
     pnp: postToPnp,
 };
 
 /**
- * Posts to each network independently and reports on each: half a self-spot is still worth having,
- * and an operator standing on a summit needs to know which half made it rather than one blanket
- * "failed".
+ * Posts to each network independently and reports on each: half a spot is still worth having, and an
+ * operator standing on a summit needs to know which half made it rather than one blanket "failed".
  */
-export const selfSpot = async (
+export const postSpot = async (
     targets: SelfSpotTarget[],
-    request: SelfSpotRequest,
+    request: SpotRequest,
     settings: Settings,
-): Promise<SelfSpotResult[]> =>
+): Promise<SpotResult[]> =>
     Promise.all(
         targets.map(async (target) => {
             try {

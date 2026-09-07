@@ -54,7 +54,10 @@ export type SpotQsoContext = {
  * settings, the previous QSO's rig and antenna, the session's values — with the spot's own facts
  * written over the top, since they're the only part the operator hasn't had to type.
  */
-export const qsoFromSpot = (spot: MergedSpot, { settings, currentLocation, session, previous }: SpotQsoContext): QSO => {
+export const qsoFromSpot = (
+    spot: MergedSpot,
+    { settings, currentLocation, session, previous }: SpotQsoContext,
+): QSO => {
     let qso = prefillMyStation(createQso(spot.callsign), myStationFromSettings(settings, currentLocation));
     if (previous) qso = carryOver(qso, previous, carryOverFields(settings.carryOver, previous, session));
     qso = prefillSession(qso, session);
@@ -69,6 +72,16 @@ export const qsoFromSpot = (spot: MergedSpot, { settings, currentLocation, sessi
     // default the form would otherwise have picked.
     return prefillOperating(qso, { mode: "SSB", band: "20m" });
 };
+
+/**
+ * The station a spot is about, shaped as a QSO so the spot modal can be handed it the same way the
+ * QSO page hands it one. Nothing is logged: this is the row's own facts, not a contact.
+ */
+export const spotStation = (spot: MergedSpot): QSO => ({
+    ...createQso(spot.callsign),
+    ...spotOperating(spot),
+    ...spotReferences(spot),
+});
 
 // Not used to fill the QSO — the field names above do that — but the summary the row shows once the
 // operator has tapped it, so they can see what's about to be logged.
