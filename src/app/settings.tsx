@@ -84,15 +84,18 @@ const Settings = () => {
                         value={settings.showHeatmap != undefined ? settings.showHeatmap : false}
                         onValueChange={(v) => updateSetting("showHeatmap", v)}
                     />
-                    <Typography underline>Show ParksnPeaks Spots:</Typography>
+                    <Typography underline>Show Spots bar:</Typography>
                     <Switch
                         value={settings.showSpots != undefined ? settings.showSpots : false}
                         onValueChange={(v) => updateSetting("showSpots", v)}
                     />
                     <Typography variant="subtitle">
-                        Latest SOTA/WWFF/POTA spots from parksnpeaks.org, refreshed every minute. On the web build the
-                        request goes through a public relay, as ParksnPeaks doesn't allow browsers to call it directly —
-                        see Spots relay under APIs if you'd rather use your own.
+                        A strip of current activations above the log, refreshed every minute. It reads pota.app and
+                        parksnpeaks.org, merges the activations both of them carry into one entry, and opens the Spots
+                        page — filters, park names, distances and one-tap logging — when tapped. pota.app is called
+                        directly; ParksnPeaks doesn't allow browsers to call it, so on the web build that half goes
+                        through a relay — see Spots relay under APIs if you'd rather use your own. SOTAwatch isn't
+                        included yet: their API terms require the app to be approved before it may connect.
                     </Typography>
                     <Typography underline>Show Filters:</Typography>
                     <Switch
@@ -165,9 +168,11 @@ const Settings = () => {
                     <Typography variant="subtitle">
                         Your log is stored locally and never leaves this device. Other things do reach the
                         network: callsign lookups go to hamqth.com, QTH lookups to geocode.maps.co, spots to
-                        parksnpeaks via one of three public relays (r.jina.ai, api.allorigins.win,
-                        api.codetabs.com) or your own if you set one, solar data to services.swpc.noaa.gov, and
-                        map tiles to tile.openstreetmap.org — which sees the areas you look at.
+                        api.pota.app directly and to parksnpeaks via one of three public relays (r.jina.ai,
+                        api.allorigins.win, api.codetabs.com) or your own if you set one, solar data to
+                        services.swpc.noaa.gov, and map tiles to tile.openstreetmap.org — which sees the areas you
+                        look at. Spotting yourself sends your callsign, reference, frequency, mode and comment to
+                        whichever of those two networks you pick, and your ParksnPeaks key with it.
                     </Typography>
                     <Typography underline>HamQTH:</Typography>
                     {settings.hamqth && settings.hamqth.sessionId && (
@@ -226,13 +231,35 @@ const Settings = () => {
                         ParksnPeaks blocks browsers from calling it, so on the web the spots go through a relay. Leave
                         this empty to use the public ones, which are unreliable, or deploy scripts/cors-worker.js to
                         Cloudflare and paste its URL here — use {"{url}"} where the spot URL should go. Native builds
-                        ignore this and call ParksnPeaks directly.
+                        ignore this and call ParksnPeaks directly. Posting your own spots to ParksnPeaks from the web
+                        needs your own relay: the public ones only forward reads.
                     </Typography>
                     <Stack direction="row">
                         <Typography>URL:</Typography>
                         <Input
                             value={settings.spotsProxy || ""}
                             onChangeText={(v) => updateSetting("spotsProxy", v === "" ? undefined : v)}
+                        />
+                    </Stack>
+                    <Typography underline>ParksnPeaks account:</Typography>
+                    <Typography variant="subtitle">
+                        Only needed to spot yourself. Your user name and the API key from the User Options page on
+                        parksnpeaks.org. The key is kept in the device keychain on iOS and Android. Spotting yourself to
+                        POTA needs no account.
+                    </Typography>
+                    <Stack direction="row">
+                        <Typography>User:</Typography>
+                        <Input
+                            value={settings.pnpUserId || ""}
+                            onChangeText={(v) => updateSetting("pnpUserId", v === "" ? undefined : v)}
+                        />
+                    </Stack>
+                    <Stack direction="row">
+                        <Typography>API key:</Typography>
+                        <Input
+                            password
+                            value={settings.pnpApiKey || ""}
+                            onChangeText={(v) => updateSetting("pnpApiKey", v === "" ? undefined : v)}
                         />
                     </Stack>
                 </Stack>

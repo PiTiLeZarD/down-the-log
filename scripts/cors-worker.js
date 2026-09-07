@@ -6,6 +6,10 @@
  * most of them proxy from a data centre and get refused or time out. Running this instead gives a
  * relay that answers every time and involves nobody but you.
  *
+ * POSTs are forwarded too, which is what lets the web build spot itself on ParksnPeaks: the public
+ * relays only ever forward reads. The API key travels in the body of that POST, so use your own
+ * worker rather than somebody else's if you spot yourself from a browser.
+ *
  * Deploy (free tier is far more than enough for one request a minute):
  *
  *     npx wrangler deploy scripts/cors-worker.js --name dtl-spots --compatibility-date 2024-01-01
@@ -21,12 +25,15 @@ const ALLOWED_HOSTS = ["parksnpeaks.org", "www.parksnpeaks.org"];
 
 const cors = {
     "access-control-allow-origin": "*",
-    "access-control-allow-methods": "GET, OPTIONS",
+    "access-control-allow-methods": "GET, POST, OPTIONS",
+    "access-control-allow-headers": "content-type",
 };
 
 export default {
     async fetch(request) {
         if (request.method === "OPTIONS") return new Response(null, { headers: cors });
+        if (request.method !== "GET" && request.method !== "POST")
+            return new Response("method not allowed", { status: 405, headers: cors });
 
         const target = new URL(request.url).searchParams.get("url");
         if (!target) return new Response("missing url parameter", { status: 400, headers: cors });
@@ -39,7 +46,14 @@ export default {
         }
         if (!ALLOWED_HOSTS.includes(host)) return new Response("host not allowed", { status: 403, headers: cors });
 
-        const upstream = await fetch(target, { headers: { accept: "application/json" } });
+        const upstream = await fetch(target, {
+            method: request.method,
+            headers: {
+                accept: "application/json",
+                ...(request.method === "POST" ? { "content-type": "application/json" } : {}),
+            },
+            ...(request.method === "POST" ? { body: await request.text() } : {}),
+        });
         return new Response(upstream.body, {
             status: upstream.status,
             headers: { ...cors, "content-type": "application/json", "cache-control": "no-store" },

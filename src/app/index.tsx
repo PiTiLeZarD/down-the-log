@@ -7,7 +7,7 @@ import { StyleSheet } from "react-native-unistyles";
 import { Beacons } from "../lib/components/beacons";
 import { Filters, useFilteredQsos } from "../lib/components/filters";
 import { FirstRunSetup } from "../lib/components/first-run-setup";
-import { ParksNPeaks } from "../lib/components/parksnpeaks";
+import { SpotsBar } from "../lib/components/spots";
 import { CallsignInput } from "../lib/components/form/callsign-input";
 import {
     QSO,
@@ -127,7 +127,7 @@ const Index = () => {
                 )}
                 {settings.showBeacons && <Beacons />}
                 {settings.showHeatmap && <QsoHeatmap />}
-                {settings.showSpots && <ParksNPeaks />}
+                {settings.showSpots && <SpotsBar />}
                 {settings.showFilters && <Filters showTag />}
                 <QsoList
                     style={styles.list}

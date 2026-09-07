@@ -42,35 +42,41 @@ const Menu = () => {
         <PageLayout title="Menu">
             <Grid container>
                 <Grid item xs={6}>
+                    <MenuButton icon="radio" navigateTo="/spots" text="Spots" />
+                </Grid>
+                <Grid item xs={6}>
                     <MenuButton icon="earth" navigateTo="/events" text="Events" />
                 </Grid>
+            </Grid>
+            <Grid container>
                 <Grid item xs={6}>
                     <MenuButton icon="time" navigateTo="/sessions" text="Sessions" />
                 </Grid>
-            </Grid>
-            <Grid container>
                 <Grid item xs={6}>
                     <MenuButton icon="grid" navigateTo="/tota" text="Tiles" />
                 </Grid>
+            </Grid>
+            <Grid container>
                 <Grid item xs={6}>
                     <MenuButton icon="albums" navigateTo="/qsl" text="QSLs" />
                 </Grid>
-            </Grid>
-            <Grid container>
                 <Grid item xs={6}>
                     <MenuButton icon="stats-chart" navigateTo="/stats" text="Stats" />
                 </Grid>
+            </Grid>
+            <Grid container>
                 <Grid item xs={6}>
                     <MenuButton icon="archive" navigateTo="/adif" text="Import/Export" />
+                </Grid>
+                <Grid item xs={6}>
+                    <MenuButton icon="settings" navigateTo="/settings" text="Settings" />
                 </Grid>
             </Grid>
             <Grid container>
                 <Grid item xs={6}>
-                    <MenuButton icon="settings" navigateTo="/settings" text="Settings" />
-                </Grid>
-                <Grid item xs={6}>
                     <MenuButton icon="information-circle" navigateTo="/about" text="About" />
                 </Grid>
+                <Grid item xs={6} />
             </Grid>
         </PageLayout>
     );

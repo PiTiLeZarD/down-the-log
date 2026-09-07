@@ -10,6 +10,7 @@ import { Icon } from "../../ui/icon";
 import { Typography } from "../../ui/typography";
 import { useActiveSession } from "../../utils/use-session";
 import { QSO, useQsos } from "../qso";
+import { SpotMeButton } from "../spots/spot-me";
 import { Stack } from "../stack";
 import { SessionFieldModal } from "./session-field-modal";
 import { SessionModal } from "./session-modal";
@@ -83,6 +84,10 @@ export const SessionBar = () => {
                     </Typography>
                     <Typography variant="subtitle">{elapsed(session.startedAt, now)}</Typography>
                     {session.contest && <Typography variant="subtitle">#{session.contest.serial}</Typography>}
+                    {/* Icon only: the bar is already tight, and a running session is exactly when
+                        self-spotting is wanted — the reference and frequency it needs are the ones
+                        on screen. */}
+                    <SpotMeButton compact />
                     <View>
                         <Button variant="chip" startIcon="create" onPress={() => setModalOpen(true)} />
                     </View>

@@ -14,6 +14,9 @@ import type { Band } from "../data/bands";
 import type { Mode } from "../data/modes";
 import type { HamQTHSettingsType } from "./hamqth";
 import type { Session } from "./session";
+// Runtime import, but a deliberately light one: `spots/types` holds no reference data and pulls in
+// nothing but Luxon. The rest of the spots code hangs off ./spots/status, which does.
+import { defaultSpotFilter, type SelfSpotTarget, type SpotFilter, type SpotSource } from "./spots/types";
 import type { TotaView } from "./tota";
 
 // Only the operator's identity lives here. The rest of the station — rig, antenna, QTH, country —
@@ -40,6 +43,15 @@ export type Settings = {
     hamqth?: HamQTHSettingsType;
     geocodeMapsCoKey?: string;
     spotsProxy?: string;
+    // Which spot networks are polled. SOTAwatch isn't among them yet — see utils/spots/sota.
+    spotSources: SpotSource[];
+    spotFilter: SpotFilter;
+    // Where "Spot me" posts. Empty means the button asks before it can do anything.
+    selfSpotTargets: SelfSpotTarget[];
+    // ParksnPeaks account, needed only to post spots. The key is treated as a credential: on native
+    // it lives in the Keychain rather than the settings blob, like the HamQTH password.
+    pnpUserId?: string;
+    pnpApiKey?: string;
     favouriteModes: Mode[];
     favouriteBands: Band[];
     inputBarConfig: (keyof QSO)[];
@@ -51,6 +63,9 @@ const defaultSettings: Settings = {
     showBeacons: false,
     showHeatmap: false,
     showSpots: false,
+    spotSources: ["pota", "pnp"],
+    spotFilter: defaultSpotFilter,
+    selfSpotTargets: [],
     imperial: false,
     datemonth: false,
     timeoffThreshold: 10,
@@ -209,6 +224,7 @@ const reviveDate = (key: string, value: unknown) =>
 // written and stashed in the platform Keychain/Keystore instead, then merged back in on read.
 // Web has no equivalent secure store, so it falls back to the plain AsyncStorage blob there.
 const HAMQTH_PASSWORD_KEY = "dtl-hamqth-password";
+const PNP_API_KEY = "dtl-pnp-api-key";
 
 const secureStorage: PersistStorage<UseStorePropsType> = {
     getItem: async (name) => {
@@ -219,19 +235,29 @@ const secureStorage: PersistStorage<UseStorePropsType> = {
             const password = await SecureStore.getItemAsync(HAMQTH_PASSWORD_KEY);
             if (password) parsed.state.settings.hamqth.password = password;
         }
+        if (Platform.OS !== "web" && parsed.state?.settings) {
+            const key = await SecureStore.getItemAsync(PNP_API_KEY);
+            if (key) parsed.state.settings.pnpApiKey = key;
+        }
         return parsed;
     },
     setItem: async (name, value) => {
         let toStore = value;
+        if (Platform.OS !== "web" && value.state.settings) {
+            const { pnpApiKey, ...settings } = value.state.settings;
+            if (pnpApiKey) await SecureStore.setItemAsync(PNP_API_KEY, pnpApiKey);
+            else await SecureStore.deleteItemAsync(PNP_API_KEY);
+            toStore = { ...toStore, state: { ...toStore.state, settings: settings as Settings } };
+        }
         if (Platform.OS !== "web" && value.state.settings?.hamqth) {
             const { password, ...hamqthRest } = value.state.settings.hamqth;
             if (password) await SecureStore.setItemAsync(HAMQTH_PASSWORD_KEY, password);
             else await SecureStore.deleteItemAsync(HAMQTH_PASSWORD_KEY);
             toStore = {
-                ...value,
+                ...toStore,
                 state: {
-                    ...value.state,
-                    settings: { ...value.state.settings, hamqth: hamqthRest as HamQTHSettingsType },
+                    ...toStore.state,
+                    settings: { ...toStore.state.settings, hamqth: hamqthRest as HamQTHSettingsType },
                 },
             };
         }
@@ -239,7 +265,10 @@ const secureStorage: PersistStorage<UseStorePropsType> = {
     },
     removeItem: async (name) => {
         await AsyncStorage.removeItem(name);
-        if (Platform.OS !== "web") await SecureStore.deleteItemAsync(HAMQTH_PASSWORD_KEY);
+        if (Platform.OS !== "web") {
+            await SecureStore.deleteItemAsync(HAMQTH_PASSWORD_KEY);
+            await SecureStore.deleteItemAsync(PNP_API_KEY);
+        }
     },
 };
 
