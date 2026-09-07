@@ -82,7 +82,9 @@ export type FormFieldsProps = {
 const diffTimeInMinutes = (qso: QSO, dt: DateTime) => dt.diff(qso.date, ["minutes"]).toObject().minutes || 0;
 
 export const FormFields = ({ qso }: FormFieldsProps) => {
-    const isLastQso = useQsos()[0].id === qso.id;
+    // Deleting the only QSO in the log re-renders this against an empty list before goBack()
+    // commits, so the newest QSO is not always there to compare against.
+    const isLastQso = useQsos()[0]?.id === qso.id;
     const [now, setNow] = React.useState<DateTime>(DateTime.utc());
     const [openTimeLocModal, setOpenTimeLocModal] = React.useState<boolean>(false);
     const deleteLog = useStore((state) => state.deleteLog);
