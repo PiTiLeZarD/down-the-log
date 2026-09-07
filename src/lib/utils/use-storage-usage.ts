@@ -1,7 +1,6 @@
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import React from "react";
 import { Platform } from "react-native";
-import { useStore } from "./store";
 
 // The web fallback budget, and only that: it is what localStorage gives an origin — ~5 MB, billed in
 // UTF-16 code units, so every character costs two bytes whatever it is. Storage moved to IndexedDB,
@@ -54,12 +53,10 @@ const measureNative = async (): Promise<StorageUsage> => {
     return { used: total(entries), entries: bySize(entries) };
 };
 
-// Measuring means walking every key, so it's done on demand and after the log changes rather than
-// on a timer. The persist middleware writes asynchronously, so the figure can trail the very last
-// QSO by a tick — refresh picks it up.
+// Measuring means walking every key, so it's done on demand rather than on a timer or on every
+// store write. The persist middleware writes asynchronously, so the figure can trail the last QSO
+// — refresh picks it up.
 export const useStorageUsage = () => {
-    const qsos = useStore((state) => state.qsos);
-    const settings = useStore((state) => state.settings);
     const [usage, setUsage] = React.useState<StorageUsage | undefined>(undefined);
 
     // Both sides are async: the web figure comes from the Storage API, the native one from walking
@@ -70,9 +67,12 @@ export const useStorageUsage = () => {
         measured.then(setUsage);
     }, []);
 
+    // Measured once on mount, then only when the operator asks. Re-measuring on every store change
+    // meant that logging a QSO with the Settings screen mounted read the entire log back out of
+    // AsyncStorage to size it — the Refresh button next to the gauge exists for exactly this.
     React.useEffect(() => {
         refresh();
-    }, [refresh, qsos, settings]);
+    }, [refresh]);
 
     return { usage, refresh };
 };
