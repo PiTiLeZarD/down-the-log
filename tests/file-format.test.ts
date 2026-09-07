@@ -484,6 +484,18 @@ describe("Cabrillo", () => {
         });
     });
 
+    test("round trips a file that ends with a newline", () => {
+        const file = `${CabrilloAPI.generateFile([contestQso], header())}\n`;
+        const records = CabrilloAPI.parseFile(file);
+        expect(records).toHaveLength(1);
+        expect(records[0]).toMatchObject({ call: "VK4ALE", stx: "007", srx: "042" });
+    });
+
+    test("skips lines that aren't KEY: value instead of throwing", () => {
+        expect(() => CabrilloAPI.parseFile("\nHELLO WORLD\n\n")).not.toThrow();
+        expect(CabrilloAPI.parseFile("\nHELLO WORLD\n\n")).toEqual([]);
+    });
+
     test("names the contest from CONTEST_ID, falling back to SIG", () => {
         expect(CabrilloAPI.generateFile([contestQso], header())).toContain("CONTEST: CQ-WW-SSB");
         expect(CabrilloAPI.generateFile([{ ...qso, sig: "POTA" }], header())).toContain("CONTEST: POTA");

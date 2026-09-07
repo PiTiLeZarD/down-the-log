@@ -6,8 +6,12 @@ import { FileFormatAPI, QSORecord, qso2record } from "./common";
 const pad = (s: string | undefined, l: number, d: "LEFT" | "RIGHT" = "LEFT") =>
     (s || "")[d === "LEFT" ? "padEnd" : "padStart"](l, " ");
 
-const parseLine = (s: string): { key: string; line: string; values: string[] } => {
+// Cabrillo is a tag file, but real ones carry blank lines and the odd continuation that isn't
+// `KEY: value` — including the trailing empty line every file ending in a newline has. Those get a
+// keyless result rather than throwing, so the caller can skip them.
+const parseLine = (s: string): { key: string | undefined; line: string; values: string[] } => {
     const [, key, line] = s.split(/^([^:]+): (.*)/);
+    if (key === undefined || line === undefined) return { key: undefined, line: "", values: [] };
     return { key, line, values: line.split(/\s{1,}/) };
 };
 
@@ -82,6 +86,7 @@ export const CabrilloAPI: FileFormatAPI = {
 
         fileContent.split("\n").forEach((tagline) => {
             const { key, line } = parseLine(tagline);
+            if (key === undefined) return;
             if (key === "QSO") records.push(CabrilloAPI.toRecord(tagline));
             else metadata[key] = line;
         });
