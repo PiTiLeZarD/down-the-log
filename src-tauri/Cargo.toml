@@ -18,6 +18,9 @@ tauri-build = { version = "2", features = [] }
 serde_json = "1.0"
 serde = { version = "1.0", features = ["derive"] }
 tauri = { version = "2", features = [] }
+# Spot alerts. The webview has no usable Notification constructor on macOS or Windows, so the
+# desktop build raises them over IPC instead — see src/lib/utils/notify/tauri.ts.
+tauri-plugin-notification = "2"
 
 [features]
 # this feature is used for production builds or when `devPath` points to the filesystem and the built-in dev server is disabled.

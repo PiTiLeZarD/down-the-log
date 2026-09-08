@@ -21,3 +21,7 @@ minimumReleaseAgeExclude:
   - expo-location@57.0.9
   - expo-router@57.0.12
   - expo-splash-screen@57.0.6
+# expo-constants 57.0.17 depends on @expo/env@~2.4.3, which was never published — any package that
+# pulls expo-constants by range (expo-notifications does) fails to resolve without this pin.
+overrides:
+  expo-constants: 57.0.10
