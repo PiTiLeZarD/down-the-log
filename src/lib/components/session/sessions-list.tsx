@@ -1,12 +1,12 @@
 import { useRouter } from "expo-router";
 import { View } from "react-native";
 import { useUnistyles } from "react-native-unistyles";
-import { Grid } from "../lib/components/grid";
-import { PageLayout } from "../lib/components/page-layout";
-import { QSO, useQsos } from "../lib/components/qso";
-import { Stack } from "../lib/components/stack";
-import { eventDataMassageMap } from "../lib/utils/event-rules";
-import { downloadQsos } from "../lib/utils/file-format";
+import { Button } from "../../ui/button";
+import { showDialog } from "../../ui/dialog";
+import { PaginatedList } from "../../ui/paginated-list";
+import { Typography } from "../../ui/typography";
+import { eventDataMassageMap } from "../../utils/event-rules";
+import { downloadQsos } from "../../utils/file-format";
 import {
     Session,
     activationProgress,
@@ -15,14 +15,13 @@ import {
     sessionName,
     sessionQsos,
     templates,
-} from "../lib/utils/session";
-import { useStore } from "../lib/utils/store";
-import { Button } from "../lib/ui/button";
-import { showDialog } from "../lib/ui/dialog";
-import { PaginatedList } from "../lib/ui/paginated-list";
-import { Typography } from "../lib/ui/typography";
-import { useSessions } from "../lib/utils/use-session";
-import { useSettings } from "../lib/utils/use-settings";
+} from "../../utils/session";
+import { useStore } from "../../utils/store";
+import { useSessions } from "../../utils/use-session";
+import { useSettings } from "../../utils/use-settings";
+import { Grid } from "../grid";
+import { QSO, useQsos } from "../qso";
+import { Stack } from "../stack";
 
 const SessionRow = ({ position, session, qsos }: { position: number; session: Session; qsos: QSO[] }) => {
     const { theme } = useUnistyles();
@@ -120,14 +119,14 @@ const SessionRow = ({ position, session, qsos }: { position: number; session: Se
     );
 };
 
-const Sessions = () => {
+export const SessionsList = () => {
     const sessions = useSessions();
     const qsos = useQsos();
 
     return (
-        <PageLayout title="Sessions">
+        <Stack gap="xxl">
             <Typography variant="subtitle">
-                Every outing you've logged under a session. Starting one again reuses its settings on a fresh
+                Every outing you&apos;ve logged under a session. Starting one again reuses its settings on a fresh
                 activation — the QSOs stay with the session that logged them.
             </Typography>
             <PaginatedList whenEmpty={<Typography>No sessions yet — start one from the log screen.</Typography>}>
@@ -135,8 +134,6 @@ const Sessions = () => {
                     <SessionRow key={session.id} position={i} session={session} qsos={qsos} />
                 ))}
             </PaginatedList>
-        </PageLayout>
+        </Stack>
     );
 };
-
-export default Sessions;

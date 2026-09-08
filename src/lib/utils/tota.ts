@@ -17,7 +17,7 @@ import { normalise } from "./locator";
 export const TILE_LENGTH = 6;
 
 // The Tiles page shows the same activations two ways: the list that hands out ADIFs, and the poster
-// of which tiles are covered. The choice is a setting so it survives navigating away. See app/tota.
+// of which tiles are covered. The choice is a setting so it survives navigating away. See components/tota-activations.
 export type TotaView = "list" | "poster";
 
 export const dtFormat = "yyyyMMdd";

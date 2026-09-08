@@ -1,9 +1,9 @@
+import { useRouter } from "expo-router";
 import { Switch } from "react-native";
 import { UnistylesRuntime, useUnistyles } from "react-native-unistyles";
 import { DateFormatSetting, UnitsSetting } from "../lib/components/choice-setting";
 import { PageLayout } from "../lib/components/page-layout";
 import { PickFavourite } from "../lib/components/pick-favourite";
-import { SpotAlertSettings } from "../lib/components/spots";
 import { Stack } from "../lib/components/stack";
 import { StorageUsage } from "../lib/components/storage-usage";
 import { TabsLayout } from "../lib/components/tabs-layout";
@@ -21,6 +21,7 @@ import { useSettings } from "../lib/utils/use-settings";
 
 const Settings = () => {
     const { rt } = useUnistyles();
+    const { navigate } = useRouter();
     const settings = useSettings();
     const currentLocation = useStore((state) => state.currentLocation);
     const updateSetting = useStore((state) => state.updateSetting);
@@ -87,20 +88,14 @@ const Settings = () => {
                         value={settings.showHeatmap != undefined ? settings.showHeatmap : false}
                         onValueChange={(v) => updateSetting("showHeatmap", v)}
                     />
-                    <Typography underline>Show Spots bar:</Typography>
-                    <Switch
-                        value={settings.showSpots != undefined ? settings.showSpots : false}
-                        onValueChange={(v) => updateSetting("showSpots", v)}
-                    />
+                    {/* The spots bar, alerts, the ParksnPeaks account and the relay all moved to the
+                        Spots page itself: they're decisions made while looking at the feed. */}
+                    <Typography underline>Spots:</Typography>
                     <Typography variant="subtitle">
-                        A strip of current activations above the log, refreshed every minute. It reads pota.app and
-                        parksnpeaks.org, merges the activations both of them carry into one entry, and opens the Spots
-                        page — filters, park names, distances and one-tap logging — when tapped. pota.app is called
-                        directly; ParksnPeaks doesn't allow browsers to call it, so on the web build that half goes
-                        through a relay — see Spots relay under APIs if you'd rather use your own. SOTAwatch isn't
-                        included yet: their API terms require the app to be approved before it may connect.
+                        The spots bar above the log, alerts, and the ParksnPeaks account used to spot yourself are all
+                        set behind the cog on the Spots page.
                     </Typography>
-                    <SpotAlertSettings />
+                    <Button text="Open Spots" variant="outlined" onPress={() => navigate("/spots")} />
                     <Typography underline>Show Filters:</Typography>
                     <Switch
                         value={settings.showFilters != undefined ? settings.showFilters : false}
@@ -230,42 +225,13 @@ const Settings = () => {
                             onChangeText={(v) => updateSetting("geocodeMapsCoKey", v)}
                         />
                     </Stack>
-                    <Typography underline>Spots relay:</Typography>
+                    {/* The relay and the ParksnPeaks key live behind the cog on the Spots page, next to
+                        the feed they serve. */}
+                    <Typography underline>Spot networks:</Typography>
                     <Typography variant="subtitle">
-                        ParksnPeaks blocks browsers from calling it, so on the web the spots go through a relay. Leave
-                        this empty to use the public ones, which are unreliable, or deploy scripts/cors-worker.js to
-                        Cloudflare and paste its URL here — use {"{url}"} where the spot URL should go. Native builds
-                        ignore this and call ParksnPeaks directly. Posting your own spots to ParksnPeaks from the web
-                        needs your own relay: the public ones only forward reads.
+                        The ParksnPeaks account used to spot yourself, and the relay the web build reads ParksnPeaks
+                        through, are set behind the cog on the Spots page.
                     </Typography>
-                    <Stack direction="row">
-                        <Typography>URL:</Typography>
-                        <Input
-                            value={settings.spotsProxy || ""}
-                            onChangeText={(v) => updateSetting("spotsProxy", v === "" ? undefined : v)}
-                        />
-                    </Stack>
-                    <Typography underline>ParksnPeaks account:</Typography>
-                    <Typography variant="subtitle">
-                        Only needed to spot yourself. Your user name and the API key from the User Options page on
-                        parksnpeaks.org. The key is kept in the device keychain on iOS and Android. Spotting yourself to
-                        POTA needs no account.
-                    </Typography>
-                    <Stack direction="row">
-                        <Typography>User:</Typography>
-                        <Input
-                            value={settings.pnpUserId || ""}
-                            onChangeText={(v) => updateSetting("pnpUserId", v === "" ? undefined : v)}
-                        />
-                    </Stack>
-                    <Stack direction="row">
-                        <Typography>API key:</Typography>
-                        <Input
-                            password
-                            value={settings.pnpApiKey || ""}
-                            onChangeText={(v) => updateSetting("pnpApiKey", v === "" ? undefined : v)}
-                        />
-                    </Stack>
                 </Stack>
             </TabsLayout>
         </PageLayout>

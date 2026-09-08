@@ -154,7 +154,7 @@ const getSnapshot = () => state;
 
 /**
  * Hands the poller its settings without subscribing to the feed. Mounted once in the root layout, so
- * that switching alerts on from the Settings screen starts the poll that will raise them — every
+ * that switching alerts on from the Spots page starts the poll that will raise them — every
  * other caller of `useSpots` is a component that only exists while spots are on screen.
  */
 export const useSpotConfig = () => {

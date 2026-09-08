@@ -95,10 +95,9 @@ const RootLayout = () => {
                             <Stack.Screen name="menu" />
                             <Stack.Screen name="about" />
                             <Stack.Screen name="settings" />
-                            <Stack.Screen name="events" />
-                            <Stack.Screen name="tota" />
+                            <Stack.Screen name="events/index" />
+                            <Stack.Screen name="events/[section]" />
                             <Stack.Screen name="qsl" />
-                            <Stack.Screen name="sessions" />
                             <Stack.Screen name="stats" />
                         </Stack>
                     </ThemeProvider>

@@ -50,14 +50,6 @@ const Menu = () => {
             </Grid>
             <Grid container>
                 <Grid item xs={6}>
-                    <MenuButton icon="time" navigateTo="/sessions" text="Sessions" />
-                </Grid>
-                <Grid item xs={6}>
-                    <MenuButton icon="grid" navigateTo="/tota" text="Tiles" />
-                </Grid>
-            </Grid>
-            <Grid container>
-                <Grid item xs={6}>
                     <MenuButton icon="albums" navigateTo="/qsl" text="QSLs" />
                 </Grid>
                 <Grid item xs={6}>

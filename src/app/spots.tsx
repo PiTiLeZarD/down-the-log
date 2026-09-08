@@ -2,9 +2,10 @@ import { useRouter } from "expo-router";
 import { DateTime } from "luxon";
 import React from "react";
 import { View } from "react-native";
+import { useUnistyles } from "react-native-unistyles";
 import { PageLayout } from "../lib/components/page-layout";
 import { QSO, extrapolate, useQsos } from "../lib/components/qso";
-import { SpotFilters, SpotList, SpotMeButton, SpotModal } from "../lib/components/spots";
+import { SpotFilters, SpotList, SpotMeButton, SpotModal, SpotSettings } from "../lib/components/spots";
 import { Stack } from "../lib/components/stack";
 import { Button } from "../lib/ui/button";
 import { Typography } from "../lib/ui/typography";
@@ -25,6 +26,7 @@ import { useActiveSession } from "../lib/utils/use-session";
 import { useSettings } from "../lib/utils/use-settings";
 
 const Spots = () => {
+    const { theme } = useUnistyles();
     const settings = useSettings();
     const updateSetting = useStore((state) => state.updateSetting);
     const log = useStore((state) => state.log);
@@ -36,10 +38,14 @@ const Spots = () => {
     const { navigate } = useRouter();
 
     const [showFilters, setShowFilters] = React.useState<boolean>(false);
+    // Setup takes the page over rather than sitting above the list: it is long enough that the spots
+    // below it were unreachable anyway, and a screen of settings on top of a live feed read as one
+    // page doing two things at once.
+    const [setup, setSetup] = React.useState<boolean>(false);
     // The station whose megaphone was tapped, shaped as a QSO for the modal. Nothing is logged by it.
     const [respotting, setRespotting] = React.useState<QSO | undefined>(undefined);
-    // Four labelled buttons don't fit a phone, and the icons carry the meaning on their own. The
-    // filter count stays: it's the one of the four whose label is information rather than a name.
+    // Five labelled buttons don't fit a phone, and the icons carry the meaning on their own. The
+    // filter count stays: it's the one of them whose label is information rather than a name.
     const compact = useWidthMatches(undefined, "md");
 
     const visible = React.useMemo(
@@ -77,8 +83,34 @@ const Spots = () => {
         })
         .join(" · ");
 
+    // The cog sits beside Back rather than among the chips below: it swaps the whole page for the
+    // setup, which is a different thing from the filters and refresh that act on the list in place.
+    const title = (
+        <Stack direction="row" gap="md">
+            <Typography variant="h1" style={{ flexGrow: 1 }}>
+                {setup ? "Spot setup" : `Spots (${visible.length})`}
+            </Typography>
+            <View>
+                <Button
+                    colour={setup ? "secondary" : "primary"}
+                    startIcon="settings"
+                    aria-label={setup ? "Back to spots" : "Spot setup"}
+                    onPress={() => setSetup(!setup)}
+                    style={{ paddingLeft: theme.margins.xl, paddingRight: theme.margins.xl }}
+                />
+            </View>
+        </Stack>
+    );
+
+    if (setup)
+        return (
+            <PageLayout title={title}>
+                <SpotSettings />
+            </PageLayout>
+        );
+
     return (
-        <PageLayout title={`Spots (${visible.length})`}>
+        <PageLayout title={title}>
             {/* Every button is wrapped: a Button carries `flex: 1` of its own, which in a row makes
                 it fight its neighbours for the width instead of taking what its label needs. */}
             <Stack direction="row" gap="lg" style={{ flexWrap: "wrap" }}>

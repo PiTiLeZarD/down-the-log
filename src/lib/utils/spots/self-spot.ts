@@ -50,7 +50,7 @@ const postPotaSpot = async (request: SpotRequest): Promise<void> => {
 
 const pnpCredentials = (settings: Settings): PnpCredentials => {
     if (!settings.pnpUserId || !settings.pnpApiKey)
-        throw new Error("ParksnPeaks needs your user name and API key — see APIs in settings.");
+        throw new Error("ParksnPeaks needs your user name and API key — see the cog on the Spots page.");
     return { userID: settings.pnpUserId, apiKey: settings.pnpApiKey };
 };
 

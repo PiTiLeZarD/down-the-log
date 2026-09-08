@@ -1,14 +1,13 @@
 import { useRouter } from "expo-router";
 import React from "react";
 import { View } from "react-native";
-import { PageLayout } from "../lib/components/page-layout";
-import { useQsos } from "../lib/components/qso";
-import { Stack } from "../lib/components/stack";
-import { TotaActivationRow } from "../lib/components/tota-activation";
-import { TotaPoster } from "../lib/components/tota-poster";
-import { TotaRegistration, TotaRegistrationChip, readableDate } from "../lib/components/tota-registration";
-import { unique } from "../lib/utils/arrays";
-import { useStore } from "../lib/utils/store";
+import { Alert } from "../ui/alert";
+import { Button } from "../ui/button";
+import { IconName } from "../ui/icon";
+import { PaginatedList } from "../ui/paginated-list";
+import { Typography } from "../ui/typography";
+import { unique } from "../utils/arrays";
+import { useStore } from "../utils/store";
 import {
     TotaView,
     activationKey,
@@ -18,18 +17,47 @@ import {
     qsosMissingTile,
     totaCutoff,
     uploadedAt,
-} from "../lib/utils/tota";
-import { useSettings } from "../lib/utils/use-settings";
-import { Alert } from "../lib/ui/alert";
-import { Button } from "../lib/ui/button";
-import { IconName } from "../lib/ui/icon";
-import { PaginatedList } from "../lib/ui/paginated-list";
-import { Typography } from "../lib/ui/typography";
+} from "../utils/tota";
+import { useSettings } from "../utils/use-settings";
+import { useQsos } from "./qso";
+import { Stack } from "./stack";
+import { TotaActivationRow } from "./tota-activation";
+import { TotaPoster } from "./tota-poster";
+import { TotaRegistration, TotaRegistrationChip, readableDate } from "./tota-registration";
 
 const views: { value: TotaView; label: string; icon: IconName }[] = [
     { value: "list", label: "List", icon: "list" },
     { value: "poster", label: "Poster", icon: "grid-outline" },
 ];
+
+// A view that no longer exists — the map the poster took over from — falls back to the list.
+const currentView = (stored: TotaView): TotaView => (views.some((v) => v.value === stored) ? stored : "list");
+
+// Sits in the page header next to the section title. Until the registration date is known the page
+// shows nothing but the form asking for it, so there is no view to switch between.
+export const TotaViewToggle = () => {
+    const { totaView, totaRegistered } = useSettings();
+    const updateSetting = useStore((state) => state.updateSetting);
+    const view = currentView(totaView);
+
+    if (!totaRegistered) return null;
+
+    return (
+        <>
+            {views.map(({ value, label, icon }) => (
+                <View key={value}>
+                    <Button
+                        variant="chip"
+                        colour={view === value ? "primary" : "grey"}
+                        startIcon={icon}
+                        text={label}
+                        onPress={() => updateSetting("totaView", value)}
+                    />
+                </View>
+            ))}
+        </>
+    );
+};
 
 // Nothing is filtered out on merit. TOTA puts every inch of the planet in a tile — a backyard is as
 // valid an activation as a summit, it just scores its QSOs with no distance behind them — so the log
@@ -37,13 +65,11 @@ const views: { value: TotaView; label: string; icon: IconName }[] = [
 // are the days already sent, which is bookkeeping, and the days before TOTA's backdating window,
 // which their uploader would refuse anyway. That window is measured from the registration date, so
 // the page asks for it before it can show anything.
-const Tota = () => {
+export const TotaActivations = () => {
     const qsos = useQsos();
     const settings = useSettings();
     const { totaView: stored, totaRegistered: registered } = settings;
-    // A view that no longer exists — the map the poster took over from — falls back to the list.
-    const view = views.some((v) => v.value === stored) ? stored : "list";
-    const updateSetting = useStore((state) => state.updateSetting);
+    const view = currentView(stored);
     const updateFilters = useStore((state) => state.updateFilters);
     const { navigate } = useRouter();
     const [hideUploaded, setHideUploaded] = React.useState<boolean>(false);
@@ -54,8 +80,10 @@ const Tota = () => {
     const everything = React.useMemo(() => getTotaActivations(qsos), [qsos]);
     const allMissing = React.useMemo(() => qsosMissingTile(qsos), [qsos]);
 
-    const all = registered ? everything.filter((a) => isUploadable(a, registered)) : everything;
-    const missing = registered ? allMissing.filter((q) => isQsoUploadable(q, registered)) : allMissing;
+    if (!registered) return <TotaRegistration />;
+
+    const all = everything.filter((a) => isUploadable(a, registered));
+    const missing = allMissing.filter((q) => isQsoUploadable(q, registered));
     const tooOld = everything.length - all.length;
 
     const uploaded = all.filter((a) => !!uploadedAt(a)).length;
@@ -63,42 +91,13 @@ const Tota = () => {
     // stay counts of everything TOTA would take.
     const activations = hideUploaded ? all.filter((a) => !uploadedAt(a)) : all;
     const tiles = unique(all.map((a) => a.tile));
-    // The poster draws the same activations the rest of the page does, so it stops at the same
-    // cutoff: a tile only reached on a day TOTA won't accept isn't progress it will ever hold.
-    const posterTiles = unique(all.map((a) => a.tile));
     // Nothing to hand out isn't the same thing as nothing logged, and the empty view should say so.
     const whenEmpty = (
         <Typography>{hideUploaded ? "Every activation here is uploaded" : "No tile activations yet"}</Typography>
     );
 
-    if (!registered)
-        return (
-            <PageLayout title="Tiles">
-                <TotaRegistration />
-            </PageLayout>
-        );
-
     return (
-        <PageLayout
-            title={
-                <Stack direction="row" gap="md">
-                    <Typography variant="h1" style={{ flexGrow: 1 }}>
-                        Tiles
-                    </Typography>
-                    {views.map(({ value, label, icon }) => (
-                        <View key={value}>
-                            <Button
-                                variant="chip"
-                                colour={view === value ? "primary" : "grey"}
-                                startIcon={icon}
-                                text={label}
-                                onPress={() => updateSetting("totaView", value)}
-                            />
-                        </View>
-                    ))}
-                </Stack>
-            }
-        >
+        <Stack gap="xxl">
             <Stack direction="row">
                 <Typography style={{ flexGrow: 1 }}>
                     {all.length} activation{all.length === 1 ? "" : "s"} in {tiles.length} tile
@@ -161,7 +160,7 @@ const Tota = () => {
                     </Stack>
                 </Alert>
             )}
-            {view === "poster" && <TotaPoster tiles={posterTiles} />}
+            {view === "poster" && <TotaPoster tiles={tiles} />}
             {view === "list" && (
                 <PaginatedList itemsPerPage={8} whenEmpty={whenEmpty}>
                     {activations.map((activation, i) => (
@@ -169,8 +168,6 @@ const Tota = () => {
                     ))}
                 </PaginatedList>
             )}
-        </PageLayout>
+        </Stack>
     );
 };
-
-export default Tota;
