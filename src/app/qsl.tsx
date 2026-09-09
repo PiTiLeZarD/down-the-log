@@ -1,13 +1,14 @@
 import { DateTime } from "luxon";
+import { useState } from "react";
 import { View } from "react-native";
 import { showImportError, styles } from "../lib/components/adif/import";
 import { Dropzone, FileWithPreview } from "../lib/components/dropzone";
 import { PageLayout } from "../lib/components/page-layout";
-import { confirmQso, qslRecordKey } from "../lib/components/qsl";
+import { QSL_IGNORED, UnmatchedQsl, confirmQso, qslRecordKey } from "../lib/components/qsl";
+import { UnmatchedQsls } from "../lib/components/qsl/unmatched-qsls";
 import { QSO, findMatchingQso, useQsos } from "../lib/components/qso";
 import { Stack } from "../lib/components/stack";
 import { TabsLayout } from "../lib/components/tabs-layout";
-import { baseCallsign } from "../lib/utils/callsign";
 import { downloadQsos, getFileApiFromFilename, record2qso } from "../lib/utils/file-format";
 import { useStore } from "../lib/utils/store";
 import { Alert } from "../lib/ui/alert";
@@ -18,6 +19,7 @@ import { useSettings } from "../lib/utils/use-settings";
 
 const Qsl = () => {
     const qsos = useQsos();
+    const [unmatched, setUnmatched] = useState<UnmatchedQsl[]>([]);
     const log = useStore((state) => state.log);
     const today = DateTime.local().toFormat("yyyyMMdd");
     const settings = useSettings();
@@ -64,6 +66,7 @@ const Qsl = () => {
                     // have the second one match against pre-import QSOs and overwrite the first
                     // import's confirmations.
                     const currentQsos = useStore.getState().qsos;
+                    const resolutions = useStore.getState().qslResolutions;
 
                     // The duplicate pass used to be a findIndex() inside a filter(), so a download
                     // cost records² comparisons — the shape that makes a big file look hung. A Set
@@ -79,20 +82,49 @@ const Qsl = () => {
                         if (record.callsign) records.push({ key, record });
                     }
 
+                    // Answers the operator has already given win over the time window: they are
+                    // about exactly this record, and they are held by QSO id, so editing the QSO
+                    // afterwards doesn't lose them. The index is only worth building when there is
+                    // something to look up.
+                    const byId = Object.keys(resolutions).length
+                        ? new Map(currentQsos.map((q) => [q.id, q]))
+                        : new Map<string, QSO>();
+
                     // The matched QSO is copied rather than edited in place: the store's own
                     // objects are what the rest of the app renders from, and mutating one
                     // changes what is on screen without zustand ever hearing about it.
-                    const matches = records.map(({ key, record }) => ({
-                        key,
-                        record,
-                        matching: findMatchingQso(currentQsos, record),
-                    }));
+                    const matches = records.map(({ key, record }) => {
+                        const resolved = resolutions[key];
+                        return {
+                            key,
+                            record,
+                            ignored: resolved === QSL_IGNORED,
+                            matching:
+                                resolved && resolved !== QSL_IGNORED
+                                    ? byId.get(resolved) || null
+                                    : findMatchingQso(currentQsos, record),
+                        };
+                    });
 
-                    const toImport = matches
-                        .map(({ record, matching }) => (matching ? confirmQso(matching, record) : null))
-                        .filter((q): q is QSO => !!q);
-                    const unmatched = matches.filter(({ matching }) => !matching);
-                    const known = matches.length - unmatched.length - toImport.length;
+                    // Folded onto the running copy rather than onto the stored QSO: a download
+                    // holds a LoTW row and an eQSL row for the same contact, and two records
+                    // confirming one QSO from its stored state each produced a copy carrying only
+                    // their own flag — whichever landed last in log() won, and the other
+                    // confirmation was lost.
+                    const confirmed = new Map<string, QSO>();
+                    let newlyConfirmed = 0;
+                    for (const { record, matching } of matches) {
+                        if (!matching) continue;
+                        const next = confirmQso(confirmed.get(matching.id) || matching, record);
+                        if (!next) continue;
+                        confirmed.set(matching.id, next);
+                        newlyConfirmed++;
+                    }
+
+                    const toImport = [...confirmed.values()];
+                    const stillUnmatched = matches.filter(({ matching, ignored }) => !matching && !ignored);
+                    const ignored = matches.filter(({ ignored: i }) => i).length;
+                    const known = matches.length - stillUnmatched.length - ignored - newlyConfirmed;
 
                     // Nothing new in the file means nothing written at all: re-importing the same
                     // download is a no-op rather than a full rewrite of every QSO it mentions.
@@ -101,28 +133,26 @@ const Qsl = () => {
                     showDialog({
                         title: "Done!",
                         text: [
-                            `${toImport.length} new confirmation${toImport.length === 1 ? "" : "s"}`,
+                            `${newlyConfirmed} new confirmation${newlyConfirmed === 1 ? "" : "s"}`,
                             ...(known ? [`${known} already confirmed`] : []),
-                            ...(unmatched.length ? [`${unmatched.length} unmatched`] : []),
+                            ...(stillUnmatched.length ? [`${stillUnmatched.length} unmatched`] : []),
+                            ...(ignored ? [`${ignored} ignored`] : []),
                         ].join(", ") + ` out of ${records.length} records.`,
                         icon: "success",
                         confirmButtonText: "Ok",
                     });
 
-                    if (unmatched.length) {
-                        console.group("QSOs unmatched and possible matches:");
-                        unmatched.forEach(({ record }) => {
-                            console.info(`Callsign: ${record.callsign} Date: ${record.date.toFormat("yyyy-MM-dd HH:mm")}`);
-                            currentQsos
-                                .filter((qq) => baseCallsign(qq.callsign) === baseCallsign(record.callsign || ""))
-                                .forEach((qq) =>
-                                    console.info(
-                                        `-> ${qq.callsign} > ${qq.date.toFormat("yyyy-MM-dd HH:mm")} ( /qso?qsoId=${qq.id} )`,
-                                    ),
-                                );
-                        });
-                        console.groupEnd();
-                    }
+                    // Same file twice adds nothing to the list: the record key is what an answer
+                    // is remembered under, so it is what tells two copies of a record apart.
+                    setUnmatched((prev) => {
+                        const listed = new Set(prev.map((u) => u.key));
+                        return [
+                            ...prev,
+                            ...stillUnmatched
+                                .filter((u) => !listed.has(u.key))
+                                .map(({ key, record }) => ({ key, record })),
+                        ];
+                    });
                 } catch (e) {
                     showImportError(file.name, e);
                 }
@@ -233,6 +263,8 @@ const Qsl = () => {
                         </Typography>
                     </Stack>
                 </Dropzone>
+
+                {unmatched.length > 0 && <UnmatchedQsls unmatched={unmatched} onClear={() => setUnmatched([])} />}
             </Stack>
         </PageLayout>
     );

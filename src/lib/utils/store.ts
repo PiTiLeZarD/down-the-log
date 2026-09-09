@@ -128,6 +128,11 @@ type DTLStoreProps = {
     // it's held by id rather than by value so ending it is a one-field write.
     sessions: Session[];
     activeSessionId?: string;
+    // Manual answers to QSL records the importer couldn't place, keyed by qslRecordKey. The value
+    // is the id of the QSO the record belongs to, or QSL_IGNORED. Held here rather than on the QSO
+    // so that re-importing a download the operator has already sorted out asks nothing twice —
+    // see components/qsl.
+    qslResolutions: Record<string, string>;
 };
 
 type DTLStoreActionsProps = {
@@ -143,6 +148,7 @@ type DTLStoreActionsProps = {
     deleteSession: (id: string) => void;
     bumpSerial: (id: string) => void;
     adoptSessions: (sessions: Session[], qsos: QSO[]) => void;
+    resolveQsl: (key: string, target: string | null) => void;
 };
 
 type DTLStoreActionsMutatorProps = (
@@ -156,6 +162,7 @@ const InitialStore: DTLStoreProps = {
     settings: defaultSettings,
     currentLocation: "",
     sessions: [],
+    qslResolutions: {},
 };
 
 const StoreActions: DTLStoreActionsMutatorProps = (set) => ({
@@ -222,6 +229,13 @@ const StoreActions: DTLStoreActionsMutatorProps = (set) => ({
                 sessions: [...state.sessions, ...sessions],
                 qsos: [...state.qsos.filter((q) => !adopted.has(q.id)), ...qsos],
             };
+        }),
+    // null forgets the answer, which is the undo behind a mis-click: the next import asks about the
+    // record again. It doesn't touch the QSO — confirmations are one-way everywhere else too.
+    resolveQsl: (key, target) =>
+        set((state) => {
+            const rest = Object.fromEntries(Object.entries(state.qslResolutions).filter(([k]) => k !== key));
+            return { qslResolutions: target === null ? rest : { ...rest, [key]: target } };
         }),
 });
 
