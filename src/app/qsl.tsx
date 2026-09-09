@@ -3,6 +3,7 @@ import { View } from "react-native";
 import { showImportError, styles } from "../lib/components/adif/import";
 import { Dropzone, FileWithPreview } from "../lib/components/dropzone";
 import { PageLayout } from "../lib/components/page-layout";
+import { confirmQso, qslRecordKey } from "../lib/components/qsl";
 import { QSO, findMatchingQso, useQsos } from "../lib/components/qso";
 import { Stack } from "../lib/components/stack";
 import { TabsLayout } from "../lib/components/tabs-layout";
@@ -64,63 +65,61 @@ const Qsl = () => {
                     // import's confirmations.
                     const currentQsos = useStore.getState().qsos;
 
-                    const updates = getFileApiFromFilename(file.name)
-                        .parseFile(content)
-                        .filter(
-                            (r, i, a) =>
-                                a.findIndex(
-                                    (rr) =>
-                                        baseCallsign(rr.call || "") === baseCallsign(r.call || "") &&
-                                        rr.qso_date === r.qso_date &&
-                                        rr.time_on === r.time_on,
-                                ) === i,
-                        )
-                        .map((r) => record2qso(r))
-                        .filter((q) => !!q.callsign)
-                        // The matched QSO is copied rather than edited in place: the store's own
-                        // objects are what the rest of the app renders from, and mutating one
-                        // changes what is on screen without zustand ever hearing about it.
-                        .map((q): [QSO, QSO | null] => {
-                            const matching = findMatchingQso(currentQsos, q);
-                            if (!matching) return [q, null];
-                            const honeypot = q.honeypot || {};
-                            return [
-                                q,
-                                {
-                                    ...matching,
-                                    ...("app_lotw_owncall" in honeypot ? { lotw_received: true } : {}),
-                                    ...("app_eqsl_ag" in honeypot ? { eqsl_received: true } : {}),
-                                },
-                            ];
-                        });
+                    // The duplicate pass used to be a findIndex() inside a filter(), so a download
+                    // cost records² comparisons — the shape that makes a big file look hung. A Set
+                    // of the record keys answers the same question in one pass.
+                    const records: { key: string; record: QSO }[] = [];
+                    const seen = new Set<string>();
+                    for (const r of getFileApiFromFilename(file.name).parseFile(content)) {
+                        const key = qslRecordKey(r);
+                        if (seen.has(key)) continue;
+                        seen.add(key);
+                        const record = record2qso(r);
+                        // A record with no callsign can't be matched against anything.
+                        if (record.callsign) records.push({ key, record });
+                    }
 
-                    const toImport = updates.map(([, matching]) => matching).filter((q): q is QSO => !!q);
-                    log(toImport);
+                    // The matched QSO is copied rather than edited in place: the store's own
+                    // objects are what the rest of the app renders from, and mutating one
+                    // changes what is on screen without zustand ever hearing about it.
+                    const matches = records.map(({ key, record }) => ({
+                        key,
+                        record,
+                        matching: findMatchingQso(currentQsos, record),
+                    }));
+
+                    const toImport = matches
+                        .map(({ record, matching }) => (matching ? confirmQso(matching, record) : null))
+                        .filter((q): q is QSO => !!q);
+                    const unmatched = matches.filter(({ matching }) => !matching);
+                    const known = matches.length - unmatched.length - toImport.length;
+
+                    // Nothing new in the file means nothing written at all: re-importing the same
+                    // download is a no-op rather than a full rewrite of every QSO it mentions.
+                    if (toImport.length) log(toImport);
 
                     showDialog({
                         title: "Done!",
-                        text: `${toImport.length} records have been matched! ${
-                            toImport.length !== updates.length
-                                ? `(${updates.length - toImport.length} couldn't be matched, check the logs)`
-                                : ""
-                        }`,
+                        text: [
+                            `${toImport.length} new confirmation${toImport.length === 1 ? "" : "s"}`,
+                            ...(known ? [`${known} already confirmed`] : []),
+                            ...(unmatched.length ? [`${unmatched.length} unmatched`] : []),
+                        ].join(", ") + ` out of ${records.length} records.`,
                         icon: "success",
                         confirmButtonText: "Ok",
                     });
 
-                    if (toImport.length !== updates.length) {
+                    if (unmatched.length) {
                         console.group("QSOs unmatched and possible matches:");
-                        updates.forEach(([q, matching]) => {
-                            if (!matching) {
-                                console.info(`Callsign: ${q?.callsign} Date: ${q?.date.toFormat("yyyy-MM-dd HH:mm")}`);
-                                currentQsos.filter(
-                                    (qq) => baseCallsign(qq.callsign) === baseCallsign(q?.callsign || ""),
-                                ).forEach((qq) =>
+                        unmatched.forEach(({ record }) => {
+                            console.info(`Callsign: ${record.callsign} Date: ${record.date.toFormat("yyyy-MM-dd HH:mm")}`);
+                            currentQsos
+                                .filter((qq) => baseCallsign(qq.callsign) === baseCallsign(record.callsign || ""))
+                                .forEach((qq) =>
                                     console.info(
                                         `-> ${qq.callsign} > ${qq.date.toFormat("yyyy-MM-dd HH:mm")} ( /qso?qsoId=${qq.id} )`,
                                     ),
                                 );
-                            }
                         });
                         console.groupEnd();
                     }
