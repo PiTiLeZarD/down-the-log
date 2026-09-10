@@ -77,20 +77,37 @@ export const CallsignInput = ({ handleAdd }: CallsignInputProps) => {
     // same band and mode. Indexed once per session so typing a callsign isn't a scan of the log.
     const dupeKeys = React.useMemo(() => sessionDupeKeys(sessionQsos(qsos, session)), [qsos, session]);
     const isDupe = !!session && !!callsign && dupeKeys.has(sessionDupeKey({ callsign, band, mode }));
-    const previousQso = qsos.filter((q) => baseCallsign(q.callsign) === baseCallsign(callsign));
+    // Indexed once per log rather than filtered per keystroke: the scan was the whole log on every
+    // letter typed, which on a 100k log is what made the box lag a character behind the operator.
+    const byBaseCallsign = React.useMemo(() => {
+        const index = new Map<string, QSO>();
+        // Last write wins so the newest QSO with the station is the one that fills the form — the
+        // log is newest-first, so it's walked backwards.
+        for (let i = qsos.length - 1; i >= 0; i--) {
+            const base = baseCallsign(qsos[i].callsign);
+            if (base) index.set(base, qsos[i]);
+        }
+        return index;
+    }, [qsos]);
+    const previousQso = byBaseCallsign.get(baseCallsign(callsign) ?? "");
     const hamqth = useHamqth(callsign);
-    let hamqthCSData: Partial<HamQTHCallsignData> | undefined = hamqth.data;
-    if ((previousQso || []).length) {
-        hamqthCSData = {
-            callsign,
-            qth: previousQso[0].qth,
-            name: previousQso[0].name,
-            country: previousQso[0].country,
-            itu: previousQso[0].ituzone,
-            cq: previousQso[0].cqzone,
-            grid: previousQso[0].locator,
-        } as any;
-    }
+    // Memoised on what it's built from: this drives the effect below, and a fresh object every
+    // render meant the form was refilled from the lookup on every render rather than on a new one.
+    const hamqthCSData: Partial<HamQTHCallsignData> | undefined = React.useMemo(
+        () =>
+            previousQso
+                ? ({
+                      callsign,
+                      qth: previousQso.qth,
+                      name: previousQso.name,
+                      country: previousQso.country,
+                      itu: previousQso.ituzone,
+                      cq: previousQso.cqzone,
+                      grid: previousQso.locator,
+                  } as any)
+                : hamqth.data,
+        [previousQso, callsign, hamqth.data],
+    );
 
     const fillFromLookup = useEffectEvent(() => {
         if (hamqthCSData && hamqthCSData.callsign == baseCallsign(callsign)) {

@@ -30,6 +30,7 @@ import { Button } from "../lib/ui/button";
 import { Typography } from "../lib/ui/typography";
 import { carryOverFields } from "../lib/utils/session";
 import { useActiveSession } from "../lib/utils/use-session";
+import { useDebouncedValue } from "../lib/utils/use-debounced-value";
 import { useSettings } from "../lib/utils/use-settings";
 
 const styles = StyleSheet.create((theme) => ({
@@ -76,7 +77,11 @@ const Index = () => {
     // `useWatch` rather than `methods.watch()`: the latter can't be memoised, which made React
     // Compiler skip this whole file.
     const callsign = useWatch({ control: methods.control, name: "callsign" });
-    const listFilters = useMemo(() => (callsign ? [(q: QSO) => q.callsign.includes(callsign)] : undefined), [callsign]);
+    // The log search follows the box, it isn't wired to it: scanning a 100k-QSO log and regrouping
+    // what comes back is far slower than a keystroke, so on a big log the field went dead between
+    // letters. Filtering on the settled value means one search per pause instead of one per letter.
+    const search = useDebouncedValue(callsign, 300);
+    const listFilters = useMemo(() => (search ? [(q: QSO) => q.callsign.includes(search)] : undefined), [search]);
     const resetQso = (previousQso?: QSO) => {
         const previous = previousQso || lastQso;
         let qso = prefillMyStation(createQso(""), myStationFromSettings(settings, currentLocation));
