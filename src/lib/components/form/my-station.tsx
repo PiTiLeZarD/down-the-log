@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useMemo } from "react";
 import { useFormContext, useWatch } from "react-hook-form";
 import { Pressable, View } from "react-native";
 import { StyleSheet } from "react-native-unistyles";
@@ -65,19 +65,18 @@ export const MyStation = () => {
     // rig and antenna off a narrow row.
     const summary = [values.myCallsign, values.myLocator, values.myRig, values.myAntenna].filter(Boolean) as string[];
 
+    // Every field of the form is watched above, so this component re-renders on each character
+    // typed into it — walking the whole log for the pick lists twice per keystroke. They only ever
+    // change when the log does; dropping the field's current value out of them is the cheap half.
+    const log = useQsos();
+    const knownRigs = useMemo(() => unique(log.map((q) => q.myRig).filter((e) => !!e)), [log]);
+    const knownAntennas = useMemo(() => unique(log.map((q) => q.myAntenna).filter((e) => !!e)), [log]);
+
     const rig = values.myRig;
-    const rigs = unique(
-        useQsos()
-            .map((q) => q.myRig)
-            .filter((e) => !!e),
-    ).filter((a) => a !== rig);
+    const rigs = knownRigs.filter((a) => a !== rig);
 
     const antenna = values.myAntenna;
-    const antennas = unique(
-        useQsos()
-            .map((q) => q.myAntenna)
-            .filter((e) => !!e),
-    ).filter((a) => a !== antenna);
+    const antennas = knownAntennas.filter((a) => a !== antenna);
 
     // Anything the app can work out for itself is filled in as the modal opens rather than left as a
     // blank to type: a QSO logged before the settings existed, or imported from ADIF, arrives here

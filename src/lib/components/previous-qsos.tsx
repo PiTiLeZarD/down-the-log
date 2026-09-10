@@ -3,7 +3,7 @@ import { useFormContext } from "react-hook-form";
 import { PaginatedList } from "../ui/paginated-list";
 import { Typography } from "../ui/typography";
 import { baseCallsign } from "../utils/callsign";
-import { QSO, useQsos } from "./qso";
+import { QSO, qsosByCallsign, useQsos } from "./qso";
 import { QsoRow } from "./qso/qso-row";
 import { Stack } from "./stack";
 
@@ -12,10 +12,12 @@ export const PreviousQsos = () => {
     const { id, callsign } = getValues();
     const { navigate } = useRouter();
 
-    const qsos = useQsos().filter(
-        (q) =>
-            id != q.id && baseCallsign(callsign) !== undefined && baseCallsign(q.callsign) === baseCallsign(callsign),
-    );
+    const base = baseCallsign(callsign);
+    // Bucketed by callsign rather than scanned: this mounts as part of the QSO page, and a filter
+    // over the whole log is work the page waits on before it can show anything. The index itself is
+    // cached against the log, so the bucket is all this pays for.
+    const log = useQsos();
+    const qsos = base === undefined ? [] : (qsosByCallsign(log).get(base) || []).filter((q) => id != q.id);
 
     if (qsos.length === 0) return <></>;
 

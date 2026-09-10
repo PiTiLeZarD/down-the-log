@@ -15,10 +15,24 @@ import { type Session, carryOverFields } from "../../utils/session";
 import { Settings, useStore } from "../../utils/store";
 
 // sort() is in-place, so sorting the array zustand handed us would reorder the store itself.
-// Copy first, and memoise so every consumer doesn't re-sort the whole log on each render.
+// Copy first, and cache against the store's array rather than in each caller's memo: two dozen
+// components call the hook, so a single logged QSO used to cost one full re-sort of the log per
+// mounted consumer — all of it synchronous, and all of it before the next screen could paint. The
+// store never mutates its arrays in place, so a new log is a new reference and a fresh sort.
+const sortedLogs = new WeakMap<QSO[], QSO[]>();
+
+export const sortedQsos = (qsos: QSO[]): QSO[] => {
+    const cached = sortedLogs.get(qsos);
+    if (cached) return cached;
+
+    const sorted = [...qsos].sort((q1, q2) => (q1.date <= q2.date ? 1 : -1));
+    sortedLogs.set(qsos, sorted);
+    return sorted;
+};
+
 export const useQsos = (): QSO[] => {
     const qsos = useStore((state) => state.qsos);
-    return useMemo(() => [...qsos].sort((q1, q2) => (q1.date <= q2.date ? 1 : -1)), [qsos]);
+    return useMemo(() => sortedQsos(qsos), [qsos]);
 };
 
 export type QSO = {
@@ -337,7 +351,9 @@ export const extrapolate = (qso: QSO, qsos: QSO[], fields: (keyof QSO)[], sessio
     // the reset deliberately left would put the finished activation's park back on.
     if (qsos.length) qso = carryOver(qso, qsos[0], carryOverFields(fields, qsos[0], session), "fill");
 
-    const lastQsoWithCallsign = qsos.filter((q) => baseCallsign(q.callsign) === baseCallsign(qso.callsign));
+    // Through the index rather than a filter: this runs on the keypress that logs the QSO, with the
+    // whole log to walk, and the same index is already built for the duplicate checks.
+    const lastQsoWithCallsign = qsosByCallsign(qsos).get(baseCallsign(qso.callsign)) || [];
     if (lastQsoWithCallsign.length) qso = prefillSameCallsign(qso, lastQsoWithCallsign[0]);
 
     // Last, and only filling blanks. The form was already reset with the session's values in

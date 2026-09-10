@@ -1,4 +1,5 @@
 import { useRouter } from "expo-router";
+import { useMemo } from "react";
 import { View } from "react-native";
 import { groupQsos } from "../../app/stats";
 import { sortBands } from "../data/bands";
@@ -16,16 +17,27 @@ export type DxccStatsProps = {
 };
 
 export const DxccStats = ({ dxcc }: DxccStatsProps) => {
-    const qsos = useQsos().filter((q) => q.dxcc === dxcc);
+    const log = useQsos();
     const updateFilters = useStore((state) => state.updateFilters);
     const { navigate } = useRouter();
 
-    const groups = groupQsos(qsos, "band", "mode");
-    const modes = unique(
-        Object.values(groups)
-            .map((g) => Object.keys(g))
-            .flat(),
-    );
+    // One pass over the log per entity shown, not per render: this sits inside the QSO form, which
+    // re-renders as the operator edits it.
+    const { groups, modes } = useMemo(() => {
+        const grouped = groupQsos(
+            log.filter((q) => q.dxcc === dxcc),
+            "band",
+            "mode",
+        );
+        return {
+            groups: grouped,
+            modes: unique(
+                Object.values(grouped)
+                    .map((g) => Object.keys(g))
+                    .flat(),
+            ),
+        };
+    }, [log, dxcc]);
 
     const chipValue = (band: string, mode: string) => {
         const qs = groups[band][mode] || [];

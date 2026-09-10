@@ -115,9 +115,18 @@ const applyFilters = (qsos: QSO[], filters: QsoListProps["filters"]) =>
 
 export const QsoList = ({ style, filters, qsos, onQsoPress }: QsoListProps) => {
     const settings = useStore((state) => state.settings);
-    // Both props have to be referentially stable for this to hold: a fresh row array on every render
-    // re-runs the grouping over the whole log.
-    const rows = React.useMemo(() => sections2rows(qsos2sections(applyFilters(qsos, filters))), [qsos, filters]);
+    // Deferred, because rebuilding the rows is the slowest thing a log change causes and nothing
+    // else should wait behind it: logging a QSO writes to the store, and the store write used to
+    // regroup and re-date-format the whole log synchronously before the screen it navigates to
+    // could paint. React renders the urgent work first and comes back for the list.
+    const deferredQsos = React.useDeferredValue(qsos);
+    const deferredFilters = React.useDeferredValue(filters);
+    // Both inputs have to be referentially stable for this to hold: a fresh row array on every
+    // render re-runs the grouping over the whole log.
+    const rows = React.useMemo(
+        () => sections2rows(qsos2sections(applyFilters(deferredQsos, deferredFilters))),
+        [deferredQsos, deferredFilters],
+    );
 
     // A phone row is already one line of callsign, band and icons with nothing to spare, so the
     // bracket and the gutter it needs are left to the screens with room for them.
