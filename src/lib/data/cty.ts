@@ -85,6 +85,20 @@ const prefixMap = () => {
     return prefixes;
 };
 
+/**
+ * The entity an ADIF COUNTRY field names, which is how an imported file gets back to a country.
+ * Current entities only: a deleted one has no ISO country to resolve to, so its name passes through
+ * as written rather than being turned into something it isn't.
+ */
+let entitiesByName: Map<string, DxccEntity> | undefined;
+
+export const entityByName = (name?: string): DxccEntity | undefined => {
+    if (!name) return undefined;
+    if (!entitiesByName)
+        entitiesByName = new Map(Object.values(entities).map((entity) => [entity.name.toUpperCase(), entity]));
+    return entitiesByName.get(name.toUpperCase().trim());
+};
+
 /** An exact callsign the table calls out by name: a DXpedition, a portable operation, a one-off. */
 export const ctyException = (callsign: string): DxccEntity | undefined => {
     if (!exceptions) exceptions = decode(raw.exceptions);

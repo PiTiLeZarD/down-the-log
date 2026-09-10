@@ -129,8 +129,29 @@ describe("qso2record", () => {
         expect(qso2record(qso).country).toBe("Australia");
     });
 
+    // The iso3 alone can't say which of a country's entities was worked, so the name comes off the
+    // DXCC field: ESP is Spain, the Canaries, the Balearics and Ceuta, and ADIF wants to know which.
+    test("names the DXCC entity rather than the country", () => {
+        expect(qso2record({ ...qso, country: "ESP", dxcc: 29 }).country).toBe("Canary Is.");
+        expect(qso2record({ ...qso, country: "ESP", dxcc: 281 }).country).toBe("Spain");
+        expect(qso2record({ ...qso, country: "GBR", dxcc: 279 }).country).toBe("Scotland");
+    });
+
+    // Settling that disagreement on the way out would hide it: the issue list is already flagging it.
+    test("falls back to the country name when the DXCC belongs somewhere else", () => {
+        expect(qso2record({ ...qso, country: "AUS", dxcc: 291 }).country).toBe("Australia");
+        expect(qso2record({ ...qso, country: "AUS", dxcc: undefined }).country).toBe("Australia");
+    });
+
     test("passes a country it can't translate through as it stands", () => {
         expect(qso2record({ ...qso, country: "Freedonia" }).country).toBe("Freedonia");
+    });
+
+    // MY_COUNTRY is the same enumeration as COUNTRY, and used to go out as our iso3 — a code no
+    // other logger reads.
+    test("writes MY_COUNTRY as a name too", () => {
+        expect(qso2record({ ...qso, myCountry: "AUS" }).my_country).toBe("Australia");
+        expect(qso2record({ ...qso, myCountry: "Freedonia" }).my_country).toBe("Freedonia");
     });
 
     test("stringifies numbers", () => {
@@ -182,6 +203,48 @@ describe("record2qso", () => {
         // Files this app wrote before COUNTRY held the entity name still hold the code
         expect(record2qso(record({ country: "AUS" })).country).toBe("AUS");
         expect(record2qso(record({ country: "Freedonia" })).country).toBe("Freedonia");
+        expect(record2qso(record({ country: "Canary Is." })).country).toBe("ESP");
+        expect(record2qso(record({ country: "sardinia" })).country).toBe("ITA");
+        expect(record2qso(record({ my_country: "Scotland" })).myCountry).toBe("GBR");
+    });
+
+    // COUNTRY now carries a name the export chose from two fields, so both directions have to be
+    // stable: a QSO exported and re-imported is the same QSO, and a record imported and re-exported
+    // is the same record. Anything else drifts a little further every time a log is round-tripped.
+    describe("COUNTRY survives a round trip", () => {
+        const cases: Array<Pick<QSO, "country" | "dxcc" | "myCountry">> = [
+            { country: "AUS", dxcc: 150 },
+            { country: "ESP", dxcc: 29 }, // Canary Is., a sub-entity ISO folds into its parent
+            { country: "ESP", dxcc: 281 },
+            { country: "GBR", dxcc: 279 }, // Scotland
+            { country: "USA", dxcc: 291 },
+            { country: "USA", dxcc: 6 }, // Alaska
+            { country: "AUS", dxcc: 291 }, // a mismatch the issue list flags, kept as it is
+            { country: "AUS", dxcc: undefined },
+            { country: undefined, dxcc: 150 },
+            { country: "Freedonia", dxcc: undefined },
+            { country: "AUS", dxcc: 150, myCountry: "GBR" },
+        ];
+
+        cases.forEach((fields) => {
+            const label = `${fields.country} / ${fields.dxcc}${fields.myCountry ? ` / my ${fields.myCountry}` : ""}`;
+
+            test(`QSO -> record -> QSO keeps ${label}`, () => {
+                const roundTripped = record2qso(qso2record({ ...qso, ...fields }));
+                expect(roundTripped.country).toBe(fields.country);
+                expect(roundTripped.dxcc).toBe(fields.dxcc);
+                if (fields.myCountry) expect(roundTripped.myCountry).toBe(fields.myCountry);
+            });
+
+            test(`record -> QSO -> record keeps ${label}`, () => {
+                const written = qso2record({ ...qso, ...fields });
+                expect(qso2record(record2qso(written))).toMatchObject({
+                    country: written.country,
+                    dxcc: written.dxcc,
+                    my_country: written.my_country,
+                });
+            });
+        });
     });
 
     test("leaves a QSL flag unset when the file doesn't carry the tag", () => {

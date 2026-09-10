@@ -1,13 +1,19 @@
+import { entityByName } from "./cty";
+
 // ADIF's COUNTRY field holds the DXCC entity name, never a code, so the file format has to
 // translate in both directions. The QSO itself keeps the iso3.
 export const countryName = (iso3?: string): string | undefined => (iso3 ? countries[iso3]?.name : undefined);
 
 // Keyed uppercase: the spelling that comes back from another logger is whatever casing it used.
 // Accepts an iso3 too, so QSOs written by older versions of this app still resolve.
+//
+// DXCC entity names resolve as well as ISO country names, because those are what ADIF actually
+// writes and what this app now exports: "Canary Is." and "Sardinia" have to come back as ESP and
+// ITA, not as strings nothing recognises. The two namings agree on every country they share.
 export const resolveCountry = (country?: string): string | undefined => {
     if (!country) return undefined;
     if (country in countries) return country;
-    return iso3ByName[country.toUpperCase().trim()];
+    return iso3ByName[country.toUpperCase().trim()] || entityByName(country)?.iso3;
 };
 
 export const countries: Record<string, { name: string; flag: string }> = {

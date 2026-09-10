@@ -3,6 +3,7 @@ import { QSO, newQsoID } from "../../components/qso";
 import { freq2band, resolveBand } from "../../data/bands";
 import { Continent, continents } from "../../data/callsigns";
 import { countryName, resolveCountry } from "../../data/countries";
+import { entities as dxccEntities } from "../../data/cty";
 import { resolveMode } from "../../data/modes";
 import { normalise } from "../locator";
 
@@ -142,6 +143,13 @@ type FieldDescriptor = {
 };
 
 const defaultTo = (value: unknown) => (value === undefined || value === null ? undefined : String(value));
+
+// The DXCC entity name to write for a QSO, or nothing when its entity isn't in the country it says
+// it's in. `dxcc` is a number on an imported QSO and whatever the form field held on an edited one.
+const entityNameOf = (dxcc: QSO["dxcc"], iso3?: string): string | undefined => {
+    const entity = dxcc ? dxccEntities[Number(dxcc)] : undefined;
+    return entity && entity.iso3 === iso3 ? entity.name : undefined;
+};
 const defaultFrom = (value: string | undefined) => value;
 
 const field = <K extends keyof QSO>(qsoKey: K, adifKey: RecordField, codec: FieldCodec<K> = {}): FieldDescriptor =>
@@ -174,11 +182,14 @@ export const fields: FieldDescriptor[] = [
     field("rst_received", "rst_rcvd"),
     field("callsign", "call"),
     field("prefix", "pfx"),
-    // ADIF COUNTRY is the DXCC entity name; the QSO holds an iso3. Writing the code out made the
-    // file wrong for every other logger, and unknown names/codes pass through untouched rather
-    // than being dropped, so nothing is lost on a round trip we can't translate.
+    // ADIF COUNTRY is the DXCC entity name; the QSO holds an iso3, which can't say which of a
+    // country's entities was worked, so the name comes off the DXCC field where the two agree.
+    // Where they don't, the ISO country name is written instead: a QSO whose country and DXCC
+    // disagree is one the issue list is already flagging, and rewriting either of them on the way
+    // out would quietly settle it. Unknown names and codes pass through untouched, so nothing is
+    // lost on a round trip we can't translate.
     field("country", "country", {
-        to: (v?: string) => countryName(v) || v,
+        to: (v, qso) => entityNameOf(qso.dxcc, v) || countryName(v) || v,
         from: (v) => resolveCountry(v) || v,
     }),
     field("state", "state"),
@@ -215,7 +226,12 @@ export const fields: FieldDescriptor[] = [
     field("mySigInfo", "my_sig_info"),
     field("myRig", "my_rig"),
     field("myAntenna", "my_antenna"),
-    field("myCountry", "my_country"),
+    // Same enumeration as COUNTRY, and it used to go out as our iso3 — a code no other logger
+    // reads. There is no my_dxcc on the QSO to name an entity with, so this is the country name.
+    field("myCountry", "my_country", {
+        to: (v?: string) => countryName(v) || v,
+        from: (v) => resolveCountry(v) || v,
+    }),
     field("myState", "my_state"),
     field("contestId", "contest_id"),
     field("stx", "stx", number),
