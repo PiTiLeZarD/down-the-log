@@ -33,8 +33,9 @@
         "refreshpota": "wget -O scripts/all_parks_ext.csv https://pota.app/all_parks_ext.csv && tsx scripts/pota.ts",
         "refreshsota": "wget -O scripts/summitslist.csv https://storage.sota.org.uk/summitslist.csv && tsx scripts/sota.ts",
         "refreshwwff": "wget -O scripts/wwff_directory.csv https://wwff.co/wwff-data/wwff_directory.csv && tsx scripts/wwff.ts",
+        "refreshcty": "wget -O scripts/cty.dat https://www.country-files.com/bigcty/cty.dat && wget -O scripts/dxcclist.txt \"https://www.arrl.org/files/file/DXCC/2020%20Current_Deleted.txt\" && tsx scripts/cty.ts",
         "potawwfflinks": "tsx scripts/linkpotawwff.ts ",
-        "refreshdata": "pnpm refreshpota && pnpm refreshsota && pnpm refreshwwff && pnpm potawwfflinks"
+        "refreshdata": "pnpm refreshpota && pnpm refreshsota && pnpm refreshwwff && pnpm refreshcty && pnpm potawwfflinks"
     },
     "dependencies": {
         "@expo/html-elements": "57.0.0",

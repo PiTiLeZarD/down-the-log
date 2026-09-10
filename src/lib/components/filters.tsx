@@ -2,8 +2,8 @@ import { useRouter } from "expo-router";
 import React from "react";
 import { View, useWindowDimensions } from "react-native";
 import { StyleSheet } from "react-native-unistyles";
-import { callsigns } from "../data/callsigns";
 import { mostWanted } from "../data/clranks";
+import { dxccName } from "../data/cty";
 import { countries } from "../data/countries";
 import { isDigital } from "../data/modes";
 import { sortNumsAndAlpha, unique } from "../utils/arrays";
@@ -29,9 +29,9 @@ const styles = StyleSheet.create((theme) => ({
 }));
 
 export type FilterFunction = (qso: QSO, i: number, a: QSO[]) => string[];
-const dxcc2countrymap = Object.fromEntries(callsigns.map((csd) => [+csd.dxcc, csd.iso3]));
-export const dxcc2label = (dxcc?: number) =>
-    `${dxcc} (${dxcc ? (countries[dxcc2countrymap[dxcc]] || { name: "?" }).name : "?"})`;
+// The DXCC entity name, not the country: the entity is what the filter is picking out, and a
+// country name can't tell the Canaries from Spain.
+export const dxcc2label = (dxcc?: number) => `${dxcc} (${dxccName(dxcc) || "?"})`;
 
 export const filterMap: Record<string, FilterFunction> = {
     year: (qso) => [String(qso.date.toObject().year)],

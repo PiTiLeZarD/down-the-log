@@ -1,8 +1,7 @@
 import React, { useEffect } from "react";
 import { useFormContext, useWatch } from "react-hook-form";
-import { callsigns } from "../../data/callsigns";
 import { states } from "../../data/states";
-import { withState } from "../../utils/callsign";
+import { getCallsignData } from "../../utils/callsign";
 import { QSO } from "../qso";
 import { FormField } from "./form-field";
 
@@ -31,10 +30,9 @@ export const StateField = ({ name }: StateFieldProps) => {
         // operator's own settings, so this must not write into the form when that's what we render.
         if (name !== "state") return;
 
-        const cs = withState(
-            callsign,
-            callsigns.find((c) => c.iso3 === country),
-        );
+        // Read off the callsign, not off the country: the state a callsign gives away belongs to
+        // its DXCC entity, and one country can hold several of those.
+        const cs = getCallsignData(callsign);
         if (cs && cs.state != getValues("state")) setValue("state", cs.state);
     }, [callsign, country, name, getValues, setValue]);
 

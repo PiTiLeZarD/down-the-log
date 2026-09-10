@@ -294,6 +294,12 @@ export const prefillLocation = (qso: QSO) => {
     const parsed = parseCallsign(qso.callsign);
     const callsignData = getCallsignData(qso.callsign);
     const locator = qso.locator || callsignData?.gs;
+    // Where the zones come from depends on whether the gridsquare is the station's or the entity's.
+    // A real locator — typed, spotted, or looked up — beats the prefix, because it says which corner
+    // of a big country the station is in. The entity's reference square says nothing of the sort, so
+    // when that's all there is the prefix wins: cty.dat splits the US and Russian call areas, and
+    // deriving from the reference square put every one of them in the same zone.
+    const zoneFromLocator = !!qso.locator;
     return {
         ...qso,
         locator: qso.locator || locator,
@@ -308,11 +314,19 @@ export const prefillLocation = (qso: QSO) => {
             : {}),
         ...(locator
             ? {
-                  dxcc: qso.dxcc || +(callsignData?.dxcc || findZone(dxcc, maidenhead2Latlong(locator))),
-                  ituzone: qso.ituzone || +findZone(ituzones, maidenhead2Latlong(locator)),
-                  cqzone: qso.cqzone || +findZone(cqzones, maidenhead2Latlong(locator)),
+                  dxcc: qso.dxcc || callsignData?.dxcc || +findZone(dxcc, maidenhead2Latlong(locator)),
+                  ituzone:
+                      qso.ituzone ||
+                      (zoneFromLocator ? +findZone(ituzones, maidenhead2Latlong(locator)) : callsignData?.itu),
+                  cqzone:
+                      qso.cqzone ||
+                      (zoneFromLocator ? +findZone(cqzones, maidenhead2Latlong(locator)) : callsignData?.cq),
               }
-            : { dxcc: qso.dxcc || (callsignData ? +callsignData.dxcc : undefined) }),
+            : {
+                  dxcc: qso.dxcc || callsignData?.dxcc,
+                  ituzone: qso.ituzone || callsignData?.itu,
+                  cqzone: qso.cqzone || callsignData?.cq,
+              }),
     };
 };
 

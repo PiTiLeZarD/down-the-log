@@ -5,12 +5,10 @@ import { Pressable, View } from "react-native";
 import { Switch } from "react-native-gesture-handler";
 import { StyleSheet } from "react-native-unistyles";
 import { continents } from "../../data/callsigns";
-import { getCallsignData } from "../../utils/callsign";
 import { roundTo } from "../../utils/math";
 import { Modal } from "../../utils/modal";
 import { useStore } from "../../utils/store";
 import { useWidthMatches } from "../../ui/breakpoints";
-import { Alert } from "../../ui/alert";
 import { Button } from "../../ui/button";
 import { Typography } from "../../ui/typography";
 import { showDialog, useDialogOpen } from "../../ui/dialog";
@@ -61,17 +59,11 @@ const styles = StyleSheet.create((theme) => ({
         paddingTop: theme.margins.xs,
         paddingBottom: theme.margins.xs,
     },
-    locsubtitle: (alert: boolean = false) => ({
+    locsubtitle: {
         flex: 1,
         textAlign: "center",
         borderRadius: theme.margins.md,
-        ...(alert
-            ? {
-                  backgroundColor: theme.colours.secondary.dark,
-                  color: theme.background,
-              }
-            : {}),
-    }),
+    },
 }));
 
 const Note = () => <FormField role="textarea" name="note" label="Note:" numberOfLines={7} />;
@@ -102,7 +94,6 @@ export const FormFields = ({ qso }: FormFieldsProps) => {
     // note drops to the bottom of the form instead — operating fields, references, location, note.
     const twoColumns = useWidthMatches("md");
     const requestCallsignFocus = useCallsignFocus((state) => state.request);
-    const csdata = getCallsignData(qso.callsign);
 
     const onDelete = async () => {
         if (!qso) return;
@@ -262,16 +253,16 @@ export const FormFields = ({ qso }: FormFieldsProps) => {
                 </Stack>
                 {qso && (
                     <Stack direction="row">
-                        <Typography variant="subtitle" style={styles.locsubtitle()}>
+                        <Typography variant="subtitle" style={styles.locsubtitle}>
                             CQ: {qso.cqzone}
                         </Typography>
-                        <Typography variant="subtitle" style={styles.locsubtitle()}>
+                        <Typography variant="subtitle" style={styles.locsubtitle}>
                             ITU: {qso.ituzone}
                         </Typography>
-                        <Typography variant="subtitle" style={styles.locsubtitle(!!csdata?.dxccAlt)}>
+                        <Typography variant="subtitle" style={styles.locsubtitle}>
                             DXCC: {qso.dxcc}
                         </Typography>
-                        <Typography variant="subtitle" style={styles.locsubtitle()}>
+                        <Typography variant="subtitle" style={styles.locsubtitle}>
                             QRB: {qso.distance}km
                         </Typography>
                     </Stack>
@@ -296,14 +287,6 @@ export const FormFields = ({ qso }: FormFieldsProps) => {
                     <FormField name="cqzone" label="CQZone:" />
                     <FormField name="ituzone" label="ITUZone:" />
                     <FormField name="dxcc" label="DXCC:" />
-                    {csdata?.dxccAlt && (
-                        <Alert severity="info">
-                            <Typography>
-                                Alertnate DXCC:{" "}
-                                {[...csdata?.dxccAlt, csdata?.dxcc].filter((d) => +d !== qso.dxcc).join(", ")}
-                            </Typography>
-                        </Alert>
-                    )}
                     <Typography variant="h3" underline>
                         QSL
                     </Typography>

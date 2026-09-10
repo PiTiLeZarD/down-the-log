@@ -1,5 +1,6 @@
 import { describe, expect, test } from "vitest";
-import { callsigns } from "../src/lib/data/callsigns";
+import { stateRegexps } from "../src/lib/data/callsigns";
+import { dxccEntities, dxccName } from "../src/lib/data/cty";
 import {
     baseCallsign,
     collapseCallsign,
@@ -89,7 +90,7 @@ describe("collapseCallsign", () => {
 
 describe("getCallsignData", () => {
     test("resolves the country of a plain callsign", () => {
-        expect(getCallsignData("VK4ALE")).toMatchObject({ iso3: "AUS", dxcc: "150", ctn: "OC" });
+        expect(getCallsignData("VK4ALE")).toMatchObject({ iso3: "AUS", dxcc: 150, ctn: "OC" });
         expect(getCallsignData("W1AW")).toMatchObject({ iso3: "USA", ctn: "NA" });
     });
 
@@ -97,61 +98,96 @@ describe("getCallsignData", () => {
         expect(getCallsignData("VK4ALE/P")?.iso3).toBe("AUS");
     });
 
-    // The list is alphabetical and the first match wins, so the broad AUS row sits well above the
-    // external territories it would otherwise swallow.
+    // Longest prefix wins, so the external territories come out on their own without the entity
+    // list needing a lookahead written by hand to keep VK9 away from VK.
     test("the Australian external territories aren't swallowed by AUS", () => {
-        expect(getCallsignData("VK4ALE")?.iso3).toBe("AUS");
+        expect(getCallsignData("VK4ALE")?.dxcc).toBe(150);
         expect(getCallsignData("VK9PH")?.iso3).toBe("NFK");
         expect(getCallsignData("VK9XY")?.iso3).toBe("CXR");
-        expect(getCallsignData("VK0AB")?.iso3).toBe("ATA");
+        expect(getCallsignData("VK9CE")?.dxcc).toBe(38); // Cocos (Keeling)
+        expect(getCallsignData("VK9LA")?.dxcc).toBe(147); // Lord Howe
     });
 
     // Madeira and the Azores are Portugal to ISO but their own DXCC entities, so they share PRT and
     // are told apart by the digit.
     test("Madeira and the Azores resolve to their own DXCC under PRT", () => {
-        expect(getCallsignData("CT1ABC")).toMatchObject({ iso3: "PRT", dxcc: "272" });
-        expect(getCallsignData("CS7ABC")).toMatchObject({ iso3: "PRT", dxcc: "272" });
-        expect(getCallsignData("CT3MD")).toMatchObject({ iso3: "PRT", dxcc: "256" });
-        expect(getCallsignData("CQ9K")).toMatchObject({ iso3: "PRT", dxcc: "256" });
-        expect(getCallsignData("CU2AA")).toMatchObject({ iso3: "PRT", dxcc: "149" });
-        expect(getCallsignData("CT8AA")).toMatchObject({ iso3: "PRT", dxcc: "149" });
+        expect(getCallsignData("CT1ABC")).toMatchObject({ iso3: "PRT", dxcc: 272 });
+        expect(getCallsignData("CS7ABC")).toMatchObject({ iso3: "PRT", dxcc: 272 });
+        expect(getCallsignData("CT3MD")).toMatchObject({ iso3: "PRT", dxcc: 256 });
+        expect(getCallsignData("CQ9K")).toMatchObject({ iso3: "PRT", dxcc: 256 });
+        expect(getCallsignData("CU2AA")).toMatchObject({ iso3: "PRT", dxcc: 149 });
+        expect(getCallsignData("CT8AA")).toMatchObject({ iso3: "PRT", dxcc: 149 });
     });
 
-    // On its own it answers for the home callsign; callers that care where the operator actually
-    // is (CallsignAutofill, the issue checker) collapse first. Both directions are pinned here so
-    // neither drifts.
-    test("resolves the home country of a portable callsign", () => {
-        expect(getCallsignData("F5/DL1ABC")?.iso3).toBe("DEU");
+    // A row of entities the hand-written table had no way to reach: it was keyed by ISO country and
+    // could only name one DXCC entity per country, so all of these came back as their parent.
+    test("sub-entities of a country resolve to their own DXCC", () => {
+        expect(getCallsignData("EA8ABC")).toMatchObject({ iso3: "ESP", dxcc: 29 }); // Canary Is.
+        expect(getCallsignData("EA6ABC")).toMatchObject({ iso3: "ESP", dxcc: 21 }); // Balearic Is.
+        expect(getCallsignData("EA9ABC")).toMatchObject({ iso3: "ESP", dxcc: 32 }); // Ceuta & Melilla
+        expect(getCallsignData("EA4ABC")).toMatchObject({ iso3: "ESP", dxcc: 281 }); // Spain
+        expect(getCallsignData("GM4ABC")).toMatchObject({ iso3: "GBR", dxcc: 279 }); // Scotland
+        expect(getCallsignData("GW4ABC")).toMatchObject({ iso3: "GBR", dxcc: 294 }); // Wales
+        expect(getCallsignData("GI4ABC")).toMatchObject({ iso3: "GBR", dxcc: 265 }); // Northern Ireland
+        expect(getCallsignData("G4ABC")).toMatchObject({ iso3: "GBR", dxcc: 223 }); // England
+        expect(getCallsignData("KL7AA")).toMatchObject({ iso3: "USA", dxcc: 6 }); // Alaska
+        expect(getCallsignData("KH6J")).toMatchObject({ iso3: "USA", dxcc: 110 }); // Hawaii
+        expect(getCallsignData("SV9ABC")).toMatchObject({ iso3: "GRC", dxcc: 40 }); // Crete
+        expect(getCallsignData("IS0ABC")).toMatchObject({ iso3: "ITA", dxcc: 225 }); // Sardinia
+        expect(getCallsignData("TK5ABC")).toMatchObject({ iso3: "FRA", dxcc: 214 }); // Corsica
+        expect(getCallsignData("UA2FZ")).toMatchObject({ iso3: "RUS", dxcc: 126 }); // Kaliningrad
     });
 
-    test("resolves the visited country once the callsign is collapsed", () => {
-        expect(getCallsignData(collapseCallsign("F5/DL1ABC"))?.iso3).toBe("FRA");
+    // Sicily is a cty.dat split rather than a DXCC entity of its own: the entity stays Italy, but
+    // the zones and continent it carries are the ones the prefix says.
+    test("a contest-only split keeps its zones and its parent entity", () => {
+        expect(getCallsignData("IT9ABC")).toMatchObject({ dxcc: 248, cq: 15, itu: 28 });
+        expect(getCallsignData("IG9A")).toMatchObject({ dxcc: 248, ctn: "AF" });
     });
 
-    test("derives the state from the call area where the country defines states", () => {
+    test("carries the CQ and ITU zones of the prefix, not of the entity", () => {
+        expect(getCallsignData("K6ABC")).toMatchObject({ cq: 3, itu: 6 });
+        expect(getCallsignData("W1AW")).toMatchObject({ cq: 5, itu: 8 });
+        expect(getCallsignData("RA1ABC")).toMatchObject({ dxcc: 54, cq: 16 });
+        expect(getCallsignData("RA0FF")).toMatchObject({ dxcc: 15, ctn: "AS" });
+    });
+
+    // A location prefix says where the operator is, and that beats everything the home callsign
+    // says — including an exception the table holds for it.
+    test("a location prefix wins over the home callsign", () => {
+        expect(getCallsignData("F5/DL1ABC")?.iso3).toBe("FRA");
+        expect(getCallsignData("EA8/DL1ABC")?.dxcc).toBe(29);
+        expect(getCallsignData("DL1ABC")?.iso3).toBe("DEU");
+    });
+
+    test("derives the state from the call area where the entity defines states", () => {
         expect(getCallsignData("VK2XYZ")?.state).toBe("NSW");
         expect(getCallsignData("VK4ALE")?.state).toBe("QLD");
     });
 
-    test("leaves state undefined for countries without state regexps", () => {
+    test("leaves state undefined for entities without state regexps", () => {
         expect(getCallsignData("F1ABC")?.state).toBeUndefined();
     });
 
     test("returns undefined for an empty callsign", () => {
         expect(getCallsignData("")).toBeUndefined();
     });
+
+    test("returns undefined for a callsign no prefix covers", () => {
+        expect(getCallsignData("12345")).toBeUndefined();
+    });
 });
 
 describe("withState", () => {
+    const france = { dxcc: 227, name: "France", iso3: "FRA", ctn: "EU" as const, cq: 14, itu: 27, gs: "JN16aa" };
+
     test("returns undefined when there is no callsign data", () => {
         expect(withState("VK4ALE", undefined)).toBeUndefined();
     });
 
-    test("adds no state when the entry has no state map", () => {
-        expect(withState("F1ABC", { iso3: "FRA", dxcc: "227", regexp: /^F.*/, gs: "IN95", ctn: "EU" })).toMatchObject({
-            iso3: "FRA",
-            state: undefined,
-        });
+    test("adds no state when the entity has no state map", () => {
+        expect(withState("F1ABC", france)).toMatchObject({ iso3: "FRA" });
+        expect(withState("F1ABC", france)?.state).toBeUndefined();
     });
 });
 
@@ -167,11 +203,28 @@ describe("findCountry", () => {
 
 // A stateful (`/g`) regexp in the table would make `.test()` alternate true/false on repeated
 // calls, which is exactly the kind of bug that only shows up on the second lookup.
-test("no callsign regexp is global", () => {
-    callsigns.forEach((cs) => {
-        expect(cs.regexp.global, `${cs.iso3} regexp`).toBe(false);
-        Object.entries(cs.states || {}).forEach(([state, re]) =>
-            expect(re.global, `${cs.iso3} ${state} regexp`).toBe(false),
-        );
+test("no state regexp is global", () => {
+    Object.entries(stateRegexps).forEach(([dxcc, states]) =>
+        Object.entries(states).forEach(([state, re]) => expect(re.global, `${dxcc} ${state} regexp`).toBe(false)),
+    );
+});
+
+describe("the entity table", () => {
+    test("covers every current DXCC entity", () => {
+        expect(dxccEntities.length).toBe(340);
+    });
+
+    test("names deleted entities too, so an imported QSO doesn't read as a bare number", () => {
+        expect(dxccName(230)).toBe("Federal Republic of Germany");
+        expect(dxccName(154)).toBeTruthy(); // Yemen Arab Republic, deleted in 1990
+        expect(dxccName(undefined)).toBeUndefined();
+    });
+
+    test("every entity has a reference gridsquare and zones", () => {
+        dxccEntities.forEach((e) => {
+            expect(e.gs, e.name).toMatch(/^[A-R]{2}[0-9]{2}[a-x]{2}$/);
+            expect(e.cq, e.name).toBeGreaterThan(0);
+            expect(e.itu, e.name).toBeGreaterThan(0);
+        });
     });
 });

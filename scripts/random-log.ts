@@ -10,7 +10,7 @@
 
 import { createWriteStream, readFileSync } from "node:fs";
 import { Band, bands, modeBandMap } from "../src/lib/data/bands";
-import { CallsignData, callsigns } from "../src/lib/data/callsigns";
+import { DxccEntity, ctyPrefix, dxccEntities } from "../src/lib/data/cty";
 import { countries } from "../src/lib/data/countries";
 import { maidenDistance } from "../src/lib/utils/locator";
 import { roundTo } from "../src/lib/utils/math";
@@ -48,21 +48,30 @@ const upper = "ABCDEFGHIJKLMNOPQRSTUVWX";
 const lower = upper.toLowerCase();
 
 /**
- * The country table keys callsigns by regexp, which can't be run backwards, but nearly all of them
- * are a plain list of prefix literals (`/^(T6|YA).*&#47;`). Those we can read off; the handful using
- * character classes or lookarounds are dropped rather than guessed at.
+ * cty.dat lists the real prefixes, so the generator picks from those rather than trying to read a
+ * regexp backwards. Only the short ones are usable as a callsign stem: a prefix like `KH8/s` or
+ * `3D2/R` is a marker for an operation, not something to bolt a suffix onto.
  */
-const prefixesOf = (entry: CallsignData): string[] =>
-    entry.regexp.source
-        .replace(/^\^/, "")
-        .replace(/[.][*][$]?$/, "")
-        .replace(/^[(]([^)]*)[)]$/, "$1")
-        .split("|")
-        .map((p) => p.trim().toUpperCase())
-        .filter((p) => /^[A-Z0-9]{1,3}$/.test(p));
+const ctyPrefixesByDxcc = (JSON.parse(readFileSync("./src/lib/data/cty.json", "utf8")) as { prefixes: string })
+    .prefixes.split(",")
+    .reduce<Record<number, string[]>>((map, record) => {
+        const [key, dxcc] = record.split(":");
+        return { ...map, [+dxcc]: [...(map[+dxcc] || []), key] };
+    }, {});
 
-const entities = callsigns
-    .map((entry) => ({ entry, prefixes: prefixesOf(entry) }))
+const usablePrefixes = (entity: DxccEntity): string[] =>
+    ctyPrefixesByDxcc[entity.dxcc]?.filter((p) => /^[A-Z0-9]{1,3}$/.test(p)) || [];
+
+const entities = dxccEntities
+    .map((entry) => ({ entry, prefixes: usablePrefixes(entry) }))
+    // The prefix has to resolve back to the entity it came from, or the generated log disagrees
+    // with the app that reads it: `K` belongs to the USA, but `K1` through `K0` are call areas and
+    // `KH6` is Hawaii.
+    .filter(({ prefixes }) => prefixes.length > 0)
+    .map(({ entry, prefixes }) => ({
+        entry,
+        prefixes: prefixes.filter((p) => ctyPrefix(p)?.dxcc === entry.dxcc),
+    }))
     .filter(({ prefixes }) => prefixes.length > 0);
 
 const callsignFor = (prefix: string) => {
@@ -188,7 +197,7 @@ const qso = (): string => {
     // Activations come in runs in a real log, but a per-QSO chance is enough to exercise the
     // reference lookups and the POTA/SOTA grouping. Refs are drawn from the worked entity, so a
     // Dominica callsign doesn't come back activating a Canadian park.
-    const parks = potaByCountry[iso2(entry.iso3)];
+    const parks = entry.iso3 ? potaByCountry[iso2(entry.iso3)] : undefined;
     const summits = sotaFor(prefixes);
     const pota = parks?.length && chance(0.12) ? pick(parks) : undefined;
     const sota = summits.length && chance(0.04) ? pick(summits) : undefined;
@@ -213,7 +222,7 @@ const qso = (): string => {
             field("rst_rcvd", rst(mode)),
             field("call", call),
             field("pfx", prefix),
-            field("country", countries[entry.iso3]?.name || entry.iso3),
+            field("country", (entry.iso3 && countries[entry.iso3]?.name) || entry.name),
             field("name", chance(0.35) ? pick(names) : undefined),
             field("distance", roundTo(maidenDistance(myLocator, locator), 2)),
             field("station_callsign", me.callsign),

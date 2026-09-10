@@ -1,9 +1,9 @@
 import { QSO } from "../components/qso";
 import { Band, bands } from "../data/bands";
-import { CallsignData, callsigns } from "../data/callsigns";
 import { countries, resolveCountry } from "../data/countries";
+import { DxccEntity, dxccEntities, entities as dxccEntityByNumber } from "../data/cty";
 import { unique } from "./arrays";
-import { collapseCallsign, getCallsignData } from "./callsign";
+import { getCallsignData } from "./callsign";
 import { EventType, capitalise, eventDataMap, events } from "./event-rules";
 import { locatorRegexp, maidenDistance } from "./locator";
 
@@ -66,24 +66,12 @@ const sig2event = Object.fromEntries(events.map((e) => [eventNames[e], e])) as R
 
 const refField = (event: EventType, mine: boolean) => (mine ? (`my${capitalise(event)}` as keyof QSO) : event);
 
-// One iso3 can span several DXCC entities (RUS is European and Asiatic Russia, USA covers Hawaii),
-// so a country resolves to a list and anything matching any of them is fine. Keying a single entity
-// per iso3 flagged every European Russian QSO against the Asiatic entity.
-const entitiesByIso3 = callsigns.reduce<Map<string, CallsignData[]>>(
-    (map, entity) => map.set(entity.iso3, [...(map.get(entity.iso3) || []), entity]),
-    new Map(),
-);
-
-// The other direction, and the reason it exists: this table is keyed by ISO country, and DXCC splits
-// islands ISO doesn't (Balearic, Canary, Lord Howe, Mellish...), so ~100 entity numbers appear in no
-// row at all. A DXCC we can't place is not evidence of a mismatch — only one we can place, somewhere
-// else, is. Without this every one of those entities reads as an error against its parent country.
-const iso3ByDxcc = callsigns.reduce<Map<number, Set<string>>>(
-    (map, entity) =>
-        [entity.dxcc, ...(entity.dxccAlt || [])].reduce(
-            (acc, d) => acc.set(+d, (acc.get(+d) || new Set<string>()).add(entity.iso3)),
-            map,
-        ),
+// One ISO country can hold several DXCC entities — RUS is European and Asiatic Russia, ESP is Spain
+// plus the Balearics, the Canaries and Ceuta — so a country resolves to a list and anything matching
+// any of them is fine. Keying a single entity per country flagged every European Russian QSO against
+// the Asiatic one.
+const entitiesByIso3 = dxccEntities.reduce<Map<string, DxccEntity[]>>(
+    (map, entity) => (entity.iso3 ? map.set(entity.iso3, [...(map.get(entity.iso3) || []), entity]) : map),
     new Map(),
 );
 
@@ -96,23 +84,15 @@ const num = (value: unknown): number | undefined => {
     return Number.isNaN(parsed) ? undefined : parsed;
 };
 
-// getCallsignData walks the 300-odd entity table matching regexps, and the list re-checks a QSO
-// whenever its row is rendered, so the answer is memoised on the callsign it came from.
-const csdataCache = new Map<string, ReturnType<typeof getCallsignData>>();
-const callsignData = (callsign: string) => {
-    if (!csdataCache.has(callsign)) csdataCache.set(callsign, getCallsignData(collapseCallsign(callsign)));
-    return csdataCache.get(callsign);
-};
-
 type RawIssue = Omit<QsoIssue, "ignored">;
 
 const countryIssues = (qso: QSO, issues: RawIssue[]) => {
-    const csdata = callsignData(qso.callsign);
+    const csdata = getCallsignData(qso.callsign);
     const iso3 = resolveCountry(qso.country);
 
     if (qso.country && !iso3)
         issues.push({ field: "country", code: "country-unknown", description: `Unknown country "${qso.country}"` });
-    if (csdata && iso3 && csdata.iso3 !== iso3)
+    if (csdata?.iso3 && iso3 && csdata.iso3 !== iso3)
         issues.push({
             field: "country",
             code: "country-callsign",
@@ -121,7 +101,7 @@ const countryIssues = (qso: QSO, issues: RawIssue[]) => {
 
     const entities = (iso3 && entitiesByIso3.get(iso3)) || (csdata ? [csdata] : []);
     if (entities.length === 0) return;
-    const name = countries[entities[0].iso3]?.name || entities[0].iso3;
+    const name = (iso3 && countries[iso3]?.name) || entities[0].name;
 
     if (qso.continent && !entities.some((e) => e.ctn === qso.continent))
         issues.push({
@@ -130,13 +110,16 @@ const countryIssues = (qso: QSO, issues: RawIssue[]) => {
             description: `Continent ${qso.continent} doesn't match ${name} (${unique(entities.map((e) => e.ctn)).join(", ")})`,
         });
 
+    // The entity table names every DXCC number, so a mismatch is now a mismatch rather than a gap:
+    // the old table only knew one entity per country, and every island it couldn't name — the
+    // Canaries, Crete, Lord Howe — had to be waved through against its parent.
     const dxcc = num(qso.dxcc);
-    const owners = dxcc ? iso3ByDxcc.get(dxcc) : undefined;
-    if (dxcc && owners && !owners.has(entities[0].iso3))
+    const owner = dxcc ? dxccEntityByNumber[dxcc] : undefined;
+    if (dxcc && owner && !entities.some((e) => e.dxcc === dxcc))
         issues.push({
             field: "dxcc",
             code: "dxcc-country",
-            description: `DXCC ${dxcc} belongs to ${unique([...owners].map((iso3) => countries[iso3]?.name || iso3)).join(", ")}, not ${name}`,
+            description: `DXCC ${dxcc} is ${owner.name}, not ${name}`,
         });
 
     if (!qso.locator) return;

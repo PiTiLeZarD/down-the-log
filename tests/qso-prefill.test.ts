@@ -233,8 +233,8 @@ describe("prefillLocation", () => {
         });
     });
 
-    test("uses the country's reference grid when the QSO has no locator", () => {
-        expect(prefillLocation(createQso("VK4ALE")).locator).toBe("PF26gj");
+    test("uses the entity's reference grid when the QSO has no locator", () => {
+        expect(prefillLocation(createQso("VK4ALE")).locator).toBe("PG66dh");
     });
 
     test("keeps a locator the operator entered", () => {
@@ -254,6 +254,13 @@ describe("prefillLocation", () => {
         const filled = prefillLocation(qso({ locator: "QG62nl" }));
         expect(filled.cqzone).toBe(30);
         expect(filled.ituzone).toBe(55);
+    });
+
+    // With no real locator the entity's reference square is all there is, and it says the same
+    // thing for every station in the country. The prefix knows the call area.
+    test("takes the zones off the prefix when the QSO has no locator of its own", () => {
+        expect(prefillLocation(createQso("K6ABC"))).toMatchObject({ cqzone: 3, ituzone: 6 });
+        expect(prefillLocation(createQso("W1AW"))).toMatchObject({ cqzone: 5, ituzone: 8 });
     });
 
     test("never overwrites what the operator entered", () => {

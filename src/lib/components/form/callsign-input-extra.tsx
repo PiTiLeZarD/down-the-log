@@ -1,12 +1,9 @@
 import { DateTime } from "luxon";
 import { useMemo } from "react";
 import { clranks, mostWanted } from "../../data/clranks";
-import cqzones from "../../data/cqzones.json";
-import ituzones from "../../data/ituzones.json";
 import { findCountry, getCallsignData } from "../../utils/callsign";
 import { HamQTHCallsignData } from "../../utils/hamqth";
-import { maidenDistance, maidenhead2Latlong } from "../../utils/locator";
-import { findZone } from "../../utils/polydec";
+import { maidenDistance } from "../../utils/locator";
 import { useStore } from "../../utils/store";
 import { Typography } from "../../ui/typography";
 import { useSettings } from "../../utils/use-settings";
@@ -33,7 +30,7 @@ export const CallsignInputExtra = ({ value, hamqthCSData }: CallsignInputExtraPr
                     {hamqthCSData && <Typography>{hamqthCSData.qth}</Typography>}
                     <Stack direction="row">
                         <Typography>{country?.flag}</Typography>
-                        <Typography>{country?.name}</Typography>
+                        <Typography>{callsignData.name}</Typography>
                         {callsignData.state && <Typography>{callsignData.state}</Typography>}
                         <Typography>({callsignData.ctn})</Typography>
                     </Stack>
@@ -72,19 +69,13 @@ export const CallsignInputExtra = ({ value, hamqthCSData }: CallsignInputExtraPr
             </Grid>
             <Grid item xs={-1} md={3} lg={1}>
                 <Stack>
+                    {/* Straight off the callsign's prefix. Deriving these from the entity's
+                        reference square put every US station in one zone and every Russian one in
+                        another; cty.dat carries them per prefix, call area included. */}
+                    <Typography variant="subtitle">CQ: {callsignData.cq}</Typography>
+                    <Typography variant="subtitle">ITU: {callsignData.itu}</Typography>
                     <Typography variant="subtitle">
-                        CQ: {callsignData.gs ? findZone(cqzones, maidenhead2Latlong(callsignData.gs)) : "??"}
-                    </Typography>
-                    <Typography variant="subtitle">
-                        ITU: {callsignData.gs ? findZone(ituzones, maidenhead2Latlong(callsignData.gs)) : "??"}
-                    </Typography>
-                    <Typography variant="subtitle">
-                        DXCC: {callsignData.dxcc}{" "}
-                        {callsignData.dxcc && (
-                            <>
-                                ({mostWanted(+callsignData.dxcc)}/{clranks.length})
-                            </>
-                        )}
+                        DXCC: {callsignData.dxcc} ({mostWanted(callsignData.dxcc)}/{clranks.length})
                     </Typography>
                 </Stack>
             </Grid>
