@@ -171,7 +171,8 @@ const Settings = () => {
                         api.allorigins.win, api.codetabs.com) or your own if you set one, solar data to
                         services.swpc.noaa.gov, and map tiles to tile.openstreetmap.org — which sees the areas you
                         look at. Spotting yourself sends your callsign, reference, frequency, mode and comment to
-                        whichever of those two networks you pick, and your ParksnPeaks key with it.
+                        whichever of those two networks you pick, and your ParksnPeaks key with it. Loading confirmations sends
+                        your LoTW user name and password to lotw.arrl.org, or to your own relay if you set one.
                     </Typography>
                     <Typography underline>HamQTH:</Typography>
                     {!!settings.hamqth?.sessionId && (
@@ -211,6 +212,47 @@ const Settings = () => {
                                     password: v,
                                 })
                             }
+                        />
+                    </Stack>
+                    <Typography underline>LoTW:</Typography>
+                    <Typography variant="subtitle">
+                        Your lotw.arrl.org website login, used only to pull confirmations into the log from the QSLs
+                        page. Nothing is ever uploaded and your callsign certificate is never asked for — signing
+                        stays in tqsl. The password is kept in the device keychain on iOS and Android.
+                    </Typography>
+                    <Stack direction="row">
+                        <Typography>User:</Typography>
+                        <Input
+                            value={settings.lotw?.user || ""}
+                            onChangeText={(v) =>
+                                updateSetting("lotw", { ...(settings.lotw || { user: "", password: "" }), user: v })
+                            }
+                        />
+                        <Typography>Password:</Typography>
+                        <Input
+                            password
+                            value={settings.lotw?.password || ""}
+                            onChangeText={(v) =>
+                                updateSetting("lotw", {
+                                    ...(settings.lotw || { user: "", password: "" }),
+                                    password: v,
+                                })
+                            }
+                        />
+                    </Stack>
+                    <Typography underline>LoTW relay:</Typography>
+                    <Typography variant="subtitle">
+                        LoTW blocks browsers from calling it, so the web and desktop builds need a relay of your own —
+                        deploy scripts/cors-worker.js to Cloudflare and paste its URL here, using {"{url}"} where the
+                        LoTW URL should go. This one is kept apart from the spots relay on purpose: the request carries
+                        your LoTW password, so it must never go through a public relay. Leave it empty on iOS and
+                        Android, which call LoTW directly.
+                    </Typography>
+                    <Stack direction="row">
+                        <Typography>URL:</Typography>
+                        <Input
+                            value={settings.lotwProxy || ""}
+                            onChangeText={(v) => updateSetting("lotwProxy", v === "" ? undefined : v)}
                         />
                     </Stack>
                     <Typography underline>Geocode Maps:</Typography>

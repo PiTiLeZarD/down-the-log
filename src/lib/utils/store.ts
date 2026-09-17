@@ -13,6 +13,7 @@ import type { QSO } from "../components/qso";
 import type { Band } from "../data/bands";
 import type { Mode } from "../data/modes";
 import type { HamQTHSettingsType } from "./hamqth";
+import type { LotwSettingsType } from "./lotw";
 import type { Session } from "./session";
 // Runtime import, but a deliberately light one: `spots/types` holds no reference data and pulls in
 // nothing but Luxon. The rest of the spots code hangs off ./spots/status, which does.
@@ -50,6 +51,16 @@ export type Settings = {
     hamqth?: HamQTHSettingsType;
     geocodeMapsCoKey?: string;
     spotsProxy?: string;
+    // LoTW website account, needed only to pull confirmations. The password is kept in the device
+    // keychain on native like the HamQTH one; it is not the callsign certificate, which this app
+    // never holds — see utils/lotw.
+    lotw?: LotwSettingsType;
+    // LoTW serves no CORS header, so the web and Tauri builds need a relay. Deliberately separate
+    // from `spotsProxy`: that one may be a public relay, and this URL carries the LoTW password.
+    lotwProxy?: string;
+    // How far back the next confirmation pull asks, yyyy-MM-dd. Moved forward after a successful
+    // one so a second pull isn't the operator's whole LoTW history again.
+    lotwQslSince?: string;
     // Which spot networks are polled. SOTAwatch isn't among them yet — see utils/spots/sota.
     spotSources: SpotSource[];
     spotFilter: SpotFilter;
@@ -250,6 +261,7 @@ const reviveDate = (key: string, value: unknown) =>
 // Web has no equivalent secure store, so it falls back to the plain AsyncStorage blob there.
 const HAMQTH_PASSWORD_KEY = "dtl-hamqth-password";
 const PNP_API_KEY = "dtl-pnp-api-key";
+const LOTW_PASSWORD_KEY = "dtl-lotw-password";
 
 const secureStorage: PersistStorage<UseStorePropsType> = {
     getItem: async (name) => {
@@ -263,6 +275,10 @@ const secureStorage: PersistStorage<UseStorePropsType> = {
         if (Platform.OS !== "web" && parsed.state?.settings) {
             const key = await SecureStore.getItemAsync(PNP_API_KEY);
             if (key) parsed.state.settings.pnpApiKey = key;
+        }
+        if (Platform.OS !== "web" && parsed.state?.settings?.lotw) {
+            const password = await SecureStore.getItemAsync(LOTW_PASSWORD_KEY);
+            if (password) parsed.state.settings.lotw.password = password;
         }
         return parsed;
     },
@@ -286,6 +302,18 @@ const secureStorage: PersistStorage<UseStorePropsType> = {
                 },
             };
         }
+        if (Platform.OS !== "web" && value.state.settings?.lotw) {
+            const { password, ...lotwRest } = value.state.settings.lotw;
+            if (password) await SecureStore.setItemAsync(LOTW_PASSWORD_KEY, password);
+            else await SecureStore.deleteItemAsync(LOTW_PASSWORD_KEY);
+            toStore = {
+                ...toStore,
+                state: {
+                    ...toStore.state,
+                    settings: { ...toStore.state.settings, lotw: lotwRest as LotwSettingsType },
+                },
+            };
+        }
         await AsyncStorage.setItem(name, JSON.stringify(toStore));
     },
     removeItem: async (name) => {
@@ -293,6 +321,7 @@ const secureStorage: PersistStorage<UseStorePropsType> = {
         if (Platform.OS !== "web") {
             await SecureStore.deleteItemAsync(HAMQTH_PASSWORD_KEY);
             await SecureStore.deleteItemAsync(PNP_API_KEY);
+            await SecureStore.deleteItemAsync(LOTW_PASSWORD_KEY);
         }
     },
 };
