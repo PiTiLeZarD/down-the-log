@@ -1,5 +1,6 @@
 import { DateTime } from "luxon";
 import { freq2band } from "../../data/bands";
+import { adifMode, resolveMode } from "../../data/modes";
 import { parseCallsign } from "../callsign";
 import { normalise } from "../locator";
 import { FileFormatAPI, Honeypot, QSORecord, allFields, qso2record } from "./common";
@@ -57,7 +58,8 @@ export const WsjtxAPI: FileFormatAPI = {
             record.call,
             normalise(record.gridsquare)?.substring(0, 4),
             record.freq,
-            record.mode,
+            // WSJT-X's own log names the submode (FT4) in this column, not ADIF's parent (MFSK)
+            adifMode(resolveMode(record.honeypot?.submode)).submode ? record.honeypot.submode : record.mode,
             record.rst_sent,
             record.rst_rcvd,
             record.tx_pwr,

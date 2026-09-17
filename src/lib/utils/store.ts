@@ -11,7 +11,7 @@ import { IdbOp, META_STORE, QSO_STORE, idbAvailable, idbBatch, idbGet, idbValues
 import type { QsoFilter } from "../components/filters";
 import type { QSO } from "../components/qso";
 import type { Band } from "../data/bands";
-import type { Mode } from "../data/modes";
+import { liftSubmode, type Mode } from "../data/modes";
 import type { HamQTHSettingsType } from "./hamqth";
 import type { LotwSettingsType } from "./lotw";
 import type { Session } from "./session";
@@ -388,7 +388,10 @@ const indexedStorage: PersistStorage<UseStorePropsType> = {
         void requestPersistence();
         const meta = await idbGet<StorageValue<DTLStoreProps>>(META_STORE, name);
         if (!meta) return migrateFromLocalStorage(name);
-        const qsos = (await idbValues<unknown>(QSO_STORE)).map((qso) => fromStorable(qso) as QSO);
+        // `liftSubmode` turns QSOs imported before FT4/JS8 were modes of their own (MFSK plus a
+        // stashed submode) into those modes. Nothing is re-written for it: the lift is cheap, and a
+        // QSO only goes back to disk once it is edited.
+        const qsos = (await idbValues<unknown>(QSO_STORE)).map((qso) => liftSubmode(fromStorable(qso) as QSO));
         // Seeded here as well as on write: the objects just handed to the store are the ones it
         // holds, so the first save after a launch has nothing to re-write.
         persistedQsos = new Map(qsos.map((qso) => [qso.id, qso]));

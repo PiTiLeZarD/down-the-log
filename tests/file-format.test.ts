@@ -103,6 +103,24 @@ describe("int / castAs", () => {
 });
 
 describe("qso2record", () => {
+    test("writes a picked submode as MODE and SUBMODE", () => {
+        const r = qso2record({ ...qso, mode: "JS8" });
+        expect(r.mode).toBe("MFSK");
+        expect(r.honeypot.submode).toBe("JS8");
+    });
+
+    test("keeps a stashed submode only while it still fits the mode", () => {
+        expect(qso2record({ ...qso, mode: "SSB", honeypot: { submode: "USB" } }).honeypot.submode).toBe("USB");
+        expect(qso2record({ ...qso, mode: "FST4", honeypot: { submode: "FST4W" } }).honeypot.submode).toBe("FST4W");
+        expect(qso2record({ ...qso, mode: "SSB", honeypot: { submode: "JS8" } }).honeypot.submode).toBeUndefined();
+        expect(qso2record({ ...qso, mode: "FT4", honeypot: { submode: "JS8" } }).honeypot.submode).toBe("FT4");
+    });
+
+    test("round trips a JS8 QSO through ADIF", () => {
+        const [back] = AdifAPI.parseFile(AdifAPI.generateFile([{ ...qso, mode: "JS8" }], header())).map(record2qso);
+        expect(back.mode).toBe("JS8");
+    });
+
     test("splits the timestamps into ADIF date and time fields", () => {
         const r = qso2record(qso);
         expect(r.qso_date).toBe("20240101");
@@ -288,9 +306,21 @@ describe("record2qso", () => {
     });
 
     test("resolves a submode to its parent mode and keeps the original in the honeypot", () => {
-        const q = record2qso(record({ mode: "FT4" }));
+        const q = record2qso(record({ mode: "MFSK16" }));
         expect(q.mode).toBe("MFSK");
-        expect(q.honeypot?.submode).toBe("FT4");
+        expect(q.honeypot?.submode).toBe("MFSK16");
+    });
+
+    test("reads the submodes we pick as their own mode", () => {
+        expect(record2qso(record({ mode: "FT4" })).mode).toBe("FT4");
+        const q = record2qso({ ...record({ mode: "MFSK" }), honeypot: { submode: "JS8" } } as QSORecord);
+        expect(q.mode).toBe("JS8");
+        expect(q.honeypot?.submode).toBeUndefined();
+    });
+
+    test("leaves a SUBMODE that belongs to another parent alone", () => {
+        const q = record2qso({ ...record({ mode: "PSK" }), honeypot: { submode: "JS8" } } as QSORecord);
+        expect(q.mode).toBe("PSK");
     });
 
     test("does not overwrite a SUBMODE the file already carried", () => {

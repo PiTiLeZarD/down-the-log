@@ -4,7 +4,7 @@ import { freq2band, resolveBand } from "../../data/bands";
 import { Continent, continents } from "../../data/callsigns";
 import { countryName, resolveCountry } from "../../data/countries";
 import { entities as dxccEntities } from "../../data/cty";
-import { resolveMode } from "../../data/modes";
+import { adifMode, liftSubmode, resolveMode } from "../../data/modes";
 import { normalise } from "../locator";
 
 export type Honeypot = Record<string, string>;
@@ -176,7 +176,9 @@ export const fields: FieldDescriptor[] = [
             resolveBand(v) || (record.freq ? freq2band(+(record.freq as string)) : undefined) || undefined,
     }),
     field("frequency", "freq", number),
-    field("mode", "mode", { from: (v) => resolveMode(v) }),
+    // JS8, FT4 and friends are modes to us but submodes to ADIF: MODE carries the parent, and
+    // `qso2record` puts the rest in SUBMODE.
+    field("mode", "mode", { to: (v) => adifMode(v).mode, from: (v) => resolveMode(v) }),
     field("power", "tx_pwr", number),
     field("rst_sent", "rst_sent"),
     field("rst_received", "rst_rcvd"),
@@ -255,6 +257,17 @@ export const fields: FieldDescriptor[] = [
     }),
 ];
 
+// SUBMODE lives in the honeypot. One an import stashed (FST4W, USB, PSK31) is only kept while it
+// still belongs to the mode, or editing a JS8 QSO to SSB would export MODE=SSB SUBMODE=JS8.
+const honeypotOf = (qso: QSO): Honeypot => {
+    const { submode, ...rest } = qso.honeypot || {};
+    const stashed = resolveMode(submode);
+    const picked = adifMode(qso.mode);
+    if (submode && stashed && (stashed === qso.mode || (!picked.submode && adifMode(stashed).mode === picked.mode)))
+        return { ...rest, submode };
+    return picked.submode ? { ...rest, submode: picked.submode } : rest;
+};
+
 export const qso2record = (qso: QSO): QSORecord =>
     ({
         qso_date: qso.date && qso.date.toFormat("yyyyMMdd"),
@@ -262,7 +275,7 @@ export const qso2record = (qso: QSO): QSORecord =>
         qso_date_off: qso.dateOff && qso.dateOff.toFormat("yyyyMMdd"),
         time_off: qso.dateOff && qso.dateOff.toFormat("HHmmss"),
         ...Object.fromEntries(fields.map(({ qsoKey, adifKey, to }) => [adifKey, to(qso[qsoKey], qso)])),
-        honeypot: qso.honeypot || {},
+        honeypot: honeypotOf(qso),
     }) as QSORecord;
 
 export const record2qso = (record: QSORecord): QSO => {
@@ -270,7 +283,7 @@ export const record2qso = (record: QSORecord): QSO => {
     // MODE held a submode (FT4, USB, PSK31...): keep the original around so an export doesn't lose it
     const submode = mode && record.mode?.toUpperCase().trim() !== mode ? record.mode?.toUpperCase().trim() : undefined;
 
-    return {
+    return liftSubmode({
         ...Object.fromEntries(fields.map(({ qsoKey, adifKey, from }) => [qsoKey, from(record[adifKey], record)])),
         id: newQsoID(),
         // ADIF timestamps are UTC by definition and the log is kept in UTC, so they have to be read
@@ -290,7 +303,7 @@ export const record2qso = (record: QSORecord): QSO => {
                   )
                 : undefined,
         honeypot: submode && !record.honeypot?.submode ? { ...record.honeypot, submode } : record.honeypot,
-    } as QSO;
+    } as QSO);
 };
 
 export type Header = {

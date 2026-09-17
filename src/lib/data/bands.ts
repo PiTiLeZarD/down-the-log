@@ -29,6 +29,9 @@ export const bands = {
     "4mm": [76000.0, 81000.0],
 };
 
+// The usual watering holes per mode (WSJT-X / JS8Call defaults, the common PSK31 frequencies), so
+// picking a band lands on the right dial frequency instead of the middle of the band. Region
+// differences exist; these are the ones the software ships with.
 export const modeBandMap: Partial<Record<Mode, Partial<Record<Band, number>>>> = {
     FT8: {
         "160m": 1.84,
@@ -44,6 +47,81 @@ export const modeBandMap: Partial<Record<Mode, Partial<Record<Band, number>>>> =
         "6m": 50.313,
         "4m": 70.1,
         "2m": 144.174,
+    },
+    FT4: {
+        "80m": 3.575,
+        "40m": 7.0475,
+        "30m": 10.14,
+        "20m": 14.08,
+        "17m": 18.104,
+        "15m": 21.14,
+        "12m": 24.919,
+        "10m": 28.18,
+        "6m": 50.318,
+        "2m": 144.17,
+    },
+    JS8: {
+        "160m": 1.842,
+        "80m": 3.578,
+        "40m": 7.078,
+        "30m": 10.13,
+        "20m": 14.078,
+        "17m": 18.104,
+        "15m": 21.078,
+        "12m": 24.922,
+        "10m": 28.078,
+        "6m": 50.318,
+        "2m": 144.178,
+    },
+    JT65: {
+        "160m": 1.838,
+        "80m": 3.57,
+        "40m": 7.076,
+        "30m": 10.138,
+        "20m": 14.076,
+        "17m": 18.102,
+        "15m": 21.076,
+        "12m": 24.917,
+        "10m": 28.076,
+        "6m": 50.31,
+    },
+    JT9: {
+        "160m": 1.8395,
+        "80m": 3.572,
+        "40m": 7.078,
+        "30m": 10.14,
+        "20m": 14.078,
+        "17m": 18.104,
+        "15m": 21.078,
+        "12m": 24.919,
+        "10m": 28.078,
+        "6m": 50.312,
+    },
+    // 60m WSPR (5.2872) sits below the 60m range above, so it's left out rather than mis-banded.
+    WSPR: {
+        "2.2km": 0.136,
+        "630m": 0.4742,
+        "160m": 1.8366,
+        "80m": 3.5686,
+        "40m": 7.0386,
+        "30m": 10.1387,
+        "20m": 14.0956,
+        "17m": 18.1046,
+        "15m": 21.0946,
+        "12m": 24.9246,
+        "10m": 28.1246,
+        "6m": 50.293,
+        "2m": 144.489,
+    },
+    PSK: {
+        "80m": 3.58,
+        "40m": 7.07,
+        "30m": 10.142,
+        "20m": 14.07,
+        "17m": 18.1,
+        "15m": 21.07,
+        "12m": 24.92,
+        "10m": 28.12,
     },
 };
 
