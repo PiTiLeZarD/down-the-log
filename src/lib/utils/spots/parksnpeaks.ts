@@ -1,10 +1,9 @@
 import axios from "axios";
 import { DateTime } from "luxon";
-import { Platform } from "react-native";
 import { freq2band } from "../../data/bands";
 import { resolveMode } from "../../data/modes";
 import { EventType } from "../event-rules";
-import { TIMEOUT_MS, applyProxy, fetchJsonArray } from "./fetch";
+import { TIMEOUT_MS, fetchJsonArray, relayed } from "./fetch";
 import { Spot } from "./types";
 
 // What ParksnPeaks actually returns from /api/ALL. Everything is a string, including the
@@ -62,8 +61,8 @@ export const parsePnpSpot = (raw: RawPnpSpot): Spot => {
     };
 };
 
-export const fetchPnpSpots = async (proxy?: string): Promise<Spot[]> =>
-    (await fetchJsonArray<RawPnpSpot>(PNP_SPOTS_API, proxy)).map(parsePnpSpot);
+export const fetchPnpSpots = async (): Promise<Spot[]> =>
+    (await fetchJsonArray<RawPnpSpot>(PNP_SPOTS_API, true)).map(parsePnpSpot);
 
 // The award schemes ParksnPeaks will accept a spot for, as their API spells them.
 export const pnpSpotClasses: Partial<Record<EventType, string>> = {
@@ -87,23 +86,14 @@ export type PnpCredentials = { userID: string; apiKey: string };
  * Posting needs the operator's own ParksnPeaks user name and the API key from their user options
  * page, which is why this is opt-in in settings rather than something the app can do on its own.
  *
- * The relay chain used for reading is no help here — those services only proxy GETs — so on web this
- * needs the operator's own worker, which passes POSTs through to the one allowlisted host. Without
- * one configured the browser's CORS check kills the request, and saying so up front beats a network
- * error with no explanation.
+ * On web this goes through the same relay as reading, which passes POSTs through too.
  */
 export const postPnpSpot = async (
     request: PnpSpotRequest,
     credentials: PnpCredentials,
-    proxy?: string,
 ): Promise<void> => {
-    if (Platform.OS === "web" && !proxy)
-        throw new Error(
-            "ParksnPeaks can't be posted to from a browser without your own relay — see Spots relay in settings.",
-        );
-    const url = Platform.OS === "web" ? applyProxy(proxy as string, PNP_SPOT_POST_API) : PNP_SPOT_POST_API;
     const { data } = await axios.post(
-        url,
+        relayed(PNP_SPOT_POST_API),
         { ...request, userID: credentials.userID, APIKey: credentials.apiKey },
         { timeout: TIMEOUT_MS, headers: { "content-type": "application/json" } },
     );

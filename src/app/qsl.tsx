@@ -190,7 +190,6 @@ const Qsl = () => {
                 password: lotw.password,
                 since: qslSince,
                 callsign: settings.myCallsign || undefined,
-                proxy: settings.lotwProxy,
             });
             const imported = importQslContent(content, "lotw.adi");
             if (imported) updateSetting("lotwQslSince", asked);

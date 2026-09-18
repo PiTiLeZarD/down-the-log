@@ -1,41 +1,51 @@
 /**
- * Optional CORS relay for the ParksnPeaks spots plugin and for LoTW confirmations.
+ * CORS relay for ParksnPeaks spots and LoTW confirmations, deployed at cors.jadami.com.
  *
- * ParksnPeaks serves no `access-control-allow-origin`, so the web build can't call it from the
- * browser. The plugin falls back to public relays, but those are unreliable against this host —
- * most of them proxy from a data centre and get refused or time out. Running this instead gives a
- * relay that answers every time and involves nobody but you.
+ * Neither parksnpeaks.org nor lotw.arrl.org serves `access-control-allow-origin`, so the web build
+ * and the Tauri shell can't call them from the webview. They come through here instead; iOS and
+ * Android call both directly.
  *
- * POSTs are forwarded too, which is what lets the web build spot itself on ParksnPeaks: the public
- * relays only ever forward reads. The API key travels in the body of that POST, so use your own
- * worker rather than somebody else's if you spot yourself from a browser.
+ * POSTs are forwarded too, which is what lets the web build spot itself on ParksnPeaks. The API key
+ * travels in that POST's body and the LoTW password in the report's query string; both are passed
+ * straight through and nothing is stored or logged here.
  *
  * Deploy (free tier is far more than enough for one request a minute):
  *
- *     npx wrangler deploy scripts/cors-worker.js --name dtl-spots --compatibility-date 2024-01-01
+ *     cd scripts && npx wrangler deploy
  *
- * Then paste the worker URL into Settings > APIs > Spots relay, as:
- *
- *     https://dtl-spots.<your-subdomain>.workers.dev/?url={url}
- *
- * The same worker serves Settings > API's > LoTW relay, which the web and desktop builds need for
- * the same reason — lotw.arrl.org sends no CORS header either. That request carries your LoTW
- * password in the query string, so only ever point the LoTW relay setting at a worker you run
- * yourself; the app deliberately refuses to fall back to the public relays for it.
- *
- * Only the allowlisted hosts can be fetched, so this can't be turned into an open proxy.
+ * Only the allowlisted hosts can be fetched, so this can't be turned into an open proxy, and only
+ * the app's own origins are answered, so other sites can't spend its quota from their visitors'
+ * browsers. The Origin check is a browser-level fence, not authentication: anything outside a browser
+ * can send whatever Origin it likes.
  */
 
 const ALLOWED_HOSTS = ["parksnpeaks.org", "www.parksnpeaks.org", "lotw.arrl.org"];
 
-const cors = {
-    "access-control-allow-origin": "*",
+const ALLOWED_ORIGINS = [
+    // The web demo on GitHub Pages.
+    "https://pitilezard.github.io",
+    // The Tauri shell: macOS and Linux serve the app from tauri://, Windows from https://tauri.localhost.
+    "tauri://localhost",
+    "https://tauri.localhost",
+];
+
+// Any port, so `pnpm start:web` and `pnpm start:tauri` work against the deployed relay.
+const isAllowedOrigin = (origin) =>
+    ALLOWED_ORIGINS.includes(origin) || /^http:\/\/localhost(:\d+)?$/.test(origin);
+
+const corsFor = (origin) => ({
+    "access-control-allow-origin": origin,
     "access-control-allow-methods": "GET, POST, OPTIONS",
     "access-control-allow-headers": "content-type",
-};
+    vary: "origin",
+});
 
 export default {
     async fetch(request) {
+        const origin = request.headers.get("origin") || "";
+        if (!isAllowedOrigin(origin)) return new Response("origin not allowed", { status: 403 });
+        const cors = corsFor(origin);
+
         if (request.method === "OPTIONS") return new Response(null, { headers: cors });
         if (request.method !== "GET" && request.method !== "POST")
             return new Response("method not allowed", { status: 405, headers: cors });

@@ -16,3 +16,6 @@ scripts/*.dat
 *.adif
 *.adi
 *.adx
+
+# wrangler
+.wrangler/

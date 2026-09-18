@@ -69,7 +69,6 @@ const postToPnp = async (request: SpotRequest, settings: Settings): Promise<void
             comments: request.comments,
         },
         pnpCredentials(settings),
-        settings.spotsProxy,
     );
 };
 

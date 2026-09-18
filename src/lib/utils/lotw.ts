@@ -1,7 +1,6 @@
 import axios from "axios";
 import { DateTime } from "luxon";
-import { Platform } from "react-native";
-import { applyProxy } from "./spots/fetch";
+import { relayed } from "./spots/fetch";
 
 /**
  * LoTW account, used only to pull confirmations. The password is the LoTW website password — the
@@ -14,7 +13,7 @@ export type LotwSettingsType = {
 };
 
 /** What a fetch did, so the button can say it without a dialog for the ordinary cases. */
-export type LotwStatus = "idle" | "loading" | "done" | "auth" | "blocked" | "offline" | "error";
+export type LotwStatus = "idle" | "loading" | "done" | "auth" | "offline" | "error";
 
 const REPORT_URL = "https://lotw.arrl.org/lotwuser/lotwreport.adi";
 
@@ -37,8 +36,7 @@ export class LotwError extends Error {
 
 /**
  * Credentials travel in the query string — LoTW's API takes them no other way — so this URL is a
- * secret in its own right. It must never be logged, and never handed to a relay the operator
- * didn't choose themselves.
+ * secret in its own right, and must never be logged.
  */
 export const lotwReportUrl = ({
     user,
@@ -68,21 +66,6 @@ export const lotwReportUrl = ({
         .join("&")}`;
 };
 
-/**
- * Where the request can actually go. Native builds call LoTW directly — there's no CORS in a native
- * HTTP stack. Browsers can't: lotw.arrl.org serves no `access-control-allow-origin`, and that
- * covers the Tauri shell too, which is a webview and plays by the same rules.
- *
- * The public relays in utils/spots/fetch are deliberately not offered here. They're fine for spot
- * data, which is public; this URL carries the operator's LoTW password and their confirmed log, and
- * a relay sees both in full. So the web build needs the operator's own relay or nothing — see
- * scripts/cors-worker.js.
- */
-export const lotwSource = (url: string, proxy?: string): string | undefined => {
-    if (Platform.OS !== "web") return url;
-    return proxy ? applyProxy(proxy, url) : undefined;
-};
-
 /** LoTW answers failures as prose, so the reason has to be read out of the body. */
 const classify = (body: string): LotwStatus => {
     if (/username\/password|incorrect|invalid.*password|login/i.test(body)) return "auth";
@@ -98,20 +81,17 @@ export const fetchLotwConfirmations = async ({
     password,
     since,
     callsign,
-    proxy,
 }: {
     user: string;
     password: string;
     since: string;
     callsign?: string;
-    proxy?: string;
 }): Promise<string> => {
-    const source = lotwSource(lotwReportUrl({ user, password, since, callsign }), proxy);
-    if (!source)
-        throw new LotwError(
-            "blocked",
-            "LoTW doesn't allow browsers to call it directly. Set your own relay in Settings > API's, or use the link below to download the file by hand.",
-        );
+    // Native builds call LoTW directly — there's no CORS in a native HTTP stack. Browsers can't:
+    // lotw.arrl.org serves no `access-control-allow-origin`, and that covers the Tauri shell too, which
+    // is a webview and plays by the same rules. So those go through the relay, which passes the
+    // password and the report straight through without keeping either — see scripts/cors-worker.js.
+    const source = relayed(lotwReportUrl({ user, password, since, callsign }));
 
     let body: string;
     try {

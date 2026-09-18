@@ -167,12 +167,14 @@ const Settings = () => {
                     <Typography variant="subtitle">
                         Your log is stored locally and never leaves this device. Other things do reach the
                         network: callsign lookups go to hamqth.com, QTH lookups to geocode.maps.co, spots to
-                        api.pota.app directly and to parksnpeaks via one of three public relays (r.jina.ai,
-                        api.allorigins.win, api.codetabs.com) or your own if you set one, solar data to
+                        api.pota.app directly and to parksnpeaks through cors.jadami.com on web and desktop, solar
+                        data to
                         services.swpc.noaa.gov, and map tiles to tile.openstreetmap.org — which sees the areas you
                         look at. Spotting yourself sends your callsign, reference, frequency, mode and comment to
                         whichever of those two networks you pick, and your ParksnPeaks key with it. Loading confirmations sends
-                        your LoTW user name and password to lotw.arrl.org, or to your own relay if you set one.
+                        your LoTW user name and password to lotw.arrl.org, through cors.jadami.com on web and
+                        desktop. That relay only passes requests through and keeps nothing — its code is in
+                        scripts/cors-worker.js.
                     </Typography>
                     <Typography underline>HamQTH:</Typography>
                     {!!settings.hamqth?.sessionId && (
@@ -238,21 +240,6 @@ const Settings = () => {
                                     password: v,
                                 })
                             }
-                        />
-                    </Stack>
-                    <Typography underline>LoTW relay:</Typography>
-                    <Typography variant="subtitle">
-                        LoTW blocks browsers from calling it, so the web and desktop builds need a relay of your own —
-                        deploy scripts/cors-worker.js to Cloudflare and paste its URL here, using {"{url}"} where the
-                        LoTW URL should go. This one is kept apart from the spots relay on purpose: the request carries
-                        your LoTW password, so it must never go through a public relay. Leave it empty on iOS and
-                        Android, which call LoTW directly.
-                    </Typography>
-                    <Stack direction="row">
-                        <Typography>URL:</Typography>
-                        <Input
-                            value={settings.lotwProxy || ""}
-                            onChangeText={(v) => updateSetting("lotwProxy", v === "" ? undefined : v)}
                         />
                     </Stack>
                     <Typography underline>Geocode Maps:</Typography>

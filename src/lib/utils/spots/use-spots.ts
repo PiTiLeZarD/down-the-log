@@ -12,10 +12,10 @@ import { MergedSpot, Spot, SpotAlert, SpotSource, defaultSpotAlert } from "./typ
 
 const REFRESH_MS = 60 * 1000;
 
-const fetchers: Record<SpotSource, (proxy?: string) => Promise<Spot[]>> = {
-    pota: () => fetchPotaSpots(),
-    pnp: (proxy) => fetchPnpSpots(proxy),
-    sota: () => fetchSotaSpots(),
+const fetchers: Record<SpotSource, () => Promise<Spot[]>> = {
+    pota: fetchPotaSpots,
+    pnp: fetchPnpSpots,
+    sota: fetchSotaSpots,
 };
 
 export type SourceState = { spots: Spot[]; failed: boolean; fetchedAt?: DateTime };
@@ -31,9 +31,8 @@ export type SpotsState = {
 // One poller for the whole app: the bar on the log screen and the spots page read the same feed, and
 // two components mounting must not mean two requests a minute to every network.
 let state: SpotsState = { spots: [], bySource: {}, loading: false };
-let config: { sources: SpotSource[]; proxy?: string; alert: SpotAlert } = {
+let config: { sources: SpotSource[]; alert: SpotAlert } = {
     sources: [],
-    proxy: undefined,
     alert: defaultSpotAlert,
 };
 let timer: ReturnType<typeof setInterval> | undefined;
@@ -72,7 +71,7 @@ const announce = (spots: MergedSpot[]) => {
 };
 
 export const refreshSpots = async (): Promise<void> => {
-    // Walking the relay chain can outlast the interval, so a refresh still in flight when the next
+    // A slow source can outlast the interval, so a refresh still in flight when the next
     // tick lands keeps the tick rather than racing it.
     if (inFlight) return;
     inFlight = true;
@@ -81,7 +80,7 @@ export const refreshSpots = async (): Promise<void> => {
     const results = await Promise.all(
         sources.map(async (source): Promise<[SpotSource, SourceState]> => {
             try {
-                return [source, { spots: await fetchers[source](config.proxy), failed: false, fetchedAt: DateTime.utc() }];
+                return [source, { spots: await fetchers[source](), failed: false, fetchedAt: DateTime.utc() }];
             } catch {
                 // A failed refresh keeps whatever that source last returned — a minute-old spot beats
                 // an empty list, and one dead network must not blank the others.
@@ -120,15 +119,14 @@ const sync = () => {
     else stop();
 };
 
-export const configureSpots = (sources: SpotSource[], proxy: string | undefined, alert: SpotAlert) => {
+export const configureSpots = (sources: SpotSource[], alert: SpotAlert) => {
     const same = sources.length === config.sources.length && sources.every((s, i) => config.sources[i] === s);
-    const sameProxy = proxy === config.proxy;
     // The alert rules only decide what a later poll announces, so a change to them alone needs no
     // refetch — it just has to be in `config` before the next tick reads it, and the poller has to
     // be running at all.
     config = { ...config, alert };
-    if (same && sameProxy) return sync();
-    config = { sources, proxy, alert };
+    if (same) return sync();
+    config = { sources, alert };
     // A source that was just switched off keeps no cache: leaving its spots in `bySource` would put
     // them back on screen the moment it was switched on again, dated and wrong.
     const bySource = Object.fromEntries(
@@ -160,9 +158,8 @@ const getSnapshot = () => state;
 export const useSpotConfig = () => {
     const settings = useSettings();
     const sources = settings.spotSources;
-    const proxy = settings.spotsProxy;
     const alert = settings.spotAlerts;
-    useEffect(() => configureSpots(sources, proxy, alert), [sources, proxy, alert]);
+    useEffect(() => configureSpots(sources, alert), [sources, alert]);
 };
 
 export const useSpots = (): SpotsState => {

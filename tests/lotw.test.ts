@@ -1,5 +1,5 @@
 import { beforeEach, describe, expect, test, vi } from "vitest";
-import { LotwError, fetchLotwConfirmations, lotwReportUrl, lotwSource, nextQslSince } from "../src/lib/utils/lotw";
+import { LotwError, fetchLotwConfirmations, lotwReportUrl, nextQslSince } from "../src/lib/utils/lotw";
 
 vi.mock("axios", () => ({ default: { get: vi.fn() } }));
 const axios = (await import("axios")).default as unknown as { get: ReturnType<typeof vi.fn> };
@@ -36,33 +36,25 @@ describe("lotwReportUrl", () => {
         expect(lotwReportUrl(credentials)).not.toContain("qso_owncall"));
 });
 
-describe("lotwSource", () => {
-    // Platform.OS is "web" under test — the browser and Tauri case, where CORS applies.
-    test("has nowhere to go without a relay", () => expect(lotwSource("https://lotw/x")).toBeUndefined());
-
-    test("uses the operator's own relay when they set one", () =>
-        expect(lotwSource("https://lotw/x", "https://mine.workers.dev/?url={url}")).toBe(
-            "https://mine.workers.dev/?url=https%3A%2F%2Flotw%2Fx",
-        ));
-});
-
 describe("fetchLotwConfirmations", () => {
     test("hands back the report body", async () => {
         answers(report);
         await expect(
-            fetchLotwConfirmations({ ...credentials, proxy: "https://mine.workers.dev/?url={url}" }),
+            fetchLotwConfirmations(credentials),
         ).resolves.toBe(report);
     });
 
-    test("refuses to guess a relay, rather than sending the password through a public one", async () => {
-        await expect(fetchLotwConfirmations(credentials)).rejects.toMatchObject({ status: "blocked" });
-        expect(axios.get).not.toHaveBeenCalled();
+    // Platform.OS is "web" under test — the browser and Tauri case, where CORS applies.
+    test("goes through the relay", async () => {
+        answers(report);
+        await fetchLotwConfirmations(credentials);
+        expect(axios.get.mock.calls[0][0]).toMatch(/^https:\/\/cors\.jadami\.com\/\?url=https%3A%2F%2Flotw\.arrl\.org%2F/);
     });
 
     test("reads a refusal as an auth failure", async () => {
         answers("<html>Username/password incorrect</html>");
         await expect(
-            fetchLotwConfirmations({ ...credentials, proxy: "https://mine.workers.dev/?url={url}" }),
+            fetchLotwConfirmations(credentials),
         ).rejects.toMatchObject({ status: "auth" });
     });
 
@@ -71,23 +63,20 @@ describe("fetchLotwConfirmations", () => {
     test("rejects a body that isn't a report at all", async () => {
         answers("<html>Scheduled maintenance</html>");
         await expect(
-            fetchLotwConfirmations({ ...credentials, proxy: "https://mine.workers.dev/?url={url}" }),
+            fetchLotwConfirmations(credentials),
         ).rejects.toMatchObject({ status: "error" });
     });
 
     test("reports a dead connection as offline", async () => {
         axios.get.mockRejectedValueOnce(new Error("ETIMEDOUT"));
         await expect(
-            fetchLotwConfirmations({ ...credentials, proxy: "https://mine.workers.dev/?url={url}" }),
+            fetchLotwConfirmations(credentials),
         ).rejects.toBeInstanceOf(LotwError);
     });
 
     test("keeps the credentials out of the thrown message", async () => {
         axios.get.mockRejectedValueOnce(new Error("ETIMEDOUT"));
-        const error = await fetchLotwConfirmations({
-            ...credentials,
-            proxy: "https://mine.workers.dev/?url={url}",
-        }).then(
+        const error = await fetchLotwConfirmations(credentials).then(
             () => new Error("expected a rejection"),
             (e: Error) => e,
         );

@@ -50,14 +50,10 @@ export type Settings = {
     datemonth: boolean;
     hamqth?: HamQTHSettingsType;
     geocodeMapsCoKey?: string;
-    spotsProxy?: string;
     // LoTW website account, needed only to pull confirmations. The password is kept in the device
     // keychain on native like the HamQTH one; it is not the callsign certificate, which this app
     // never holds — see utils/lotw.
     lotw?: LotwSettingsType;
-    // LoTW serves no CORS header, so the web and Tauri builds need a relay. Deliberately separate
-    // from `spotsProxy`: that one may be a public relay, and this URL carries the LoTW password.
-    lotwProxy?: string;
     // How far back the next confirmation pull asks, yyyy-MM-dd. Moved forward after a successful
     // one so a second pull isn't the operator's whole LoTW history again.
     lotwQslSince?: string;

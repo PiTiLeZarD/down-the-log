@@ -24,7 +24,7 @@ export const SpotSettings = () => {
                 A strip of current activations above the log, refreshed every minute. It reads pota.app and
                 parksnpeaks.org, merges the activations both of them carry into one entry, and opens this page when
                 tapped. pota.app is called directly; ParksnPeaks doesn&apos;t allow browsers to call it, so on the web
-                build that half goes through a relay — see Spots relay below if you&apos;d rather use your own.
+                and desktop builds that half goes through cors.jadami.com.
                 SOTAwatch isn&apos;t included yet: their API terms require the app to be approved before it may connect.
             </Typography>
             <SpotAlertSettings />
@@ -47,21 +47,6 @@ export const SpotSettings = () => {
                     password
                     value={settings.pnpApiKey || ""}
                     onChangeText={(v) => updateSetting("pnpApiKey", v === "" ? undefined : v)}
-                />
-            </Stack>
-            <Typography underline>Spots relay:</Typography>
-            <Typography variant="subtitle">
-                ParksnPeaks blocks browsers from calling it, so on the web the spots go through a relay. Leave this
-                empty to use the public ones, which are unreliable, or deploy scripts/cors-worker.js to Cloudflare and
-                paste its URL here — use {"{url}"} where the spot URL should go. Native builds ignore this and call
-                ParksnPeaks directly. Posting your own spots to ParksnPeaks from the web needs your own relay: the
-                public ones only forward reads.
-            </Typography>
-            <Stack direction="row">
-                <Typography>URL:</Typography>
-                <Input
-                    value={settings.spotsProxy || ""}
-                    onChangeText={(v) => updateSetting("spotsProxy", v === "" ? undefined : v)}
                 />
             </Stack>
         </Stack>

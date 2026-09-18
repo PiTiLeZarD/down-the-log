@@ -1,0 +1,12 @@
+# CORS relay for the ParksnPeaks spots plugin and LoTW confirmations. See cors-worker.js.
+# Deploy from this directory with: npx wrangler deploy
+
+name = "dtl-spots"
+main = "cors-worker.js"
+compatibility_date = "2026-09-01"
+workers_dev = false
+
+# Cloudflare creates the DNS record and certificate for this hostname on deploy.
+routes = [
+  { pattern = "cors.jadami.com", custom_domain = true }
+]
