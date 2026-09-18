@@ -10,7 +10,7 @@
 
 // scripts/pwa.mjs stamps the release version here on export, so every release lands under a fresh
 // cache name and `activate` drops the previous one. Left as-is when served straight out of public/.
-const CACHE = "down-the-log-v0.0.1";
+const CACHE = "down-the-log-v0.1.1";
 
 const scope = self.registration.scope;
 const shell = new URL("./", scope).href;
