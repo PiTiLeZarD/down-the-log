@@ -277,6 +277,15 @@ describe("alerts", () => {
         expect(matchesSpotAlert(merged({ callsign: "VK6ABC" }), alert, [])).toBe(false);
     });
 
+    test("a watchlist wildcard matches a prefix, on the base call or the full one", () => {
+        const alert = { ...on, watch: ["ZL*", "VK*"] };
+        expect(matchesSpotAlert(merged({ callsign: "ZL1ABC" }), alert, [])).toBe(true);
+        expect(matchesSpotAlert(merged({ callsign: "VK6MB/P" }), alert, [])).toBe(true);
+        expect(matchesSpotAlert(merged({ callsign: "VK/G4XYZ" }), alert, [])).toBe(true);
+        expect(matchesSpotAlert(merged({ callsign: "G4XYZ" }), alert, [])).toBe(false);
+        expect(matchesSpotAlert(merged({ callsign: "AZL1ABC" }), alert, [])).toBe(false);
+    });
+
     test("hiding RBN needs every source behind the row to be automatic", () => {
         const alert = { ...on, hideAutomatic: true };
         const relayed = mergeSpots([spot({ automatic: true, frequency: 7.032 })])[0];

@@ -25,9 +25,24 @@ export const MAX_PER_POLL = 3;
 export const alertKey = (spot: MergedSpot): string =>
     `${baseCallsign(spot.callsign) || spot.callsign.toUpperCase()}|${spot.reference || ""}|${spot.band || ""}`;
 
+// "VK*" or "ZL?ABC": * is any run of characters, ? exactly one. Everything else is literal, so the
+// / in a portable call can't turn into regexp syntax.
+const globToRegExp = (pattern: string): RegExp =>
+    new RegExp(`^${pattern.replace(/[.+^${}()|[\]\\/-]/g, "\\$&").replace(/\*/g, ".*").replace(/\?/g, ".")}$`);
+
 const watched = (spot: MergedSpot, watch: string[]): boolean => {
-    const base = baseCallsign(spot.callsign) || spot.callsign.toUpperCase();
-    return watch.some((call) => (baseCallsign(call) || call.toUpperCase().trim()) === base);
+    const full = spot.callsign.toUpperCase();
+    const base = baseCallsign(spot.callsign) || full;
+    return watch.some((entry) => {
+        const call = entry.toUpperCase().trim();
+        // A pattern is tried against both: "VK*" should catch ZL1ABC operating as VK/ZL1ABC as well
+        // as VK6MB/P, and the base call alone would miss the first.
+        if (/[*?]/.test(call)) {
+            const glob = globToRegExp(call);
+            return glob.test(base) || glob.test(full);
+        }
+        return (baseCallsign(call) || call) === base;
+    });
 };
 
 export const matchesSpotAlert = (spot: MergedSpot, alert: SpotAlert, qsos: QSO[]): boolean => {

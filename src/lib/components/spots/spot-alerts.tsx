@@ -53,10 +53,8 @@ const refusedText = native
     ? "Permission wasn't granted, so nothing will be shown."
     : "The browser didn't grant permission. On iPhone and iPad, notifications only work once the app has been added to the Home Screen.";
 
-// What "while the app is open" costs, which is not the same sentence on a phone as in a tab.
-const openLimit = native
-    ? "A phone suspends an app it has put in the background, which stops the poll with it — so alerts arrive while down-the-log is on screen."
-    : "";
+// A phone suspends a backgrounded app, and the poll with it.
+const openLimit = native ? "On a phone, only while it's on screen." : "";
 
 export const SpotAlertSettings = () => {
     const settings = useSettings();
@@ -105,9 +103,7 @@ export const SpotAlertSettings = () => {
             <Stack>
                 <Typography underline>Spot alerts:</Typography>
                 <Typography variant="subtitle">
-                    Not available on this build. Alerts need a notifier: a browser that supports notifications, the
-                    desktop app, or an iPhone or Android build made with the development client — the notification
-                    module is native, so it is missing from Expo Go.
+                    Not available on this build (no notification support — Expo Go lacks the native module).
                 </Typography>
             </Stack>
         );
@@ -118,11 +114,8 @@ export const SpotAlertSettings = () => {
             <Switch value={alert.enabled} onValueChange={(v) => void enable(v)} />
             {alert.enabled && permission !== "granted" && <Typography variant="em">{blockedText}</Typography>}
             <Typography variant="subtitle">
-                Raises a notification when a spot the app has not seen before matches the rules below. Alerts come off
-                the same one-minute poll as the Spots bar, so they only arrive while the app is open — nothing is pushed
-                from a server, and closing it stops them. {openLimit} An empty row means no opinion: leave everything
-                clear and every new spot is announced. A station that has said QRT is never announced, and a poll that
-                matches more than a few spots at once collapses into a single &quot;N new spots&quot;.
+                Notifies on new spots matching the rules below, while the app is open. {openLimit} Empty rows match
+                everything.
             </Typography>
             {alert.enabled && (
                 <Stack gap="lg">
@@ -164,13 +157,12 @@ export const SpotAlertSettings = () => {
                     <Typography variant="em">Callsigns</Typography>
                     <Input
                         value={watchText}
-                        placeholder="G4XYZ VK6MB — blank for any"
+                        placeholder="VK* ZL* G4XYZ — blank for any"
                         onChangeText={setWatchText}
                         onBlur={() => patch({ watch: parseWatch(watchText) })}
                     />
                     <Typography variant="subtitle">
-                        Only these callsigns raise an alert. Matched on the base call, so a /P or a DL/ prefix still
-                        counts. Separate them with spaces or commas.
+                        Spaces or commas between calls. * matches anything, so VK* is every VK station.
                     </Typography>
                 </Stack>
             )}

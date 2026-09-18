@@ -23,11 +23,8 @@ export const SpotSettings = () => {
                 onValueChange={(v) => updateSetting("showSpots", v)}
             />
             <Typography variant="subtitle">
-                A strip of current activations above the log, refreshed every minute. It reads pota.app and
-                parksnpeaks.org, merges the activations both of them carry into one entry, and opens this page when
-                tapped. pota.app is called directly; ParksnPeaks doesn&apos;t allow browsers to call it, so on the web
-                and desktop builds that half goes through cors.jadami.com.
-                SOTAwatch isn&apos;t included yet: their API terms require the app to be approved before it may connect.
+                Current POTA and ParksnPeaks activations above the log, refreshed every minute. SOTA is waiting on API
+                approval.
             </Typography>
             <SpotAlertSettings />
             <Typography underline>ParksnPeaks account:</Typography>

@@ -87,6 +87,7 @@ export const theme = (shade: "light" | "dark") =>
                 borderRadius: 4,
             },
             buttonText: {
+                fontFamily: "Quicksand",
                 textAlign: "center",
                 textTransform: "uppercase",
                 fontWeight: "bold",
