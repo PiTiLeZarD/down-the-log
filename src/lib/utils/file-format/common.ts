@@ -315,7 +315,7 @@ export const header = (): Header => ({
     fields: {
         created_timestamp: DateTime.utc().toFormat("yyyyMMdd HHmmss"),
         programid: "down-the-log",
-        programversion: "0.0.1",
+        programversion: "0.1.1",
     },
 });
 

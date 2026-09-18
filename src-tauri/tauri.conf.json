@@ -42,7 +42,7 @@
   },
   "productName": "down-the-log",
   "mainBinaryName": "down-the-log",
-  "version": "1.0.0",
+  "version": "0.1.1",
   "identifier": "com.pitilezard.dev",
   "plugins": {},
   "app": {
@@ -57,7 +57,9 @@
       }
     ],
     "security": {
-      "dangerousDisableAssetCspModification": ["style-src"],
+      "dangerousDisableAssetCspModification": [
+        "style-src"
+      ],
       "csp": "default-src 'self'; connect-src 'self' ipc: http://ipc.localhost https://services.swpc.noaa.gov https://www.hamqth.com https://geocode.maps.co https://api.pota.app https://cors.jadami.com; img-src 'self' data: https://tile.openstreetmap.org; style-src 'self' 'unsafe-inline'; script-src 'self'; font-src 'self' data:; object-src 'none'; base-uri 'self'"
     }
   }
