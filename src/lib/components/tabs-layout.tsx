@@ -51,10 +51,12 @@ export type TabsLayoutProps = PropsWithChildren<{
     tabs: string[];
     position?: "top" | "bottom";
     variant?: ColourVariant;
+    // Index of the tab shown first, so a link from elsewhere can land on the tab it's about.
+    initial?: number;
 }>;
 
-export const TabsLayout = ({ position = "top", variant = "primary", tabs, children }: TabsLayoutProps) => {
-    const [current, setCurrent] = React.useState<number>(0);
+export const TabsLayout = ({ position = "top", variant = "primary", initial = 0, tabs, children }: TabsLayoutProps) => {
+    const [current, setCurrent] = React.useState<number>(initial);
 
     const tabsButtons = (
         <Stack direction="row" style={styles.tabsButtonsContainer}>

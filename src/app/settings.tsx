@@ -1,4 +1,4 @@
-import { useRouter } from "expo-router";
+import { useLocalSearchParams, useRouter } from "expo-router";
 import { Switch } from "react-native";
 import { UnistylesRuntime, useUnistyles } from "react-native-unistyles";
 import { DateFormatSetting, UnitsSetting } from "../lib/components/choice-setting";
@@ -19,8 +19,13 @@ import { normalise } from "../lib/utils/locator";
 import { useStore } from "../lib/utils/store";
 import { useSettings } from "../lib/utils/use-settings";
 
+const tabs = ["My Details", "Interface", "Customisation", "APIs"];
+// Short names other screens link with, e.g. /settings?tab=apis.
+const tabParams = ["details", "interface", "customisation", "apis"];
+
 const Settings = () => {
     const { rt } = useUnistyles();
+    const { tab } = useLocalSearchParams<{ tab?: string }>();
     const { navigate } = useRouter();
     const settings = useSettings();
     const currentLocation = useStore((state) => state.currentLocation);
@@ -29,7 +34,7 @@ const Settings = () => {
 
     return (
         <PageLayout title="Settings">
-            <TabsLayout tabs={["My Details", "Interface", "Customisation", "APIs"]}>
+            <TabsLayout tabs={tabs} initial={Math.max(0, tabParams.indexOf(tab ?? ""))}>
                 <Stack>
                     <Typography underline>My Callsign:</Typography>
                     <Input
@@ -88,12 +93,13 @@ const Settings = () => {
                         value={settings.showHeatmap != undefined ? settings.showHeatmap : false}
                         onValueChange={(v) => updateSetting("showHeatmap", v)}
                     />
-                    {/* The spots bar, alerts, the ParksnPeaks account and the relay all moved to the
-                        Spots page itself: they're decisions made while looking at the feed. */}
+                    {/* The spots bar and alerts moved to the Spots page itself: they're decisions made
+                        while looking at the feed. The ParksnPeaks account sits with the other credentials
+                        under APIs. */}
                     <Typography underline>Spots:</Typography>
                     <Typography variant="subtitle">
-                        The spots bar above the log, alerts, and the ParksnPeaks account used to spot yourself are all
-                        set behind the cog on the Spots page.
+                        The spots bar above the log and alerts are set behind the cog on the Spots page. The
+                        ParksnPeaks account used to spot yourself is under APIs.
                     </Typography>
                     <Button text="Open Spots" variant="outlined" onPress={() => navigate("/spots")} />
                     <Typography underline>Show Filters:</Typography>
@@ -254,13 +260,25 @@ const Settings = () => {
                             onChangeText={(v) => updateSetting("geocodeMapsCoKey", v)}
                         />
                     </Stack>
-                    {/* The relay and the ParksnPeaks key live behind the cog on the Spots page, next to
-                        the feed they serve. */}
-                    <Typography underline>Spot networks:</Typography>
+                    <Typography underline>ParksnPeaks:</Typography>
                     <Typography variant="subtitle">
-                        The ParksnPeaks account used to spot yourself, and the relay the web build reads ParksnPeaks
-                        through, are set behind the cog on the Spots page.
+                        Only needed to spot yourself. Your user name and the API key from the User Options page on
+                        parksnpeaks.org. The key is kept in the device keychain on iOS and Android. Spotting yourself
+                        to POTA needs no account.
                     </Typography>
+                    <Stack direction="row">
+                        <Typography>User:</Typography>
+                        <Input
+                            value={settings.pnpUserId || ""}
+                            onChangeText={(v) => updateSetting("pnpUserId", v === "" ? undefined : v)}
+                        />
+                        <Typography>API key:</Typography>
+                        <Input
+                            password
+                            value={settings.pnpApiKey || ""}
+                            onChangeText={(v) => updateSetting("pnpApiKey", v === "" ? undefined : v)}
+                        />
+                    </Stack>
                 </Stack>
             </TabsLayout>
         </PageLayout>
