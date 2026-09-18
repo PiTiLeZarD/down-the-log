@@ -6,10 +6,12 @@ import { useStore } from "../../utils/store";
 import { useSettings } from "../../utils/use-settings";
 import { Stack } from "../stack";
 import { SpotAlertSettings } from "./spot-alerts";
+import { SpotFilters } from "./spot-filters";
 
-// The spots bar and alerts are set here rather than on the Settings screen: the operator is looking at
-// the feed when they decide the bar is in the way or that an alert should have fired. The ParksnPeaks
-// account is a credential like HamQTH and LoTW, so it lives with them under Settings > APIs.
+// The spots bar, the filter and alerts are set here rather than on the Settings screen: the operator
+// is looking at the feed when they decide the bar is in the way or that an alert should have fired.
+// There is one filter, for the list and the alerts alike, so it sits beside the alert switch. The
+// ParksnPeaks account is a credential like HamQTH and LoTW, so it lives with them under Settings > APIs.
 export const SpotSettings = () => {
     const { navigate } = useRouter();
     const settings = useSettings();
@@ -26,6 +28,8 @@ export const SpotSettings = () => {
                 Current POTA and ParksnPeaks activations above the log, refreshed every minute. SOTA is waiting on API
                 approval.
             </Typography>
+            <Typography underline>Filter:</Typography>
+            <SpotFilters />
             <SpotAlertSettings />
             <Typography underline>ParksnPeaks account:</Typography>
             <Typography variant="subtitle">

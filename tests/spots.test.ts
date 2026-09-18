@@ -13,7 +13,7 @@ import { parsePnpSpot } from "../src/lib/utils/spots/parksnpeaks";
 import { parsePotaSpot } from "../src/lib/utils/spots/pota";
 import { spotDistance, spotLocator, spotStatus } from "../src/lib/utils/spots/status";
 import { qsoFromSpot, spotReferences } from "../src/lib/utils/spots/to-qso";
-import { MergedSpot, Spot, defaultSpotAlert, defaultSpotFilter, isQrt } from "../src/lib/utils/spots/types";
+import { MergedSpot, Spot, defaultSpotFilter, isQrt } from "../src/lib/utils/spots/types";
 import { QSO } from "../src/lib/components/qso";
 import { fixSettings } from "../src/lib/utils/store";
 
@@ -209,6 +209,67 @@ describe("filtering", () => {
     test("a source switched off takes its spots with it", () => {
         expect(applySpotFilter(spots, defaultSpotFilter, ["pnp"], [], now)).toEqual([]);
     });
+
+    test("a callsign list narrows the list, not just the alerts", () => {
+        const mixed = [
+            merged({ id: "vk", callsign: "VK6MB/P" }),
+            merged({ id: "zl", callsign: "ZL1ABC" }),
+            merged({ id: "k", callsign: "K1ABC" }),
+        ];
+        const filter = { ...defaultSpotFilter, watch: ["ZL*", "VK*"] };
+        expect(applySpotFilter(mixed, filter, ["pota"], [], now).map((s) => s.id)).toEqual(["vk", "zl"]);
+    });
+
+    test("continent comes from the callsign, portable prefix included", () => {
+        const mixed = [
+            merged({ id: "vk", callsign: "VK6MB" }),
+            merged({ id: "zl", callsign: "ZL1ABC" }),
+            merged({ id: "k", callsign: "K1ABC" }),
+            merged({ id: "g-in-vk", callsign: "VK/G4XYZ" }),
+            merged({ id: "vk-in-g", callsign: "G/VK6MB" }),
+        ];
+        const filter = { ...defaultSpotFilter, continents: ["OC" as const] };
+        expect(applySpotFilter(mixed, filter, ["pota"], [], now).map((s) => s.id)).toEqual(["vk", "zl", "g-in-vk"]);
+    });
+});
+
+describe("settings from before the two filters were one", () => {
+    const alert = {
+        enabled: true,
+        programmes: [],
+        bands: ["40m" as const],
+        modeGroups: [],
+        newOnly: false,
+        hideAutomatic: true,
+        watch: ["VK*", "ZL*"],
+    };
+
+    test("alert rules that were on become the filter, and the switch survives", () => {
+        const settings = fixSettings({
+            spotFilter: { ...defaultSpotFilter, bands: ["20m"], hideQrt: true, maxAgeMinutes: 30, search: "x" },
+            spotAlerts: alert,
+        } as never);
+        expect(settings.spotFilter).toEqual({
+            ...defaultSpotFilter,
+            bands: ["40m"],
+            watch: ["VK*", "ZL*"],
+            hideAutomatic: true,
+            hideQrt: true,
+            maxAgeMinutes: 30,
+        });
+        expect(settings.spotAlertsEnabled).toBe(true);
+        expect("spotAlerts" in settings).toBe(false);
+    });
+
+    test("alert rules that were off leave the page filter as it was", () => {
+        const settings = fixSettings({
+            spotFilter: { ...defaultSpotFilter, bands: ["20m"] },
+            spotAlerts: { ...alert, enabled: false },
+        } as never);
+        expect(settings.spotFilter.bands).toEqual(["20m"]);
+        expect(settings.spotFilter.watch).toEqual([]);
+        expect(settings.spotAlertsEnabled).toBe(false);
+    });
 });
 
 describe("logging from a spot", () => {
@@ -249,18 +310,14 @@ describe("logging from a spot", () => {
 });
 
 describe("alerts", () => {
-    const on = { ...defaultSpotAlert, enabled: true, hideAutomatic: false };
+    const on = defaultSpotFilter;
     const now = at("2024-01-01T10:05:00Z");
 
-    test("nothing is announced while the switch is off", () => {
-        expect(matchesSpotAlert(merged(), defaultSpotAlert, [])).toBe(false);
-    });
-
-    test("an empty rule announces every spot", () => {
+    test("an empty filter announces every spot", () => {
         expect(matchesSpotAlert(merged({ band: "40m", mode: "CW" }), on, [])).toBe(true);
     });
 
-    test("a station that has said QRT is never announced", () => {
+    test("a station that has said QRT is never announced, even with QRT shown on the page", () => {
         expect(matchesSpotAlert(merged({ comments: "QRT thanks all" }), on, [])).toBe(false);
     });
 

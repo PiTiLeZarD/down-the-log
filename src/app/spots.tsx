@@ -5,7 +5,7 @@ import { View } from "react-native";
 import { useUnistyles } from "react-native-unistyles";
 import { PageLayout } from "../lib/components/page-layout";
 import { QSO, extrapolate, useQsos } from "../lib/components/qso";
-import { SpotFilters, SpotList, SpotMeButton, SpotModal, SpotSettings } from "../lib/components/spots";
+import { SpotList, SpotMeButton, SpotModal, SpotSettings } from "../lib/components/spots";
 import { Stack } from "../lib/components/stack";
 import { Button } from "../lib/ui/button";
 import { Typography } from "../lib/ui/typography";
@@ -13,7 +13,6 @@ import {
     MergedSpot,
     activeFilterCount,
     applySpotFilter,
-    defaultSpotFilter,
     qsoFromSpot,
     refreshSpots,
     spotSourceLabels,
@@ -28,7 +27,6 @@ import { useSettings } from "../lib/utils/use-settings";
 const Spots = () => {
     const { theme } = useUnistyles();
     const settings = useSettings();
-    const updateSetting = useStore((state) => state.updateSetting);
     const log = useStore((state) => state.log);
     const bumpSerial = useStore((state) => state.bumpSerial);
     const currentLocation = useStore((state) => state.currentLocation);
@@ -37,15 +35,13 @@ const Spots = () => {
     const { spots, bySource, loading, fetchedAt } = useSpots();
     const { navigate } = useRouter();
 
-    const [showFilters, setShowFilters] = React.useState<boolean>(false);
     // Setup takes the page over rather than sitting above the list: it is long enough that the spots
     // below it were unreachable anyway, and a screen of settings on top of a live feed read as one
     // page doing two things at once.
     const [setup, setSetup] = React.useState<boolean>(false);
     // The station whose megaphone was tapped, shaped as a QSO for the modal. Nothing is logged by it.
     const [respotting, setRespotting] = React.useState<QSO | undefined>(undefined);
-    // Five labelled buttons don't fit a phone, and the icons carry the meaning on their own. The
-    // filter count stays: it's the one of them whose label is information rather than a name.
+    // Labelled buttons don't fit a phone beside Spot me, and the icons carry the meaning on their own.
     const compact = useWidthMatches(undefined, "md");
 
     const visible = React.useMemo(
@@ -82,9 +78,12 @@ const Spots = () => {
             return `${spotSourceLabels[source]} ${state.failed ? "unavailable" : state.spots.length}`;
         })
         .join(" · ");
+    // The filter lives in the setup, so the list says when it's narrowed — otherwise a short list
+    // reads as a quiet band.
+    const filterStatus = filterCount ? ` · ${filterCount} filter${filterCount > 1 ? "s" : ""} on` : "";
 
     // The cog sits beside Back rather than among the chips below: it swaps the whole page for the
-    // setup, which is a different thing from the filters and refresh that act on the list in place.
+    // setup — filter included — which is a different thing from refresh acting on the list in place.
     const title = (
         <Stack direction="row" gap="md">
             <Typography variant="h1" style={{ flexGrow: 1 }}>
@@ -94,7 +93,7 @@ const Spots = () => {
                 <Button
                     colour={setup ? "secondary" : "primary"}
                     startIcon="settings"
-                    aria-label={setup ? "Back to spots" : "Spot setup"}
+                    aria-label={setup ? "Back to spots" : "Spot setup and filter"}
                     onPress={() => setSetup(!setup)}
                     style={{ paddingLeft: theme.margins.xl, paddingRight: theme.margins.xl }}
                 />
@@ -125,44 +124,12 @@ const Spots = () => {
                         onPress={() => void refreshSpots()}
                     />
                 </View>
-                <View>
-                    <Button
-                        variant="chip"
-                        colour={filterCount ? "primary" : "grey"}
-                        startIcon="funnel"
-                        text={
-                            filterCount
-                                ? `${compact ? "" : "Filters "}(${filterCount})`
-                                : compact
-                                  ? undefined
-                                  : "Filters"
-                        }
-                        aria-label="Filters"
-                        onPress={() => setShowFilters(!showFilters)}
-                    />
-                </View>
-                {filterCount > 0 && (
-                    <View>
-                        <Button
-                            variant="chip"
-                            colour="grey"
-                            text={compact ? undefined : "Clear"}
-                            startIcon={compact ? "close" : undefined}
-                            aria-label="Clear filters"
-                            onPress={() => updateSetting("spotFilter", defaultSpotFilter)}
-                        />
-                    </View>
-                )}
             </Stack>
             <Typography variant="subtitle">
                 {sourceStatus}
+                {filterStatus}
                 {fetchedAt ? ` · updated ${fetchedAt.toFormat("HH:mm")}z` : ""}
             </Typography>
-            {showFilters && (
-                <View>
-                    <SpotFilters spots={spots} />
-                </View>
-            )}
             <SpotList
                 spots={visible}
                 qsos={qsos}
@@ -170,9 +137,9 @@ const Spots = () => {
                     !fetchedAt
                         ? "Fetching spots..."
                         : !settings.spotSources.length
-                          ? "No spot networks are switched on — turn one on under Filters."
+                          ? "No spot networks are switched on — turn one on in the setup."
                           : spots.length
-                            ? "No spots match your filters."
+                            ? "No spots match your filter — change it in the setup."
                             : "Nothing spotted in the last hour."
                 }
                 onSpotPress={handleSpotPress}

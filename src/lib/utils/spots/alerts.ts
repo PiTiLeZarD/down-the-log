@@ -3,9 +3,8 @@ import type { QSO } from "../../components/qso";
 import { roundTo } from "../math";
 import { baseCallsign } from "../callsign";
 import type { NotifyOptions } from "../notify";
-import { modeGroup } from "./filter";
-import { spotStatus } from "./status";
-import { MergedSpot, SpotAlert, isQrt, spotProgrammeLabel } from "./types";
+import { matchesSpotFilter } from "./filter";
+import { MergedSpot, SpotFilter, isQrt, spotProgrammeLabel } from "./types";
 
 // How many keys the seen set holds before the oldest fall out. An hour of spots from three networks
 // is a few hundred, so this covers a long session without growing without bound.
@@ -25,48 +24,15 @@ export const MAX_PER_POLL = 3;
 export const alertKey = (spot: MergedSpot): string =>
     `${baseCallsign(spot.callsign) || spot.callsign.toUpperCase()}|${spot.reference || ""}|${spot.band || ""}`;
 
-// "VK*" or "ZL?ABC": * is any run of characters, ? exactly one. Everything else is literal, so the
-// / in a portable call can't turn into regexp syntax.
-const globToRegExp = (pattern: string): RegExp =>
-    new RegExp(`^${pattern.replace(/[.+^${}()|[\]\\/-]/g, "\\$&").replace(/\*/g, ".*").replace(/\?/g, ".")}$`);
-
-const watched = (spot: MergedSpot, watch: string[]): boolean => {
-    const full = spot.callsign.toUpperCase();
-    const base = baseCallsign(spot.callsign) || full;
-    return watch.some((entry) => {
-        const call = entry.toUpperCase().trim();
-        // A pattern is tried against both: "VK*" should catch ZL1ABC operating as VK/ZL1ABC as well
-        // as VK6MB/P, and the base call alone would miss the first.
-        if (/[*?]/.test(call)) {
-            const glob = globToRegExp(call);
-            return glob.test(base) || glob.test(full);
-        }
-        return (baseCallsign(call) || call) === base;
-    });
-};
-
-export const matchesSpotAlert = (spot: MergedSpot, alert: SpotAlert, qsos: QSO[]): boolean => {
-    if (!alert.enabled) return false;
-    // A station that has said it is packing up is never worth an interruption, whatever the rest of
-    // the rules say. The page still lists it, because it says the frequency is about to be free.
-    if (isQrt(spot)) return false;
-    if (alert.hideAutomatic && spot.sources.every((source) => source.automatic)) return false;
-    if (alert.programmes.length && !spot.sources.some((source) => alert.programmes.includes(source.programme)))
-        return false;
-    if (alert.bands.length && !(spot.band && alert.bands.includes(spot.band))) return false;
-    if (alert.modeGroups.length) {
-        const group = modeGroup(spot.mode);
-        if (!group || !alert.modeGroups.includes(group)) return false;
-    }
-    if (alert.watch.length && !watched(spot, alert.watch)) return false;
-    // Last, because it walks the log: everything cheap has already had its chance to say no.
-    if (alert.newOnly && !spotStatus(spot, qsos).newReference) return false;
-    return true;
-};
+// Alerts have no rules of their own: a spot is worth a notification when it passes the same filter
+// as the list. A station that has said it is packing up never is, whatever the filter says — the
+// page may still list it, because it says the frequency is about to be free.
+export const matchesSpotAlert = (spot: MergedSpot, filter: SpotFilter, qsos: QSO[]): boolean =>
+    !isQrt(spot) && matchesSpotFilter(spot, filter, qsos);
 
 export const newSpotAlerts = (
     spots: MergedSpot[],
-    alert: SpotAlert,
+    filter: SpotFilter,
     qsos: QSO[],
     seen: Set<string>,
     now: DateTime = DateTime.utc(),
@@ -77,7 +43,7 @@ export const newSpotAlerts = (
             spot.date.isValid &&
             spot.date >= cutoff &&
             !seen.has(alertKey(spot)) &&
-            matchesSpotAlert(spot, alert, qsos),
+            matchesSpotAlert(spot, filter, qsos),
     );
 };
 

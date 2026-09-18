@@ -2,6 +2,7 @@ import { DateTime } from "luxon";
 // Types only: `event-rules` reaches the park and summit tables, and this module is pulled in by the
 // store, which every screen imports. The heavy end of the spots code lives behind ./status.
 import type { Band } from "../../data/bands";
+import type { Continent } from "../../data/callsigns";
 import type { Mode } from "../../data/modes";
 import type { EventType } from "../event-rules";
 
@@ -59,60 +60,73 @@ export const isQrt = (spot: Spot): boolean => /\bq\s?r\s?t\b/i.test(spot.comment
 export const spotModeGroups = ["CW", "Phone", "Data"] as const;
 export type SpotModeGroup = (typeof spotModeGroups)[number];
 
+// One filter, read by the Spots page, the spots bar and the alerts alike. There used to be two — a
+// page filter and a separate set of alert rules — and an operator who set up VK* and ZL* in the
+// alert rules reasonably expected the list to follow. Alerts now just say whether a new spot that
+// passes this filter is worth a notification.
+//
+// Every field is an AND, and an empty list means "no opinion" rather than "nothing": a filter
+// nobody has touched shouldn't hide a network the operator just enabled.
 export type SpotFilter = {
-    // Empty means "everything": a filter nobody has touched shouldn't hide a network the operator
-    // just enabled.
     programmes: EventType[];
     bands: Band[];
     modeGroups: SpotModeGroup[];
+    // Where the activator is, from the callsign's DXCC entity — so VK/G4XYZ is Oceania.
+    continents: Continent[];
+    // Callsigns to show, compared on the base call so a /P or a DL/ prefix still matches. * and ?
+    // are wildcards, so VK* is every VK station.
+    watch: string[];
     // Only references the log has never worked.
     newOnly: boolean;
     hideQrt: boolean;
     // Drop RBN-relayed spots, which are frequency-accurate and otherwise uninformative.
     hideAutomatic: boolean;
     maxAgeMinutes: number;
-    // Matches callsign, reference or reference name.
-    search: string;
 };
 
 export const defaultSpotFilter: SpotFilter = {
     programmes: [],
     bands: [],
     modeGroups: [],
+    continents: [],
+    watch: [],
     newOnly: false,
     hideQrt: false,
     hideAutomatic: false,
     maxAgeMinutes: 60,
-    search: "",
 };
 
-// What the app is allowed to interrupt the operator for. Deliberately not the same object as
-// `SpotFilter`: that one changes every time a chip on the Spots page is poked, and quietly
-// rewriting the notification rules because somebody widened the list to look a callsign up is the
-// kind of surprise that gets notifications switched off for good.
-//
-// Every field is an AND, and an empty list still means "no opinion" — same reading as the page
-// filter, so `watch` with nothing else set is "only these callsigns", and nothing set at all is
-// "every spot", which is what the wording on the settings screen promises.
-export type SpotAlert = {
+// The old alert rules, kept only so `fixSettings` can fold a stored copy into the filter.
+export type LegacySpotAlert = {
     enabled: boolean;
     programmes: EventType[];
     bands: Band[];
     modeGroups: SpotModeGroup[];
-    // Only references the log has never worked.
     newOnly: boolean;
-    // Drop RBN-relayed spots, which are frequency-accurate and otherwise uninformative.
     hideAutomatic: boolean;
-    // Callsigns to watch for, compared on the base call so a /P or a DL/ prefix still matches.
     watch: string[];
 };
 
-export const defaultSpotAlert: SpotAlert = {
-    enabled: false,
-    programmes: [],
-    bands: [],
-    modeGroups: [],
-    newOnly: false,
-    hideAutomatic: true,
-    watch: [],
+/**
+ * Settings from before the two filters became one carry both. The alert rules win when alerts were
+ * on — that's the one the operator set up deliberately, with every band on offer — and the page
+ * filter's otherwise. Age and QRT only ever lived on the page filter, and the search box is gone:
+ * the callsign list does its job.
+ */
+export const migrateSpotFilter = (
+    filter: Partial<SpotFilter> & { search?: string } = {},
+    alert?: Partial<LegacySpotAlert>,
+): SpotFilter => {
+    const { search: _search, ...rest } = filter;
+    const merged = { ...defaultSpotFilter, ...rest };
+    if (!alert?.enabled) return merged;
+    return {
+        ...merged,
+        programmes: alert.programmes || merged.programmes,
+        bands: alert.bands || merged.bands,
+        modeGroups: alert.modeGroups || merged.modeGroups,
+        newOnly: alert.newOnly ?? merged.newOnly,
+        hideAutomatic: alert.hideAutomatic ?? merged.hideAutomatic,
+        watch: alert.watch || merged.watch,
+    };
 };

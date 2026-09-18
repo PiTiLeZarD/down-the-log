@@ -1,14 +1,15 @@
 import React from "react";
 import { View } from "react-native";
 import { StyleSheet } from "react-native-unistyles";
-import { Band, sortBands } from "../../data/bands";
+import { Band, bands as bandRanges, sortBands } from "../../data/bands";
+import { Continent, continents } from "../../data/callsigns";
 import { EventType } from "../../utils/event-rules";
 import {
-    MergedSpot,
     SpotFilter,
     SpotModeGroup,
     SpotSource,
-    modeGroup,
+    activeFilterCount,
+    defaultSpotFilter,
     spotModeGroups,
     spotSourceLabels,
     spotSources,
@@ -27,7 +28,7 @@ const styles = StyleSheet.create((theme) => ({
         flexWrap: "wrap",
     },
     label: {
-        width: 74,
+        width: 84,
     },
 }));
 
@@ -79,24 +80,38 @@ export const FilterRow = <T extends string>({
     </Stack>
 );
 
-export type SpotFiltersProps = {
-    // The unfiltered feed, so the band chips only offer bands something is actually spotted on.
-    spots: MergedSpot[];
-};
+// Every band rather than the ones currently spotted: a chip row that changes shape with the feed
+// can't be set once and left alone, and the band nothing is on right now is the one an alert is for.
+const allBands = (Object.keys(bandRanges) as Band[]).sort(sortBands);
 
-export const SpotFilters = ({ spots }: SpotFiltersProps) => {
+// Free text, because the operator is typing calls they heard about rather than picking from a list.
+// Commas, spaces and newlines all separate — nobody should have to guess which.
+const parseWatch = (text: string): string[] =>
+    text
+        .toUpperCase()
+        .split(/[\s,;]+/)
+        .filter(Boolean);
+
+export const SpotFilters = () => {
     const settings = useSettings();
     const updateSetting = useStore((state) => state.updateSetting);
     const filter = settings.spotFilter;
     const patch = (values: Partial<SpotFilter>) => updateSetting("spotFilter", { ...filter, ...values });
 
-    const bands = ([...new Set(spots.map((spot) => spot.band))].filter(Boolean) as Band[]).sort(sortBands);
+    // Held separately from the setting so a half-typed callsign isn't parsed into the list on every
+    // keystroke — "G4A" would be a rule of its own for as long as it takes to finish typing.
+    const [watchText, setWatchText] = React.useState(filter.watch.join(" "));
     // SOTAwatch is listed but not offerable until the API approval lands; hiding it entirely would
     // just raise the same question every time somebody wonders where SOTA spots are.
     const sources = spotSources.filter((source) => source !== "sota" || !sotaApprovalPending);
+    const count = activeFilterCount(filter);
 
     return (
         <Stack gap="lg">
+            <Typography variant="subtitle">
+                Decides what the Spots page and the spots bar list, and what alerts fire for. Every row has to match; a
+                row with nothing picked matches everything.
+            </Typography>
             <FilterRow<SpotSource>
                 label="Networks"
                 options={[...sources]}
@@ -112,19 +127,24 @@ export const SpotFilters = ({ spots }: SpotFiltersProps) => {
                 colourFor={(programme) => programmeColours[programme]}
                 onToggle={(programme) => patch({ programmes: toggle(filter.programmes, programme) })}
             />
-            {bands.length > 1 && (
-                <FilterRow<Band>
-                    label="Band"
-                    options={bands}
-                    selected={filter.bands}
-                    onToggle={(band) => patch({ bands: toggle(filter.bands, band) })}
-                />
-            )}
+            <FilterRow<Band>
+                label="Band"
+                options={allBands}
+                selected={filter.bands}
+                onToggle={(band) => patch({ bands: toggle(filter.bands, band) })}
+            />
             <FilterRow<SpotModeGroup>
                 label="Mode"
                 options={[...spotModeGroups]}
                 selected={filter.modeGroups}
                 onToggle={(group) => patch({ modeGroups: toggle(filter.modeGroups, group) })}
+            />
+            <FilterRow<Continent>
+                label="Continent"
+                options={Object.keys(continents) as Continent[]}
+                selected={filter.continents}
+                labelFor={(continent) => continents[continent]}
+                onToggle={(continent) => patch({ continents: toggle(filter.continents, continent) })}
             />
             <FilterRow<string>
                 label="Show"
@@ -152,19 +172,32 @@ export const SpotFilters = ({ spots }: SpotFiltersProps) => {
             />
             <Stack direction="row" gap="lg">
                 <Typography variant="em" style={styles.label}>
-                    Search
+                    Callsigns
                 </Typography>
                 <View style={{ flexGrow: 1 }}>
                     <Input
-                        value={filter.search}
-                        placeholder="Callsign, reference or park"
-                        onChangeText={(search) => patch({ search })}
+                        value={watchText}
+                        placeholder="VK* ZL* G4XYZ — blank for any"
+                        onChangeText={setWatchText}
+                        onBlur={() => patch({ watch: parseWatch(watchText) })}
                     />
                 </View>
             </Stack>
+            <Typography variant="subtitle">
+                Spaces or commas between calls. * matches anything, so VK* is every VK station, portable or not.
+            </Typography>
+            {count > 0 && (
+                <View>
+                    <Button
+                        variant="outlined"
+                        text={`Clear filter (${count})`}
+                        onPress={() => {
+                            setWatchText("");
+                            updateSetting("spotFilter", { ...defaultSpotFilter, maxAgeMinutes: filter.maxAgeMinutes });
+                        }}
+                    />
+                </View>
+            )}
         </Stack>
     );
 };
-
-// Used by the modeGroup chips above and by the page's summary line.
-export const spotModeGroupOf = modeGroup;

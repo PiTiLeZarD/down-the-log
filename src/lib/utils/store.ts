@@ -18,10 +18,10 @@ import type { Session } from "./session";
 // Runtime import, but a deliberately light one: `spots/types` holds no reference data and pulls in
 // nothing but Luxon. The rest of the spots code hangs off ./spots/status, which does.
 import {
-    defaultSpotAlert,
     defaultSpotFilter,
+    migrateSpotFilter,
+    type LegacySpotAlert,
     type SelfSpotTarget,
-    type SpotAlert,
     type SpotFilter,
     type SpotSource,
 } from "./spots/types";
@@ -59,10 +59,10 @@ export type Settings = {
     lotwQslSince?: string;
     // Which spot networks are polled. SOTAwatch isn't among them yet — see utils/spots/sota.
     spotSources: SpotSource[];
+    // Drives the Spots page, the spots bar and the alerts alike — see utils/spots/types.
     spotFilter: SpotFilter;
-    // What the app may raise a notification for. Separate from `spotFilter` on purpose — see
-    // utils/spots/types.
-    spotAlerts: SpotAlert;
+    // Notify on new spots that pass `spotFilter`.
+    spotAlertsEnabled: boolean;
     // Where "Spot me" posts. Empty means the button asks before it can do anything.
     selfSpotTargets: SelfSpotTarget[];
     // ParksnPeaks account, needed only to post spots. The key is treated as a credential: on native
@@ -82,7 +82,7 @@ const defaultSettings: Settings = {
     showSpots: false,
     spotSources: ["pota", "pnp"],
     spotFilter: defaultSpotFilter,
-    spotAlerts: defaultSpotAlert,
+    spotAlertsEnabled: false,
     selfSpotTargets: [],
     imperial: false,
     datemonth: false,
@@ -118,13 +118,28 @@ const defaultSettings: Settings = {
 // `totaMap` was the Tiles page's list/map boolean. The poster replaced that map — it says which
 // tiles are covered, which is what the map was being read for — and the list is still the default,
 // so a stored `false` needs nothing carried over and a stored `true` has nowhere to go.
-const legacySettings = ["contestMode", "totaMap"];
+// `spotAlerts` was a second set of filter rules just for notifications; it's folded into
+// `spotFilter` below and only its on/off survives, as `spotAlertsEnabled`.
+const legacySettings = ["contestMode", "totaMap", "spotAlerts"];
 
-export const fixSettings = (settings: Partial<Settings>): Settings =>
-    ({
+// Rebuilt whenever it's there at all, so a filter stored before a field existed gets that field's
+// default rather than an `undefined` the filter code would trip over.
+const fixSpotSettings = (settings: Partial<Settings> & { spotAlerts?: LegacySpotAlert }): Partial<Settings> => {
+    if (!settings.spotFilter && !settings.spotAlerts) return settings;
+    return {
+        ...settings,
+        spotFilter: migrateSpotFilter(settings.spotFilter, settings.spotAlerts),
+        spotAlertsEnabled: settings.spotAlertsEnabled ?? !!settings.spotAlerts?.enabled,
+    };
+};
+
+export const fixSettings = (stored: Partial<Settings>): Settings => {
+    const settings = fixSpotSettings(stored);
+    return {
         ...Object.fromEntries(Object.entries(settings).filter(([k]) => !legacySettings.includes(k))),
         ...Object.fromEntries(Object.entries(defaultSettings).filter(([k, v]) => !(k in settings))),
-    }) as Settings;
+    } as Settings;
+};
 
 type DTLStoreProps = {
     qsos: QSO[];

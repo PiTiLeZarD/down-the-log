@@ -8,7 +8,7 @@ import { mergeSpots } from "./merge";
 import { fetchPnpSpots } from "./parksnpeaks";
 import { fetchPotaSpots } from "./pota";
 import { fetchSotaSpots } from "./sota";
-import { MergedSpot, Spot, SpotAlert, SpotSource, defaultSpotAlert } from "./types";
+import { MergedSpot, Spot, SpotFilter, SpotSource, defaultSpotFilter } from "./types";
 
 const REFRESH_MS = 60 * 1000;
 
@@ -31,9 +31,10 @@ export type SpotsState = {
 // One poller for the whole app: the bar on the log screen and the spots page read the same feed, and
 // two components mounting must not mean two requests a minute to every network.
 let state: SpotsState = { spots: [], bySource: {}, loading: false };
-let config: { sources: SpotSource[]; alert: SpotAlert } = {
+let config: { sources: SpotSource[]; alerts: boolean; filter: SpotFilter } = {
     sources: [],
-    alert: defaultSpotAlert,
+    alerts: false,
+    filter: defaultSpotFilter,
 };
 let timer: ReturnType<typeof setInterval> | undefined;
 let inFlight = false;
@@ -58,10 +59,10 @@ const announce = (spots: MergedSpot[]) => {
         seen = rememberSpots(new Set(), spots);
         return;
     }
-    if (config.alert.enabled) {
+    if (config.alerts) {
         // Read rather than subscribed to: the poller isn't a component, and `newOnly` is the only
         // thing here that wants the log at all.
-        const fresh = newSpotAlerts(spots, config.alert, useStore.getState().qsos, seen);
+        const fresh = newSpotAlerts(spots, config.filter, useStore.getState().qsos, seen);
         if (fresh.length > MAX_PER_POLL) void notify(spotAlertSummary(fresh.length));
         else fresh.forEach((spot) => void notify(spotAlertNotification(spot)));
     }
@@ -112,21 +113,21 @@ const stop = () => {
 // while the app is open, not while they happen to have the list in front of them — the whole point
 // is to be somewhere else. Without this the poller only runs behind the spots bar and the Spots
 // page, and alerts are silent from every other screen.
-const wanted = () => listeners.size > 0 || config.alert.enabled;
+const wanted = () => listeners.size > 0 || config.alerts;
 
 const sync = () => {
     if (wanted()) start();
     else stop();
 };
 
-export const configureSpots = (sources: SpotSource[], alert: SpotAlert) => {
+export const configureSpots = (sources: SpotSource[], alerts: boolean, filter: SpotFilter) => {
     const same = sources.length === config.sources.length && sources.every((s, i) => config.sources[i] === s);
-    // The alert rules only decide what a later poll announces, so a change to them alone needs no
-    // refetch — it just has to be in `config` before the next tick reads it, and the poller has to
-    // be running at all.
-    config = { ...config, alert };
+    // The switch and the filter only decide what a later poll announces, so a change to them alone
+    // needs no refetch — it just has to be in `config` before the next tick reads it, and the poller
+    // has to be running at all.
+    config = { ...config, alerts, filter };
     if (same) return sync();
-    config = { sources, alert };
+    config = { sources, alerts, filter };
     // A source that was just switched off keeps no cache: leaving its spots in `bySource` would put
     // them back on screen the moment it was switched on again, dated and wrong.
     const bySource = Object.fromEntries(
@@ -158,8 +159,9 @@ const getSnapshot = () => state;
 export const useSpotConfig = () => {
     const settings = useSettings();
     const sources = settings.spotSources;
-    const alert = settings.spotAlerts;
-    useEffect(() => configureSpots(sources, alert), [sources, alert]);
+    const alerts = settings.spotAlertsEnabled;
+    const filter = settings.spotFilter;
+    useEffect(() => configureSpots(sources, alerts, filter), [sources, alerts, filter]);
 };
 
 export const useSpots = (): SpotsState => {
