@@ -13,7 +13,7 @@ import { Typography } from "../ui/typography";
 import { useLocationError } from "../utils/use-location";
 import { useSettings } from "../utils/use-settings";
 import { Clocks } from "./clocks";
-import { SolarData } from "./solar-data";
+import { PropagationData } from "./propagation";
 import { Stack } from "./stack";
 
 const styles = StyleSheet.create((theme) => ({
@@ -37,8 +37,8 @@ export const LocationHeader = () => {
     // A denied or failed GPS fix used to leave "Looking for your location..." up for good. Say what
     // went wrong instead, and point at the setting that makes the app work without a fix at all.
     const locationError = useLocationError((state) => state.error);
-    // A QSO form is already tall on a phone; the solar chips push the fields off the first screen.
-    const hideSolar = usePathname().startsWith("/qso");
+    // A QSO form is already tall on a phone; the propagation chips push the fields off the first screen.
+    const hidePropagation = usePathname().startsWith("/qso");
 
     return (
         <View style={styles.header}>
@@ -70,7 +70,7 @@ export const LocationHeader = () => {
                 </View>
                 <View style={useWidthMatches("md") ? {} : { display: "none" }}>
                     <Stack direction="row">
-                        <SolarData />
+                        <PropagationData />
                         <Clocks />
                     </Stack>
                 </View>
@@ -80,7 +80,7 @@ export const LocationHeader = () => {
             </Stack>
             <View style={useWidthMatches(undefined, "md") ? {} : { display: "none" }}>
                 <Stack>
-                    {!hideSolar && <SolarData />}
+                    {!hidePropagation && <PropagationData />}
                     <Clocks />
                 </Stack>
             </View>
