@@ -104,8 +104,11 @@ export const AdifAPI: FileFormatAPI = {
         });
         records.push(current);
 
+        // Only chunks holding at least one real `<name:length>` field are records. What trails the last
+        // <EOR> is often something else entirely — LoTW ends its report with a bare <APP_LoTW_EOF> —
+        // and parsing it as a record only logged an error for an empty QSO.
         return records
-            .filter((record) => record.some((l) => Boolean(l)))
+            .filter((record) => /<[^:<>]+:\d+/.test(record.join("\n")))
             .map((record) => AdifAPI.toRecord(record.join("\n")));
     },
     generateFile: (qsos, header, massage = (r) => r) =>
