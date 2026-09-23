@@ -353,14 +353,19 @@ export const SpotMeButton = ({ compact }: SpotMeButtonProps) => {
 
 export type SpotStationButtonProps = { qso: QSO };
 
+// Past this the station has most likely moved on or gone QRT, so a spot would only send chasers to silence.
+const SPOT_STATION_MAX_AGE_MINUTES = 60;
+
 /**
  * Spots the station this QSO is with. Only rendered once they have a reference on the QSO: without
  * one there is nothing either network will take, and a button that can only explain itself by
- * failing is worse than no button on a screen this full.
+ * failing is worse than no button on a screen this full. Same goes for QSOs older than an hour.
  */
 export const SpotStationButton = ({ qso }: SpotStationButtonProps) => {
     const [open, setOpen] = React.useState<boolean>(false);
     if (!stationReferences(qso).length) return null;
+    const ageMinutes = -(qso.dateOff ?? qso.date).diffNow("minutes").minutes;
+    if (ageMinutes > SPOT_STATION_MAX_AGE_MINUTES) return null;
     return (
         <>
             <View>
