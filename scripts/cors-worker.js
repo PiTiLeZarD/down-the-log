@@ -1,13 +1,14 @@
 /**
- * CORS relay for ParksnPeaks spots and LoTW confirmations, deployed at cors.jadami.com.
+ * CORS relay for ParksnPeaks spots, LoTW confirmations and eQSL, deployed at cors.jadami.com.
  *
- * Neither parksnpeaks.org nor lotw.arrl.org serves `access-control-allow-origin`, so the web build
+ * None of parksnpeaks.org, lotw.arrl.org or eqsl.cc serves `access-control-allow-origin`, so the web build
  * and the Tauri shell can't call them from the webview. They come through here instead; iOS and
- * Android call both directly.
+ * Android call them directly.
  *
- * POSTs are forwarded too, which is what lets the web build spot itself on ParksnPeaks. The API key
- * travels in that POST's body and the LoTW password in the report's query string; both are passed
- * straight through and nothing is stored or logged here.
+ * POSTs are forwarded too, which is what lets the web build spot itself on ParksnPeaks and upload to
+ * eQSL. The ParksnPeaks key and the eQSL login travel in those POST bodies, and the LoTW and eQSL
+ * passwords in the download query strings; all are passed straight through and nothing is stored or
+ * logged here.
  *
  * Deploy (free tier is far more than enough for one request a minute):
  *
@@ -19,7 +20,7 @@
  * can send whatever Origin it likes.
  */
 
-const ALLOWED_HOSTS = ["parksnpeaks.org", "www.parksnpeaks.org", "lotw.arrl.org"];
+const ALLOWED_HOSTS = ["parksnpeaks.org", "www.parksnpeaks.org", "lotw.arrl.org", "eqsl.cc", "www.eqsl.cc"];
 
 const ALLOWED_ORIGINS = [
     // The web demo on GitHub Pages.
@@ -65,7 +66,10 @@ export default {
             method: request.method,
             headers: {
                 accept: request.headers.get("accept") || "application/json",
-                ...(request.method === "POST" ? { "content-type": "application/json" } : {}),
+                // The caller's own content type: ParksnPeaks takes JSON, but an eQSL upload is a form.
+                ...(request.method === "POST"
+                    ? { "content-type": request.headers.get("content-type") || "application/json" }
+                    : {}),
             },
             ...(request.method === "POST" ? { body: await request.text() } : {}),
         });

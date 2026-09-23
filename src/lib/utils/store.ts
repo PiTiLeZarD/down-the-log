@@ -13,6 +13,7 @@ import type { QSO } from "../components/qso";
 import type { Band } from "../data/bands";
 import { liftSubmode, type Mode } from "../data/modes";
 import type { HamQTHSettingsType } from "./hamqth";
+import type { EqslSettingsType } from "./eqsl";
 import type { LotwSettingsType } from "./lotw";
 import type { Session } from "./session";
 // Runtime import, but a deliberately light one: `spots/types` holds no reference data and pulls in
@@ -57,6 +58,11 @@ export type Settings = {
     // How far back the next confirmation pull asks, yyyy-MM-dd. Moved forward after a successful
     // one so a second pull isn't the operator's whole LoTW history again.
     lotwQslSince?: string;
+    // eQSL website account, used to pull the inbox and to upload. The password is kept in the device
+    // keychain on native, like the LoTW one — see utils/eqsl.
+    eqsl?: EqslSettingsType;
+    // How far back the next inbox pull asks, yyyyMMdd. Moved forward after a successful one.
+    eqslRcvdSince?: string;
     // Which spot networks are polled. SOTAwatch isn't among them yet — see utils/spots/sota.
     spotSources: SpotSource[];
     // Drives the Spots page, the spots bar and the alerts alike — see utils/spots/types.
@@ -273,6 +279,7 @@ const reviveDate = (key: string, value: unknown) =>
 const HAMQTH_PASSWORD_KEY = "dtl-hamqth-password";
 const PNP_API_KEY = "dtl-pnp-api-key";
 const LOTW_PASSWORD_KEY = "dtl-lotw-password";
+const EQSL_PASSWORD_KEY = "dtl-eqsl-password";
 
 const secureStorage: PersistStorage<UseStorePropsType> = {
     getItem: async (name) => {
@@ -290,6 +297,10 @@ const secureStorage: PersistStorage<UseStorePropsType> = {
         if (Platform.OS !== "web" && parsed.state?.settings?.lotw) {
             const password = await SecureStore.getItemAsync(LOTW_PASSWORD_KEY);
             if (password) parsed.state.settings.lotw.password = password;
+        }
+        if (Platform.OS !== "web" && parsed.state?.settings?.eqsl) {
+            const password = await SecureStore.getItemAsync(EQSL_PASSWORD_KEY);
+            if (password) parsed.state.settings.eqsl.password = password;
         }
         return parsed;
     },
@@ -325,6 +336,18 @@ const secureStorage: PersistStorage<UseStorePropsType> = {
                 },
             };
         }
+        if (Platform.OS !== "web" && value.state.settings?.eqsl) {
+            const { password, ...eqslRest } = value.state.settings.eqsl;
+            if (password) await SecureStore.setItemAsync(EQSL_PASSWORD_KEY, password);
+            else await SecureStore.deleteItemAsync(EQSL_PASSWORD_KEY);
+            toStore = {
+                ...toStore,
+                state: {
+                    ...toStore.state,
+                    settings: { ...toStore.state.settings, eqsl: eqslRest as EqslSettingsType },
+                },
+            };
+        }
         await AsyncStorage.setItem(name, JSON.stringify(toStore));
     },
     removeItem: async (name) => {
@@ -333,6 +356,7 @@ const secureStorage: PersistStorage<UseStorePropsType> = {
             await SecureStore.deleteItemAsync(HAMQTH_PASSWORD_KEY);
             await SecureStore.deleteItemAsync(PNP_API_KEY);
             await SecureStore.deleteItemAsync(LOTW_PASSWORD_KEY);
+            await SecureStore.deleteItemAsync(EQSL_PASSWORD_KEY);
         }
     },
 };

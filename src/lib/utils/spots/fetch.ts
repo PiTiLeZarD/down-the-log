@@ -4,10 +4,10 @@ import { Platform } from "react-native";
 export const TIMEOUT_MS = 12000;
 
 // POTA and SOTA both answer with `access-control-allow-origin: *`, so they're called directly on
-// every platform. ParksnPeaks and LoTW serve no CORS header at all, so anything running in a browser
-// engine — the web build and the Tauri shell alike — has to go through a relay.
+// every platform. ParksnPeaks, LoTW and eQSL serve no CORS header at all, so anything running in a
+// browser engine — the web build and the Tauri shell alike — has to go through a relay.
 //
-// This is scripts/cors-worker.js, deployed to Cloudflare. It only forwards to those two hosts, and
+// This is scripts/cors-worker.js, deployed to Cloudflare. It only forwards to those hosts, and
 // only for the app's own origins.
 const RELAY = "https://cors.jadami.com/?url=";
 

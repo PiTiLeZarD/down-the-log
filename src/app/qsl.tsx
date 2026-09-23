@@ -1,8 +1,7 @@
 import { DateTime } from "luxon";
 import { useState } from "react";
 import { View } from "react-native";
-import { showImportError, styles } from "../lib/components/adif/import";
-import { Dropzone, FileWithPreview } from "../lib/components/dropzone";
+import { showImportError } from "../lib/components/adif/import";
 import { PageLayout } from "../lib/components/page-layout";
 import { QSL_IGNORED, UnmatchedQsl, confirmQso, qslRecordKey } from "../lib/components/qsl";
 import { UnmatchedQsls } from "../lib/components/qsl/unmatched-qsls";
@@ -17,11 +16,14 @@ import { Typography } from "../lib/ui/typography";
 import { showDialog } from "../lib/ui/dialog";
 import { useSettings } from "../lib/utils/use-settings";
 import { LotwError, LotwStatus, fetchLotwConfirmations, nextQslSince } from "../lib/utils/lotw";
+import { EqslError, EqslStatus, fetchEqslConfirmations, nextRcvdSince, uploadToEqsl } from "../lib/utils/eqsl";
 
 const Qsl = () => {
     const qsos = useQsos();
     const [unmatched, setUnmatched] = useState<UnmatchedQsl[]>([]);
     const [lotwStatus, setLotwStatus] = useState<LotwStatus>("idle");
+    const [eqslStatus, setEqslStatus] = useState<EqslStatus>("idle");
+    const [eqslUploading, setEqslUploading] = useState(false);
     const log = useStore((state) => state.log);
     const updateSetting = useStore((state) => state.updateSetting);
     const today = DateTime.local().toFormat("yyyyMMdd");
@@ -35,18 +37,19 @@ const Qsl = () => {
     ).date;
     // A pull that has already happened moves the window forward; until then it's the whole log.
     const qslSince = settings.lotwQslSince || fromDate.toFormat("yyyy-MM-dd");
+    const rcvdSince = settings.eqslRcvdSince || fromDate.toFormat("yyyyMMdd");
 
     // The download is the only part of the upload we can see happen, so it is what ticks the QSOs
     // off — same order as the TOTA activation flow. Marking first meant a download the browser
     // refused left the log permanently claiming those QSOs were sent, with no way to clear the flag.
-    const handleQslDownload = (type: "lotw" | "eqsl") => () => {
-        const toSend = qsos.filter((q) => (type === "lotw" ? !q.lotw_sent : !q.eqsl_sent));
+    const handleQslDownload = () => {
+        const toSend = qsos.filter((q) => !q.lotw_sent);
         try {
-            downloadQsos(`${today}_${type}.adif`, toSend);
+            downloadQsos(`${today}_lotw.adif`, toSend);
         } catch (e) {
             showDialog({
                 title: "Download failed",
-                text: `The ${type.toUpperCase()} file could not be created, so nothing has been marked as sent: ${
+                text: `The LoTW file could not be created, so nothing has been marked as sent: ${
                     e instanceof Error ? e.message : String(e)
                 }`,
                 icon: "error",
@@ -54,18 +57,16 @@ const Qsl = () => {
             });
             return;
         }
-        log(toSend.map((q): QSO => ({ ...q, ...(type === "lotw" ? { lotw_sent: true } : { eqsl_sent: true }) })));
+        log(toSend.map((q): QSO => ({ ...q, lotw_sent: true })));
     };
 
-    // One importer for both ways a report arrives: a file the operator dropped, and the one pulled
-    // straight from LoTW. `name` only picks the parser and names the error, so the pulled report
-    // passes the extension it is rather than a file that exists.
+    // One importer for both services' reports. `name` only picks the parser and names the error, so
+    // each pulled report passes the extension it is rather than a file that exists.
     const importQslContent = (content: string, name: string) => {
         try {
-            // Read the log as it is now, not as it was when this page rendered: FileReader
-            // callbacks land one after the other, so dropping two files at once used to
-            // have the second one match against pre-import QSOs and overwrite the first
-            // import's confirmations.
+            // Read the log as it is now, not as it was when this page rendered: a pull lands
+            // after an await, and matching against pre-import QSOs overwrote the confirmations
+            // an earlier import had just written.
             const currentQsos = useStore.getState().qsos;
             const resolutions = useStore.getState().qslResolutions;
 
@@ -159,22 +160,6 @@ const Qsl = () => {
         }
     };
 
-    const handleQSLImport = (files: FileWithPreview[]) => {
-        files.forEach((file) => {
-            const fr = new FileReader();
-            fr.onerror = () => showImportError(file.name, fr.error);
-            fr.onload = () => {
-                if (!fr.result) return;
-                importQslContent(
-                    typeof fr.result == "string" ? fr.result : new TextDecoder("utf-8").decode(fr.result),
-                    file.name,
-                );
-            };
-
-            fr.readAsText(file);
-        });
-    };
-
     // The window only moves on a clean import. A report that arrived but wouldn't parse leaves it
     // where it was, so the next pull covers the same period again rather than skipping it.
     const handleLotwFetch = async () => {
@@ -205,14 +190,87 @@ const Qsl = () => {
         }
     };
 
+    // Same shape as the LoTW pull. An empty inbox is a clean import of nothing, so it moves the window.
+    const handleEqslFetch = async () => {
+        const eqsl = settings.eqsl;
+        if (!eqsl?.user || !eqsl?.password) return;
+        setEqslStatus("loading");
+        const asked = nextRcvdSince();
+        try {
+            const content = await fetchEqslConfirmations({ ...eqsl, since: rcvdSince });
+            if (!content) {
+                updateSetting("eqslRcvdSince", asked);
+                setEqslStatus("done");
+                showDialog({
+                    title: "eQSL",
+                    text: `Nothing new in your eQSL inbox since ${rcvdSince}.`,
+                    icon: "info",
+                    confirmButtonText: "Ok",
+                });
+                return;
+            }
+            const imported = importQslContent(content, "eqsl.adi");
+            if (imported) updateSetting("eqslRcvdSince", asked);
+            setEqslStatus(imported ? "done" : "error");
+        } catch (e) {
+            setEqslStatus(e instanceof EqslError ? e.status : "error");
+            showDialog({
+                title: "eQSL",
+                text: e instanceof Error ? e.message : String(e),
+                icon: "error",
+                confirmButtonText: "Ok",
+            });
+        }
+    };
+
+    // QSOs are only marked sent once eQSL has said it holds them, batch by batch, so a failure part way
+    // through keeps what already landed and leaves the rest for next time.
+    const handleEqslUpload = async () => {
+        const eqsl = settings.eqsl;
+        if (!eqsl?.user || !eqsl?.password) return;
+        const toSend = qsos.filter((q) => !q.eqsl_sent);
+        if (!toSend.length) return;
+        setEqslUploading(true);
+        const markSent = (sent: QSO[]) => {
+            // The log as it is now: a QSO edited while the upload ran keeps the edit.
+            const ids = new Set(sent.map((q) => q.id));
+            log(useStore.getState().qsos.filter((q) => ids.has(q.id)).map((q) => ({ ...q, eqsl_sent: true })));
+        };
+        try {
+            const result = await uploadToEqsl(toSend, eqsl, markSent);
+            showDialog({
+                title: result.held ? "Partly uploaded" : "Done!",
+                text: [
+                    [
+                        `${result.added} added`,
+                        ...(result.duplicates ? [`${result.duplicates} already on eQSL`] : []),
+                        ...(result.held ? [`${result.held} held back and not marked as sent`] : []),
+                    ].join(", ") + ` out of ${toSend.length} QSOs.`,
+                    ...result.problems.slice(0, 5),
+                    ...(result.problems.length > 5 ? [`…and ${result.problems.length - 5} more`] : []),
+                ].join("\n"),
+                icon: result.held ? "warning" : "success",
+                confirmButtonText: "Ok",
+            });
+        } catch (e) {
+            showDialog({
+                title: "eQSL",
+                text: e instanceof Error ? e.message : String(e),
+                icon: "error",
+                confirmButtonText: "Ok",
+            });
+        } finally {
+            setEqslUploading(false);
+        }
+    };
+
     const lotwConfigured = !!settings.lotw?.user && !!settings.lotw?.password;
+    const eqslConfigured = !!settings.eqsl?.user && !!settings.eqsl?.password;
+    const eqslUnsent = qsos.filter((q) => !q.eqsl_sent).length;
 
     return (
         <PageLayout title="QSLs">
             <Stack>
-                <Typography>
-                    You can download all qsos that aren't marked as sent for either lotw or eqsl here
-                </Typography>
                 <TabsLayout tabs={["LoTW", "eQSL"]}>
                     <Stack gap="xxl">
                         <Alert severity="info">
@@ -222,7 +280,7 @@ const Qsl = () => {
                             startIcon="download-outline"
                             text={`LoTW file: ${qsos.filter((q) => !q.lotw_sent).length} qsos`}
                             variant="outlined"
-                            onPress={handleQslDownload("lotw")}
+                            onPress={handleQslDownload}
                         />
                         <Stack direction="row">
                             <Typography>You will need to sign your QSOs using LoTW's tqsl app</Typography>
@@ -252,86 +310,52 @@ const Qsl = () => {
                                 </Typography>
                             </Stack>
                         ) : (
-                            <Stack>
-                                <Alert severity="info">
-                                    <Typography>
-                                        Add your LoTW user name and password in Settings &gt; API&apos;s to pull
-                                        confirmations straight into the log.
-                                    </Typography>
-                                </Alert>
-                                <Stack direction="row">
-                                    <Typography>Or download the file by hand</Typography>
-                                    <View>
-                                        <Button
-                                            variant="chip"
-                                            colour="grey"
-                                            text="Get from LoTW"
-                                            url="https://lotw.arrl.org/lotwuser/qsos?qsoscmd=adif"
-                                        />
-                                    </View>
-                                </Stack>
-                                <Typography variant="subtitle">
-                                    Leave all fields as is and put the date "{fromDate.toFormat("yyyy-MM-dd")}", then
-                                    drop the file on the eQSL tab's upload box — it reads LoTW reports too.
+                            <Alert severity="info">
+                                <Typography>
+                                    Add your LoTW user name and password in Settings &gt; API&apos;s to pull
+                                    confirmations straight into the log.
                                 </Typography>
-                            </Stack>
+                            </Alert>
                         )}
                     </Stack>
-                    <Stack>
-                        <Alert severity="info">
-                            <Typography>QSOs will be altered and marked as sent</Typography>
-                        </Alert>
-
-                        <Button
-                            startIcon="download-outline"
-                            text={`eQSL file: ${qsos.filter((q) => !q.eqsl_sent).length} qsos`}
-                            variant="outlined"
-                            onPress={handleQslDownload("eqsl")}
-                        />
-                        <Stack direction="row">
-                            <Typography>You will need to upload this file to eQSL directly</Typography>
-                            <View>
-                                <Button
-                                    url="https://eqsl.cc/qslcard/EnterADIF.cfm"
-                                    variant="chip"
-                                    colour="grey"
-                                    text="Click here to upload to eQSL"
-                                />
-                            </View>
-                        </Stack>
-
-                        <Typography variant="h3">Getting confirmations</Typography>
-                        <Stack direction="row">
-                            <Typography>Click on the link to get eQSL's qsl confirmations</Typography>
-                            <View>
-                                <Button
-                                    text="Get from eQSL"
-                                    variant="chip"
-                                    colour="grey"
-                                    url={`https://www.eQSL.cc/qslcard/DownloadInBox.cfm?RcvdSince=${fromDate.toFormat(
-                                        "yyyyMMdd",
-                                    )}`}
-                                />
-                            </View>
-                        </Stack>
-                        <Typography variant="subtitle">Get the Adif file.</Typography>
-
-                        <Typography>
-                            Upload the exported file here, it'll be matched and automatically update the records
-                            appropriately. A LoTW report downloaded by hand works here too.
-                        </Typography>
-
-                        <Dropzone onAcceptedFiles={handleQSLImport} style={styles.dropzone}>
+                    {eqslConfigured ? (
+                        <Stack gap="xxl">
                             <Stack>
-                                <Typography style={styles.dropzoneText} variant="h2">
-                                    eQSL File upload
-                                </Typography>
-                                <Typography variant="subtitle" style={{ textAlign: "center" }}>
-                                    Click or drop a file here
+                                <Button
+                                    startIcon="cloud-upload-outline"
+                                    text={eqslUploading ? "Uploading to eQSL…" : `Upload to eQSL: ${eqslUnsent} qsos`}
+                                    variant="outlined"
+                                    disabled={eqslUploading || !eqslUnsent}
+                                    onPress={handleEqslUpload}
+                                />
+                                <Typography variant="subtitle">
+                                    Sends every QSO not yet marked as sent straight to eQSL, and marks the ones it
+                                    accepts.
                                 </Typography>
                             </Stack>
-                        </Dropzone>
-                    </Stack>
+
+                            <Typography variant="h3">Getting confirmations</Typography>
+                            <Stack>
+                                <Button
+                                    startIcon="cloud-download-outline"
+                                    text={eqslStatus === "loading" ? "Loading from eQSL…" : "Load from eQSL"}
+                                    variant="outlined"
+                                    disabled={eqslStatus === "loading"}
+                                    onPress={handleEqslFetch}
+                                />
+                                <Typography variant="subtitle">
+                                    Asks eQSL for cards received since {rcvdSince} and applies them to the log.
+                                </Typography>
+                            </Stack>
+                        </Stack>
+                    ) : (
+                        <Alert severity="info">
+                            <Typography>
+                                Add your eQSL user name and password in Settings &gt; API&apos;s to upload and pull
+                                confirmations in one click.
+                            </Typography>
+                        </Alert>
+                    )}
                 </TabsLayout>
 
                 {unmatched.length > 0 && <UnmatchedQsls unmatched={unmatched} onClear={() => setUnmatched([])} />}

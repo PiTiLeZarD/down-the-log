@@ -1,5 +1,5 @@
 import { DateTime, Settings } from "luxon";
-import { describe, expect, test } from "vitest";
+import { describe, expect, test, vi } from "vitest";
 import { QSO } from "../src/lib/components/qso";
 import { getFileApiFromFilename } from "../src/lib/utils/file-format";
 import { AdifAPI } from "../src/lib/utils/file-format/adif";
@@ -393,6 +393,15 @@ describe("ADIF", () => {
             "VK4ALE",
             "G4ABC",
         ]);
+    });
+
+    test("ignores a trailing tag that isn't a record, like LoTW's end marker", () => {
+        const error = vi.spyOn(console, "error").mockImplementation(() => {});
+        expect(AdifAPI.parseFile("<EOH>\n<CALL:6>VK4ALE\n<EOR>\n<APP_LoTW_EOF>\n").map((r) => r.call)).toEqual([
+            "VK4ALE",
+        ]);
+        expect(error).not.toHaveBeenCalled();
+        error.mockRestore();
     });
 
     test("reads a record spread over several lines", () => {

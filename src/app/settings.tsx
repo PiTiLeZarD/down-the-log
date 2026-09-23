@@ -178,8 +178,9 @@ const Settings = () => {
                         services.swpc.noaa.gov, and map tiles to tile.openstreetmap.org — which sees the areas you
                         look at. Spotting yourself sends your callsign, reference, frequency, mode and comment to
                         whichever of those two networks you pick, and your ParksnPeaks key with it. Loading confirmations sends
-                        your LoTW user name and password to lotw.arrl.org, through cors.jadami.com on web and
-                        desktop. That relay only passes requests through and keeps nothing — its code is in
+                        your LoTW user name and password to lotw.arrl.org, and your eQSL ones to eqsl.cc, through
+                        cors.jadami.com on web and desktop. Uploading to eQSL sends it the QSOs not yet marked as
+                        sent. That relay only passes requests through and keeps nothing — its code is in
                         scripts/cors-worker.js.
                     </Typography>
                     <Typography underline>HamQTH:</Typography>
@@ -244,6 +245,44 @@ const Settings = () => {
                                 updateSetting("lotw", {
                                     ...(settings.lotw || { user: "", password: "" }),
                                     password: v,
+                                })
+                            }
+                        />
+                    </Stack>
+                    <Typography underline>eQSL:</Typography>
+                    <Typography variant="subtitle">
+                        Your eqsl.cc login, used to upload QSOs and pull confirmations from the QSLs page. The QTH
+                        nickname is only needed if your account holds more than one QTH for this callsign. The
+                        password is kept in the device keychain on iOS and Android.
+                    </Typography>
+                    <Stack direction="row">
+                        <Typography>User:</Typography>
+                        <Input
+                            value={settings.eqsl?.user || ""}
+                            onChangeText={(v) =>
+                                updateSetting("eqsl", { ...(settings.eqsl || { user: "", password: "" }), user: v })
+                            }
+                        />
+                        <Typography>Password:</Typography>
+                        <Input
+                            password
+                            value={settings.eqsl?.password || ""}
+                            onChangeText={(v) =>
+                                updateSetting("eqsl", {
+                                    ...(settings.eqsl || { user: "", password: "" }),
+                                    password: v,
+                                })
+                            }
+                        />
+                    </Stack>
+                    <Stack direction="row">
+                        <Typography>QTH nickname:</Typography>
+                        <Input
+                            value={settings.eqsl?.qthNickname || ""}
+                            onChangeText={(v) =>
+                                updateSetting("eqsl", {
+                                    ...(settings.eqsl || { user: "", password: "" }),
+                                    qthNickname: v === "" ? undefined : v,
                                 })
                             }
                         />

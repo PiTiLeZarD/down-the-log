@@ -73,7 +73,7 @@ const classify = (body: string): LotwStatus => {
 };
 
 /**
- * The raw ADIF report, ready for the same importer a dropped file goes through. Throws a
+ * The raw ADIF report, ready for the same importer the eQSL inbox goes through. Throws a
  * `LotwError` carrying a status the UI can phrase, rather than a bare network error.
  */
 export const fetchLotwConfirmations = async ({
