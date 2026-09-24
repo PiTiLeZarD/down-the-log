@@ -1,6 +1,8 @@
 import { Platform, View } from "react-native";
 import { StyleSheet } from "react-native-unistyles";
 import { getFileApiFromFilename, record2qso } from "../../utils/file-format";
+import { SESSIONS_HEADER_FIELD } from "../../utils/file-format/common";
+import { parseSessions, sessionsToRestore } from "../../utils/session";
 import { useStore } from "../../utils/store";
 import { Typography } from "../../ui/typography";
 import { showDialog } from "../../ui/dialog";
@@ -41,6 +43,7 @@ export const showImportError = (filename: string, e: unknown) =>
 export const Import = () => {
     const qsos = useQsos();
     const log = useStore((state) => state.log);
+    const adoptSessions = useStore((state) => state.adoptSessions);
     const currentLocation = useStore((state) => state.currentLocation);
     const settings = useSettings();
 
@@ -54,7 +57,8 @@ export const Import = () => {
                     const content =
                         typeof fr.result == "string" ? fr.result : new TextDecoder("utf-8").decode(fr.result);
 
-                    const toImport: QSO[] = getFileApiFromFilename(file.name)
+                    const api = getFileApiFromFilename(file.name);
+                    const toImport: QSO[] = api
                         .parseFile(content)
                         .map((r) => record2qso(r))
                         // A record with no callsign is not a QSO: importing one puts a blank row in
@@ -72,10 +76,20 @@ export const Import = () => {
                             }
                             return q;
                         });
+                    // Read from the store now, not the render: several files dropped at once each
+                    // land here in turn, and the earlier ones may have restored sessions already.
+                    const restored = sessionsToRestore(
+                        parseSessions(api.parseHeader?.(content)[SESSIONS_HEADER_FIELD]),
+                        toImport,
+                        useStore.getState().sessions,
+                    );
+                    if (restored.length) adoptSessions(restored, []);
                     log(toImport);
                     showDialog({
                         title: "Done!",
-                        text: `All ${toImport.length} records have been imported!`,
+                        text:
+                            `All ${toImport.length} records have been imported!` +
+                            (restored.length ? ` ${restored.length} sessions came back with them.` : ""),
                         icon: "success",
                         confirmButtonText: "Ok",
                     });

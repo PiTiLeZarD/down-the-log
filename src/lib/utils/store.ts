@@ -253,8 +253,10 @@ const StoreActions: DTLStoreActionsMutatorProps = (set) => ({
     adoptSessions: (sessions, qsos) =>
         set((state) => {
             const adopted = new Set(qsos.map((q) => q.id));
+            // Never two sessions under one id: every lookup finds the first and the other is a ghost.
+            const known = new Set(state.sessions.map((s) => s.id));
             return {
-                sessions: [...state.sessions, ...sessions],
+                sessions: [...state.sessions, ...sessions.filter((s) => !known.has(s.id))],
                 qsos: [...state.qsos.filter((q) => !adopted.has(q.id)), ...qsos],
             };
         }),

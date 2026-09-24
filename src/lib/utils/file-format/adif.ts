@@ -45,6 +45,23 @@ const headerToAdif = (header: Header) =>
         "",
     ].join("\n");
 
+// Everything before <EOH> is the header, free text around its fields included. No <EOH> means no
+// header at all: the file starts on its first record.
+const parseAdifHeader = (fileContent: string): Honeypot => {
+    const eoh = fileContent.toUpperCase().indexOf("<EOH>");
+    if (eoh === -1) return {};
+    const fields: Honeypot = {};
+    let remaining = fileContent.slice(0, eoh).trim();
+    while (remaining.length) {
+        const field = parseAdifField(remaining);
+        if (field.length === 0) break;
+        const [rest, tagName, value] = field;
+        fields[tagName] = value;
+        remaining = rest;
+    }
+    return fields;
+};
+
 export const AdifAPI: FileFormatAPI = {
     toRecord: (from) => {
         const record = {
@@ -111,6 +128,7 @@ export const AdifAPI: FileFormatAPI = {
             .filter((record) => /<[^:<>]+:\d+/.test(record.join("\n")))
             .map((record) => AdifAPI.toRecord(record.join("\n")));
     },
+    parseHeader: parseAdifHeader,
     generateFile: (qsos, header, massage = (r) => r) =>
         [headerToAdif(header), ...qsos.map((q) => AdifAPI.fromRecord(massage(qso2record(q))))].join("\n"),
 };

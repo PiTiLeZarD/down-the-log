@@ -7,6 +7,7 @@ import {
     activationProgress,
     backfillSessions,
     newSession,
+    parseSessions,
     resumedSession,
     sessionChipLabel,
     sessionDupeKey,
@@ -15,6 +16,7 @@ import {
     sessionLabels,
     sessionName,
     sessionQsos,
+    sessionsToRestore,
     templateRefField,
     templates,
 } from "../src/lib/utils/session";
@@ -219,12 +221,45 @@ describe("backfillSessions", () => {
     });
 
     test("leaves QSOs that already belong to a session alone", () => {
-        const { sessions, qsos: updated } = backfillSessions([
-            parkQso("a", "2024-01-01T09:00:00Z", { sessionId: "existing" }),
-            parkQso("b", "2024-01-01T11:00:00Z", { sessionId: "existing" }),
-        ]);
+        const existing = { ...newSession("pota"), id: "existing" };
+        const { sessions, qsos: updated } = backfillSessions(
+            [
+                parkQso("a", "2024-01-01T09:00:00Z", { sessionId: "existing" }),
+                parkQso("b", "2024-01-01T11:00:00Z", { sessionId: "existing" }),
+            ],
+            [existing],
+        );
         expect(sessions).toHaveLength(0);
         expect(updated).toHaveLength(0);
+    });
+
+    test("rebuilds a session the QSOs point at but the store no longer has, under the same id", () => {
+        const qsos = [
+            parkQso("b", "2024-01-01T11:00:00Z", { sessionId: "gone" }),
+            parkQso("a", "2024-01-01T09:00:00Z", { sessionId: "gone" }),
+        ];
+        const { sessions, qsos: updated } = backfillSessions(qsos, []);
+
+        expect(sessions).toHaveLength(1);
+        expect(sessions[0].id).toBe("gone");
+        expect(sessions[0].template).toBe("pota");
+        expect(sessions[0].startedAt.toISO()).toBe(at("2024-01-01T09:00:00Z").toISO());
+        expect(sessions[0].endedAt?.toISO()).toBe(at("2024-01-01T11:00:00Z").toISO());
+        expect(sessions[0].defaults).toEqual({ myPota: "VK-0001", power: 10, myRig: "IC-705" });
+        // Same objects back: nothing about them changed.
+        expect(updated).toHaveLength(2);
+        expect(updated.every((q) => qsos.includes(q))).toBe(true);
+    });
+
+    test("rebuilds a dangling session with no reference as casual, or contest when it has a contest id", () => {
+        const { sessions } = backfillSessions([
+            qso({ id: "a", sessionId: "desk", power: 100 }),
+            qso({ id: "b", sessionId: "cq", contestId: "CQ-WW-SSB" }),
+        ]);
+        expect(Object.fromEntries(sessions.map((s) => [s.id, s.template]))).toEqual({
+            desk: "casual",
+            cq: "contest",
+        });
     });
 
     test("claims a QSO once when it counts towards two programs", () => {
@@ -250,5 +285,70 @@ describe("backfillSessions", () => {
         const { sessions, qsos: updated } = backfillSessions([qso({ id: "a" })]);
         expect(sessions).toHaveLength(0);
         expect(updated).toHaveLength(0);
+    });
+});
+
+describe("parseSessions", () => {
+    const valid = { id: "s1", template: "pota", startedAt: "2024-01-01T09:00:00.000Z", name: "Park day" };
+
+    test("fills what the file left out from the template", () => {
+        const [session] = parseSessions(JSON.stringify([valid]));
+        expect(session.id).toBe("s1");
+        expect(session.name).toBe("Park day");
+        expect(session.fields).toEqual(templates.pota.fields);
+        expect(session.defaults).toEqual({});
+        expect(session.startedAt.toISO()).toBe(at("2024-01-01T09:00:00Z").toISO());
+        expect(session.endedAt).toBeUndefined();
+    });
+
+    test("drops sessions that don't hold together and keeps the rest", () => {
+        const sessions = parseSessions(
+            JSON.stringify([
+                valid,
+                { ...valid, id: "" },
+                { ...valid, id: "bad-template", template: "nope" },
+                { ...valid, id: "bad-date", startedAt: "yesterday" },
+                "junk",
+                null,
+            ]),
+        );
+        expect(sessions.map((s) => s.id)).toEqual(["s1"]);
+    });
+
+    test("reads nothing out of something that isn't a list of sessions", () => {
+        expect(parseSessions(undefined)).toEqual([]);
+        expect(parseSessions("{not json")).toEqual([]);
+        expect(parseSessions(JSON.stringify({ id: "s1" }))).toEqual([]);
+    });
+});
+
+describe("sessionsToRestore", () => {
+    const session = (id: string, fields: Partial<Session> = {}): Session => ({
+        ...newSession("casual"),
+        id,
+        startedAt: at("2024-01-01T09:00:00Z"),
+        ...fields,
+    });
+
+    test("skips the sessions the store already has", () => {
+        const restored = sessionsToRestore(
+            [session("known"), session("new")].map((s) => ({ ...s, endedAt: at("2024-01-01T10:00:00Z") })),
+            [],
+            [session("known", { name: "edited since" })],
+        );
+        expect(restored.map((s) => s.id)).toEqual(["new"]);
+    });
+
+    test("closes a session exported while it ran at its last QSO", () => {
+        const [restored] = sessionsToRestore(
+            [session("running")],
+            [
+                qso({ id: "a", sessionId: "running", date: at("2024-01-01T11:00:00Z") }),
+                qso({ id: "b", sessionId: "running", date: at("2024-01-01T10:00:00Z") }),
+                qso({ id: "c", sessionId: "other", date: at("2024-01-02T10:00:00Z") }),
+            ],
+            [],
+        );
+        expect(restored.endedAt?.toISO()).toBe(at("2024-01-01T11:00:00Z").toISO());
     });
 });

@@ -10,9 +10,10 @@ import { useQsos } from "../qso";
 // gets nothing from them until it's been through here.
 export const BackfillButton = () => {
     const qsos = useQsos();
+    const sessions = useStore((state) => state.sessions);
     const adoptSessions = useStore((state) => state.adoptSessions);
     // The whole log walked per event; worth memoising, since it recomputes on any press on the page.
-    const pending = React.useMemo(() => backfillSessions(qsos), [qsos]);
+    const pending = React.useMemo(() => backfillSessions(qsos, sessions), [qsos, sessions]);
 
     if (!pending.sessions.length) return null;
 
@@ -20,7 +21,7 @@ export const BackfillButton = () => {
         const confirmed = await showDialog({
             title: `Make ${pending.sessions.length} sessions?`,
             icon: "question",
-            text: `${pending.qsos.length} QSOs from past activations aren't in a session yet. Each activation becomes one, dated when it happened. Nothing is logged or changed beyond that.`,
+            text: `${pending.qsos.length} QSOs from past activations aren't in a session yet, or belong to one this log no longer has. Each activation becomes one, dated when it happened. Nothing is logged or changed beyond that.`,
             confirmButtonText: "Make them",
             cancelButtonText: "Cancel",
         });

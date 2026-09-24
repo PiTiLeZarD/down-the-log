@@ -190,6 +190,14 @@ export const activationProgress = (session: Session, qsos: QSO[]): SessionProgre
     return { count: sessionsQsos.length, target: targets[event], status: rules[event](sessionsQsos) };
 };
 
+// What a session rebuilt from its QSOs must have been: the program whose reference they carry, a
+// contest if they carry a contest id, and a casual outing otherwise.
+const inferTemplate = (qsos: QSO[]): SessionTemplate =>
+    sessionTemplates.find((template) => {
+        const refField = templateRefField(template);
+        return refField && qsos.some((q) => q[refField]);
+    }) || (qsos.some((q) => q.contestId) ? "contest" : "casual");
+
 /**
  * Every past activation that predates sessions, turned into one.
  *
@@ -198,14 +206,44 @@ export const activationProgress = (session: Session, qsos: QSO[]): SessionProgre
  * and gives each one a real session, so it shows up on the sessions list and can be exported or
  * resumed like anything logged since.
  *
- * A QSO already carrying a `sessionId` is left alone, and one that qualifies under two programs at
- * once — a park inside a WWFF reference — is claimed by the first template that sees it rather than
- * split across two sessions. Nothing is written here: the caller gets the new sessions and the QSOs
- * to store back, so an empty result costs nothing.
+ * The same goes for QSOs whose `sessionId` names a session the store no longer has. ADIF carries
+ * the id on every QSO but not the session itself, so erasing the log and importing it back — or
+ * importing it on another device — leaves them pointing at nothing. Those get their session back
+ * under the id they already carry, so nothing about the QSOs needs to change.
+ *
+ * A QSO in a known session is left alone, and one that qualifies under two programs at once — a
+ * park inside a WWFF reference — is claimed by the first template that sees it rather than split
+ * across two sessions. Nothing is written here: the caller gets the new sessions and the QSOs to
+ * store back, so an empty result costs nothing.
  */
-export const backfillSessions = (qsos: QSO[]): { sessions: Session[]; qsos: QSO[] } => {
+export const backfillSessions = (
+    qsos: QSO[],
+    known: Session[] = [],
+): { sessions: Session[]; qsos: QSO[] } => {
     const claimedBy = new Map<string, string>();
+    const knownIds = new Set(known.map((s) => s.id));
     const sessions: Session[] = [];
+
+    const dangling: Record<string, QSO[]> = {};
+    for (const q of qsos)
+        if (q.sessionId && !knownIds.has(q.sessionId)) (dangling[q.sessionId] ||= []).push(q);
+
+    for (const [id, group] of Object.entries(dangling)) {
+        const sorted = [...group].sort((q1, q2) => q1.date.toMillis() - q2.date.toMillis());
+        const template = inferTemplate(sorted);
+        const defaults = Object.fromEntries(
+            templates[template].fields
+                .map((field) => [field, sorted.find((q) => q[field] !== undefined && q[field] !== "")?.[field]])
+                .filter(([, value]) => value !== undefined),
+        ) as Partial<QSO>;
+        sessions.push({
+            ...newSession(template, defaults),
+            id,
+            startedAt: sorted[0].date,
+            endedAt: sorted[sorted.length - 1].date,
+        });
+        sorted.forEach((q) => claimedBy.set(q.id, id));
+    }
 
     for (const template of sessionTemplates) {
         const { event, fields } = templates[template];
@@ -239,8 +277,82 @@ export const backfillSessions = (qsos: QSO[]): { sessions: Session[]; qsos: QSO[
 
     return {
         sessions,
-        qsos: qsos.filter((q) => claimedBy.has(q.id)).map((q) => ({ ...q, sessionId: claimedBy.get(q.id) })),
+        // A QSO whose session was only rebuilt goes back as the same object, so storage has nothing
+        // to re-write for it.
+        qsos: qsos
+            .filter((q) => claimedBy.has(q.id))
+            .map((q) => (q.sessionId === claimedBy.get(q.id) ? q : { ...q, sessionId: claimedBy.get(q.id) })),
     };
+};
+
+/**
+ * Sessions as they ride in an export's header. ADIF has no notion of them — each QSO only carries
+ * the id of the one it was logged in — so without this an export read back in has QSOs pointing at
+ * nothing, and the name, template and settings the operator gave the outing are gone for good. Only
+ * the sessions the exported QSOs belong to go in, so a filtered export doesn't carry the whole list.
+ */
+export const serialiseSessions = (sessions: Session[], qsos: QSO[]): string | undefined => {
+    const used = new Set(qsos.map((q) => q.sessionId).filter(Boolean));
+    const picked = sessions.filter((s) => used.has(s.id));
+    // DateTime serialises itself as ISO through its toJSON.
+    return picked.length ? JSON.stringify(picked) : undefined;
+};
+
+// The other half, and the defensive one: it reads whatever a file says. A session that doesn't hold
+// together — no id, a template this version doesn't know, a date that won't parse — is dropped
+// rather than let into the store, and the fields a hand-edited file left out come back from its
+// template. Anything unreadable at all is no sessions, never an import that fails.
+export const parseSessions = (json?: string): Session[] => {
+    if (!json) return [];
+    let raw: unknown;
+    try {
+        raw = JSON.parse(json);
+    } catch {
+        return [];
+    }
+    if (!Array.isArray(raw)) return [];
+
+    return raw.flatMap((entry): Session[] => {
+        if (!entry || typeof entry !== "object") return [];
+        const { id, template, startedAt, endedAt, ...rest } = entry as Record<string, unknown>;
+        if (typeof id !== "string" || !id || !(template as string in templates)) return [];
+        const started = typeof startedAt === "string" ? DateTime.fromISO(startedAt, { setZone: true }) : undefined;
+        if (!started?.isValid) return [];
+        const ended = typeof endedAt === "string" ? DateTime.fromISO(endedAt, { setZone: true }) : undefined;
+
+        const base = newSession(template as SessionTemplate);
+        return [
+            {
+                ...base,
+                ...(typeof rest.name === "string" ? { name: rest.name } : {}),
+                ...(rest.defaults && typeof rest.defaults === "object" ? { defaults: rest.defaults } : {}),
+                ...(Array.isArray(rest.fields) ? { fields: rest.fields as (keyof QSO)[] } : {}),
+                ...(typeof rest.quickLog === "boolean" ? { quickLog: rest.quickLog } : {}),
+                ...(typeof rest.plainRst === "boolean" ? { plainRst: rest.plainRst } : {}),
+                ...(rest.contest && typeof rest.contest === "object"
+                    ? { contest: { serial: 1, ...base.contest, ...(rest.contest as Partial<SessionContest>) } }
+                    : {}),
+                id,
+                startedAt: started,
+                ...(ended?.isValid ? { endedAt: ended } : {}),
+            },
+        ];
+    });
+};
+
+// What an import adds to the store: the file's sessions the store doesn't have yet — one it does have
+// is the same outing, and the copy in the store is the one the operator may have edited since. A
+// session exported while it ran comes in closed at its last QSO: it isn't running here, and the
+// sessions list would say it was forever.
+export const sessionsToRestore = (fromFile: Session[], qsos: QSO[], known: Session[]): Session[] => {
+    const knownIds = new Set(known.map((s) => s.id));
+    return fromFile
+        .filter((s) => !knownIds.has(s.id))
+        .map((s) => {
+            if (s.endedAt) return s;
+            const last = sessionQsos(qsos, s).reduce((latest, q) => (q.date > latest ? q.date : latest), s.startedAt);
+            return { ...s, endedAt: last };
+        });
 };
 
 // Band and mode are part of the key: the same station worked again on another band isn't a dupe in

@@ -16,13 +16,13 @@ export const Export = () => {
                     startIcon="download-outline"
                     text="Download (ADIF)"
                     variant="outlined"
-                    onPress={() => downloadQsos(`${today}_adif_export.adif`, filteredQsos)}
+                    onPress={() => downloadQsos(`${today}_adif_export.adif`, filteredQsos, "adif", undefined, true)}
                 />
                 <Button
                     startIcon="download-outline"
                     text="Download (ADX)"
                     variant="outlined"
-                    onPress={() => downloadQsos(`${today}_adx_export.adx`, filteredQsos, "adx")}
+                    onPress={() => downloadQsos(`${today}_adx_export.adx`, filteredQsos, "adx", undefined, true)}
                 />
             </Stack>
             <Stack direction="row">

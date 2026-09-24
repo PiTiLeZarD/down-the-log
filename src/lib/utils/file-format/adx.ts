@@ -65,6 +65,10 @@ export const AdxAPI: FileFormatAPI = {
             .join("")}</RECORD>`,
 
     parseFile: (fileContent) => collectRecords(parser.parse(fileContent)).map((n) => AdxAPI.toRecord(n)),
+    parseHeader: (fileContent) => {
+        const { adx } = parser.parse(fileContent) as { adx?: { header?: AdxNode } };
+        return Object.fromEntries(Object.entries(adx?.header || {}).map(([tagName, raw]) => [tagName, textValue(raw)]));
+    },
     generateFile: (qsos, header, massage = (r) => r) =>
         `<?xml version="1.0" encoding="UTF-8"?><ADX>${headerToAdx(header)}<RECORDS>${qsos
             .map((q) => AdxAPI.fromRecord(massage(qso2record(q))))

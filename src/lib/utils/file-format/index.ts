@@ -1,4 +1,6 @@
 import { QSO } from "../../components/qso";
+import { serialiseSessions } from "../session";
+import { useStore } from "../store";
 import { AdifAPI } from "./adif";
 import { AdxAPI } from "./adx";
 import { CabrilloAPI } from "./cabrillo";
@@ -16,10 +18,15 @@ export const downloadQsos = (
     qsos: QSO[],
     type: "adif" | "adx" | "wsjtx" | "cabrillo" = "adif",
     massage?: RecordMassageFn,
+    // The sessions the QSOs belong to, in the header, so a re-import can put them back. Only for a
+    // file meant to come back to us: an upload to LoTW or POTA has no use for them. WSJT-X and
+    // Cabrillo have nowhere to keep them and skip header fields they don't know.
+    withSessions = false,
 ) => {
+    const sessions = withSessions ? serialiseSessions(useStore.getState().sessions, qsos) : undefined;
     const content = { adif: AdifAPI, adx: AdxAPI, wsjtx: WsjtxAPI, cabrillo: CabrilloAPI }[type].generateFile(
         qsos,
-        header(),
+        header(sessions),
         massage,
     );
     const url = URL.createObjectURL(new Blob([content], { type: "text/plain" }));

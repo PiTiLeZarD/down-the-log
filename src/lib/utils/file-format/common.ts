@@ -310,12 +310,18 @@ export type Header = {
     note?: string;
     fields?: Honeypot;
 };
-export const header = (): Header => ({
+
+// The sessions the exported QSOs were logged in, as JSON (see `serialiseSessions`). The header, not
+// each record: a session is shared by every QSO in it, and one copy is all a re-import needs.
+export const SESSIONS_HEADER_FIELD = "app_down-the-log_sessions";
+
+export const header = (sessions?: string): Header => ({
     note: "ADIF Export from down-the-log by VK4ALE\nfor further info visit: https://github.com/PiTiLeZarD/down-the-log",
     fields: {
         created_timestamp: DateTime.utc().toFormat("yyyyMMdd HHmmss"),
         programid: "down-the-log",
         programversion: "0.1.1",
+        ...(sessions ? { [SESSIONS_HEADER_FIELD]: sessions } : {}),
     },
 });
 
@@ -323,5 +329,7 @@ export type FileFormatAPI = {
     toRecord: (from: unknown) => QSORecord;
     fromRecord: (record: QSORecord) => string;
     parseFile: (fileContent: string) => QSORecord[];
+    // Header fields, keys lowercased. Only the formats that have a header worth reading back.
+    parseHeader?: (fileContent: string) => Honeypot;
     generateFile: (qsos: QSO[], header: Header, massage?: RecordMassageFn) => string;
 };

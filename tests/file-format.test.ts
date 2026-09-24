@@ -6,8 +6,10 @@ import { AdifAPI } from "../src/lib/utils/file-format/adif";
 import { AdxAPI } from "../src/lib/utils/file-format/adx";
 import { CabrilloAPI } from "../src/lib/utils/file-format/cabrillo";
 import { WsjtxAPI } from "../src/lib/utils/file-format/wsjtx";
+import { newSession, parseSessions, serialiseSessions } from "../src/lib/utils/session";
 import {
     QSORecord,
+    SESSIONS_HEADER_FIELD,
     castAs,
     header,
     int,
@@ -647,5 +649,47 @@ describe("header", () => {
         const h = header();
         expect(h.fields?.programid).toBe("down-the-log");
         expect(h.fields?.created_timestamp).toMatch(/^\d{8} \d{6}$/);
+    });
+});
+
+describe("sessions in the header", () => {
+    // Everything that would trip the ADIF length count or the XML: markup, entities, quotes.
+    const session = {
+        ...newSession("contest", { contestId: "CQ-WW-SSB", power: 100 }),
+        id: "session-1",
+        name: `Field day <A&B> "north" 'hill'`,
+        startedAt: DateTime.fromISO("2024-01-01T09:00:00Z", { zone: "utc" }),
+        endedAt: DateTime.fromISO("2024-01-01T12:00:00Z", { zone: "utc" }),
+        contest: { contestId: "CQ-WW-SSB", serial: 8 },
+    };
+    const other = { ...newSession("casual"), id: "not-in-the-file" };
+    const exported = header(serialiseSessions([session, other], [contestQso]));
+
+    test.each([
+        ["ADIF", AdifAPI],
+        ["ADX", AdxAPI],
+    ])("%s carries them through and still reads the records", (_, api) => {
+        const file = api.generateFile([contestQso], exported);
+        const [restored, ...rest] = parseSessions(api.parseHeader?.(file)[SESSIONS_HEADER_FIELD]);
+
+        expect(rest).toHaveLength(0);
+        expect(restored.id).toBe("session-1");
+        expect(restored.name).toBe(session.name);
+        expect(restored.template).toBe("contest");
+        expect(restored.defaults).toEqual({ contestId: "CQ-WW-SSB", power: 100 });
+        expect(restored.contest).toEqual({ contestId: "CQ-WW-SSB", serial: 8 });
+        expect(restored.startedAt.toMillis()).toBe(session.startedAt.toMillis());
+        expect(restored.endedAt?.toMillis()).toBe(session.endedAt.toMillis());
+        expect(api.parseFile(file).map((r) => r["app_down-the-log_session_id"])).toEqual(["session-1"]);
+    });
+
+    test("an export with no sessions in it leaves the header alone", () => {
+        expect(serialiseSessions([session], [qso])).toBeUndefined();
+        expect(header(undefined).fields).not.toHaveProperty(SESSIONS_HEADER_FIELD);
+    });
+
+    test("a file without a header has none to read", () => {
+        expect(AdifAPI.parseHeader?.("<CALL:6>VK4ALE<EOR>")).toEqual({});
+        expect(AdxAPI.parseHeader?.("<ADX><RECORDS></RECORDS></ADX>")).toEqual({});
     });
 });
