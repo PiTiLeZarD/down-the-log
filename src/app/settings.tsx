@@ -14,6 +14,7 @@ import { Button } from "../lib/ui/button";
 import { Input } from "../lib/ui/input";
 import { showDialog } from "../lib/ui/dialog";
 import { Typography } from "../lib/ui/typography";
+import { CLUBLOG_API_KEY } from "../lib/utils/clublog";
 import { HamQTHSettingsType } from "../lib/utils/hamqth";
 import { normalise } from "../lib/utils/locator";
 import { useStore } from "../lib/utils/store";
@@ -179,8 +180,8 @@ const Settings = () => {
                         look at. Spotting yourself sends your callsign, reference, frequency, mode and comment to
                         whichever of those two networks you pick, and your ParksnPeaks key with it. Loading confirmations sends
                         your LoTW user name and password to lotw.arrl.org, and your eQSL ones to eqsl.cc, through
-                        cors.jadami.com on web and desktop. Uploading to eQSL sends it the QSOs not yet marked as
-                        sent. That relay only passes requests through and keeps nothing — its code is in
+                        cors.jadami.com on web and desktop. Uploading to eQSL or Club Log sends it the QSOs not yet
+                        marked as sent, with your login for that site. That relay only passes requests through and keeps nothing — its code is in
                         scripts/cors-worker.js.
                     </Typography>
                     <Typography underline>HamQTH:</Typography>
@@ -287,6 +288,52 @@ const Settings = () => {
                             }
                         />
                     </Stack>
+                    {!!CLUBLOG_API_KEY && (
+                        <>
+                            <Typography underline>Club Log:</Typography>
+                            <Typography variant="subtitle">
+                                Your clublog.org login, used to upload QSOs from the QSLs page. If your account has
+                                an application password, use that one. Leave the callsign empty to send each QSO to the
+                                log of the callsign it was made under. The password is kept in the device keychain on
+                                iOS and Android.
+                            </Typography>
+                            <Stack direction="row">
+                                <Typography>Email:</Typography>
+                                <Input
+                                    value={settings.clublog?.email || ""}
+                                    onChangeText={(v) =>
+                                        updateSetting("clublog", {
+                                            ...(settings.clublog || { email: "", password: "" }),
+                                            email: v,
+                                        })
+                                    }
+                                />
+                                <Typography>Password:</Typography>
+                                <Input
+                                    password
+                                    value={settings.clublog?.password || ""}
+                                    onChangeText={(v) =>
+                                        updateSetting("clublog", {
+                                            ...(settings.clublog || { email: "", password: "" }),
+                                            password: v,
+                                        })
+                                    }
+                                />
+                            </Stack>
+                            <Stack direction="row">
+                                <Typography>Callsign:</Typography>
+                                <Input
+                                    value={settings.clublog?.callsign || ""}
+                                    onChangeText={(v) =>
+                                        updateSetting("clublog", {
+                                            ...(settings.clublog || { email: "", password: "" }),
+                                            callsign: v === "" ? undefined : v.toUpperCase(),
+                                        })
+                                    }
+                                />
+                            </Stack>
+                        </>
+                    )}
                     <Typography underline>Geocode Maps:</Typography>
                     <Typography variant="subtitle">
                         Get an api key on https://geocode.maps.co/ to add a button on the form that will allow you to

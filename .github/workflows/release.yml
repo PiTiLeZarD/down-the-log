@@ -37,6 +37,8 @@ jobs:
             - run: pnpm install --frozen-lockfile
 
             - run: pnpm build:web
+              env:
+                  EXPO_PUBLIC_CLUBLOG_API_KEY: ${{ secrets.CLUBLOG_API_KEY }}
 
             - name: Deploy to ghpages branch
               run: |
@@ -106,6 +108,7 @@ jobs:
               env:
                   GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
                   TAURI_BUILD: "1"
+                  EXPO_PUBLIC_CLUBLOG_API_KEY: ${{ secrets.CLUBLOG_API_KEY }}
               with:
                   tagName: ${{ inputs.tag || github.ref_name }}
                   releaseName: ${{ inputs.tag || github.ref_name }}

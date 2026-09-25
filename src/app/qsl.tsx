@@ -17,6 +17,7 @@ import { showDialog } from "../lib/ui/dialog";
 import { useSettings } from "../lib/utils/use-settings";
 import { LotwError, LotwStatus, fetchLotwConfirmations, nextQslSince } from "../lib/utils/lotw";
 import { EqslError, EqslStatus, fetchEqslConfirmations, nextRcvdSince, uploadToEqsl } from "../lib/utils/eqsl";
+import { CLUBLOG_API_KEY, ClublogError, ClublogStatus, uploadToClublog } from "../lib/utils/clublog";
 
 const Qsl = () => {
     const qsos = useQsos();
@@ -24,6 +25,7 @@ const Qsl = () => {
     const [lotwStatus, setLotwStatus] = useState<LotwStatus>("idle");
     const [eqslStatus, setEqslStatus] = useState<EqslStatus>("idle");
     const [eqslUploading, setEqslUploading] = useState(false);
+    const [clublogStatus, setClublogStatus] = useState<ClublogStatus>("idle");
     const log = useStore((state) => state.log);
     const updateSetting = useStore((state) => state.updateSetting);
     const today = DateTime.local().toFormat("yyyyMMdd");
@@ -264,14 +266,57 @@ const Qsl = () => {
         }
     };
 
+    // Same shape as the eQSL upload, one log at a time. A refused login leaves the button off until the
+    // page is opened again — after the credentials have been fixed in Settings — so a wrong password
+    // isn't retried against Club Log from the relay's shared address.
+    const handleClublogUpload = async () => {
+        const clublog = settings.clublog;
+        if (!clublog?.email || !clublog?.password) return;
+        const toSend = qsos.filter((q) => !q.clublog_sent);
+        if (!toSend.length) return;
+        setClublogStatus("loading");
+        const markSent = (sent: QSO[]) => {
+            // The log as it is now: a QSO edited while the upload ran keeps the edit.
+            const ids = new Set(sent.map((q) => q.id));
+            log(useStore.getState().qsos.filter((q) => ids.has(q.id)).map((q) => ({ ...q, clublog_sent: true })));
+        };
+        try {
+            const result = await uploadToClublog(toSend, clublog, markSent);
+            const partial = result.problems.length > 0 || result.unplaced > 0;
+            setClublogStatus(partial ? "error" : "done");
+            showDialog({
+                title: partial ? "Partly uploaded" : "Done!",
+                text: [
+                    [
+                        `${result.sent.length} sent`,
+                        ...(result.unplaced ? [`${result.unplaced} with no callsign to file them under`] : []),
+                    ].join(", ") + ` out of ${toSend.length} QSOs. Club Log processes uploads in its own time.`,
+                    ...result.problems,
+                ].join("\n"),
+                icon: partial ? "warning" : "success",
+                confirmButtonText: "Ok",
+            });
+        } catch (e) {
+            setClublogStatus(e instanceof ClublogError ? e.status : "error");
+            showDialog({
+                title: "Club Log",
+                text: e instanceof Error ? e.message : String(e),
+                icon: "error",
+                confirmButtonText: "Ok",
+            });
+        }
+    };
+
     const lotwConfigured = !!settings.lotw?.user && !!settings.lotw?.password;
     const eqslConfigured = !!settings.eqsl?.user && !!settings.eqsl?.password;
     const eqslUnsent = qsos.filter((q) => !q.eqsl_sent).length;
+    const clublogConfigured = !!settings.clublog?.email && !!settings.clublog?.password;
+    const clublogUnsent = qsos.filter((q) => !q.clublog_sent).length;
 
     return (
         <PageLayout title="QSLs">
             <Stack>
-                <TabsLayout tabs={["LoTW", "eQSL"]}>
+                <TabsLayout tabs={["LoTW", "eQSL", ...(CLUBLOG_API_KEY ? ["Club Log"] : [])]}>
                     <Stack gap="xxl">
                         <Alert severity="info">
                             <Typography>QSOs will be altered and marked as sent</Typography>
@@ -356,6 +401,36 @@ const Qsl = () => {
                             </Typography>
                         </Alert>
                     )}
+                    {!!CLUBLOG_API_KEY &&
+                        (clublogConfigured ? (
+                            <Stack>
+                                <Button
+                                    startIcon="cloud-upload-outline"
+                                    text={
+                                        clublogStatus === "loading"
+                                            ? "Uploading to Club Log…"
+                                            : `Upload to Club Log: ${clublogUnsent} qsos`
+                                    }
+                                    variant="outlined"
+                                    disabled={clublogStatus === "loading" || clublogStatus === "auth" || !clublogUnsent}
+                                    onPress={handleClublogUpload}
+                                />
+                                <Typography variant="subtitle">
+                                    Sends every QSO not yet marked as sent to Club Log
+                                    {settings.clublog?.callsign
+                                        ? `, into the ${settings.clublog.callsign} log`
+                                        : ", each into the log of the callsign it was made under"}
+                                    , and marks the ones it takes.
+                                </Typography>
+                            </Stack>
+                        ) : (
+                            <Alert severity="info">
+                                <Typography>
+                                    Add your Club Log email and password in Settings &gt; API&apos;s to upload in one
+                                    click.
+                                </Typography>
+                            </Alert>
+                        ))}
                 </TabsLayout>
 
                 {unmatched.length > 0 && <UnmatchedQsls unmatched={unmatched} onClear={() => setUnmatched([])} />}

@@ -19,3 +19,7 @@ scripts/*.dat
 
 # wrangler
 .wrangler/
+
+# Local build secrets, e.g. EXPO_PUBLIC_CLUBLOG_API_KEY.
+.env
+.env.local

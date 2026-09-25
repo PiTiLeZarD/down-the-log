@@ -78,6 +78,7 @@ export const filterMap: Record<string, FilterFunction> = {
         qso.lotw_sent ? "LoTW sent" : "LoTW not sent",
         qso.eqsl_received ? "eQSL received" : "eQSL not received",
         qso.eqsl_sent ? "eQSL sent" : "eQSL not sent",
+        qso.clublog_sent ? "Club Log sent" : "Club Log not sent",
     ],
 };
 export type FilterName = keyof typeof filterMap;
@@ -121,6 +122,7 @@ const tagFields = [
     "eqsl_sent",
     "lotw_received",
     "lotw_sent",
+    "clublog_sent",
     "myPota",
     "myWwff",
     "mySota",
@@ -132,7 +134,7 @@ const tagFields = [
 ];
 const castValue = (k: string, v: string) => {
     if (v === "") return undefined;
-    if (["eqsl_received", "eqsl_sent", "lotw_received", "lotw_sent"].includes(k))
+    if (["eqsl_received", "eqsl_sent", "lotw_received", "lotw_sent", "clublog_sent"].includes(k))
         return ["1", "Y", "YES"].includes(v.toUpperCase());
     if (["power", "frequency"].includes(k)) return +v;
     if (k === "locator") return normalise(v);

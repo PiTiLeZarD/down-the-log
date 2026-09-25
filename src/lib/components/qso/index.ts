@@ -66,6 +66,7 @@ export type QSO = {
     eqsl_sent?: boolean;
     lotw_received?: boolean;
     lotw_sent?: boolean;
+    clublog_sent?: boolean;
     pota?: string;
     myPota?: string;
     wwff?: string;

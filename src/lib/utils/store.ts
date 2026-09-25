@@ -13,6 +13,7 @@ import type { QSO } from "../components/qso";
 import type { Band } from "../data/bands";
 import { liftSubmode, type Mode } from "../data/modes";
 import type { HamQTHSettingsType } from "./hamqth";
+import type { ClublogSettingsType } from "./clublog";
 import type { EqslSettingsType } from "./eqsl";
 import type { LotwSettingsType } from "./lotw";
 import type { Session } from "./session";
@@ -63,6 +64,9 @@ export type Settings = {
     eqsl?: EqslSettingsType;
     // How far back the next inbox pull asks, yyyyMMdd. Moved forward after a successful one.
     eqslRcvdSince?: string;
+    // Club Log account, used only to upload. The password is kept in the device keychain on native,
+    // like the eQSL one — see utils/clublog.
+    clublog?: ClublogSettingsType;
     // Which spot networks are polled. SOTAwatch isn't among them yet — see utils/spots/sota.
     spotSources: SpotSource[];
     // Drives the Spots page, the spots bar and the alerts alike — see utils/spots/types.
@@ -282,6 +286,7 @@ const HAMQTH_PASSWORD_KEY = "dtl-hamqth-password";
 const PNP_API_KEY = "dtl-pnp-api-key";
 const LOTW_PASSWORD_KEY = "dtl-lotw-password";
 const EQSL_PASSWORD_KEY = "dtl-eqsl-password";
+const CLUBLOG_PASSWORD_KEY = "dtl-clublog-password";
 
 const secureStorage: PersistStorage<UseStorePropsType> = {
     getItem: async (name) => {
@@ -303,6 +308,10 @@ const secureStorage: PersistStorage<UseStorePropsType> = {
         if (Platform.OS !== "web" && parsed.state?.settings?.eqsl) {
             const password = await SecureStore.getItemAsync(EQSL_PASSWORD_KEY);
             if (password) parsed.state.settings.eqsl.password = password;
+        }
+        if (Platform.OS !== "web" && parsed.state?.settings?.clublog) {
+            const password = await SecureStore.getItemAsync(CLUBLOG_PASSWORD_KEY);
+            if (password) parsed.state.settings.clublog.password = password;
         }
         return parsed;
     },
@@ -350,6 +359,18 @@ const secureStorage: PersistStorage<UseStorePropsType> = {
                 },
             };
         }
+        if (Platform.OS !== "web" && value.state.settings?.clublog) {
+            const { password, ...clublogRest } = value.state.settings.clublog;
+            if (password) await SecureStore.setItemAsync(CLUBLOG_PASSWORD_KEY, password);
+            else await SecureStore.deleteItemAsync(CLUBLOG_PASSWORD_KEY);
+            toStore = {
+                ...toStore,
+                state: {
+                    ...toStore.state,
+                    settings: { ...toStore.state.settings, clublog: clublogRest as ClublogSettingsType },
+                },
+            };
+        }
         await AsyncStorage.setItem(name, JSON.stringify(toStore));
     },
     removeItem: async (name) => {
@@ -359,6 +380,7 @@ const secureStorage: PersistStorage<UseStorePropsType> = {
             await SecureStore.deleteItemAsync(PNP_API_KEY);
             await SecureStore.deleteItemAsync(LOTW_PASSWORD_KEY);
             await SecureStore.deleteItemAsync(EQSL_PASSWORD_KEY);
+            await SecureStore.deleteItemAsync(CLUBLOG_PASSWORD_KEY);
         }
     },
 };
