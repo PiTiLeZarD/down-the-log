@@ -5,6 +5,7 @@ import { Pressable, View } from "react-native";
 import { Switch } from "react-native-gesture-handler";
 import { StyleSheet } from "react-native-unistyles";
 import { continents } from "../../data/callsigns";
+import { CLUBLOG_API_KEY } from "../../utils/clublog";
 import { roundTo } from "../../utils/math";
 import { Modal } from "../../utils/modal";
 import { useStore } from "../../utils/store";
@@ -170,8 +171,10 @@ export const FormFields = ({ qso }: FormFieldsProps) => {
 
     const qslInfo = () => {
         showDialog({
-            title: "eQSL/LoTW",
-            text: "If you've received a qsl, the button will light up green, if you've sent it, it'll be blue and grey otherwise",
+            title: CLUBLOG_API_KEY ? "eQSL/LoTW/Club Log" : "eQSL/LoTW",
+            text:
+                "If you've received a qsl, the button will light up green, if you've sent it, it'll be blue and grey otherwise" +
+                (CLUBLOG_API_KEY ? ". Club Log has nothing to receive, so it is only ever blue or grey." : ""),
             icon: "info",
             confirmButtonText: "Ok",
         });
@@ -225,6 +228,17 @@ export const FormFields = ({ qso }: FormFieldsProps) => {
                                         onPress={qslInfo}
                                     />
                                 </View>
+                                {!!CLUBLOG_API_KEY && (
+                                    <View>
+                                        <Button
+                                            variant="chip"
+                                            style={styles.qslChip}
+                                            colour={qso.clublog_sent ? "primary" : "grey"}
+                                            text="Club Log"
+                                            onPress={qslInfo}
+                                        />
+                                    </View>
+                                )}
                             </Stack>
                             <Stack direction="row" style={{ justifyContent: "flex-end", flex: 1 }}>
                                 {isRunning && (
@@ -321,6 +335,16 @@ export const FormFields = ({ qso }: FormFieldsProps) => {
                             <Switch value={qso.eqsl_received} onValueChange={(v) => setValue("eqsl_received", v)} />
                         </Grid>
                     </Grid>
+                    {!!CLUBLOG_API_KEY && (
+                        <Grid container>
+                            <Grid item xs={4}>
+                                <Typography>Club Log</Typography>
+                            </Grid>
+                            <Grid item xs={4}>
+                                <Switch value={qso.clublog_sent} onValueChange={(v) => setValue("clublog_sent", v)} />
+                            </Grid>
+                        </Grid>
+                    )}
                     <Button text="OK" colour="success" onPress={() => setOpenTimeLocModal(false)} />
                 </Stack>
             </Modal>
