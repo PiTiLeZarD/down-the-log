@@ -7,7 +7,6 @@ import { QSL_IGNORED, UnmatchedQsl, confirmQso, qslRecordKey } from "../lib/comp
 import { UnmatchedQsls } from "../lib/components/qsl/unmatched-qsls";
 import { QSO, findMatchingQso, useQsos } from "../lib/components/qso";
 import { Stack } from "../lib/components/stack";
-import { TabsLayout } from "../lib/components/tabs-layout";
 import { downloadQsos, getFileApiFromFilename, record2qso } from "../lib/utils/file-format";
 import { useStore } from "../lib/utils/store";
 import { Alert } from "../lib/ui/alert";
@@ -312,126 +311,121 @@ const Qsl = () => {
     const eqslUnsent = qsos.filter((q) => !q.eqsl_sent).length;
     const clublogConfigured = !!settings.clublog?.email && !!settings.clublog?.password;
     const clublogUnsent = qsos.filter((q) => !q.clublog_sent).length;
+    // A refused login keeps the button off until the page is opened again (see handleClublogUpload).
+    const clublogUploadable =
+        clublogConfigured && !!clublogUnsent && clublogStatus !== "loading" && clublogStatus !== "auth";
+    const lotwUnsent = qsos.filter((q) => !q.lotw_sent).length;
 
     return (
         <PageLayout title="QSLs">
-            <Stack>
-                <TabsLayout tabs={["LoTW", "eQSL", ...(CLUBLOG_API_KEY ? ["Club Log"] : [])]}>
-                    <Stack gap="xxl">
-                        <Alert severity="info">
-                            <Typography>QSOs will be altered and marked as sent</Typography>
-                        </Alert>
+            <Stack gap="xxl">
+                <Alert severity="info">
+                    <Typography>Uploading marks QSOs as sent</Typography>
+                </Alert>
+
+                <Stack>
+                    <Stack direction="row">
+                        <Typography variant="h3" style={{ flexGrow: 1 }}>
+                            LoTW
+                        </Typography>
+                        <View>
+                            <Button
+                                variant="chip"
+                                colour="grey"
+                                text="TQSL"
+                                endIcon="open-outline"
+                                url="https://www.arrl.org/tqsl-download"
+                            />
+                        </View>
+                    </Stack>
+                    <Stack direction="row">
+                        <Button
+                            startIcon="cloud-download-outline"
+                            text={lotwStatus === "loading" ? "Downloading…" : "Download"}
+                            variant="outlined"
+                            colour={lotwConfigured ? "primary" : "grey"}
+                            numberOfLines={1}
+                            disabled={!lotwConfigured || lotwStatus === "loading"}
+                            onPress={handleLotwFetch}
+                        />
                         <Button
                             startIcon="download-outline"
-                            text={`LoTW file: ${qsos.filter((q) => !q.lotw_sent).length} qsos`}
+                            text={`ADIF: ${lotwUnsent} qsos`}
                             variant="outlined"
+                            numberOfLines={1}
                             onPress={handleQslDownload}
                         />
-                        <Stack direction="row">
-                            <Typography>You will need to sign your QSOs using LoTW's tqsl app</Typography>
-                            <View>
-                                <Button
-                                    variant="chip"
-                                    url="https://www.arrl.org/tqsl-download"
-                                    colour="grey"
-                                    text="Click here to download"
-                                />
-                            </View>
-                        </Stack>
-
-                        <Typography variant="h3">Getting confirmations</Typography>
-                        {lotwConfigured ? (
-                            <Stack>
-                                <Button
-                                    startIcon="cloud-download-outline"
-                                    text={lotwStatus === "loading" ? "Loading from LoTW…" : "Load from LoTW"}
-                                    variant="outlined"
-                                    disabled={lotwStatus === "loading"}
-                                    onPress={handleLotwFetch}
-                                />
-                                <Typography variant="subtitle">
-                                    Asks LoTW for confirmations matched since {qslSince} and applies them to the
-                                    log. Nothing is uploaded and your callsign certificate is never needed.
-                                </Typography>
-                            </Stack>
-                        ) : (
-                            <Alert severity="info">
-                                <Typography>
-                                    Add your LoTW user name and password in Settings &gt; API&apos;s to pull
-                                    confirmations straight into the log.
-                                </Typography>
-                            </Alert>
-                        )}
                     </Stack>
-                    {eqslConfigured ? (
-                        <Stack gap="xxl">
-                            <Stack>
-                                <Button
-                                    startIcon="cloud-upload-outline"
-                                    text={eqslUploading ? "Uploading to eQSL…" : `Upload to eQSL: ${eqslUnsent} qsos`}
-                                    variant="outlined"
-                                    disabled={eqslUploading || !eqslUnsent}
-                                    onPress={handleEqslUpload}
-                                />
-                                <Typography variant="subtitle">
-                                    Sends every QSO not yet marked as sent straight to eQSL, and marks the ones it
-                                    accepts.
-                                </Typography>
-                            </Stack>
+                    <Typography variant="subtitle">
+                        {lotwConfigured
+                            ? `Download pulls confirmations matched since ${qslSince}. `
+                            : "Add your LoTW user name and password in Settings > API's to download confirmations. "}
+                        Uploading is an ADIF file for now: sign and send it with TQSL.
+                    </Typography>
+                </Stack>
 
-                            <Typography variant="h3">Getting confirmations</Typography>
-                            <Stack>
-                                <Button
-                                    startIcon="cloud-download-outline"
-                                    text={eqslStatus === "loading" ? "Loading from eQSL…" : "Load from eQSL"}
-                                    variant="outlined"
-                                    disabled={eqslStatus === "loading"}
-                                    onPress={handleEqslFetch}
-                                />
-                                <Typography variant="subtitle">
-                                    Asks eQSL for cards received since {rcvdSince} and applies them to the log.
-                                </Typography>
-                            </Stack>
+                <Stack>
+                    <Typography variant="h3">eQSL</Typography>
+                    <Stack direction="row">
+                        <Button
+                            startIcon="cloud-download-outline"
+                            text={eqslStatus === "loading" ? "Downloading…" : "Download"}
+                            variant="outlined"
+                            colour={eqslConfigured ? "primary" : "grey"}
+                            numberOfLines={1}
+                            disabled={!eqslConfigured || eqslStatus === "loading"}
+                            onPress={handleEqslFetch}
+                        />
+                        <Button
+                            startIcon="cloud-upload-outline"
+                            text={eqslUploading ? "Uploading…" : `Upload: ${eqslUnsent} qsos`}
+                            variant="outlined"
+                            colour={eqslConfigured && eqslUnsent ? "primary" : "grey"}
+                            numberOfLines={1}
+                            disabled={!eqslConfigured || eqslUploading || !eqslUnsent}
+                            onPress={handleEqslUpload}
+                        />
+                    </Stack>
+                    <Typography variant="subtitle">
+                        {eqslConfigured
+                            ? `Download pulls cards received since ${rcvdSince}. Upload sends every QSO not yet marked as sent and marks the ones eQSL accepts.`
+                            : "Add your eQSL user name and password in Settings > API's to download and upload."}
+                    </Typography>
+                </Stack>
+
+                {!!CLUBLOG_API_KEY && (
+                    <Stack>
+                        <Typography variant="h3">Club Log</Typography>
+                        <Stack direction="row">
+                            <Button
+                                startIcon="cloud-download-outline"
+                                text="No download"
+                                variant="outlined"
+                                colour="grey"
+                                numberOfLines={1}
+                                disabled
+                            />
+                            <Button
+                                startIcon="cloud-upload-outline"
+                                text={clublogStatus === "loading" ? "Uploading…" : `Upload: ${clublogUnsent} qsos`}
+                                variant="outlined"
+                                colour={clublogUploadable ? "primary" : "grey"}
+                                numberOfLines={1}
+                                disabled={!clublogUploadable}
+                                onPress={handleClublogUpload}
+                            />
                         </Stack>
-                    ) : (
-                        <Alert severity="info">
-                            <Typography>
-                                Add your eQSL user name and password in Settings &gt; API&apos;s to upload and pull
-                                confirmations in one click.
-                            </Typography>
-                        </Alert>
-                    )}
-                    {!!CLUBLOG_API_KEY &&
-                        (clublogConfigured ? (
-                            <Stack>
-                                <Button
-                                    startIcon="cloud-upload-outline"
-                                    text={
-                                        clublogStatus === "loading"
-                                            ? "Uploading to Club Log…"
-                                            : `Upload to Club Log: ${clublogUnsent} qsos`
-                                    }
-                                    variant="outlined"
-                                    disabled={clublogStatus === "loading" || clublogStatus === "auth" || !clublogUnsent}
-                                    onPress={handleClublogUpload}
-                                />
-                                <Typography variant="subtitle">
-                                    Sends every QSO not yet marked as sent to Club Log
-                                    {settings.clublog?.callsign
-                                        ? `, into the ${settings.clublog.callsign} log`
-                                        : ", each into the log of the callsign it was made under"}
-                                    , and marks the ones it takes.
-                                </Typography>
-                            </Stack>
-                        ) : (
-                            <Alert severity="info">
-                                <Typography>
-                                    Add your Club Log email and password in Settings &gt; API&apos;s to upload in one
-                                    click.
-                                </Typography>
-                            </Alert>
-                        ))}
-                </TabsLayout>
+                        <Typography variant="subtitle">
+                            {clublogConfigured
+                                ? `Upload sends every QSO not yet marked as sent${
+                                      settings.clublog?.callsign
+                                          ? `, into the ${settings.clublog.callsign} log`
+                                          : ", each into the log of the callsign it was made under"
+                                  }, and marks the ones it takes.`
+                                : "Add your Club Log email and password in Settings > API's to upload."}
+                        </Typography>
+                    </Stack>
+                )}
 
                 {unmatched.length > 0 && <UnmatchedQsls unmatched={unmatched} onClear={() => setUnmatched([])} />}
             </Stack>
