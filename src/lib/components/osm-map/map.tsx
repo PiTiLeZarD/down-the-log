@@ -17,8 +17,10 @@ import {
 
 const TILE_URL = "https://tile.openstreetmap.org";
 // The OSM tile usage policy wants a real identifying User-Agent. Browsers set their own and ignore
-// this, but the native image loaders would otherwise send a generic one.
-const TILE_HEADERS = { "User-Agent": "down-the-log (https://github.com/PiTiLeZarD/down-the-log)" };
+// this, but the native image loaders would otherwise send a generic one. Left off on web: given
+// headers, expo-image swaps the <img> for a fetch() into a blob URL, which the Tauri CSP refuses.
+const TILE_HEADERS =
+    Platform.OS === "web" ? undefined : { "User-Agent": "down-the-log (https://github.com/PiTiLeZarD/down-the-log)" };
 // Enough room for the tallest pin to stay inside the viewport once the bounds are fitted.
 const DEFAULT_PADDING = 32;
 

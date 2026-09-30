@@ -46,6 +46,7 @@
         "@react-native-picker/picker": "2.11.4",
         "@react-native/normalize-colors": "^0.86.2",
         "@tauri-apps/plugin-notification": "^2.4.0",
+        "@tauri-apps/plugin-opener": "^2.7.0",
         "axios": "^1.19.0",
         "expo": "^57.0.12",
         "expo-constants": "~57.0.10",

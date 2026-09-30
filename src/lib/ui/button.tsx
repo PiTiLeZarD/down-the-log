@@ -1,10 +1,11 @@
 import React, { PropsWithChildren } from "react";
-import { Linking, Pressable, PressableProps, Text, TextProps, TextStyle, ViewStyle } from "react-native";
+import { Pressable, PressableProps, Text, TextProps, TextStyle, ViewStyle } from "react-native";
 import { StyleSheet } from "react-native-unistyles";
 import { Stack } from "../components/stack";
 import { ColourVariant } from "./theme";
 import { Icon, IconName } from "./icon";
 import { Styles, mergeStyles } from "./styles";
+import { openURL } from "../utils/open-url";
 
 export type ButtonVariants = "contained" | "outlined" | "chip";
 const styles = StyleSheet.create((theme) => ({
@@ -95,10 +96,7 @@ export const Button = ({
     children,
     ...otherProps
 }: ButtonProps) => {
-    const handleLink = (url: string) => async () => {
-        const supported = await Linking.canOpenURL(url);
-        if (supported) await Linking.openURL(url);
-    };
+    const handleLink = (url: string) => () => openURL(url);
 
     return (
         <Pressable
