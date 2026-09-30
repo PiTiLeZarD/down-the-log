@@ -1,5 +1,5 @@
-# CORS relay for the ParksnPeaks spots plugin and LoTW confirmations. See cors-worker.js.
-# Deploy from this directory with: npx wrangler deploy
+# CORS relay for ParksnPeaks spots, LoTW confirmations, eQSL and Club Log uploads. See cors-worker.js.
+# Deploy from the repo root with: pnpm deploy:relay
 
 name = "dtl-spots"
 main = "cors-worker.js"

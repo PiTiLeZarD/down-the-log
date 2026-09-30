@@ -2,6 +2,8 @@ allowBuilds:
   esbuild: true
   # Native binding for eslint-import-resolver-typescript, pulled in by eslint-config-expo.
   unrs-resolver: true
+  # Cloudflare's runtime binary, fetched on install; wrangler needs it for the relay deploy.
+  workerd: true
 minimumReleaseAgeExclude:
   - '@expo/cli@57.0.14'
   - '@expo/fingerprint@0.20.7'

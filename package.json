@@ -29,6 +29,7 @@
         "clean": "rm -Rf down-the-log",
         "prepages": "pnpm clean && pnpm build:web",
         "pages": "gh-pages -t -b ghpages -d down-the-log",
+        "deploy:relay": "wrangler deploy --config scripts/wrangler.toml",
         "tag": "node scripts/tag.mjs",
         "refreshpota": "wget -O scripts/all_parks_ext.csv https://pota.app/all_parks_ext.csv && tsx scripts/pota.ts",
         "refreshsota": "wget -O scripts/summitslist.csv https://storage.sota.org.uk/summitslist.csv && tsx scripts/sota.ts",
@@ -94,7 +95,8 @@
         "gh-pages": "^6.3.0",
         "tsx": "^4.23.12",
         "typescript": "~6.0.3",
-        "vitest": "^4.1.10"
+        "vitest": "^4.1.10",
+        "wrangler": "^4.143.0"
     },
     "private": true
 }

@@ -12,7 +12,7 @@
  *
  * Deploy (free tier is far more than enough for one request a minute):
  *
- *     cd scripts && npx wrangler deploy
+ *     pnpm deploy:relay
  *
  * Only the allowlisted hosts can be fetched, so this can't be turned into an open proxy, and only
  * the app's own origins are answered, so other sites can't spend its quota from their visitors'
