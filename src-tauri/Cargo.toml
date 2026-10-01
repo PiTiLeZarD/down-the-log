@@ -22,6 +22,7 @@ tauri = { version = "2", features = [] }
 # desktop build raises them over IPC instead — see src/lib/utils/notify/tauri.ts.
 tauri-plugin-notification = "2"
 tauri-plugin-opener = "2"
+roxmltree = "0.21.1"
 
 [features]
 # this feature is used for production builds or when `devPath` points to the filesystem and the built-in dev server is disabled.

@@ -9,6 +9,21 @@ import { WsjtxAPI } from "./wsjtx";
 
 export { RecordMassageFn, qso2record, record2qso } from "./common";
 
+/** The file `downloadQsos` would save, for a caller that hands it somewhere other than the browser. */
+export const generateQsos = (
+    qsos: QSO[],
+    type: "adif" | "adx" | "wsjtx" | "cabrillo" = "adif",
+    massage?: RecordMassageFn,
+    withSessions = false,
+): string => {
+    const sessions = withSessions ? serialiseSessions(useStore.getState().sessions, qsos) : undefined;
+    return { adif: AdifAPI, adx: AdxAPI, wsjtx: WsjtxAPI, cabrillo: CabrilloAPI }[type].generateFile(
+        qsos,
+        header(sessions),
+        massage,
+    );
+};
+
 // A Blob URL rather than a `data:` one. encodeURIComponent held a second copy of the whole file up
 // to three times the size — ADIF is dense in `<`, `>`, spaces and newlines, all of which escape —
 // so a 50k-QSO export meant hundreds of megabytes of live strings and a URI that long pinned on a
@@ -23,12 +38,7 @@ export const downloadQsos = (
     // Cabrillo have nowhere to keep them and skip header fields they don't know.
     withSessions = false,
 ) => {
-    const sessions = withSessions ? serialiseSessions(useStore.getState().sessions, qsos) : undefined;
-    const content = { adif: AdifAPI, adx: AdxAPI, wsjtx: WsjtxAPI, cabrillo: CabrilloAPI }[type].generateFile(
-        qsos,
-        header(sessions),
-        massage,
-    );
+    const content = generateQsos(qsos, type, massage, withSessions);
     const url = URL.createObjectURL(new Blob([content], { type: "text/plain" }));
     const anchor = Object.assign(document.createElement("a"), { href: url, download: title });
     // In the document for the click: a detached anchor is not clickable in every browser, and the

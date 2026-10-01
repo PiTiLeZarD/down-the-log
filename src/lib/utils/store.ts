@@ -59,6 +59,9 @@ export type Settings = {
     // How far back the next confirmation pull asks, yyyy-MM-dd. Moved forward after a successful
     // one so a second pull isn't the operator's whole LoTW history again.
     lotwQslSince?: string;
+    // Desktop only: the TQSL Station Location each callsign signs with, by callsign. A callsign with
+    // no entry signs with the first location TQSL has for it — see utils/tqsl.
+    tqslLocations?: Record<string, string>;
     // eQSL website account, used to pull the inbox and to upload. The password is kept in the device
     // keychain on native, like the LoTW one — see utils/eqsl.
     eqsl?: EqslSettingsType;

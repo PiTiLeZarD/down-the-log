@@ -1,5 +1,5 @@
 import { DateTime } from "luxon";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { View } from "react-native";
 import { showImportError } from "../lib/components/adif/import";
 import { PageLayout } from "../lib/components/page-layout";
@@ -13,9 +13,11 @@ import { Alert } from "../lib/ui/alert";
 import { Button } from "../lib/ui/button";
 import { Typography } from "../lib/ui/typography";
 import { showDialog } from "../lib/ui/dialog";
+import { SelectInput } from "../lib/ui/select-input";
 import { useSettings } from "../lib/utils/use-settings";
 import { LotwError, LotwStatus, fetchLotwConfirmations, nextQslSince } from "../lib/utils/lotw";
 import { EqslError, EqslStatus, fetchEqslConfirmations, nextRcvdSince, uploadToEqsl } from "../lib/utils/eqsl";
+import { TqslLocation, fetchTqslLocations, locationFor, tqslAvailable, uploadWithTqsl } from "../lib/utils/tqsl";
 import { CLUBLOG_API_KEY, ClublogError, ClublogStatus, uploadToClublog } from "../lib/utils/clublog";
 
 const Qsl = () => {
@@ -25,6 +27,9 @@ const Qsl = () => {
     const [eqslStatus, setEqslStatus] = useState<EqslStatus>("idle");
     const [eqslUploading, setEqslUploading] = useState(false);
     const [clublogStatus, setClublogStatus] = useState<ClublogStatus>("idle");
+    // Desktop only. Undefined until TQSL's station_data has been read; a string is why it couldn't be.
+    const [tqslLocations, setTqslLocations] = useState<TqslLocation[] | string>();
+    const [tqslUploading, setTqslUploading] = useState(false);
     const log = useStore((state) => state.log);
     const updateSetting = useStore((state) => state.updateSetting);
     const today = DateTime.local().toFormat("yyyyMMdd");
@@ -39,6 +44,48 @@ const Qsl = () => {
     // A pull that has already happened moves the window forward; until then it's the whole log.
     const qslSince = settings.lotwQslSince || fromDate.toFormat("yyyy-MM-dd");
     const rcvdSince = settings.eqslRcvdSince || fromDate.toFormat("yyyyMMdd");
+
+    useEffect(() => {
+        if (!tqslAvailable()) return;
+        fetchTqslLocations()
+            .then(setTqslLocations)
+            .catch((e) => setTqslLocations(e instanceof Error ? e.message : String(e)));
+    }, []);
+
+    // Same shape as the Club Log upload, with TQSL doing the signing and sending on this machine.
+    const handleTqslUpload = async () => {
+        if (!Array.isArray(tqslLocations)) return;
+        const toSend = qsos.filter((q) => !q.lotw_sent);
+        if (!toSend.length) return;
+        setTqslUploading(true);
+        const markSent = (sent: QSO[]) => {
+            // The log as it is now: a QSO edited while the upload ran keeps the edit.
+            const ids = new Set(sent.map((q) => q.id));
+            log(
+                useStore
+                    .getState()
+                    .qsos.filter((q) => ids.has(q.id))
+                    .map((q) => ({ ...q, lotw_sent: true })),
+            );
+        };
+        try {
+            const result = await uploadWithTqsl(toSend, tqslLocations, settings.tqslLocations, markSent);
+            const unplaced = Object.entries(result.unplaced);
+            const partial = result.sent.length < toSend.length;
+            showDialog({
+                title: partial ? "Partly uploaded" : "Done!",
+                text: [
+                    `${result.sent.length} sent out of ${toSend.length} QSOs.`,
+                    ...unplaced.map(([call, count]) => `${count} as ${call}, which has no Station Location in TQSL`),
+                    ...result.problems,
+                ].join("\n"),
+                icon: partial ? "warning" : "success",
+                confirmButtonText: "Ok",
+            });
+        } finally {
+            setTqslUploading(false);
+        }
+    };
 
     // The download is the only part of the upload we can see happen, so it is what ticks the QSOs
     // off — same order as the TOTA activation flow. Marking first meant a download the browser
@@ -135,12 +182,13 @@ const Qsl = () => {
 
             showDialog({
                 title: "Done!",
-                text: [
-                    `${newlyConfirmed} new confirmation${newlyConfirmed === 1 ? "" : "s"}`,
-                    ...(known ? [`${known} already confirmed`] : []),
-                    ...(stillUnmatched.length ? [`${stillUnmatched.length} unmatched`] : []),
-                    ...(ignored ? [`${ignored} ignored`] : []),
-                ].join(", ") + ` out of ${records.length} records.`,
+                text:
+                    [
+                        `${newlyConfirmed} new confirmation${newlyConfirmed === 1 ? "" : "s"}`,
+                        ...(known ? [`${known} already confirmed`] : []),
+                        ...(stillUnmatched.length ? [`${stillUnmatched.length} unmatched`] : []),
+                        ...(ignored ? [`${ignored} ignored`] : []),
+                    ].join(", ") + ` out of ${records.length} records.`,
                 icon: "success",
                 confirmButtonText: "Ok",
             });
@@ -235,7 +283,12 @@ const Qsl = () => {
         const markSent = (sent: QSO[]) => {
             // The log as it is now: a QSO edited while the upload ran keeps the edit.
             const ids = new Set(sent.map((q) => q.id));
-            log(useStore.getState().qsos.filter((q) => ids.has(q.id)).map((q) => ({ ...q, eqsl_sent: true })));
+            log(
+                useStore
+                    .getState()
+                    .qsos.filter((q) => ids.has(q.id))
+                    .map((q) => ({ ...q, eqsl_sent: true })),
+            );
         };
         try {
             const result = await uploadToEqsl(toSend, eqsl, markSent);
@@ -277,7 +330,12 @@ const Qsl = () => {
         const markSent = (sent: QSO[]) => {
             // The log as it is now: a QSO edited while the upload ran keeps the edit.
             const ids = new Set(sent.map((q) => q.id));
-            log(useStore.getState().qsos.filter((q) => ids.has(q.id)).map((q) => ({ ...q, clublog_sent: true })));
+            log(
+                useStore
+                    .getState()
+                    .qsos.filter((q) => ids.has(q.id))
+                    .map((q) => ({ ...q, clublog_sent: true })),
+            );
         };
         try {
             const result = await uploadToClublog(toSend, clublog, markSent);
@@ -315,6 +373,17 @@ const Qsl = () => {
     const clublogUploadable =
         clublogConfigured && !!clublogUnsent && clublogStatus !== "loading" && clublogStatus !== "auth";
     const lotwUnsent = qsos.filter((q) => !q.lotw_sent).length;
+    const tqsl = tqslAvailable();
+    // The callsigns waiting to go to LoTW, each with the locations TQSL has for it.
+    const unsentCalls = Array.isArray(tqslLocations)
+        ? [...new Set(qsos.filter((q) => !q.lotw_sent).map((q) => q.myCallsign?.trim().toUpperCase()))]
+              .filter((call): call is string => !!call)
+              .map((call) => ({
+                  call,
+                  locations: tqslLocations.filter((l) => l.call?.toUpperCase() === call),
+                  current: locationFor(call, tqslLocations, settings.tqslLocations),
+              }))
+        : [];
 
     return (
         <PageLayout title="QSLs">
@@ -348,19 +417,57 @@ const Qsl = () => {
                             disabled={!lotwConfigured || lotwStatus === "loading"}
                             onPress={handleLotwFetch}
                         />
-                        <Button
-                            startIcon="download-outline"
-                            text={`ADIF: ${lotwUnsent} qsos`}
-                            variant="outlined"
-                            numberOfLines={1}
-                            onPress={handleQslDownload}
-                        />
+                        {tqsl ? (
+                            <Button
+                                startIcon="cloud-upload-outline"
+                                text={tqslUploading ? "Uploading…" : `Upload: ${lotwUnsent} qsos`}
+                                variant="outlined"
+                                colour={Array.isArray(tqslLocations) && lotwUnsent ? "primary" : "grey"}
+                                numberOfLines={1}
+                                disabled={!Array.isArray(tqslLocations) || !lotwUnsent || tqslUploading}
+                                onPress={handleTqslUpload}
+                            />
+                        ) : (
+                            <Button
+                                startIcon="download-outline"
+                                text={`ADIF: ${lotwUnsent} qsos`}
+                                variant="outlined"
+                                numberOfLines={1}
+                                onPress={handleQslDownload}
+                            />
+                        )}
                     </Stack>
+                    {typeof tqslLocations === "string" && (
+                        <Typography variant="subtitle">
+                            Could not read TQSL's Station Locations: {tqslLocations}
+                        </Typography>
+                    )}
+                    {unsentCalls.map(({ call, locations, current }) =>
+                        locations.length > 1 ? (
+                            <Stack key={call} direction="row" style={{ alignItems: "center" }}>
+                                <Typography>{call}</Typography>
+                                <SelectInput
+                                    style={{ flexGrow: 1 }}
+                                    value={current?.name}
+                                    items={locations.map((l) => ({ label: l.name, value: l.name }))}
+                                    onValueChange={(name) =>
+                                        updateSetting("tqslLocations", { ...settings.tqslLocations, [call]: name })
+                                    }
+                                />
+                            </Stack>
+                        ) : !locations.length ? (
+                            <Typography key={call} variant="subtitle">
+                                {call} has no Station Location in TQSL, so its QSOs will be skipped. Add one in TQSL.
+                            </Typography>
+                        ) : null,
+                    )}
                     <Typography variant="subtitle">
                         {lotwConfigured
                             ? `Download pulls confirmations matched since ${qslSince}. `
                             : "Add your LoTW user name and password in Settings > API's to download confirmations. "}
-                        Uploading is an ADIF file for now: sign and send it with TQSL.
+                        {tqsl
+                            ? "Upload signs and sends through TQSL on this computer. Each QSO's own grid and state override the Station Location's."
+                            : "Uploading is an ADIF file for now: sign and send it with TQSL."}
                     </Typography>
                 </Stack>
 
