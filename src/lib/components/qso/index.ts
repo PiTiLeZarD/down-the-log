@@ -396,3 +396,30 @@ export const findMatchingQsos = (qsos: QSO[], data: QSO, threshold: number = 20)
 
 export const findMatchingQso = (qsos: QSO[], data: QSO): QSO | null =>
     findMatchingQsos(qsos, data).sort((qa, qb) => dt2mn(qa.date, data.date) - dt2mn(qb.date, data.date))[0] || null;
+
+// Folds an imported record onto the QSO it matched. The stored QSO wins wherever it says anything:
+// an import used to replace it outright, keeping only the id, so a WSJT-X/qFT8 file carrying the
+// whole history wiped every hand-logged contact it overlapped — rig, antenna, name, QTH, session,
+// the TOTA mark and the sent/received flags, which then made them look due for upload again. The
+// import only fills what the stored QSO lacks, and a flag set on either side stays set.
+//
+// Returns the stored object itself when the import adds nothing: the persist layer diffs QSOs by
+// object identity (see qsoOps in utils/store), so a fresh copy would cost a write per matched QSO.
+export const mergeImported = (stored: QSO, imported: QSO): QSO => {
+    const merged: Record<string, unknown> = { ...stored };
+    let changed = false;
+    Object.entries(imported).forEach(([field, value]) => {
+        if (field === "id" || field === "honeypot") return;
+        const current = merged[field];
+        if (value === undefined || value === null || value === "" || value === false) return;
+        if (current !== undefined && current !== null && current !== "" && current !== false) return;
+        merged[field] = value;
+        changed = true;
+    });
+    const extra = Object.keys(imported.honeypot || {}).filter((k) => !(k in (stored.honeypot || {})));
+    if (extra.length) {
+        merged.honeypot = { ...imported.honeypot, ...stored.honeypot };
+        changed = true;
+    }
+    return changed ? (merged as QSO) : stored;
+};

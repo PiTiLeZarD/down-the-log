@@ -10,6 +10,7 @@ import {
     findMatchingQso,
     findMatchingQsos,
     hasEvent,
+    mergeImported,
     prefillLocation,
     prefillMyStation,
     prefillOperating,
@@ -522,5 +523,63 @@ describe("findMatchingQsos", () => {
         const data = qso({ callsign: "VK4ALE", date: at("2024-01-01T10:09:00Z") });
         expect(findMatchingQso(log, data)?.id).toBe("b");
         expect(findMatchingQso(log, qso({ callsign: "W1AW" }))).toBeNull();
+    });
+});
+
+describe("mergeImported", () => {
+    // A hand-logged QSO, then the same contact as a qFT8 export has it: start time, 4-char grids,
+    // no rig, no flags, no session.
+    const stored = qso({
+        id: "stored",
+        callsign: "VK6BAD",
+        date: at("2026-09-14T10:34:26Z"),
+        locator: "OF76us",
+        name: "Chris",
+        myRig: "QMX",
+        myAntenna: "MA-12",
+        sessionId: "s1",
+        lotw_sent: true,
+        eqsl_received: true,
+        lotw_received: false,
+        totaUploaded: "2026-09-14T11:43:29.762Z",
+        honeypot: { kept: "mine" },
+    });
+    const imported = qso({
+        id: "imported",
+        callsign: "VK6BAD",
+        date: at("2026-09-14T10:33:45Z"),
+        locator: "OF76",
+        frequency: 7.076,
+        lotw_received: true,
+        note: "Distance: 3680.5 km",
+        honeypot: { kept: "theirs", app_qrzlog_status: "N" },
+    });
+
+    test("keeps everything the stored QSO already says", () => {
+        const merged = mergeImported(stored, imported);
+        expect(merged.id).toBe("stored");
+        expect(merged.date).toBe(stored.date);
+        expect(merged.locator).toBe("OF76us");
+        expect(merged).toMatchObject({
+            name: "Chris",
+            myRig: "QMX",
+            myAntenna: "MA-12",
+            sessionId: "s1",
+            lotw_sent: true,
+            eqsl_received: true,
+            totaUploaded: "2026-09-14T11:43:29.762Z",
+        });
+    });
+
+    test("fills what the stored QSO lacks, and a flag set on either side stays set", () => {
+        const merged = mergeImported(stored, imported);
+        expect(merged.frequency).toBe(7.076);
+        expect(merged.note).toBe("Distance: 3680.5 km");
+        expect(merged.lotw_received).toBe(true);
+        expect(merged.honeypot).toEqual({ kept: "mine", app_qrzlog_status: "N" });
+    });
+
+    test("hands back the stored object when the import adds nothing", () => {
+        expect(mergeImported(stored, qso({ callsign: "VK6BAD", locator: "OF76", lotw_sent: false }))).toBe(stored);
     });
 });

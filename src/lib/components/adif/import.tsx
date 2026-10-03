@@ -8,7 +8,7 @@ import { Typography } from "../../ui/typography";
 import { showDialog } from "../../ui/dialog";
 import { useSettings } from "../../utils/use-settings";
 import { Dropzone, FileWithPreview } from "../dropzone";
-import { QSO, findMatchingQso, prefillLocation, prefillMyStation, useQsos } from "../qso";
+import { QSO, findMatchingQso, mergeImported, prefillLocation, prefillMyStation, useQsos } from "../qso";
 import { Stack } from "../stack";
 
 export const styles = StyleSheet.create((theme) => ({
@@ -58,7 +58,7 @@ export const Import = () => {
                         typeof fr.result == "string" ? fr.result : new TextDecoder("utf-8").decode(fr.result);
 
                     const api = getFileApiFromFilename(file.name);
-                    const toImport: QSO[] = api
+                    const parsed: QSO[] = api
                         .parseFile(content)
                         .map((r) => record2qso(r))
                         // A record with no callsign is not a QSO: importing one puts a blank row in
@@ -68,19 +68,25 @@ export const Import = () => {
                             prefillLocation(
                                 prefillMyStation(q, { myCallsign: settings.myCallsign, myLocator: currentLocation }),
                             ),
-                        )
-                        .map((q) => {
-                            const matching = findMatchingQso(qsos, q);
-                            if (matching) {
-                                q.id = matching.id;
-                            }
-                            return q;
-                        });
+                        );
+                    // A match is merged into, never replaced: see mergeImported. Folded onto the
+                    // running copy, so two records landing on the same QSO both get a say.
+                    const fresh: QSO[] = [];
+                    const stored = new Map<string, QSO>();
+                    const merged = new Map<string, QSO>();
+                    parsed.forEach((q) => {
+                        const matching = findMatchingQso(qsos, q);
+                        if (!matching) return fresh.push(q);
+                        stored.set(matching.id, matching);
+                        merged.set(matching.id, mergeImported(merged.get(matching.id) || matching, q));
+                    });
+                    const updated = [...merged.values()].filter((q) => q !== stored.get(q.id));
+                    const toImport = [...fresh, ...updated];
                     // Read from the store now, not the render: several files dropped at once each
                     // land here in turn, and the earlier ones may have restored sessions already.
                     const restored = sessionsToRestore(
                         parseSessions(api.parseHeader?.(content)[SESSIONS_HEADER_FIELD]),
-                        toImport,
+                        [...fresh, ...merged.values()],
                         useStore.getState().sessions,
                     );
                     if (restored.length) adoptSessions(restored, []);
@@ -88,7 +94,8 @@ export const Import = () => {
                     showDialog({
                         title: "Done!",
                         text:
-                            `All ${toImport.length} records have been imported!` +
+                            `${fresh.length} new QSOs imported, ${merged.size} already in the log` +
+                            (updated.length ? ` (${updated.length} filled in from the file).` : ".") +
                             (restored.length ? ` ${restored.length} sessions came back with them.` : ""),
                         icon: "success",
                         confirmButtonText: "Ok",
