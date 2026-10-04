@@ -42,7 +42,7 @@
   },
   "productName": "down-the-log",
   "mainBinaryName": "down-the-log",
-  "version": "0.1.1",
+  "version": "0.1.2",
   "identifier": "com.pitilezard.dev",
   "plugins": {},
   "app": {
