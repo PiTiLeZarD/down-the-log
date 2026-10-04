@@ -1,6 +1,6 @@
 // Cuts a release: stamps the version everywhere, commits, tags and pushes.
 // Pushing the tag is what triggers .github/workflows/release.yml, which builds
-// the desktop bundles, drafts the GitHub release and redeploys the demo.
+// the desktop bundles, publishes the GitHub release and redeploys the demo.
 //
 // Usage: pnpm tag 1.0.1 [--dry-run]
 import { execFileSync } from "node:child_process";
@@ -57,4 +57,4 @@ git("push", "origin", tag);
 
 console.log(`\nPushed ${tag}. Release workflow is building:`);
 console.log("  https://github.com/PiTiLeZarD/down-the-log/actions");
-console.log("The GitHub release is created as a draft — publish it once the bundles look right.");
+console.log("The GitHub release is published automatically once every platform builds.");
