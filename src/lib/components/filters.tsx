@@ -1,6 +1,6 @@
 import { useRouter } from "expo-router";
 import React from "react";
-import { View, useWindowDimensions } from "react-native";
+import { View } from "react-native";
 import { StyleSheet } from "react-native-unistyles";
 import { mostWanted } from "../data/clranks";
 import { dxccName } from "../data/cty";
@@ -16,7 +16,7 @@ import { useStore } from "../utils/store";
 import { Alert } from "../ui/alert";
 import { Button } from "../ui/button";
 import { Input } from "../ui/input";
-import { PaginatedList } from "../ui/paginated-list";
+import { SelectInput } from "../ui/select-input";
 import { Typography } from "../ui/typography";
 import { showDialog } from "../ui/dialog";
 import { QSO, findMatchingQsos, hasEvent, useQsos } from "./qso";
@@ -144,30 +144,49 @@ const castValue = (k: string, v: string) => {
 export const Filters = ({ showTag }: FiltersProps) => {
     const filters = useStore((state) => state.filters);
     const qsos = useFilteredQsos();
-    const { height } = useWindowDimensions();
     const [modal, setModal] = React.useState<boolean>(false);
     const [tagModal, setTagModal] = React.useState<boolean>(false);
     const [tagValues, setTagValues] = React.useState<Record<string, string>>({});
     const [filter, setFilter] = React.useState<FilterName | undefined>(undefined);
     const [values, setValues] = React.useState<Array<unknown>>([]);
+    const [search, setSearch] = React.useState<string>("");
     const log = useStore((state) => state.log);
     const setFilters = useStore((state) => state.updateFilters);
     const { navigate } = useRouter();
 
-    const itemsPerPage = Math.floor((height - 40 * 5) / 40);
+    const filterItems = React.useMemo(
+        () => [
+            { label: "Pick a filter…", value: "" },
+            ...Object.keys(filterMap)
+                .sort()
+                .map((name) => ({ label: name, value: name })),
+        ],
+        [],
+    );
+    const options = React.useMemo(
+        () => (filter ? unique(qsos.map((q, i, a) => filterMap[filter](q, i, a)).flat()).sort(sortNumsAndAlpha) : []),
+        [filter, qsos],
+    );
+    const needle = search.trim().toLowerCase();
+    const shown = needle ? options.filter((v) => String(v).toLowerCase().includes(needle)) : options;
 
-    const handleSelectFilter = (name: string) => () => {
-        setFilter(filter === name ? undefined : name);
+    const handleSelectFilter = (name: string) => {
+        setFilter(name || undefined);
         setValues([]);
+        setSearch("");
     };
     const handleSelectValue = (value: string) => () => {
         setValues(values.includes(value) ? values.filter((vi) => vi !== value) : [...values, value]);
     };
-    const handleOk = () => {
-        if (values.length) setFilters([...filters, { name: filter as string, values }]);
+    const closeModal = () => {
         setModal(false);
         setFilter(undefined);
         setValues([]);
+        setSearch("");
+    };
+    const handleOk = () => {
+        if (filter && values.length) setFilters([...filters, { name: filter, values }]);
+        closeModal();
     };
 
     const handleUpdate = () => {
@@ -215,42 +234,58 @@ export const Filters = ({ showTag }: FiltersProps) => {
             <View>
                 <Button startIcon="add" onPress={() => setModal(true)} />
             </View>
-            <Modal open={modal} onClose={() => setModal(false)}>
+            <Modal
+                open={modal}
+                onClose={closeModal}
+                header={
+                    <Stack>
+                        <SelectInput value={filter ?? ""} items={filterItems} onValueChange={handleSelectFilter} />
+                        {filter && options.length > 10 && (
+                            <Input placeholder="Search…" value={search} onChangeText={setSearch} />
+                        )}
+                    </Stack>
+                }
+                footer={
+                    <Stack direction="row">
+                        <View style={{ flexGrow: 1 }}>
+                            <Button colour="grey" text="Cancel" onPress={closeModal} />
+                        </View>
+                        <View style={{ flexGrow: 1 }}>
+                            <Button
+                                colour={values.length ? "success" : "grey"}
+                                text={values.length ? `Add (${values.length})` : "Add"}
+                                onPress={handleOk}
+                            />
+                        </View>
+                    </Stack>
+                }
+            >
                 <Stack>
-                    {filter && <Button text={filter} onPress={handleSelectFilter(filter)} />}
-                    {!filter && (
-                        <PaginatedList itemsPerPage={itemsPerPage}>
-                            {Object.keys(filterMap)
-                                .sort()
-                                .map((name) => (
-                                    <Button
-                                        key={name}
-                                        text={name}
-                                        variant="outlined"
-                                        onPress={handleSelectFilter(name)}
-                                    />
-                                ))}
-                        </PaginatedList>
-                    )}
-                    {filter && (
-                        <PaginatedList itemsPerPage={itemsPerPage}>
-                            {unique(qsos.map((q, i, a) => filterMap[filter](q, i, a)).flat())
-                                .sort(sortNumsAndAlpha)
-                                .map((v) => (
-                                    <Button
-                                        key={v}
-                                        style={{ marginTop: 2, marginBottom: 2 }}
-                                        text={String(v)}
-                                        variant={values.includes(v) ? "contained" : "outlined"}
-                                        onPress={handleSelectValue(v)}
-                                    />
-                                ))}
-                        </PaginatedList>
-                    )}
-                    <Button colour="success" text="OK" onPress={handleOk} />
+                    {filter && shown.length === 0 && <Typography>No values</Typography>}
+                    {shown.map((v) => (
+                        <Button
+                            key={String(v)}
+                            text={String(v)}
+                            variant={values.includes(v) ? "contained" : "outlined"}
+                            onPress={handleSelectValue(v as string)}
+                        />
+                    ))}
                 </Stack>
             </Modal>
-            <Modal open={tagModal} onClose={() => setTagModal(false)}>
+            <Modal
+                open={tagModal}
+                onClose={() => setTagModal(false)}
+                footer={
+                    <Stack direction="row">
+                        <View style={{ flexGrow: 1 }}>
+                            <Button colour="grey" text="Cancel" onPress={() => setTagModal(false)} />
+                        </View>
+                        <View style={{ flexGrow: 1 }}>
+                            <Button colour="success" text="Update" onPress={handleUpdate} />
+                        </View>
+                    </Stack>
+                }
+            >
                 <Stack>
                     <Typography>
                         With this, you can bulk update your QSOs. Make sure the filters match what you want, set which
@@ -267,25 +302,21 @@ export const Filters = ({ showTag }: FiltersProps) => {
                             navigate("Adif");
                         }}
                     />
-                    <PaginatedList>
-                        {tagFields.map((k) => (
-                            <Stack key={k}>
-                                <Button
-                                    variant="outlined"
-                                    text={k}
-                                    onPress={() => setTagValues({ ...tagValues, [k]: "" })}
+                    {tagFields.map((k) => (
+                        <Stack key={k}>
+                            <Button
+                                variant="outlined"
+                                text={k}
+                                onPress={() => setTagValues({ ...tagValues, [k]: "" })}
+                            />
+                            {k in tagValues && (
+                                <Input
+                                    value={tagValues[k]}
+                                    onChangeText={(v) => setTagValues({ ...tagValues, [k]: v })}
                                 />
-                                {k in tagValues && (
-                                    <Input
-                                        value={tagValues[k]}
-                                        onChangeText={(v) => setTagValues({ ...tagValues, [k]: v })}
-                                    />
-                                )}
-                            </Stack>
-                        ))}
-                    </PaginatedList>
-                    <Button colour="success" text="Update" onPress={handleUpdate} />
-                    <Button colour="grey" text="Cancel" onPress={() => setTagModal(false)} />
+                            )}
+                        </Stack>
+                    ))}
                 </Stack>
             </Modal>
         </Stack>
