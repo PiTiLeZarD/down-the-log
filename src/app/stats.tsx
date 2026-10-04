@@ -1,7 +1,6 @@
 import React from "react";
-import { Switch } from "react-native";
+import { Switch, View } from "react-native";
 import { FilterName, Filters, filterMap, useFilteredQsos } from "../lib/components/filters";
-import { Grid } from "../lib/components/grid";
 import { PageLayout } from "../lib/components/page-layout";
 import { QSO } from "../lib/components/qso";
 import { Stack } from "../lib/components/stack";
@@ -49,7 +48,9 @@ const Stats = () => {
         useFavourites,
     ).sort(secondStat === "band" ? sortBands : sortNumsAndAlpha);
 
-    const columns = secondStatValues.length + 2;
+    const firstStatValues = applyFavourites(Object.keys(groups), firstStat, settings, useFavourites).sort(
+        firstStat === "band" ? sortBands : sortNumsAndAlpha,
+    );
 
     return (
         <PageLayout title="Stats">
@@ -75,53 +76,49 @@ const Stats = () => {
                     <Typography>Use favourites when available</Typography>
                     <Switch value={useFavourites} onValueChange={(v) => setUseFavourites(v)} />
                 </Stack>
-                <Grid container>
-                    <Grid item columns={columns} xs={1}>
-                        <Typography variant="em">{firstStat}</Typography>
-                    </Grid>
+                <View style={{ flexDirection: "row" }}>
+                    <View style={{ paddingRight: 16 }}>
+                        <Typography variant="em" numberOfLines={1}>
+                            {firstStat}
+                        </Typography>
+                        {firstStatValues.map((group) => (
+                            <Typography variant="em" numberOfLines={1} key={group}>
+                                {group}
+                            </Typography>
+                        ))}
+                        <Typography variant="em" numberOfLines={1}>
+                            Total
+                        </Typography>
+                    </View>
                     {secondStatValues.map((v) => (
-                        <Grid item columns={columns} xs={1} key={v}>
-                            <Typography variant="em">{v}</Typography>
-                        </Grid>
-                    ))}
-                    <Grid item columns={columns} xs={1}>
-                        <Typography variant="em">Total</Typography>
-                    </Grid>
-                </Grid>
-                {applyFavourites(Object.keys(groups), firstStat, settings, useFavourites)
-                    .sort(firstStat === "band" ? sortBands : sortNumsAndAlpha)
-                    .map((group) => (
-                        <Grid container key={group}>
-                            <Grid item columns={columns} xs={1}>
-                                <Typography variant="em">{group}</Typography>
-                            </Grid>
-                            {secondStatValues.map((v) => (
-                                <Grid item columns={columns} xs={1} key={`${group}_${v}`}>
-                                    <Typography>{(groups[group][v] || []).length}</Typography>
-                                </Grid>
+                        <View style={{ flex: 1 }} key={v}>
+                            <Typography variant="em" numberOfLines={1}>
+                                {v}
+                            </Typography>
+                            {firstStatValues.map((group) => (
+                                <Typography numberOfLines={1} key={`${group}_${v}`}>
+                                    {(groups[group][v] || []).length}
+                                </Typography>
                             ))}
-                            <Grid item columns={columns} xs={1}>
-                                <Typography>{Object.values(groups[group]).flat().length}</Typography>
-                            </Grid>
-                        </Grid>
-                    ))}
-                <Grid container>
-                    <Grid item columns={columns} xs={1}>
-                        <Typography variant="em">Total</Typography>
-                    </Grid>
-                    {secondStatValues.map((v) => (
-                        <Grid item columns={columns} xs={1} key={`total_${v}`}>
-                            <Typography>
+                            <Typography numberOfLines={1}>
                                 {Object.values(groups)
                                     .map((group) => (group[v] || []).length)
                                     .reduce((acc, curr) => acc + curr, 0)}
                             </Typography>
-                        </Grid>
+                        </View>
                     ))}
-                    <Grid item columns={columns} xs={1}>
-                        <Typography>{qsos.length}</Typography>
-                    </Grid>
-                </Grid>
+                    <View style={{ flex: 1 }}>
+                        <Typography variant="em" numberOfLines={1}>
+                            Total
+                        </Typography>
+                        {firstStatValues.map((group) => (
+                            <Typography numberOfLines={1} key={`${group}_total`}>
+                                {Object.values(groups[group]).flat().length}
+                            </Typography>
+                        ))}
+                        <Typography numberOfLines={1}>{qsos.length}</Typography>
+                    </View>
+                </View>
             </Stack>
         </PageLayout>
     );

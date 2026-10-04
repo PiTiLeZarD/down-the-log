@@ -1,5 +1,4 @@
 import { DateTime } from "luxon";
-import { isNumber } from "./math";
 
 // Filled in place rather than by spreading the accumulator: the copying version spread the whole
 // groups object and rebuilt the target array once per element, which is the shape that makes the
@@ -24,10 +23,7 @@ export const groupBy = <T extends object, K extends string>(
 // the whole log on the export and filter paths.
 export const unique: <T>(a: Array<T>) => Array<T> = (a) => Array.from(new Set(a));
 
-export const sortNumsAndAlpha = (r1: string, r2: string) => {
-    if (isNumber(r1) && isNumber(r2)) return +r1 - +r2;
-    return r1 < r2 ? -1 : r1 === r2 ? 0 : 1;
-};
+export const sortNumsAndAlpha = (r1: string, r2: string) => r1.localeCompare(r2, undefined, { numeric: true });
 
 export const clusterByDate: <T>(objects: T[], cb: (o: T) => DateTime, interval?: number) => T[][] = (
     objects,
