@@ -49,7 +49,7 @@ export const syncVersion = (tag) => {
 
     patchSource("src-tauri/Cargo.toml", /^version = ".*"$/m, `version = "${version}"`);
     // Cargo rewrites the lock's own entry on the next build; bump it now so that isn't a stray diff.
-    patchSource("src-tauri/Cargo.lock", /^(name = "app"\nversion = )".*"$/m, `$1"${version}"`);
+    patchSource("src-tauri/Cargo.lock", /^(name = "app"\r?\nversion = )".*"$/m, `$1"${version}"`);
     // ADIF header advertises the exporting program's version to whoever reads the file.
     patchSource("src/lib/utils/file-format/common.ts", /^(\s*programversion: )".*",$/m, `$1"${version}",`);
 
