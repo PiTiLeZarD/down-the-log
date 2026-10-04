@@ -322,7 +322,7 @@ export const header = (sessions?: string): Header => ({
     fields: {
         created_timestamp: DateTime.utc().toFormat("yyyyMMdd HHmmss"),
         programid: "down-the-log",
-        programversion: "0.1.2",
+        programversion: "0.1.3",
         ...(sessions ? { [SESSIONS_HEADER_FIELD]: sessions } : {}),
     },
 });
