@@ -42,7 +42,7 @@ const Qsl = () => {
         }
     ).date;
     // A pull that has already happened moves the window forward; until then it's the whole log.
-    const qslSince = settings.lotwQslSince || fromDate.toFormat("yyyy-MM-dd");
+    const qslSince = settings.lotwConfirmedSince || fromDate.toFormat("yyyy-MM-dd");
     const rcvdSince = settings.eqslRcvdSince || fromDate.toFormat("yyyyMMdd");
 
     useEffect(() => {
@@ -226,7 +226,7 @@ const Qsl = () => {
                 callsign: settings.myCallsign || undefined,
             });
             const imported = importQslContent(content, "lotw.adi");
-            if (imported) updateSetting("lotwQslSince", asked);
+            if (imported) updateSetting("lotwConfirmedSince", asked);
             setLotwStatus(imported ? "done" : "error");
         } catch (e) {
             setLotwStatus(e instanceof LotwError ? e.status : "error");

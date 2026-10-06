@@ -58,7 +58,7 @@ export type Settings = {
     lotw?: LotwSettingsType;
     // How far back the next confirmation pull asks, yyyy-MM-dd. Moved forward after a successful
     // one so a second pull isn't the operator's whole LoTW history again.
-    lotwQslSince?: string;
+    lotwConfirmedSince?: string;
     // Desktop only: the TQSL Station Location each callsign signs with, by callsign. A callsign with
     // no entry signs with the first location TQSL has for it — see utils/tqsl.
     tqslLocations?: Record<string, string>;
@@ -131,9 +131,12 @@ const defaultSettings: Settings = {
 // `totaMap` was the Tiles page's list/map boolean. The poster replaced that map — it says which
 // tiles are covered, which is what the map was being read for — and the list is still the default,
 // so a stored `false` needs nothing carried over and a stored `true` has nowhere to go.
+// `lotwQslSince` was the LoTW pull window, moved forward by pulls that read every confirmation as
+// nothing to confirm (see confirmQso in components/qsl). Dropping it lets the next pull start again
+// from the oldest QSO and pick up what those skipped; `lotwConfirmedSince` replaced it.
 // `spotAlerts` was a second set of filter rules just for notifications; it's folded into
 // `spotFilter` below and only its on/off survives, as `spotAlertsEnabled`.
-const legacySettings = ["contestMode", "totaMap", "spotAlerts"];
+const legacySettings = ["contestMode", "totaMap", "spotAlerts", "lotwQslSince"];
 
 // Rebuilt whenever it's there at all, so a filter stored before a field existed gets that field's
 // default rather than an `undefined` the filter code would trip over.

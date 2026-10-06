@@ -36,6 +36,15 @@ describe("confirmQso", () => {
     test("flags LoTW from the service's own field", () =>
         expect(confirmQso(qso(), record(lotw))).toMatchObject({ lotw_received: true }));
 
+    // What the pull actually gets back: asked for one callsign, LoTW leaves APP_LoTW_OWNCALL out.
+    test("flags LoTW from a report narrowed to one callsign", () =>
+        expect(
+            confirmQso(qso(), record({ app_lotw_modegroup: "DATA", app_lotw_rxqsl: "2026-10-03 12:50:04", qsl_rcvd: "Y" })),
+        ).toMatchObject({ lotw_received: true }));
+
+    test("doesn't flag a LoTW record that isn't a confirmation", () =>
+        expect(confirmQso(qso(), record({ ...lotw, qsl_rcvd: "N" }))).toBeNull());
+
     test("flags eQSL from the service's own field", () =>
         expect(confirmQso(qso(), record(eqsl))).toMatchObject({ eqsl_received: true }));
 

@@ -19,9 +19,17 @@ export const qslRecordKey = (record: QSORecord): string =>
 // null means "already says this", and it matters: the persist layer diffs QSOs by object identity
 // (see qsoOps in utils/store), so handing back a fresh copy of an unchanged QSO costs a write per
 // matched QSO on every re-import of the same file.
+//
+// A LoTW record is told by any APP_LoTW_* field, not by APP_LoTW_OWNCALL in particular: LoTW leaves
+// that one out of a report asked for one callsign (qso_owncall), which is how the pull asks, and
+// keying on it read every pulled confirmation as "nothing to confirm". QSL_RCVD is what says the
+// record is a confirmation; a report of plain QSOs carries the same fields with QSL_RCVD:N.
 export const confirmQso = (target: QSO, record: QSO): QSO | null => {
     const honeypot = record.honeypot || {};
-    const lotw = "app_lotw_owncall" in honeypot && !target.lotw_received;
+    const lotw =
+        Object.keys(honeypot).some((k) => k.startsWith("app_lotw_")) &&
+        honeypot.qsl_rcvd?.toUpperCase() !== "N" &&
+        !target.lotw_received;
     const eqsl = "app_eqsl_ag" in honeypot && !target.eqsl_received;
     if (!lotw && !eqsl) return null;
     return { ...target, ...(lotw ? { lotw_received: true } : {}), ...(eqsl ? { eqsl_received: true } : {}) };
