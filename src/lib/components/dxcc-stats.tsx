@@ -1,7 +1,7 @@
 import { useRouter } from "expo-router";
 import { useMemo } from "react";
 import { View } from "react-native";
-import { groupQsos } from "../../app/stats";
+import { groupQsos } from "./analytics/stats-table";
 import { sortBands } from "../data/bands";
 import { clranks, mostWanted } from "../data/clranks";
 import { unique } from "../utils/arrays";

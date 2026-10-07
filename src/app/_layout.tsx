@@ -98,6 +98,7 @@ const RootLayout = () => {
                             <Stack.Screen name="events/index" />
                             <Stack.Screen name="events/[section]" />
                             <Stack.Screen name="qsl" />
+                            <Stack.Screen name="analytics" />
                             <Stack.Screen name="stats" />
                         </Stack>
                     </ThemeProvider>

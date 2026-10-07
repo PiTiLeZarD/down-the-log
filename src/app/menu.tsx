@@ -53,7 +53,7 @@ const Menu = () => {
                     <MenuButton icon="albums" navigateTo="/qsl" text="QSLs" />
                 </Grid>
                 <Grid item xs={6}>
-                    <MenuButton icon="stats-chart" navigateTo="/stats" text="Stats" />
+                    <MenuButton icon="stats-chart" navigateTo="/analytics" text="Analytics" />
                 </Grid>
             </Grid>
             <Grid container>

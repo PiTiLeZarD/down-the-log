@@ -5,8 +5,8 @@ import { StyleSheet } from "react-native-unistyles";
 import { mostWanted } from "../data/clranks";
 import { dxccName } from "../data/cty";
 import { countries } from "../data/countries";
-import { isDigital } from "../data/modes";
 import { sortNumsAndAlpha, unique } from "../utils/arrays";
+import { modeGroupOf } from "../utils/dxcc-progress";
 import { normalise } from "../utils/locator";
 import { Modal } from "../utils/modal";
 import { hasIgnoredIssues, hasIssues, hasOpenIssues } from "../utils/qso-issues";
@@ -39,7 +39,7 @@ export const filterMap: Record<string, FilterFunction> = {
     day: (qso) => [String(qso.date.toObject().day)],
     band: (qso) => [String(qso.band)],
     mode: (qso) => [String(qso.mode)],
-    modeGrouped: (qso) => [qso.mode === "CW" ? "CW" : isDigital(qso.mode) ? "Data" : "Phone"],
+    modeGrouped: (qso) => [modeGroupOf(qso.mode)],
     cq: (qso) => [String(qso.cqzone)],
     itu: (qso) => [String(qso.ituzone)],
     dxcc: (qso) => [dxcc2label(qso.dxcc)],
