@@ -6,7 +6,8 @@ import { mostWanted } from "../data/clranks";
 import { dxccName } from "../data/cty";
 import { countries } from "../data/countries";
 import { sortNumsAndAlpha, unique } from "../utils/arrays";
-import { modeGroupOf } from "../utils/dxcc-progress";
+import { modeGroupOf } from "../utils/award-progress";
+import { vkCallAreaOf, wasStateOf } from "../utils/awards";
 import { normalise } from "../utils/locator";
 import { Modal } from "../utils/modal";
 import { hasIgnoredIssues, hasIssues, hasOpenIssues } from "../utils/qso-issues";
@@ -44,6 +45,9 @@ export const filterMap: Record<string, FilterFunction> = {
     itu: (qso) => [String(qso.ituzone)],
     dxcc: (qso) => [dxcc2label(qso.dxcc)],
     state: (qso) => [String(qso.state)],
+    // The units of the WAS and WAVKCA awards, so the analytics screens can open the log on one.
+    wasState: (qso) => [wasStateOf(qso) || ""],
+    vkCallArea: (qso) => [vkCallAreaOf(qso) || ""],
     pota: (qso) => [qso.pota || "", qso.myPota || ""],
     wwff: (qso) => [qso.wwff || "", qso.myWwff || ""],
     sota: (qso) => [qso.sota || "", qso.mySota || ""],

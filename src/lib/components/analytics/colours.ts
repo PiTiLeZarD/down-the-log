@@ -1,7 +1,7 @@
 import React from "react";
 import { useUnistyles } from "react-native-unistyles";
 import { colour, theme } from "../../ui/theme";
-import { EntityStatus } from "../../utils/dxcc-progress";
+import { UnitStatus } from "../../utils/award-progress";
 
 /**
  * SVG fills need literal colours: on web Unistyles hands theme strings out as CSS variables, which a
@@ -12,7 +12,7 @@ export const useAnalyticsColours = () => {
     const shade = rt.themeName === "dark" ? "dark" : "light";
     return React.useMemo(() => {
         const t = theme(shade);
-        const status: Record<EntityStatus, string> = {
+        const status: Record<UnitStatus, string> = {
             // Orange reads as the finished state, the cooler teal as still waiting on a QSL.
             worked: colour("teal", "400"),
             confirmed: colour("orange", "500"),

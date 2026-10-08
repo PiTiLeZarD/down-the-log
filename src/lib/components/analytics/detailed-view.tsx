@@ -2,8 +2,7 @@ import { ScrollView, View } from "react-native";
 import { StyleSheet } from "react-native-unistyles";
 import { sortBands } from "../../data/bands";
 import { Typography } from "../../ui/typography";
-import { unique } from "../../utils/arrays";
-import { EntityLog, SlotFilter, dxccSummary, modeGroups } from "../../utils/dxcc-progress";
+import { SlotFilter, UnitLogs, awardSummary, bandsWorked, modeGroups } from "../../utils/award-progress";
 
 const CELL = 64;
 
@@ -27,17 +26,17 @@ const styles = StyleSheet.create((theme) => ({
 
 type Column = { label: string; filter: SlotFilter };
 
-export type DetailedViewProps = { logs: Map<number, EntityLog> };
+export type DetailedViewProps = { logs: UnitLogs; total: number };
 
-/** Entity counts for the whole log, each mode group and each band worked, side by side. */
-export const DetailedView = ({ logs }: DetailedViewProps) => {
-    const bands = unique([...logs.values()].flatMap((l) => l.slots.map((s) => s.band))).sort(sortBands);
+/** Unit counts for the whole log, each mode group and each band worked, side by side. */
+export const DetailedView = ({ logs, total }: DetailedViewProps) => {
+    const bands = bandsWorked(logs).sort(sortBands);
     const columns: Column[] = [
         { label: "All", filter: {} },
         ...modeGroups.map((m) => ({ label: m === "Data" ? "Digital" : m, filter: { modes: [m] } })),
         ...bands.map((b) => ({ label: b, filter: { bands: [b] } })),
     ];
-    const summaries = columns.map((c) => dxccSummary(logs, c.filter));
+    const summaries = columns.map((c) => awardSummary(logs, total, c.filter));
     const rows = [
         { label: "Total worked", value: (i: number) => summaries[i].worked },
         { label: "Confirmed", value: (i: number) => summaries[i].confirmed },

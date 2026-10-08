@@ -1,7 +1,7 @@
 import { View } from "react-native";
 import { StyleSheet } from "react-native-unistyles";
 import { Typography } from "../../ui/typography";
-import { DxccSummary } from "../../utils/dxcc-progress";
+import { AwardSummary } from "../../utils/award-progress";
 
 const styles = StyleSheet.create((theme) => ({
     tiles: {
@@ -49,7 +49,7 @@ const Tile = ({ title, value, of }: TileProps) => (
     </View>
 );
 
-export const SummaryTiles = ({ worked, confirmed, total }: DxccSummary) => (
+export const SummaryTiles = ({ worked, confirmed, total }: AwardSummary) => (
     <View style={styles.tiles}>
         <Tile title="Total worked" value={worked} of={total} />
         <Tile title="Confirmed" value={confirmed} of={total} />

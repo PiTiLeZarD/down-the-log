@@ -1,7 +1,7 @@
 import { View } from "react-native";
 import { StyleSheet } from "react-native-unistyles";
 import { Typography } from "../../ui/typography";
-import { DxccSummary, milestones } from "../../utils/dxcc-progress";
+import { AwardSummary } from "../../utils/award-progress";
 import { useAnalyticsColours } from "./colours";
 
 const BAR = 16;
@@ -56,13 +56,13 @@ const styles = StyleSheet.create((theme) => ({
     },
 }));
 
-type BarProps = { value: number; total: number; colour: string };
+type BarProps = { value: number; total: number; colour: string; milestones: number[] };
 
-const Bar = ({ value, total, colour }: BarProps) => {
+const Bar = ({ value, total, colour, milestones }: BarProps) => {
     const pc = total ? Math.min(100, (value / total) * 100) : 0;
     return (
         <View style={styles.track}>
-            {milestones(total).map((m) => (
+            {milestones.map((m) => (
                 <View key={m} style={styles.tick((m / total) * 100)} />
             ))}
             {value > 0 && (
@@ -75,12 +75,14 @@ const Bar = ({ value, total, colour }: BarProps) => {
 };
 
 // Same colours as the map, so worked and confirmed read the same everywhere on the screen.
-export const DxccProgressBar = ({ worked, confirmed, total }: DxccSummary) => {
+export type ProgressBarProps = AwardSummary & { milestones: number[] };
+
+export const ProgressBar = ({ worked, confirmed, total, milestones }: ProgressBarProps) => {
     const colours = useAnalyticsColours();
     return (
         <View style={{ gap: 8 }}>
-            <Bar value={worked} total={total} colour={colours.status.worked} />
-            <Bar value={confirmed} total={total} colour={colours.status.confirmed} />
+            <Bar value={worked} total={total} colour={colours.status.worked} milestones={milestones} />
+            <Bar value={confirmed} total={total} colour={colours.status.confirmed} milestones={milestones} />
             <View style={styles.legend}>
                 <View style={styles.legendItem}>
                     <View style={styles.dot(colours.status.confirmed)} />

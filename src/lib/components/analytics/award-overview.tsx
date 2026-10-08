@@ -1,31 +1,29 @@
-import { useRouter } from "expo-router";
 import React from "react";
 import { View } from "react-native";
 import Svg, { Circle } from "react-native-svg";
 import { StyleSheet } from "react-native-unistyles";
 import { sortBands } from "../../data/bands";
-import { countries } from "../../data/countries";
-import { entities } from "../../data/cty";
 import { Button } from "../../ui/button";
 import { SelectInput } from "../../ui/select-input";
 import { Typography } from "../../ui/typography";
 import { unique } from "../../utils/arrays";
 import {
-    DxccSummary,
-    EntityLog,
+    AwardSummary,
     ModeGroup,
     SlotFilter,
-    dxccSummary,
-    entityStatus,
+    UnitLogs,
+    awardSummary,
+    bandsWorked,
     matchingSlots,
-} from "../../utils/dxcc-progress";
-import { useStore } from "../../utils/store";
-import { dxcc2label } from "../filters";
+    unitStatus,
+} from "../../utils/award-progress";
+import { Award } from "../../utils/awards";
 import { Stack } from "../stack";
+import { AwardMap } from "./award-map";
 import { useAnalyticsColours } from "./colours";
 import { DetailedView } from "./detailed-view";
-import { DxccMap } from "./dxcc-map";
-import { DxccProgressBar } from "./dxcc-progress-bar";
+import { ProgressBar } from "./progress-bar";
+import { useShowInLog } from "./show-in-log";
 import { SummaryTiles } from "./summary-tiles";
 
 const DONUT = 72;
@@ -75,7 +73,7 @@ const modeButtons: { label: string; mode?: ModeGroup }[] = [
     { label: "Phone", mode: "Phone" },
 ];
 
-const Donut = ({ worked, confirmed, total }: DxccSummary) => {
+const Donut = ({ worked, confirmed, total }: AwardSummary) => {
     const colours = useAnalyticsColours();
     const r = (DONUT - RING) / 2;
     const circumference = 2 * Math.PI * r;
@@ -123,22 +121,22 @@ const Donut = ({ worked, confirmed, total }: DxccSummary) => {
     );
 };
 
-export type DxccOverviewProps = { logs: Map<number, EntityLog> };
+export type AwardOverviewProps = { award: Award; logs: UnitLogs };
 
-export const DxccOverview = ({ logs }: DxccOverviewProps) => {
+export const AwardOverview = ({ award, logs }: AwardOverviewProps) => {
     const [mode, setMode] = React.useState<ModeGroup | undefined>(undefined);
     const [band, setBand] = React.useState<string>("");
-    const [selected, setSelected] = React.useState<number | undefined>(undefined);
-    const updateFilters = useStore((state) => state.updateFilters);
-    const { navigate } = useRouter();
+    const [selected, setSelected] = React.useState<string | undefined>(undefined);
+    const showInLog = useShowInLog(award.key);
 
     const filter: SlotFilter = { modes: mode ? [mode] : undefined, bands: band ? [band] : undefined };
-    const summary = dxccSummary(logs, filter);
-    const bands = unique([...logs.values()].flatMap((l) => l.slots.map((s) => s.band))).sort(sortBands);
+    const summary = awardSummary(logs, award.units.length, filter);
+    const bands = bandsWorked(logs).sort(sortBands);
 
-    const selectedEntity = selected !== undefined ? entities[selected] : undefined;
-    const selectedSlots = matchingSlots(logs.get(selected ?? 0), filter);
-    const selectedStatus = entityStatus(logs.get(selected ?? 0), filter);
+    const selectedUnit = award.units.find((u) => u.id === selected);
+    const selectedLog = selected ? logs.get(selected) : undefined;
+    const selectedSlots = matchingSlots(selectedLog, filter);
+    const selectedStatus = unitStatus(selectedLog, filter);
 
     return (
         <Stack gap="xl">
@@ -161,18 +159,19 @@ export const DxccOverview = ({ logs }: DxccOverviewProps) => {
                     />
                 </View>
                 <SummaryTiles {...summary} />
-                <DxccMap
-                    status={(dxcc) => entityStatus(logs.get(dxcc), filter)}
+                <AwardMap
+                    award={award.key}
+                    status={(id) => unitStatus(logs.get(id), filter)}
                     selected={selected}
-                    onSelect={(dxcc) => setSelected(dxcc === selected ? undefined : dxcc)}
+                    onSelect={(id) => setSelected(id === selected ? undefined : id)}
                 />
                 <View style={styles.footer}>
                     <Donut {...summary} />
-                    {selectedEntity && (
+                    {selectedUnit && (
                         <View style={styles.selected}>
                             <Typography variant="em">
-                                {(selectedEntity.iso3 && countries[selectedEntity.iso3]?.flag) || ""}{" "}
-                                {selectedEntity.name} ({selectedEntity.dxcc})
+                                {selectedUnit.flag ? `${selectedUnit.flag} ` : ""}
+                                {selectedUnit.name} ({selectedUnit.code})
                             </Typography>
                             <Typography variant="subtitle">
                                 {selectedStatus === "missing"
@@ -188,10 +187,7 @@ export const DxccOverview = ({ logs }: DxccOverviewProps) => {
                                     <Button
                                         variant="chip"
                                         text="Show in log"
-                                        onPress={() => {
-                                            updateFilters([{ name: "dxcc", values: [dxcc2label(selected)] }]);
-                                            navigate("/");
-                                        }}
+                                        onPress={() => showInLog(selectedUnit.id)}
                                     />
                                 </View>
                             )}
@@ -200,12 +196,12 @@ export const DxccOverview = ({ logs }: DxccOverviewProps) => {
                 </View>
             </View>
             <View style={styles.section}>
-                <Typography variant="h4">DXCC progress</Typography>
-                <DxccProgressBar {...summary} />
+                <Typography variant="h4">{award.label} progress</Typography>
+                <ProgressBar {...summary} milestones={award.milestones} />
             </View>
             <View style={styles.section}>
                 <Typography variant="h4">Detailed view</Typography>
-                <DetailedView logs={logs} />
+                <DetailedView logs={logs} total={award.units.length} />
             </View>
         </Stack>
     );
