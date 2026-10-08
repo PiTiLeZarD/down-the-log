@@ -10,7 +10,7 @@ import { states } from "../data/states";
  * counts for; everything else — worked, confirmed, the map, the list — is shared.
  */
 
-export type AwardKey = "dxcc" | "was" | "wavkca";
+export type AwardKey = "dxcc" | "wac" | "waz" | "itu" | "was" | "wavkca";
 
 export type AwardUnit = {
     id: string;
@@ -142,4 +142,60 @@ const wavkca: Award = {
     milestones: [],
 };
 
-export const awards: Record<AwardKey, Award> = { dxcc, was, wavkca };
+/**
+ * The continent a QSO counts for toward WAC: the one logged, or failing that its DXCC entity's.
+ * Antarctica isn't one of WAC's six.
+ */
+export const continentOf = (qso: QSO): string | undefined => {
+    const d = dxccOf(qso);
+    const continent = qso.continent || (d ? entities[d]?.ctn : undefined);
+    return continent && continent !== "AN" ? continent : undefined;
+};
+
+const wac: Award = {
+    key: "wac",
+    label: "WAC",
+    title: "Worked All Continents",
+    unitName: "continents",
+    listTitle: "Continent List",
+    units: Object.entries(continents)
+        .filter(([code]) => code !== "AN")
+        .map(([code, name]) => ({ id: code, name, code })),
+    unitOf: continentOf,
+    milestones: [],
+};
+
+const zones = (count: number, name: string) =>
+    Array.from({ length: count }, (_, i) => ({ id: String(i + 1), name: `${name} ${i + 1}`, code: String(i + 1) }));
+
+// Zones come off the QSO alone. An entity's default zone is wrong for the big countries that span
+// several (the US is in three CQ zones and six ITU ones), so it's no fallback for a missing one.
+const zoneOf = (zone: number | undefined, count: number): string | undefined => {
+    const n = Number(zone);
+    return Number.isInteger(n) && n >= 1 && n <= count ? String(n) : undefined;
+};
+
+const waz: Award = {
+    key: "waz",
+    label: "WAZ",
+    title: "Worked All Zones",
+    unitName: "zones",
+    listTitle: "Zone List",
+    units: zones(40, "CQ zone"),
+    unitOf: (qso) => zoneOf(qso.cqzone, 40),
+    milestones: [10, 20, 30],
+};
+
+const itu: Award = {
+    key: "itu",
+    label: "ITU",
+    title: "ITU Zones",
+    unitName: "zones",
+    listTitle: "Zone List",
+    units: zones(90, "ITU zone"),
+    unitOf: (qso) => zoneOf(qso.ituzone, 90),
+    milestones: [25, 50, 75],
+};
+
+// In the picker's order: the world first, then by region.
+export const awards: Record<AwardKey, Award> = { dxcc, wac, waz, itu, was, wavkca };

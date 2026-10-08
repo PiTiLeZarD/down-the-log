@@ -58,6 +58,15 @@ export const AwardMap = ({ award, status, selected, onSelect }: AwardMapProps) =
                             />
                         ) : null,
                     )}
+                    {map.overlay && (
+                        <Path
+                            d={map.overlay}
+                            fill="none"
+                            stroke={colours.text}
+                            strokeOpacity={0.5}
+                            strokeWidth={stroke}
+                        />
+                    )}
                     <G>
                         {shapes.map(({ id, d, dot, pinned, status }) =>
                             // A dot that stands in for an outline is always drawn; one that only
@@ -82,7 +91,7 @@ export const AwardMap = ({ award, status, selected, onSelect }: AwardMapProps) =
                                     key={id}
                                     x={label[0]}
                                     y={label[1]}
-                                    fontSize={map.width / 36}
+                                    fontSize={map.labelSize ?? map.width / 36}
                                     fontFamily="Quicksand"
                                     fontWeight="bold"
                                     fill={colours.text}

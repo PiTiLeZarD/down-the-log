@@ -1,5 +1,7 @@
 import { entities } from "../../data/cty";
+import cqZones from "../../data/cqzones.json";
 import dxccPolygons from "../../data/dxcc.json";
+import ituZones from "../../data/ituzones.json";
 import stateMaps from "../../data/state-maps.json";
 import { AwardKey } from "../../utils/awards";
 import { maidenhead2Latlong } from "../../utils/locator";
@@ -21,7 +23,15 @@ export type Shape = {
     label?: Point;
 };
 
-export type AwardShapes = { width: number; height: number; dot: number; shapes: Shape[] };
+export type AwardShapes = {
+    width: number;
+    height: number;
+    dot: number;
+    shapes: Shape[];
+    labelSize?: number;
+    /** Drawn over the shapes as plain outlines, for bearings: the coastlines on a zone map. */
+    overlay?: string;
+};
 
 const boxOf = (rings: Point[][]): Box =>
     rings.flat().reduce(
@@ -62,31 +72,114 @@ const shape = (id: string, rings: Point[][], speck: number, label = false): Shap
     };
 };
 
-// Plain equirectangular, one unit per degree. The far south is only ocean and the Antarctic
-// coastline, so it's cut off to keep the land big; the Arctic islands that count still fit.
-const NORTH = 84;
-const SOUTH = -60;
+// Plain equirectangular, one unit per degree, [lat, lng] in. The far south is only ocean and the
+// Antarctic coastline, so the land maps cut it off to keep the land big; the zone maps can't, since
+// a good few zones are down there.
+const LAND = { north: 84, south: -60 };
+const WORLD = { north: 85, south: -85 };
+const equirect =
+    ({ north }: { north: number }) =>
+    ([lat, lng]: Point): Point => [lng + 180, north - lat];
+
+let dxccRings: Map<number, Point[][]> | undefined;
+// The DXCC outlines decoded once, in [lat, lng]: the DXCC, WAC and zone maps all draw off them.
+const getDxccRings = (): Map<number, Point[][]> => {
+    if (dxccRings) return dxccRings;
+    const polygons = dxccPolygons as Record<string, string[]>;
+    dxccRings = new Map(
+        Object.values(entities).map(({ dxcc }) => [
+            dxcc,
+            (polygons[String(dxcc).padStart(3, "0")] || []).map((e) => decode(e)),
+        ]),
+    );
+    return dxccRings;
+};
 
 const dxccShapes = (): AwardShapes => {
-    const polygons = dxccPolygons as Record<string, string[]>;
-    const project = ([lat, lng]: Point): Point => [lng + 180, NORTH - lat];
+    const project = equirect(LAND);
+    const rings = getDxccRings();
     return {
         width: 360,
-        height: NORTH - SOUTH,
+        height: LAND.north - LAND.south,
         dot: 1.6,
         shapes: Object.values(entities).map(({ dxcc, gs }) => {
-            const encoded = polygons[String(dxcc).padStart(3, "0")];
-            if (!encoded) {
+            const own = rings.get(dxcc) || [];
+            if (!own.length) {
                 // A handful of entities have no outline in the source; their reference grid places them.
                 const { latitude, longitude } = maidenhead2Latlong(gs);
                 return { id: String(dxcc), rings: [], d: "", dot: project([latitude, longitude]) };
             }
             return shape(
                 String(dxcc),
-                encoded.map((e) => decode(e).map(project)),
+                own.map((r) => r.map(project)),
                 1.5,
             );
         }),
+    };
+};
+
+// Where each continent's code goes: the middle of its box lands in the sea for half of them.
+const continentLabels: Record<string, Point> = {
+    NA: [45, -100],
+    SA: [-15, -58],
+    EU: [52, 15],
+    AF: [5, 20],
+    AS: [50, 90],
+    OC: [-25, 135],
+};
+
+// Each continent is every DXCC entity on it, drawn as one shape.
+const wacShapes = (): AwardShapes => {
+    const project = equirect(LAND);
+    const rings = getDxccRings();
+    const byContinent = new Map<string, Point[][]>();
+    for (const { dxcc, ctn } of Object.values(entities)) {
+        if (!(ctn in continentLabels)) continue;
+        byContinent.set(ctn, [...(byContinent.get(ctn) || []), ...(rings.get(dxcc) || []).map((r) => r.map(project))]);
+    }
+    return {
+        width: 360,
+        height: LAND.north - LAND.south,
+        dot: 1.6,
+        labelSize: 9,
+        shapes: [...byContinent].map(([id, own]) => ({
+            ...shape(id, own, 0),
+            label: project(continentLabels[id]),
+        })),
+    };
+};
+
+// Zones running past the antimeridian are stored past ±180 rather than split, so the part that
+// falls off one edge is drawn again on the other.
+const wrapped = (rings: Point[][], width: number): Point[][] =>
+    rings.flatMap((ring) => {
+        const xs = ring.map((p) => p[0]);
+        return [
+            ring,
+            ...(Math.max(...xs) > width ? [ring.map(([x, y]) => [x - width, y])] : []),
+            ...(Math.min(...xs) < 0 ? [ring.map(([x, y]) => [x + width, y])] : []),
+        ];
+    });
+
+const zoneShapes = (zones: Record<string, string | string[]>): AwardShapes => {
+    const project = equirect(WORLD);
+    const width = 360;
+    return {
+        width,
+        height: WORLD.north - WORLD.south,
+        dot: 1.6,
+        labelSize: 6,
+        shapes: Object.entries(zones).map(([key, encoded]) => {
+            const own = (Array.isArray(encoded) ? encoded : [encoded]).map((e) => decode(e).map(project));
+            const box = boxOf(own);
+            const [x, y] = centre(box);
+            return {
+                ...shape(String(Number(key)), wrapped(own, width), 0),
+                // The polar caps go all the way round, so their middle is wherever; the map's reads best.
+                label: [box.maxX - box.minX >= width ? width / 2 : ((x % width) + width) % width, y],
+            };
+        }),
+        overlay: pathOf([...getDxccRings().values()].flat().map((r) => r.map(project))),
     };
 };
 
@@ -137,6 +230,9 @@ const vkShapes = (): AwardShapes => {
 
 const builders: Record<AwardKey, () => AwardShapes> = {
     dxcc: dxccShapes,
+    wac: wacShapes,
+    waz: () => zoneShapes(cqZones),
+    itu: () => zoneShapes(ituZones),
     was: () => {
         const map = stateShapes(stateMaps.us, false);
         // Hawaii's islands spread too wide to count as a speck, yet each one is barely a pixel.

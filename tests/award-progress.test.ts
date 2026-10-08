@@ -2,7 +2,7 @@ import { DateTime } from "luxon";
 import { describe, expect, test } from "vitest";
 import { QSO } from "../src/lib/components/qso";
 import { awardSummary, modeGroupOf, unitLogs, unitStatus } from "../src/lib/utils/award-progress";
-import { awards, vkCallAreaOf, wasStateOf } from "../src/lib/utils/awards";
+import { awards, continentOf, vkCallAreaOf, wasStateOf } from "../src/lib/utils/awards";
 
 let counter = 0;
 const qso = (fields: Partial<QSO> = {}): QSO => ({
@@ -146,5 +146,37 @@ describe("vkCallAreaOf", () => {
     test("ignores VK calls signing from abroad and everyone else", () => {
         expect(vkCallAreaOf({ callsign: "DL/VK4ALE", dxcc: 230 })).toBeUndefined();
         expect(vkCallAreaOf({ callsign: "ZL2ABC", dxcc: 170 })).toBeUndefined();
+    });
+});
+
+describe("continentOf", () => {
+    test("takes the logged continent, else the entity's", () => {
+        expect(continentOf(qso({ continent: "EU", dxcc: 150 }))).toBe("EU");
+        expect(continentOf(qso({ dxcc: 150 }))).toBe("OC");
+    });
+
+    test("Antarctica isn't a WAC continent", () => {
+        expect(continentOf(qso({ dxcc: 13 }))).toBeUndefined();
+        expect(continentOf(qso({ continent: "AN" }))).toBeUndefined();
+    });
+
+    test("WAC is six continents", () => {
+        expect(awards.wac.units.map((u) => u.id).sort()).toEqual(["AF", "AS", "EU", "NA", "OC", "SA"]);
+    });
+});
+
+describe("zones", () => {
+    test("WAZ counts CQ zones 1 to 40 off the QSO", () => {
+        expect(awards.waz.units).toHaveLength(40);
+        expect(awards.waz.unitOf(qso({ cqzone: 30 }))).toBe("30");
+        expect(awards.waz.unitOf(qso({ cqzone: "5" as unknown as number }))).toBe("5");
+        expect(awards.waz.unitOf(qso({ cqzone: 41 }))).toBeUndefined();
+        expect(awards.waz.unitOf(qso({ dxcc: 150 }))).toBeUndefined();
+    });
+
+    test("ITU counts zones 1 to 90 off the QSO", () => {
+        expect(awards.itu.units).toHaveLength(90);
+        expect(awards.itu.unitOf(qso({ ituzone: 55 }))).toBe("55");
+        expect(awards.itu.unitOf(qso({ ituzone: 0 }))).toBeUndefined();
     });
 });

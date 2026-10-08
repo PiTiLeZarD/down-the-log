@@ -7,7 +7,7 @@ import { dxccName } from "../data/cty";
 import { countries } from "../data/countries";
 import { sortNumsAndAlpha, unique } from "../utils/arrays";
 import { modeGroupOf } from "../utils/award-progress";
-import { vkCallAreaOf, wasStateOf } from "../utils/awards";
+import { continentOf, vkCallAreaOf, wasStateOf } from "../utils/awards";
 import { normalise } from "../utils/locator";
 import { Modal } from "../utils/modal";
 import { hasIgnoredIssues, hasIssues, hasOpenIssues } from "../utils/qso-issues";
@@ -73,7 +73,7 @@ export const filterMap: Record<string, FilterFunction> = {
         findMatchingQsos(a, qso, 2).filter((q) => q.id !== qso.id).length > 0 ? "Yes" : "No",
     ],
     gridsquare: (qso) => [qso.locator?.substring(0, 3) || ""],
-    continent: (qso) => [qso.continent || ""],
+    continent: (qso) => [continentOf(qso) || qso.continent || ""],
     // country holds our iso3 on QSOs we resolved ourselves, but an imported ADIF puts the
     // DXCC entity name in there instead, which isn't a key of countries. Fall back to the raw value.
     country: (qso) => [qso.country ? countries[qso.country]?.name || qso.country : ""],
