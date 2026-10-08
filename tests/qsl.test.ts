@@ -39,7 +39,10 @@ describe("confirmQso", () => {
     // What the pull actually gets back: asked for one callsign, LoTW leaves APP_LoTW_OWNCALL out.
     test("flags LoTW from a report narrowed to one callsign", () =>
         expect(
-            confirmQso(qso(), record({ app_lotw_modegroup: "DATA", app_lotw_rxqsl: "2026-10-03 12:50:04", qsl_rcvd: "Y" })),
+            confirmQso(
+                qso(),
+                record({ app_lotw_modegroup: "DATA", app_lotw_rxqsl: "2026-10-03 12:50:04", qsl_rcvd: "Y" }),
+            ),
         ).toMatchObject({ lotw_received: true }));
 
     test("doesn't flag a LoTW record that isn't a confirmation", () =>
@@ -64,6 +67,26 @@ describe("confirmQso", () => {
             lotw_received: true,
             eqsl_received: true,
         }));
+
+    test("fills an empty state from a LoTW confirmation", () =>
+        expect(confirmQso(qso(), { ...record(lotw), state: "tx" })).toMatchObject({
+            lotw_received: true,
+            state: "TX",
+        }));
+
+    test("fills the state on a QSO LoTW had already confirmed", () =>
+        expect(confirmQso(qso({ lotw_received: true }), { ...record(lotw), state: "CA" })).toMatchObject({
+            state: "CA",
+        }));
+
+    test("never overwrites a logged state", () =>
+        expect(confirmQso(qso({ lotw_received: true, state: "NY" }), { ...record(lotw), state: "CA" })).toBeNull());
+
+    test("takes no state from a LoTW record that isn't a confirmation", () =>
+        expect(confirmQso(qso(), { ...record({ ...lotw, qsl_rcvd: "N" }), state: "CA" })).toBeNull());
+
+    test("takes no state from eQSL", () =>
+        expect(confirmQso(qso(), { ...record(eqsl), state: "CA" })?.state).toBeUndefined());
 
     test("folds onto a running copy, so one QSO keeps both services", () => {
         const target = qso();

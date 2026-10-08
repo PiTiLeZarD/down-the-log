@@ -24,15 +24,25 @@ export const qslRecordKey = (record: QSORecord): string =>
 // that one out of a report asked for one callsign (qso_owncall), which is how the pull asks, and
 // keying on it read every pulled confirmation as "nothing to confirm". QSL_RCVD is what says the
 // record is a confirmation; a report of plain QSOs carries the same fields with QSL_RCVD:N.
+//
+// A LoTW confirmation also carries the other station's STATE, as they certified it — which is what
+// WAS counts, and what the log is most often missing for a US contact. It fills an empty state and
+// never overwrites one, and it's taken from any confirmation, not only a new one, so re-downloading
+// a period fills in the QSOs that were confirmed before this was read.
 export const confirmQso = (target: QSO, record: QSO): QSO | null => {
     const honeypot = record.honeypot || {};
-    const lotw =
-        Object.keys(honeypot).some((k) => k.startsWith("app_lotw_")) &&
-        honeypot.qsl_rcvd?.toUpperCase() !== "N" &&
-        !target.lotw_received;
+    const lotwConfirmation =
+        Object.keys(honeypot).some((k) => k.startsWith("app_lotw_")) && honeypot.qsl_rcvd?.toUpperCase() !== "N";
+    const lotw = lotwConfirmation && !target.lotw_received;
     const eqsl = "app_eqsl_ag" in honeypot && !target.eqsl_received;
-    if (!lotw && !eqsl) return null;
-    return { ...target, ...(lotw ? { lotw_received: true } : {}), ...(eqsl ? { eqsl_received: true } : {}) };
+    const state = lotwConfirmation && !target.state?.trim() ? record.state?.trim().toUpperCase() : undefined;
+    if (!lotw && !eqsl && !state) return null;
+    return {
+        ...target,
+        ...(lotw ? { lotw_received: true } : {}),
+        ...(eqsl ? { eqsl_received: true } : {}),
+        ...(state ? { state } : {}),
+    };
 };
 
 // A record the operator has told the importer to stop asking about. Real values are QSO ids, which

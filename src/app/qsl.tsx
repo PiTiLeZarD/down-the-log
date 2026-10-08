@@ -42,7 +42,7 @@ const Qsl = () => {
         }
     ).date;
     // A pull that has already happened moves the window forward; until then it's the whole log.
-    const qslSince = settings.lotwConfirmedSince || fromDate.toFormat("yyyy-MM-dd");
+    const qslSince = settings.lotwPulledSince || fromDate.toFormat("yyyy-MM-dd");
     const rcvdSince = settings.eqslRcvdSince || fromDate.toFormat("yyyyMMdd");
 
     useEffect(() => {
@@ -163,12 +163,18 @@ const Qsl = () => {
             // confirmation was lost.
             const confirmed = new Map<string, QSO>();
             let newlyConfirmed = 0;
+            let statesFilled = 0;
             for (const { record, matching } of matches) {
                 if (!matching) continue;
-                const next = confirmQso(confirmed.get(matching.id) || matching, record);
+                const previous = confirmed.get(matching.id) || matching;
+                const next = confirmQso(previous, record);
                 if (!next) continue;
                 confirmed.set(matching.id, next);
-                newlyConfirmed++;
+                // A record can change a QSO without confirming anything new: a LoTW record for a
+                // QSO already confirmed may only have filled in its state.
+                if (next.lotw_received !== previous.lotw_received || next.eqsl_received !== previous.eqsl_received)
+                    newlyConfirmed++;
+                else statesFilled++;
             }
 
             const toImport = [...confirmed.values()];
@@ -186,6 +192,7 @@ const Qsl = () => {
                     [
                         `${newlyConfirmed} new confirmation${newlyConfirmed === 1 ? "" : "s"}`,
                         ...(known ? [`${known} already confirmed`] : []),
+                        ...(statesFilled ? [`${statesFilled} state${statesFilled === 1 ? "" : "s"} filled in`] : []),
                         ...(stillUnmatched.length ? [`${stillUnmatched.length} unmatched`] : []),
                         ...(ignored ? [`${ignored} ignored`] : []),
                     ].join(", ") + ` out of ${records.length} records.`,
@@ -226,7 +233,7 @@ const Qsl = () => {
                 callsign: settings.myCallsign || undefined,
             });
             const imported = importQslContent(content, "lotw.adi");
-            if (imported) updateSetting("lotwConfirmedSince", asked);
+            if (imported) updateSetting("lotwPulledSince", asked);
             setLotwStatus(imported ? "done" : "error");
         } catch (e) {
             setLotwStatus(e instanceof LotwError ? e.status : "error");
