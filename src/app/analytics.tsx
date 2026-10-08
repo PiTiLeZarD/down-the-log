@@ -14,8 +14,9 @@ import { Typography } from "../lib/ui/typography";
 import { unitLogs } from "../lib/utils/award-progress";
 import { AwardKey, awards } from "../lib/utils/awards";
 
-// Short names other screens link with, e.g. /analytics?award=was&tab=list.
-const tabParams = ["overview", "list", "stats"];
+// Short names other screens link with, e.g. /analytics?award=was&tab=list. Overview and list are
+// both views of the Awards tab; stats is a tab of its own.
+type AwardView = "overview" | "list";
 
 const styles = StyleSheet.create((theme) => ({
     picker: {
@@ -28,6 +29,20 @@ const styles = StyleSheet.create((theme) => ({
         flex: 0,
         minWidth: 100,
     },
+    views: {
+        flexDirection: "row",
+        flexWrap: "wrap",
+        alignItems: "center",
+        gap: theme.margins.lg,
+    },
+    // Its own spot at the end of the view toggle, so it stays put whatever the picker wraps to.
+    title: {
+        flexGrow: 1,
+        textAlign: "right",
+    },
+    view: (shown: boolean) => ({
+        display: shown ? "flex" : "none",
+    }),
 }));
 
 const Analytics = () => {
@@ -40,30 +55,57 @@ const Analytics = () => {
     const qsos = useFilteredQsos();
     const logs = React.useMemo(() => unitLogs(qsos, awards[award].unitOf), [qsos, award]);
     const current = awards[award];
+    const [view, setView] = React.useState<AwardView>(params.tab === "list" ? "list" : "overview");
 
     return (
         <PageLayout title="Analytics">
             <Stack>
                 <Filters />
-                <View style={styles.picker}>
-                    {Object.values(awards).map((a) => (
-                        <Button
-                            key={a.key}
-                            text={a.label}
-                            variant={a.key === award ? "contained" : "outlined"}
-                            style={styles.award}
-                            onPress={() => setAward(a.key)}
-                        />
-                    ))}
-                    <Typography variant="subtitle">{current.title}</Typography>
-                </View>
-                <TabsLayout
-                    tabs={["Overview", current.listTitle, "Stats"]}
-                    initial={Math.max(0, tabParams.indexOf(params.tab ?? ""))}
-                >
-                    {/* Keyed on the award so a selection or filter from one doesn't carry over. */}
-                    <AwardOverview key={award} award={current} logs={logs} />
-                    <UnitList key={award} award={current} logs={logs} />
+                {/* The award picker sits inside Awards, over the two views that depend on it: Stats
+                    is the same whichever award is picked, so it's a tab of its own beside them. */}
+                <TabsLayout tabs={["Awards", "Stats"]} initial={params.tab === "stats" ? 1 : 0}>
+                    <Stack gap="lg">
+                        <View style={styles.picker}>
+                            {Object.values(awards).map((a) => (
+                                <Button
+                                    key={a.key}
+                                    text={a.label}
+                                    variant={a.key === award ? "contained" : "outlined"}
+                                    style={styles.award}
+                                    onPress={() => setAward(a.key)}
+                                />
+                            ))}
+                        </View>
+                        <View style={styles.views}>
+                            {(
+                                [
+                                    ["overview", "Overview"],
+                                    ["list", current.listTitle],
+                                ] as [AwardView, string][]
+                            ).map(([key, label]) => (
+                                <View key={key}>
+                                    <Button
+                                        variant="chip"
+                                        colour={view === key ? "primary" : "grey"}
+                                        text={label}
+                                        onPress={() => setView(key)}
+                                    />
+                                </View>
+                            ))}
+                            <Typography variant="subtitle" style={styles.title}>
+                                {current.title}
+                            </Typography>
+                        </View>
+                        {/* Both stay mounted, like tabs, so the list keeps its search and sort while
+                            the overview is up. Keyed on the award so a selection or filter from one
+                            doesn't carry over to the next. */}
+                        <View style={styles.view(view === "overview")}>
+                            <AwardOverview key={award} award={current} logs={logs} />
+                        </View>
+                        <View style={styles.view(view === "list")}>
+                            <UnitList key={award} award={current} logs={logs} />
+                        </View>
+                    </Stack>
                     <StatsTable />
                 </TabsLayout>
             </Stack>
