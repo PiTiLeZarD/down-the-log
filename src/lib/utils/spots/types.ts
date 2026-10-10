@@ -16,6 +16,10 @@ export type SpotSource = (typeof spotSources)[number];
 // SOTAwatch needs a SOTA SSO token and the API approval described in ./sota.
 export type SelfSpotTarget = Extract<SpotSource, "pota" | "pnp">;
 
+// What a spot we post is for: an award reference, or "qrp" — ParksnPeaks' class for a portable
+// station that isn't at any reference, which no other network has.
+export type SpotProgramme = EventType | "qrp";
+
 export const spotSourceLabels: Record<SpotSource, string> = {
     pota: "POTA",
     pnp: "ParksnPeaks",

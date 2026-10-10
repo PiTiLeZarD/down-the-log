@@ -1,9 +1,8 @@
 import axios from "axios";
-import { EventType } from "../event-rules";
 import { Settings } from "../store";
 import { TIMEOUT_MS } from "./fetch";
 import { PnpCredentials, pnpSpotClasses, postPnpSpot } from "./parksnpeaks";
-import { SelfSpotTarget } from "./types";
+import { SelfSpotTarget, SpotProgramme } from "./types";
 
 export const POTA_SPOT_POST_API = "https://api.pota.app/spot";
 
@@ -14,7 +13,8 @@ export type SpotRequest = {
     // is the commoner kind of spot, and both networks model the two callsigns separately.
     callsign: string;
     spotter: string;
-    programme: EventType;
+    programme: SpotProgramme;
+    // For a QRP spot, the free-text position ParksnPeaks asks for instead.
     reference: string;
     // MHz, as everywhere else in the app.
     frequency: number;
@@ -77,22 +77,39 @@ const posters: Record<SelfSpotTarget, (request: SpotRequest, settings: Settings)
     pnp: postToPnp,
 };
 
+const postOne = async (target: SelfSpotTarget, request: SpotRequest, settings: Settings): Promise<SpotResult> => {
+    try {
+        await posters[target](request, settings);
+        return { target, ok: true };
+    } catch (error) {
+        return { target, ok: false, error: error instanceof Error ? error.message : String(error) };
+    }
+};
+
 /**
  * Posts to each network independently and reports on each: half a spot is still worth having, and an
  * operator standing on a summit needs to know which half made it rather than one blanket "failed".
+ *
+ * The exception is a POTA reference: pota.app refuses retired or unknown parks and ParksnPeaks takes
+ * anything, so POTA goes first and the rest only follow once it has accepted the reference.
  */
 export const postSpot = async (
     targets: SelfSpotTarget[],
     request: SpotRequest,
     settings: Settings,
-): Promise<SpotResult[]> =>
-    Promise.all(
-        targets.map(async (target) => {
-            try {
-                await posters[target](request, settings);
-                return { target, ok: true };
-            } catch (error) {
-                return { target, ok: false, error: error instanceof Error ? error.message : String(error) };
-            }
-        }),
-    );
+): Promise<SpotResult[]> => {
+    if (request.programme !== "pota" || !targets.includes("pota"))
+        return Promise.all(targets.map((target) => postOne(target, request, settings)));
+    const pota = await postOne("pota", request, settings);
+    const rest = targets.filter((target) => target !== "pota");
+    if (!pota.ok)
+        return [
+            pota,
+            ...rest.map((target) => ({
+                target,
+                ok: false,
+                error: "not sent, since POTA refused it. Untick POTA to post here anyway.",
+            })),
+        ];
+    return [pota, ...(await Promise.all(rest.map((target) => postOne(target, request, settings))))];
+};

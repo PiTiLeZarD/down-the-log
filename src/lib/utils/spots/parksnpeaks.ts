@@ -4,7 +4,7 @@ import { freq2band } from "../../data/bands";
 import { resolveMode } from "../../data/modes";
 import { EventType } from "../event-rules";
 import { TIMEOUT_MS, fetchJsonArray, relayed } from "./fetch";
-import { Spot } from "./types";
+import { Spot, SpotProgramme } from "./types";
 
 // What ParksnPeaks actually returns from /api/ALL. Everything is a string, including the
 // frequency, and `actSpoter` really is spelled that way on their side.
@@ -65,10 +65,11 @@ export const fetchPnpSpots = async (): Promise<Spot[]> =>
     (await fetchJsonArray<RawPnpSpot>(PNP_SPOTS_API, true)).map(parsePnpSpot);
 
 // The award schemes ParksnPeaks will accept a spot for, as their API spells them.
-export const pnpSpotClasses: Partial<Record<EventType, string>> = {
+export const pnpSpotClasses: Partial<Record<SpotProgramme, string>> = {
     wwff: "WWFF",
     sota: "SOTA",
     pota: "POTA",
+    qrp: "QRP",
 };
 
 export type PnpSpotRequest = {

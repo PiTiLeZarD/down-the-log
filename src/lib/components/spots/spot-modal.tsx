@@ -4,7 +4,14 @@ import { View } from "react-native";
 import { StyleSheet } from "react-native-unistyles";
 import { EventType, capitalise } from "../../utils/event-rules";
 import { Modal } from "../../utils/modal";
-import { SelfSpotTarget, SpotResult, postSpot, selfSpotTargets, spotSourceLabels } from "../../utils/spots";
+import {
+    SelfSpotTarget,
+    SpotProgramme,
+    SpotResult,
+    postSpot,
+    selfSpotTargets,
+    spotSourceLabels,
+} from "../../utils/spots";
 import { useStore } from "../../utils/store";
 import { useActiveSession } from "../../utils/use-session";
 import { useSettings } from "../../utils/use-settings";
@@ -45,7 +52,13 @@ const theirReferenceFields: [keyof QSO, EventType][] = [
     ["sigInfo", "sig"],
 ];
 
-export type SpotReference = { programme: EventType; reference: string };
+export type SpotReference = { programme: SpotProgramme; reference: string };
+
+// Out portable without a reference: ParksnPeaks takes that as a QRP spot, and nothing else does.
+// Its reference is the free-text "activating position" their form asks for, typed in the modal.
+const qrpSpot: SpotReference = { programme: "qrp", reference: "" };
+const referenceLabel = ({ programme, reference }: SpotReference) =>
+    programme === "qrp" ? "QRP, no reference (ParksnPeaks only)" : `${capitalise(programme)} ${reference}`;
 
 const referencesFrom =
     (fields: [keyof QSO, EventType][]) =>
@@ -89,6 +102,7 @@ export const SpotModal = ({ open, onClose, station }: SpotModalProps) => {
     const [typedProgramme, setTypedProgramme] = React.useState<EventType>("pota");
     const [chosen, setChosen] = React.useState<string | undefined>(undefined);
     const [comments, setComments] = React.useState<string>("");
+    const [position, setPosition] = React.useState<string>("");
     const [sending, setSending] = React.useState<boolean>(false);
     const [results, setResults] = React.useState<SpotResult[] | undefined>(undefined);
 
@@ -105,7 +119,7 @@ export const SpotModal = ({ open, onClose, station }: SpotModalProps) => {
         () =>
             subject === "other"
                 ? stationReferences(station)
-                : [...selfSpotReferences(session?.defaults), ...selfSpotReferences(last)],
+                : [...selfSpotReferences(session?.defaults), ...selfSpotReferences(last), qrpSpot],
         [subject, station, session?.defaults, last],
     );
     // De-duplicated by reference, so a park held by both the session and the last QSO is offered once.
@@ -132,6 +146,14 @@ export const SpotModal = ({ open, onClose, station }: SpotModalProps) => {
             setTypedReference("");
             setChosen(undefined);
             setComments("");
+            setPosition(
+                session?.defaults.myQth ||
+                    session?.defaults.myLocator ||
+                    last?.myQth ||
+                    last?.myLocator ||
+                    settings.myGridsquare ||
+                    "",
+            );
             setResults(undefined);
         }
     }
@@ -142,7 +164,11 @@ export const SpotModal = ({ open, onClose, station }: SpotModalProps) => {
         ? typedReference
             ? { programme: typedProgramme, reference: typedReference }
             : undefined
-        : selected;
+        : selected?.programme === "qrp"
+          ? position
+              ? { programme: "qrp", reference: position }
+              : undefined
+          : selected;
 
     const spotted = subject === "me" ? settings.myCallsign : station?.callsign || callsign;
     const canSend =
@@ -199,10 +225,11 @@ export const SpotModal = ({ open, onClose, station }: SpotModalProps) => {
                         </View>
                     </Stack>
                 )}
-                {subject === "me" && !options.length && (
-                    <Alert severity="warning">
+                {subject === "me" && options.length === 1 && (
+                    <Alert severity="info">
                         <Typography style={{ flexShrink: 1 }}>
-                            Nothing to spot: start a POTA, WWFF or SOTA session, or log a QSO with your reference on it.
+                            No reference to spot: start a POTA, WWFF or SOTA session, or log a QSO with your reference
+                            on it. Without one, ParksnPeaks still takes a QRP spot.
                         </Typography>
                     </Alert>
                 )}
@@ -248,17 +275,23 @@ export const SpotModal = ({ open, onClose, station }: SpotModalProps) => {
                             <View key={option.reference}>
                                 <Button
                                     variant={option.reference === selected?.reference ? "contained" : "chip"}
-                                    text={`${capitalise(option.programme)} ${option.reference}`}
+                                    text={referenceLabel(option)}
                                     onPress={() => setChosen(option.reference)}
                                 />
                             </View>
                         ))}
                     </Stack>
                 ) : options.length === 1 ? (
-                    <Typography variant="em">
-                        {capitalise(options[0].programme)} {options[0].reference}
-                    </Typography>
+                    <Typography variant="em">{referenceLabel(options[0])}</Typography>
                 ) : null}
+                {!typing && selected?.programme === "qrp" && (
+                    <Stack direction="row" gap="lg">
+                        <Typography style={styles.label}>Position:</Typography>
+                        <View style={{ flexGrow: 1 }}>
+                            <Input value={position} placeholder="Where you are, or your grid" onChangeText={setPosition} />
+                        </View>
+                    </Stack>
+                )}
                 <FormProvider {...methods}>
                     <BandFreqInput />
                     <ModeInput />
