@@ -49,7 +49,7 @@ const watched = (spot: MergedSpot, watch: string[]): boolean => {
 // A merged row is kept when *any* of the spots behind it passes the programme test: a park spotted
 // as both WWFF and POTA belongs in either list rather than only in the one its newest spot came from.
 const matchesProgramme = (spot: MergedSpot, programmes: EventType[]): boolean =>
-    !programmes.length || spot.sources.some((source) => programmes.includes(source.programme));
+    !programmes.length || spot.sources.some((source) => !!source.programme && programmes.includes(source.programme));
 
 const matchesSource = (spot: MergedSpot, sources: SpotSource[]): boolean =>
     spot.sources.some((source) => sources.includes(source.source));

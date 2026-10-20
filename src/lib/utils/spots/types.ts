@@ -9,7 +9,7 @@ import type { EventType } from "../event-rules";
 // Where a spot was read from, which is not the same question as what it counts towards: ParksnPeaks
 // carries WWFF, SOTA and shire spots alike, and the same activation is often spotted on two of these
 // networks at once. `programme` answers "what is being activated", `source` answers "who told us".
-export const spotSources = ["pota", "pnp", "sota"] as const;
+export const spotSources = ["pota", "pnp", "sota", "dx"] as const;
 export type SpotSource = (typeof spotSources)[number];
 
 // Only the two networks that will take a spot from an app without an account-wide OAuth dance.
@@ -24,13 +24,15 @@ export const spotSourceLabels: Record<SpotSource, string> = {
     pota: "POTA",
     pnp: "ParksnPeaks",
     sota: "SOTAwatch",
+    dx: "DX cluster",
 };
 
 export type Spot = {
     // Source-prefixed, so ids from two networks can never collide in a list key.
     id: string;
     source: SpotSource;
-    programme: EventType;
+    // Unset for a DX cluster spot, which is a station on the air rather than an award activation.
+    programme?: EventType;
     // What the source called the programme when it isn't one we model — SHIRES, ZLOTA, SIOTA. Only
     // set alongside `programme: "sig"`, and shown in place of the generic badge.
     programmeLabel?: string;
@@ -54,7 +56,7 @@ export type Spot = {
 export type MergedSpot = Spot & { sources: Spot[] };
 
 export const spotProgrammeLabel = (spot: Pick<Spot, "programme" | "programmeLabel">): string =>
-    spot.programmeLabel || spot.programme.toUpperCase();
+    spot.programmeLabel || spot.programme?.toUpperCase() || "DX";
 
 // A spot whose comment says the operator has packed up is worth hiding rather than chasing.
 export const isQrt = (spot: Spot): boolean => /\bq\s?r\s?t\b/i.test(spot.comments || "");

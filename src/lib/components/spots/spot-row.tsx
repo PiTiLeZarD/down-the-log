@@ -21,6 +21,10 @@ export const programmeColours: Record<EventType, ColourVariant> = {
     sig: "grey",
 };
 
+// A DX cluster spot has no programme, and no colour of its own to spare.
+export const programmeColour = (programme?: EventType): ColourVariant =>
+    programme ? programmeColours[programme] : "grey";
+
 const styles = StyleSheet.create((theme) => ({
     row: (odd: boolean, qrt: boolean) => ({
         flexDirection: "row",
@@ -98,7 +102,7 @@ export const SpotRow = React.memo(({ spot, index, status, distance, imperial, on
             onPress={() => onPress(spot)}
             aria-label={`Log ${spot.callsign}`}
         >
-            <View style={styles.rail(programmeColours[spot.programme])} />
+            <View style={styles.rail(programmeColour(spot.programme))} />
             <Stack gap={0} style={styles.time}>
                 <Typography variant="em">{spot.date.toFormat("HH:mm")}</Typography>
                 <Typography variant="subtitle">{age < 60 ? `${age}m` : `${Math.round(age / 60)}h`}</Typography>
@@ -112,7 +116,7 @@ export const SpotRow = React.memo(({ spot, index, status, distance, imperial, on
                         <SpotBadge
                             key={badge.label}
                             label={badge.label}
-                            colour={programmeColours[badge.programme as EventType]}
+                            colour={programmeColour(badge.programme)}
                         />
                     ))}
                     {status.newReference && <SpotBadge label="NEW" colour="success" />}

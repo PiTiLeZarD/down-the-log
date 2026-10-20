@@ -1,5 +1,6 @@
 import potawwfflinks from "../../data/potawwfflinks.json";
 import { baseCallsign } from "../callsign";
+import type { EventType } from "../event-rules";
 import { MergedSpot, Spot, spotProgrammeLabel } from "./types";
 
 // The same activation is routinely spotted on two networks at once — a VK park goes up on
@@ -53,6 +54,9 @@ const fold = (head: Spot, rest: Spot[]): Spot =>
             frequency: spot.frequency ?? other.frequency,
             band: spot.band ?? other.band,
             mode: spot.mode ?? other.mode,
+            // A cluster spot of a park activator leads with no programme; the park spot behind it has one.
+            programme: spot.programme ?? other.programme,
+            programmeLabel: spot.programme ? spot.programmeLabel : other.programmeLabel,
             reference: spot.reference ?? other.reference,
             referenceName: spot.referenceName ?? other.referenceName,
             locator: spot.locator ?? other.locator,
@@ -77,7 +81,7 @@ export const mergeSpots = (spots: Spot[]): MergedSpot[] => {
 };
 
 // What the row badges: one entry per distinct programme, in the order the networks reported them.
-export const spotBadges = (spot: MergedSpot): { label: string; programme: string }[] => {
+export const spotBadges = (spot: MergedSpot): { label: string; programme?: EventType }[] => {
     const seen = new Set<string>();
     return spot.sources.flatMap((source) => {
         const label = spotProgrammeLabel(source);

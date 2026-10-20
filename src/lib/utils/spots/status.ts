@@ -75,7 +75,7 @@ export const spotStatus = (spot: Spot, qsos: QSO[]): SpotStatus => {
 // the locator of every park and summit, so the reference itself answers where it is.
 export const spotLocator = (spot: Spot): string | undefined => {
     if (spot.locator) return normalise(spot.locator);
-    if (!spot.reference) return undefined;
+    if (!spot.reference || !spot.programme) return undefined;
     const data = eventDataMap[spot.programme]?.[spot.reference];
     return data?.locator ? normalise(data.locator) : undefined;
 };

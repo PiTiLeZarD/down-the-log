@@ -8,6 +8,7 @@ import {
     spotAlertNotification,
 } from "../src/lib/utils/spots/alerts";
 import { applySpotFilter } from "../src/lib/utils/spots/filter";
+import { parseDxSpot } from "../src/lib/utils/spots/dx";
 import { mergeSpots, sameActivation, spotBadges } from "../src/lib/utils/spots/merge";
 import { parsePnpSpot } from "../src/lib/utils/spots/parksnpeaks";
 import { parsePotaSpot } from "../src/lib/utils/spots/pota";
@@ -98,6 +99,19 @@ describe("parsing", () => {
         expect(parsed.frequency).toBe(7.144);
         expect(isQrt(parsed)).toBe(true);
     });
+
+    test("a HamQTH cluster line is kHz, UTC and a mode fished out of the comment", () => {
+        const parsed = parseDxSpot("SV8SXD^7026.0^I1MMR^ft8, tnx^0107 2026-10-20^^^EU^40M^Greece^20")!;
+        expect(parsed.source).toBe("dx");
+        expect(parsed.programme).toBeUndefined();
+        expect(parsed.frequency).toBe(7.026);
+        expect(parsed.band).toBe("40m");
+        expect(parsed.mode).toBe("FT8");
+        expect(parsed.date.toISO()).toBe("2026-10-20T01:07:00.000Z");
+        expect(parsed.spotter).toBe("I1MMR");
+        expect(parseDxSpot("W5ART^21075.2^PY2FZ^^0109 2026-10-20^L^^SA^15M^Brazil^108")!.mode).toBeUndefined();
+        expect(parseDxSpot("")).toBeUndefined();
+    });
 });
 
 describe("merging", () => {
@@ -141,6 +155,18 @@ describe("merging", () => {
         expect(rows[0].locator).toBe("OF88ab");
         expect(rows[0].mode).toBe("SSB");
         expect(rows[0].sources).toHaveLength(2);
+    });
+
+    test("a cluster spot of a park activator joins the park's row and takes its programme", () => {
+        const rows = mergeSpots([
+            spot({ id: "pota-1", date: at("2024-01-01T09:55:00Z"), reference: "VK-0123", frequency: 14.244 }),
+            spot({ id: "dx-1", source: "dx", programme: undefined, frequency: 14.244 }),
+        ]);
+        expect(rows).toHaveLength(1);
+        expect(rows[0].id).toBe("dx-1");
+        expect(rows[0].programme).toBe("pota");
+        expect(rows[0].reference).toBe("VK-0123");
+        expect(spotReferences(rows[0])).toEqual({ pota: "VK-0123" });
     });
 });
 
@@ -195,6 +221,14 @@ describe("filtering", () => {
         expect(filtered({ ...defaultSpotFilter, modeGroups: ["CW"] })).toEqual(["b"]);
         expect(filtered({ ...defaultSpotFilter, hideQrt: true })).toEqual(["a", "b"]);
         expect(filtered({ ...defaultSpotFilter, hideAutomatic: true })).toEqual(["a", "b"]);
+    });
+
+    test("a programme filter hides cluster spots, which have none", () => {
+        const dx = merged({ id: "d", source: "dx", programme: undefined, band: "20m" });
+        const ids = (filter = defaultSpotFilter) =>
+            applySpotFilter([dx], filter, ["dx"], [], now).map((s) => s.id);
+        expect(ids()).toEqual(["d"]);
+        expect(ids({ ...defaultSpotFilter, programmes: ["pota"] })).toEqual([]);
     });
 
     test("anything older than the age limit is gone", () => {

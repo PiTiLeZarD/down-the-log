@@ -25,7 +25,7 @@ const referenceField = (programme: EventType): keyof QSO =>
  */
 export const spotReferences = (spot: MergedSpot): Partial<QSO> =>
     spot.sources.reduce<Partial<QSO>>((fields, source) => {
-        if (!source.reference) return fields;
+        if (!source.reference || !source.programme) return fields;
         const field = referenceField(source.programme);
         if (fields[field]) return fields;
         return {
@@ -90,7 +90,7 @@ export const spotSummary = (spot: MergedSpot): string =>
         spot.callsign,
         spot.frequency ? `${spot.frequency}MHz` : spot.band,
         spot.mode,
-        ...spot.sources.filter((s) => s.reference).map((s) => `${capitalise(s.programme)} ${s.reference}`),
+        ...spot.sources.flatMap((s) => (s.reference && s.programme ? [`${capitalise(s.programme)} ${s.reference}`] : [])),
     ]
         .filter(Boolean)
         .join(" · ");

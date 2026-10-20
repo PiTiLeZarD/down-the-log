@@ -8,6 +8,7 @@ import { mergeSpots } from "./merge";
 import { fetchPnpSpots } from "./parksnpeaks";
 import { fetchPotaSpots } from "./pota";
 import { fetchSotaSpots } from "./sota";
+import { fetchDxSpots } from "./dx";
 import { MergedSpot, Spot, SpotFilter, SpotSource, defaultSpotFilter } from "./types";
 
 const REFRESH_MS = 60 * 1000;
@@ -16,6 +17,7 @@ const fetchers: Record<SpotSource, () => Promise<Spot[]>> = {
     pota: fetchPotaSpots,
     pnp: fetchPnpSpots,
     sota: fetchSotaSpots,
+    dx: fetchDxSpots,
 };
 
 export type SourceState = { spots: Spot[]; failed: boolean; fetchedAt?: DateTime };

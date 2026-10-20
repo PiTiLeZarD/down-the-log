@@ -10,7 +10,7 @@ import { useWidthMatches } from "../../ui/breakpoints";
 import { Button } from "../../ui/button";
 import { Typography } from "../../ui/typography";
 import { Stack } from "../stack";
-import { programmeColours } from "./spot-row";
+import { programmeColour } from "./spot-row";
 
 const MAX_CHIPS = 40;
 
@@ -62,7 +62,7 @@ export const SpotsBar = () => {
                             <Button
                                 key={spot.id}
                                 variant="chip"
-                                colour={programmeColours[spot.programme]}
+                                colour={programmeColour(spot.programme)}
                                 text={`${spot.callsign} ${spot.band || (spot.frequency ? `${spot.frequency}MHz` : "?")}`}
                                 onPress={() => navigate("/spots")}
                             />
