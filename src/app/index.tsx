@@ -7,7 +7,7 @@ import { StyleSheet } from "react-native-unistyles";
 import { Beacons } from "../lib/components/beacons";
 import { Filters, useFilteredQsos } from "../lib/components/filters";
 import { FirstRunSetup } from "../lib/components/first-run-setup";
-import { SpotsBar } from "../lib/components/spots";
+import { BandMap, useLogSpot } from "../lib/components/spots";
 import { CallsignInput } from "../lib/components/form/callsign-input";
 import {
     QSO,
@@ -28,6 +28,7 @@ import { useHydrated, useStore } from "../lib/utils/store";
 import { Alert } from "../lib/ui/alert";
 import { Button } from "../lib/ui/button";
 import { Typography } from "../lib/ui/typography";
+import { useWidthMatches } from "../lib/ui/breakpoints";
 import { carryOverFields } from "../lib/utils/session";
 import { useActiveSession } from "../lib/utils/use-session";
 import { useDebouncedValue } from "../lib/utils/use-debounced-value";
@@ -44,8 +45,29 @@ const styles = StyleSheet.create((theme) => ({
         flexGrow: 1,
     },
     // The list grows into whatever the inputs leave behind rather than pushing them off-screen.
-    list: {
+    listRow: {
+        flexDirection: "row",
+        flexGrow: 1,
         height: 0,
+    },
+    list: {
+        width: 0,
+    },
+    bandMap: {
+        width: 400,
+    },
+    // On a phone the bandmap covers the list rather than squeezing it.
+    bandMapOverlay: {
+        position: "absolute",
+        top: 0,
+        right: 0,
+        bottom: 0,
+        width: "100%",
+    },
+    bandMapButton: {
+        position: "absolute",
+        right: theme.margins.xxl,
+        bottom: theme.margins.xxl,
     },
     inputs: {
         width: "100%",
@@ -77,6 +99,13 @@ const Index = () => {
     // `useWatch` rather than `methods.watch()`: the latter can't be memoised, which made React
     // Compiler skip this whole file.
     const callsign = useWatch({ control: methods.control, name: "callsign" });
+    const band = useWatch({ control: methods.control, name: "band" });
+    const frequency = useWatch({ control: methods.control, name: "frequency" });
+    const logSpot = useLogSpot();
+    const phone = useWidthMatches(undefined, "md");
+    // Open beside the log until closed; on a phone it would cover the log, so it starts closed there.
+    const [bandMapOpen, setBandMapOpen] = React.useState<boolean | undefined>(undefined);
+    const showBandMap = bandMapOpen ?? !phone;
     // The log search follows the box, it isn't wired to it: scanning a 100k-QSO log and regrouping
     // what comes back is far slower than a keystroke, so on a big log the field went dead between
     // letters. Filtering on the settled value means one search per pause instead of one per letter.
@@ -132,14 +161,34 @@ const Index = () => {
                 )}
                 {settings.showBeacons && <Beacons />}
                 {settings.showHeatmap && <QsoHeatmap />}
-                {settings.showSpots && <SpotsBar />}
                 {settings.showFilters && <Filters showTag />}
-                <QsoList
-                    style={styles.list}
-                    qsos={listQsos}
-                    filters={listFilters}
-                    onQsoPress={(qso) => navigate(`/qso?qsoId=${qso.id}`)}
-                />
+                <View style={styles.listRow}>
+                    <QsoList
+                        style={styles.list}
+                        qsos={listQsos}
+                        filters={listFilters}
+                        onQsoPress={(qso) => navigate(`/qso?qsoId=${qso.id}`)}
+                    />
+                    {settings.showSpots && showBandMap && (
+                        <View style={phone ? styles.bandMapOverlay : styles.bandMap}>
+                            <BandMap
+                                band={band}
+                                frequency={frequency}
+                                onSpotPress={(spot) => {
+                                    // The overlay covers the log on a phone; beside it, it can stay.
+                                    if (phone) setBandMapOpen(false);
+                                    logSpot(spot);
+                                }}
+                                onClose={() => setBandMapOpen(false)}
+                            />
+                        </View>
+                    )}
+                    {settings.showSpots && !showBandMap && (
+                        <View style={styles.bandMapButton}>
+                            <Button startIcon="radio" aria-label="Open bandmap" onPress={() => setBandMapOpen(true)} />
+                        </View>
+                    )}
+                </View>
             </View>
             <View style={styles.inputs}>
                 <SessionBar />

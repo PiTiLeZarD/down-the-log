@@ -1,11 +1,9 @@
-import { useRouter } from "expo-router";
-import { DateTime } from "luxon";
 import React from "react";
 import { View } from "react-native";
 import { useUnistyles } from "react-native-unistyles";
 import { PageLayout } from "../lib/components/page-layout";
-import { QSO, extrapolate, useQsos } from "../lib/components/qso";
-import { SpotList, SpotMeButton, SpotModal, SpotSettings } from "../lib/components/spots";
+import { QSO, useQsos } from "../lib/components/qso";
+import { SpotList, SpotMeButton, SpotModal, SpotSettings, useLogSpot } from "../lib/components/spots";
 import { Stack } from "../lib/components/stack";
 import { Button } from "../lib/ui/button";
 import { Typography } from "../lib/ui/typography";
@@ -13,27 +11,19 @@ import {
     MergedSpot,
     activeFilterCount,
     applySpotFilter,
-    qsoFromSpot,
     refreshSpots,
     spotSourceLabels,
     spotStation,
     useSpots,
 } from "../lib/utils/spots";
 import { useWidthMatches } from "../lib/ui/breakpoints";
-import { useStore } from "../lib/utils/store";
-import { useActiveSession } from "../lib/utils/use-session";
 import { useSettings } from "../lib/utils/use-settings";
 
 const Spots = () => {
     const { theme } = useUnistyles();
     const settings = useSettings();
-    const log = useStore((state) => state.log);
-    const bumpSerial = useStore((state) => state.bumpSerial);
-    const currentLocation = useStore((state) => state.currentLocation);
-    const session = useActiveSession();
     const qsos = useQsos();
     const { spots, bySource, loading, fetchedAt } = useSpots();
-    const { navigate } = useRouter();
 
     // Setup takes the page over rather than sitting above the list: it is long enough that the spots
     // below it were unreachable anyway, and a screen of settings on top of a live feed read as one
@@ -50,23 +40,7 @@ const Spots = () => {
     );
     const filterCount = activeFilterCount(settings.spotFilter);
 
-    // Both handlers are memoised: SpotRow is memoised on its props, and a callback rebuilt on every
-    // render would repaint every row of the list whenever anything on this page changed.
-    const handleSpotPress = React.useCallback(
-        (spot: MergedSpot) => {
-            const seeded = qsoFromSpot(spot, { settings, currentLocation, session, previous: qsos[0] });
-            const qso: QSO = extrapolate(seeded, qsos, settings.carryOver, session);
-            qso.date = DateTime.utc();
-            if (session?.contest) {
-                qso.stx = session.contest.serial;
-                bumpSerial(session.id);
-            }
-            log(qso);
-            navigate(`/qso?qsoId=${qso.id}`);
-        },
-        [settings, currentLocation, session, qsos, log, bumpSerial, navigate],
-    );
-
+    const handleSpotPress = useLogSpot();
     const handleRespotPress = React.useCallback((spot: MergedSpot) => setRespotting(spotStation(spot)), []);
 
     // One line per network so a dead source is visible as itself rather than as spots quietly going

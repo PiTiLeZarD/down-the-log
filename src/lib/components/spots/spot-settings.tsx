@@ -8,7 +8,7 @@ import { Stack } from "../stack";
 import { SpotAlertSettings } from "./spot-alerts";
 import { SpotFilters } from "./spot-filters";
 
-// The spots bar, the filter and alerts are set here rather than on the Settings screen: the operator
+// The bandmap, the filter and alerts are set here rather than on the Settings screen: the operator
 // is looking at the feed when they decide the bar is in the way or that an alert should have fired.
 // There is one filter, for the list and the alerts alike, so it sits beside the alert switch. The
 // ParksnPeaks account is a credential like HamQTH and LoTW, so it lives with them under Settings > APIs.
@@ -19,14 +19,14 @@ export const SpotSettings = () => {
 
     return (
         <Stack gap="lg">
-            <Typography underline>Show Spots bar:</Typography>
+            <Typography underline>Show bandmap:</Typography>
             <Switch
                 value={settings.showSpots != undefined ? settings.showSpots : false}
                 onValueChange={(v) => updateSetting("showSpots", v)}
             />
             <Typography variant="subtitle">
-                Current POTA and ParksnPeaks activations above the log, refreshed every minute. SOTA is waiting on API
-                approval.
+                Spots on the band you're logging on, beside the log, refreshed every minute. Closing it leaves a button
+                over the log to bring it back. SOTA is waiting on API approval.
             </Typography>
             <Typography underline>Filter:</Typography>
             <SpotFilters />

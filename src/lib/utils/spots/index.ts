@@ -1,4 +1,5 @@
 export * from "./alerts";
+export * from "./band-map";
 export * from "./dx";
 export * from "./filter";
 export * from "./merge";
