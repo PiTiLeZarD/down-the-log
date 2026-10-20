@@ -22,6 +22,7 @@ import type { Session } from "./session";
 import {
     defaultSpotFilter,
     migrateSpotFilter,
+    type DxCluster,
     type LegacySpotAlert,
     type SelfSpotTarget,
     type SpotFilter,
@@ -76,6 +77,8 @@ export type Settings = {
     spotFilter: SpotFilter;
     // Notify on new spots that pass `spotFilter`.
     spotAlertsEnabled: boolean;
+    // Desktop only: the telnet clusters to log in to. Their spots arrive as the "dx" source.
+    dxClusters: DxCluster[];
     // Where "Spot me" posts. Empty means the button asks before it can do anything.
     selfSpotTargets: SelfSpotTarget[];
     // ParksnPeaks account, needed only to post spots. The key is treated as a credential: on native
@@ -97,6 +100,7 @@ const defaultSettings: Settings = {
     spotFilter: defaultSpotFilter,
     spotAlertsEnabled: false,
     selfSpotTargets: [],
+    dxClusters: [],
     imperial: false,
     datemonth: false,
     timeoffThreshold: 10,

@@ -1,12 +1,13 @@
 import axios from "axios";
 import { Settings } from "../store";
+import { sendToCluster } from "./cluster";
 import { TIMEOUT_MS } from "./fetch";
 import { PnpCredentials, pnpSpotClasses, postPnpSpot } from "./parksnpeaks";
 import { SelfSpotTarget, SpotProgramme } from "./types";
 
 export const POTA_SPOT_POST_API = "https://api.pota.app/spot";
 
-export const selfSpotTargets: SelfSpotTarget[] = ["pota", "pnp"];
+export const selfSpotTargets: SelfSpotTarget[] = ["pota", "pnp", "dx"];
 
 export type SpotRequest = {
     // Who is on air. Not necessarily the operator: a chaser spotting the activator they just worked
@@ -72,9 +73,26 @@ const postToPnp = async (request: SpotRequest, settings: Settings): Promise<void
     );
 };
 
+// "DX 14025.0 VK2ABC POTA VK-0123 CW": the cluster knows who's spotting from the login, and has no
+// field for a reference, so it goes at the head of the comment where hunters look for it.
+export const clusterSpotCommand = (request: SpotRequest): string =>
+    [
+        "DX",
+        (request.frequency * 1000).toFixed(1),
+        request.callsign,
+        request.programme !== "qrp" && request.reference
+            ? `${request.programme.toUpperCase()} ${request.reference}`
+            : "",
+        request.mode,
+        request.comments,
+    ]
+        .filter(Boolean)
+        .join(" ");
+
 const posters: Record<SelfSpotTarget, (request: SpotRequest, settings: Settings) => Promise<void>> = {
     pota: (request) => postPotaSpot(request),
     pnp: postToPnp,
+    dx: (request) => sendToCluster(clusterSpotCommand(request)),
 };
 
 const postOne = async (target: SelfSpotTarget, request: SpotRequest, settings: Settings): Promise<SpotResult> => {

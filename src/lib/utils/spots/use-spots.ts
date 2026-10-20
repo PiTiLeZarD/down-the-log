@@ -8,6 +8,7 @@ import { mergeSpots } from "./merge";
 import { fetchPnpSpots } from "./parksnpeaks";
 import { fetchPotaSpots } from "./pota";
 import { fetchSotaSpots } from "./sota";
+import { clusterSpots, clustersOpen, setClusterListener } from "./cluster";
 import { fetchDxSpots } from "./dx";
 import { MergedSpot, Spot, SpotFilter, SpotSource, defaultSpotFilter } from "./types";
 
@@ -17,7 +18,8 @@ const fetchers: Record<SpotSource, () => Promise<Spot[]>> = {
     pota: fetchPotaSpots,
     pnp: fetchPnpSpots,
     sota: fetchSotaSpots,
-    dx: fetchDxSpots,
+    // A connected telnet cluster (desktop only) is the live feed; HamQTH's copy is the fallback.
+    dx: async () => (clustersOpen() ? clusterSpots() : fetchDxSpots()),
 };
 
 export type SourceState = { spots: Spot[]; failed: boolean; fetchedAt?: DateTime };
@@ -98,6 +100,17 @@ export const refreshSpots = async (): Promise<void> => {
     setState({ bySource, spots, loading: false, fetchedAt: DateTime.utc() });
     announce(spots);
 };
+
+// A source that tells us rather than waiting to be asked: the telnet clusters push their spots as
+// they arrive instead of on the minute's poll.
+const pushSource = (source: SpotSource, spots: Spot[]) => {
+    if (!config.sources.includes(source)) return;
+    const bySource = { ...state.bySource, [source]: { spots, failed: false, fetchedAt: DateTime.utc() } };
+    const merged = remerge(bySource);
+    setState({ bySource, spots: merged, fetchedAt: state.fetchedAt ?? DateTime.utc() });
+    announce(merged);
+};
+setClusterListener(() => pushSource("dx", clusterSpots()));
 
 const start = () => {
     if (timer) return;

@@ -25,24 +25,28 @@ const wwff2pota = (reference: string): string | undefined =>
 // Two references for the *same* award are the exception: that's a twofer, one operator standing in
 // two parks, and it stays two rows because the log can only hold one reference per award and the
 // operator has to be able to see and pick the second one.
-const sameReference = (a: Spot, b: Spot): boolean => {
-    if (!a.reference || !b.reference) return true;
-    if (a.reference === b.reference) return true;
-    if (a.programme !== b.programme) return true;
+const samePark = (a: Spot, b: Spot): boolean => {
     const [x, y] = [a.reference, b.reference];
-    return links[x] === y || links[y] === x || wwff2pota(x) === y || wwff2pota(y) === x;
+    if (!x || !y) return false;
+    return x === y || links[x] === y || links[y] === x || wwff2pota(x) === y || wwff2pota(y) === x;
 };
+
+const sameReference = (a: Spot, b: Spot): boolean =>
+    !a.reference || !b.reference || a.programme !== b.programme || samePark(a, b);
 
 const sameFrequency = (a?: number, b?: number): boolean => !a || !b || Math.abs(a - b) <= MERGE_MHZ;
 
 const sameCallsign = (a: string, b: string): boolean =>
     (baseCallsign(a) || a.toUpperCase()) === (baseCallsign(b) || b.toUpperCase());
 
+// The time window is for guesses. Two spots naming the same park are the same activation however far
+// apart they were posted: ParksnPeaks and pota.app are often spotted by different people, half an
+// hour apart.
 export const sameActivation = (a: Spot, b: Spot): boolean =>
     sameCallsign(a.callsign, b.callsign) &&
     sameFrequency(a.frequency, b.frequency) &&
     sameReference(a, b) &&
-    Math.abs(a.date.diff(b.date, "minutes").minutes) <= MERGE_WINDOW_MINUTES;
+    (samePark(a, b) || Math.abs(a.date.diff(b.date, "minutes").minutes) <= MERGE_WINDOW_MINUTES);
 
 // The newest spot leads the row, and the others fill in whatever it doesn't carry: ParksnPeaks knows
 // nothing about gridsquares, POTA knows nothing about shires, and between them the row usually has

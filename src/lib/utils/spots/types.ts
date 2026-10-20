@@ -12,9 +12,24 @@ import type { EventType } from "../event-rules";
 export const spotSources = ["pota", "pnp", "sota", "dx"] as const;
 export type SpotSource = (typeof spotSources)[number];
 
-// Only the two networks that will take a spot from an app without an account-wide OAuth dance.
-// SOTAwatch needs a SOTA SSO token and the API approval described in ./sota.
-export type SelfSpotTarget = Extract<SpotSource, "pota" | "pnp">;
+// The networks that will take a spot from an app without an account-wide OAuth dance — the DX
+// cluster only from the desktop build, over its telnet link. SOTAwatch needs a SOTA SSO token and the
+// API approval described in ./sota.
+export type SelfSpotTarget = Extract<SpotSource, "pota" | "pnp" | "dx">;
+
+// A telnet DX cluster the desktop build logs in to — see ./cluster.
+export type DxCluster = {
+    id: string;
+    host: string;
+    port: number;
+    // Blank logs in as the operator's own callsign.
+    login?: string;
+    // Only some clusters ask for one, usually before they'll take a spot.
+    password?: string;
+    // Sent after every login, one per line — `set/skimmer`, a cluster-side filter.
+    commands?: string;
+    enabled: boolean;
+};
 
 // What a spot we post is for: an award reference, or "qrp" — ParksnPeaks' class for a portable
 // station that isn't at any reference, which no other network has.

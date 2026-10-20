@@ -1,4 +1,5 @@
 export * from "./band-map";
+export * from "./cluster-settings";
 export * from "./spot-alerts";
 export * from "./spot-filters";
 export * from "./spot-list";

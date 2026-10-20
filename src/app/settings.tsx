@@ -5,6 +5,7 @@ import { DateFormatSetting, UnitsSetting } from "../lib/components/choice-settin
 import { PageLayout } from "../lib/components/page-layout";
 import { PickFavourite } from "../lib/components/pick-favourite";
 import { Stack } from "../lib/components/stack";
+import { ClusterSettings } from "../lib/components/spots";
 import { StorageUsage } from "../lib/components/storage-usage";
 import { TabsLayout } from "../lib/components/tabs-layout";
 import { TotaRegistrationSetting } from "../lib/components/tota-registration";
@@ -17,6 +18,7 @@ import { Typography } from "../lib/ui/typography";
 import { CLUBLOG_API_KEY } from "../lib/utils/clublog";
 import { HamQTHSettingsType } from "../lib/utils/hamqth";
 import { normalise } from "../lib/utils/locator";
+import { isTauri } from "../lib/utils/notify";
 import { useStore } from "../lib/utils/store";
 import { useSettings } from "../lib/utils/use-settings";
 
@@ -355,6 +357,7 @@ const Settings = () => {
                             onChangeText={(v) => updateSetting("pnpApiKey", v === "" ? undefined : v)}
                         />
                     </Stack>
+                    {isTauri() && <ClusterSettings />}
                 </Stack>
             </TabsLayout>
         </PageLayout>

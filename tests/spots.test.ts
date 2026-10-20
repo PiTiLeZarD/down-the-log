@@ -9,7 +9,9 @@ import {
 } from "../src/lib/utils/spots/alerts";
 import { applySpotFilter } from "../src/lib/utils/spots/filter";
 import { LABEL_HEIGHT, layoutBandMap } from "../src/lib/utils/spots/band-map";
+import { parseClusterLine } from "../src/lib/utils/spots/cluster";
 import { parseDxSpot } from "../src/lib/utils/spots/dx";
+import { clusterSpotCommand } from "../src/lib/utils/spots/self-spot";
 import { mergeSpots, sameActivation, spotBadges } from "../src/lib/utils/spots/merge";
 import { parsePnpSpot } from "../src/lib/utils/spots/parksnpeaks";
 import { parsePotaSpot } from "../src/lib/utils/spots/pota";
@@ -110,7 +112,8 @@ describe("parsing", () => {
         expect(parsed.mode).toBe("FT8");
         expect(parsed.date.toISO()).toBe("2026-10-20T01:07:00.000Z");
         expect(parsed.spotter).toBe("I1MMR");
-        expect(parseDxSpot("W5ART^21075.2^PY2FZ^^0109 2026-10-20^L^^SA^15M^Brazil^108")!.mode).toBeUndefined();
+        expect(parseDxSpot("W5ART^21075.2^PY2FZ^^0109 2026-10-20^L^^SA^15M^Brazil^108")!.mode).toBe("FT8");
+        expect(parseDxSpot("W5ART^21025.2^PY2FZ^^0109 2026-10-20^L^^SA^15M^Brazil^108")!.mode).toBeUndefined();
         expect(parseDxSpot("")).toBeUndefined();
     });
 });
@@ -132,6 +135,13 @@ describe("merging", () => {
                 spot({ id: "s2", source: "pnp", programme: "wwff", reference: "KFF-0119", frequency: 14.25 }),
             ),
         ).toBe(true);
+    });
+
+    test("the same park on two networks merges however far apart it was spotted; a guess doesn't", () => {
+        const pnp = spot({ id: "pnp-1", source: "pnp", programme: "wwff", reference: "VKFF-4610", frequency: 7.144 });
+        const pota = { reference: "AU-4063", frequency: 7.144, date: at("2024-01-01T10:23:00Z") };
+        expect(mergeSpots([pnp, spot({ id: "pota-1", ...pota })])).toHaveLength(1);
+        expect(mergeSpots([pnp, spot({ id: "pota-1", ...pota, reference: "AU-0001" })])).toHaveLength(2);
     });
 
     test("a twofer stays two rows: one award can't hold two references", () => {
@@ -458,5 +468,54 @@ describe("bandmap layout", () => {
     test("ticks are spaced for the zoom", () => {
         expect(layoutBandMap([], "40m", 2).ticks.map((t) => t.khz)).toEqual([7000, 7050, 7100, 7150, 7200, 7250, 7300]);
         expect(layoutBandMap([], "40m", 16).ticks[1].khz - layoutBandMap([], "40m", 16).ticks[0].khz).toBe(5);
+    });
+});
+
+describe("telnet cluster", () => {
+    const now = at("2026-10-20T01:30:00Z");
+
+    test("a spot line is spotter, kHz, call, comment and a UTC time of day", () => {
+        const spot = parseClusterLine("DX de W3LPL-#:   14025.0  k1abc        CW 25 dB 22 WPM CQ sked 0500Z  0123Z FN20", now)!;
+        expect(spot.spotter).toBe("W3LPL-#");
+        expect(spot.callsign).toBe("K1ABC");
+        expect(spot.frequency).toBe(14.025);
+        expect(spot.band).toBe("20m");
+        expect(spot.mode).toBe("CW");
+        expect(spot.comments).toBe("CW 25 dB 22 WPM CQ sked 0500Z");
+        expect(spot.date.toISO()).toBe("2026-10-20T01:23:00.000Z");
+        expect(spot.automatic).toBe(true);
+    });
+
+    test("a time later than now was yesterday, and a bare spot still parses", () => {
+        const spot = parseClusterLine("DX de VK2ABC:     7144.0  VK3XYZ                                       2355Z", now)!;
+        expect(spot.date.toISO()).toBe("2026-10-19T23:55:00.000Z");
+        expect(spot.comments).toBeUndefined();
+        expect(spot.automatic).toBe(false);
+    });
+
+    test("the same spot from two linked clusters has one id, and chatter isn't a spot", () => {
+        const a = parseClusterLine("DX de VK2ABC: 7144.0 VK3XYZ hello 0120Z", now)!;
+        const b = parseClusterLine("DX de VK2ABC:  7144.0  VK3XYZ  hello  0120Z  QF56", now)!;
+        expect(a.id).toBe(b.id);
+        expect(parseClusterLine("To ALL de VK2ABC: anyone on 40m?", now)).toBeUndefined();
+        // FT8 spots rarely say so; the frequency does.
+        expect(parseClusterLine("DX de N0YO:       7074.9  F4JCU                                       0350Z", now)!.mode).toBe("FT8");
+        expect(parseClusterLine("VK2ABC de CLUSTER 20-Oct-2026 0130Z dxspider >", now)).toBeUndefined();
+    });
+
+    test("a spot to the cluster carries the reference in front of the comment", () => {
+        const request = {
+            callsign: "VK2ABC",
+            spotter: "VK2ABC",
+            programme: "pota" as const,
+            reference: "VK-0123",
+            frequency: 14.244,
+            mode: "SSB",
+            comments: "QRV",
+        };
+        expect(clusterSpotCommand(request)).toBe("DX 14244.0 VK2ABC POTA VK-0123 SSB QRV");
+        expect(clusterSpotCommand({ ...request, programme: "qrp", reference: "near Bathurst", comments: "" })).toBe(
+            "DX 14244.0 VK2ABC SSB",
+        );
     });
 });

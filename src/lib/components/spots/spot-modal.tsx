@@ -11,6 +11,7 @@ import {
     postSpot,
     selfSpotTargets,
     spotSourceLabels,
+    useClusterStatus,
 } from "../../utils/spots";
 import { useStore } from "../../utils/store";
 import { useActiveSession } from "../../utils/use-session";
@@ -171,9 +172,20 @@ export const SpotModal = ({ open, onClose, station }: SpotModalProps) => {
           : selected;
 
     const spotted = subject === "me" ? settings.myCallsign : station?.callsign || callsign;
+    // The cluster is only on offer while the desktop build has one connected.
+    const clusterUp = Object.values(useClusterStatus()).some((status) => status.connected);
+    const offered = selfSpotTargets.filter((option) => option !== "dx" || clusterUp);
+    const targets = settings.selfSpotTargets.filter((option) => offered.includes(option));
+    // A cluster spot is just a station on a frequency; the award networks need the reference.
+    const needsReference = targets.some((option) => option !== "dx");
     const canSend =
-        !!settings.myCallsign && !!spotted && !!target && !!frequency && !!mode && !!settings.selfSpotTargets.length;
-    const targets = settings.selfSpotTargets;
+        !!settings.myCallsign &&
+        !!spotted &&
+        (!!target || !needsReference) &&
+        !!frequency &&
+        !!mode &&
+        !!targets.length;
+    const sentReference: SpotReference = target || { programme: "qrp", reference: "" };
 
     const send = async (text: string) => {
         if (!canSend) return;
@@ -186,8 +198,8 @@ export const SpotModal = ({ open, onClose, station }: SpotModalProps) => {
                 // Whoever is on air, the spot is reported by us: on ParksnPeaks that's the account
                 // the key belongs to, and POTA carries it as a field of its own.
                 spotter: settings.myCallsign,
-                programme: (target as SpotReference).programme,
-                reference: (target as SpotReference).reference,
+                programme: sentReference.programme,
+                reference: sentReference.reference,
                 frequency: frequency as number,
                 mode: mode as string,
                 comments: text,
@@ -201,7 +213,7 @@ export const SpotModal = ({ open, onClose, station }: SpotModalProps) => {
     const title = subject === "me" ? "Spot me" : spotted ? `Spot ${spotted}` : "Spot a station";
 
     return (
-        <Modal open={open} onClose={onClose}>
+        <Modal wide open={open} onClose={onClose}>
             <Stack gap="xxl" style={styles.modal}>
                 <Typography variant="h2">{title}</Typography>
                 {!settings.myCallsign && <Alert severity="warning">Set your callsign in settings first.</Alert>}
@@ -307,7 +319,7 @@ export const SpotModal = ({ open, onClose, station }: SpotModalProps) => {
                 <Stack gap="lg">
                     <Typography variant="em">Post to:</Typography>
                     <Stack direction="row" gap="lg" style={{ flexWrap: "wrap" }}>
-                        {selfSpotTargets.map((option: SelfSpotTarget) => (
+                        {offered.map((option: SelfSpotTarget) => (
                             <View key={option}>
                                 <Button
                                     variant={targets.includes(option) ? "contained" : "chip"}
@@ -315,9 +327,11 @@ export const SpotModal = ({ open, onClose, station }: SpotModalProps) => {
                                     onPress={() =>
                                         updateSetting(
                                             "selfSpotTargets",
-                                            targets.includes(option)
-                                                ? targets.filter((t) => t !== option)
-                                                : [...targets, option],
+                                            // The stored list, not the offered one: a cluster that's
+                                            // down right now stays picked for when it's back.
+                                            settings.selfSpotTargets.includes(option)
+                                                ? settings.selfSpotTargets.filter((t) => t !== option)
+                                                : [...settings.selfSpotTargets, option],
                                         )
                                     }
                                 />

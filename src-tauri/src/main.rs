@@ -1,6 +1,7 @@
 // Prevents additional console window on Windows in release, DO NOT REMOVE!!
 #![cfg_attr(not(debug_assertions), windows_subsystem = "windows")]
 
+mod cluster;
 mod tqsl;
 
 use std::collections::HashMap;
@@ -13,7 +14,14 @@ fn main() {
   tauri::Builder::default()
     .plugin(tauri_plugin_notification::init())
     .plugin(tauri_plugin_opener::init())
-    .invoke_handler(tauri::generate_handler![tqsl::tqsl_locations, tqsl::tqsl_upload])
+    .manage(cluster::Clusters::default())
+    .invoke_handler(tauri::generate_handler![
+      tqsl::tqsl_locations,
+      tqsl::tqsl_upload,
+      cluster::cluster_connect,
+      cluster::cluster_disconnect,
+      cluster::cluster_send
+    ])
     .setup(|app| {
       // The window is built here rather than from tauri.conf.json ("create": false) so it can take a
       // download handler: the webview saves an export to Downloads with no UI of its own, so the
