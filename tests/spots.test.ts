@@ -8,6 +8,7 @@ import {
     spotAlertNotification,
 } from "../src/lib/utils/spots/alerts";
 import { applySpotFilter } from "../src/lib/utils/spots/filter";
+import { LABEL_HEIGHT, layoutBandMap } from "../src/lib/utils/spots/band-map";
 import { parseDxSpot } from "../src/lib/utils/spots/dx";
 import { mergeSpots, sameActivation, spotBadges } from "../src/lib/utils/spots/merge";
 import { parsePnpSpot } from "../src/lib/utils/spots/parksnpeaks";
@@ -423,5 +424,39 @@ describe("alerts", () => {
         );
         expect(notification.title).toBe("VK6MB · 7.032 MHz · CW");
         expect(notification.body).toBe("US-0001 Acadia");
+    });
+});
+
+describe("bandmap layout", () => {
+    test("labels sit on their frequency, top of the band first, and only the band's own spots", () => {
+        const { labels, height } = layoutBandMap(
+            [
+                merged({ id: "low", frequency: 7.01 }),
+                merged({ id: "high", frequency: 7.2 }),
+                merged({ id: "other", frequency: 14.2 }),
+                merged({ id: "none" }),
+            ],
+            "40m",
+            2,
+        );
+        expect(labels.map((l) => l.spot.id)).toEqual(["high", "low"]);
+        expect(labels[0].anchor).toBe(200);
+        expect(labels[0].top).toBe(200 - LABEL_HEIGHT / 2);
+        expect(height).toBe(600);
+    });
+
+    test("crowded labels are pushed down rather than drawn over each other", () => {
+        const { labels } = layoutBandMap(
+            [merged({ id: "a", frequency: 7.0255 }), merged({ id: "b", frequency: 7.025 })],
+            "40m",
+            2,
+        );
+        expect(labels[1].anchor - labels[0].anchor).toBe(1);
+        expect(labels[1].top).toBeGreaterThanOrEqual(labels[0].top + LABEL_HEIGHT);
+    });
+
+    test("ticks are spaced for the zoom", () => {
+        expect(layoutBandMap([], "40m", 2).ticks.map((t) => t.khz)).toEqual([7000, 7050, 7100, 7150, 7200, 7250, 7300]);
+        expect(layoutBandMap([], "40m", 16).ticks[1].khz - layoutBandMap([], "40m", 16).ticks[0].khz).toBe(5);
     });
 });

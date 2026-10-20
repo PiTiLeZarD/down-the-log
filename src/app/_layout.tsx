@@ -1,3 +1,4 @@
+import { Asset } from "expo-asset";
 import { useFonts } from "expo-font";
 import { DarkTheme, DefaultTheme, Stack, ThemeProvider } from "expo-router";
 import * as SplashScreen from "expo-splash-screen";
@@ -31,6 +32,16 @@ const styles = StyleSheet.create((theme) => ({
 
 SplashScreen.preventAutoHideAsync();
 
+const QUICKSAND = require("../../assets/Quicksand-VariableFont_wght.ttf");
+
+// expo-font's @font-face has no weight range, so WebKit (Safari, Tauri on macOS) treats the variable
+// font as regular-only and smears a faux bold over it. Chrome reads the wght axis and never notices.
+if (Platform.OS === "web") {
+    const style = document.createElement("style");
+    style.textContent = `@font-face { font-family: Quicksand; src: url(${Asset.fromModule(QUICKSAND).uri}); font-weight: 300 700; }`;
+    document.head.appendChild(style);
+}
+
 const RootLayout = () => {
     // Mounted here rather than only behind the spots bar: spot alerts have to keep polling from
     // whatever screen the operator is on, and this is the one component that is always up.
@@ -39,7 +50,7 @@ const RootLayout = () => {
     useNotificationTaps();
 
     const [fontsLoaded, fontError] = useFonts({
-        Quicksand: require("../../assets/Quicksand-VariableFont_wght.ttf"),
+        Quicksand: QUICKSAND,
     });
 
     // Every screen is painted on a react-navigation card, and its palette is independent of ours:
