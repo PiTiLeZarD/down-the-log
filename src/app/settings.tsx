@@ -1,4 +1,4 @@
-import { useLocalSearchParams, useRouter } from "expo-router";
+import { useLocalSearchParams } from "expo-router";
 import { Switch } from "react-native";
 import { UnistylesRuntime, useUnistyles } from "react-native-unistyles";
 import { DateFormatSetting, UnitsSetting } from "../lib/components/choice-setting";
@@ -27,7 +27,6 @@ const tabParams = ["details", "interface", "customisation", "apis"];
 const Settings = () => {
     const { rt } = useUnistyles();
     const { tab } = useLocalSearchParams<{ tab?: string }>();
-    const { navigate } = useRouter();
     const settings = useSettings();
     const currentLocation = useStore((state) => state.currentLocation);
     const updateSetting = useStore((state) => state.updateSetting);
@@ -94,15 +93,6 @@ const Settings = () => {
                         value={settings.showHeatmap != undefined ? settings.showHeatmap : false}
                         onValueChange={(v) => updateSetting("showHeatmap", v)}
                     />
-                    {/* The spots bar and alerts moved to the Spots page itself: they're decisions made
-                        while looking at the feed. The ParksnPeaks account sits with the other credentials
-                        under APIs. */}
-                    <Typography underline>Spots:</Typography>
-                    <Typography variant="subtitle">
-                        The spots bar above the log and alerts are set behind the cog on the Spots page. The
-                        ParksnPeaks account used to spot yourself is under APIs.
-                    </Typography>
-                    <Button text="Open Spots" variant="outlined" onPress={() => navigate("/spots")} />
                     <Typography underline>Show Filters:</Typography>
                     <Switch
                         value={settings.showFilters != undefined ? settings.showFilters : false}
