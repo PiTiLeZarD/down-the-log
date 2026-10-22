@@ -41,12 +41,15 @@ const sameCallsign = (a: string, b: string): boolean =>
 
 // The time window is for guesses. Two spots naming the same park are the same activation however far
 // apart they were posted: ParksnPeaks and pota.app are often spotted by different people, half an
-// hour apart.
+// hour apart. Two naming no park at all are a station holding a frequency, which a cluster re-spots
+// all evening; the window only exists to keep one operator's next park apart from the last.
 export const sameActivation = (a: Spot, b: Spot): boolean =>
     sameCallsign(a.callsign, b.callsign) &&
     sameFrequency(a.frequency, b.frequency) &&
     sameReference(a, b) &&
-    (samePark(a, b) || Math.abs(a.date.diff(b.date, "minutes").minutes) <= MERGE_WINDOW_MINUTES);
+    (samePark(a, b) ||
+        (!a.reference && !b.reference) ||
+        Math.abs(a.date.diff(b.date, "minutes").minutes) <= MERGE_WINDOW_MINUTES);
 
 // The newest spot leads the row, and the others fill in whatever it doesn't carry: ParksnPeaks knows
 // nothing about gridsquares, POTA knows nothing about shires, and between them the row usually has

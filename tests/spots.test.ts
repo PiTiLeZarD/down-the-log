@@ -144,6 +144,16 @@ describe("merging", () => {
         expect(mergeSpots([pnp, spot({ id: "pota-1", ...pota, reference: "AU-0001" })])).toHaveLength(2);
     });
 
+    test("a cluster re-spotting a station on its frequency is one row however far apart", () => {
+        const dx = { source: "dx" as const, programme: undefined, callsign: "IT9FJC", frequency: 7.15 };
+        const rows = mergeSpots([
+            spot({ id: "dx-1", ...dx, date: at("2024-01-01T11:30:00Z") }),
+            spot({ id: "dx-2", ...dx, frequency: 7.1495, date: at("2024-01-01T10:00:00Z") }),
+        ]);
+        expect(rows).toHaveLength(1);
+        expect(rows[0].id).toBe("dx-1");
+    });
+
     test("a twofer stays two rows: one award can't hold two references", () => {
         const rows = mergeSpots([
             spot({ id: "a", reference: "US-0001", frequency: 14.244 }),

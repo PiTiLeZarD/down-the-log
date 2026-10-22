@@ -7,7 +7,7 @@ import { StyleSheet } from "react-native-unistyles";
 import { Beacons } from "../lib/components/beacons";
 import { Filters, useFilteredQsos } from "../lib/components/filters";
 import { FirstRunSetup } from "../lib/components/first-run-setup";
-import { BandMap, useLogSpot } from "../lib/components/spots";
+import { BandMap, SpotModal, useLogSpot } from "../lib/components/spots";
 import { CallsignInput } from "../lib/components/form/callsign-input";
 import {
     QSO,
@@ -106,6 +106,9 @@ const Index = () => {
     // Open beside the log until closed; on a phone it would cover the log, so it starts closed there.
     const [bandMapOpen, setBandMapOpen] = React.useState<boolean | undefined>(undefined);
     const showBandMap = bandMapOpen ?? !phone;
+    // The QSO being typed, frozen when the bandmap's spot button was pressed: the callsign heard and
+    // where the radio is tuned are already in the form.
+    const [spotting, setSpotting] = React.useState<QSO | undefined>(undefined);
     // The log search follows the box, it isn't wired to it: scanning a 100k-QSO log and regrouping
     // what comes back is far slower than a keystroke, so on a big log the field went dead between
     // letters. Filtering on the settled value means one search per pause instead of one per letter.
@@ -179,6 +182,7 @@ const Index = () => {
                                     if (phone) setBandMapOpen(false);
                                     logSpot(spot);
                                 }}
+                                onSpot={() => setSpotting(methods.getValues())}
                                 onClose={() => setBandMapOpen(false)}
                             />
                         </View>
@@ -190,6 +194,7 @@ const Index = () => {
                     )}
                 </View>
             </View>
+            <SpotModal open={!!spotting} station={spotting} onClose={() => setSpotting(undefined)} />
             <View style={styles.inputs}>
                 <SessionBar />
                 <FormProvider {...methods}>

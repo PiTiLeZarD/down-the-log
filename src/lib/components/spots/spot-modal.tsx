@@ -82,8 +82,9 @@ const spottableProgrammes: EventType[] = ["pota", "wwff", "sota"];
 export type SpotModalProps = {
     open: boolean;
     onClose: () => void;
-    // The station being spotted. Left out, the modal opens on the operator's own activation and can
-    // be switched to another station, whose callsign and reference are then typed in.
+    // The station being spotted. Left out, or without a callsign (the bandmap hands over an empty QSO
+    // form), the modal opens on the operator's own activation and can be switched to another station,
+    // whose callsign and reference are then typed in.
     station?: QSO;
 };
 
@@ -93,11 +94,12 @@ export const SpotModal = ({ open, onClose, station }: SpotModalProps) => {
     const session = useActiveSession();
     const qsos = useQsos();
     const last = qsos[0];
+    const fixed = !!station?.callsign;
 
     // "me" spots our own activation off the running session. "other" spots somebody else: filled in
     // from the QSO or spot we were opened with, or typed from scratch when we were opened bare —
     // hearing an unspotted activator is exactly when a chaser reaches for this.
-    const [subject, setSubject] = React.useState<"me" | "other">(station ? "other" : "me");
+    const [subject, setSubject] = React.useState<"me" | "other">(fixed ? "other" : "me");
     const [callsign, setCallsign] = React.useState<string>("");
     const [typedReference, setTypedReference] = React.useState<string>("");
     const [typedProgramme, setTypedProgramme] = React.useState<EventType>("pota");
@@ -142,7 +144,7 @@ export const SpotModal = ({ open, onClose, station }: SpotModalProps) => {
                     ? station.mode
                     : (session?.defaults.mode ?? last?.mode ?? settings.favouriteModes[0] ?? "SSB"),
             });
-            setSubject(station ? "other" : "me");
+            setSubject(fixed ? "other" : "me");
             setCallsign(station?.callsign || "");
             setTypedReference("");
             setChosen(undefined);
@@ -219,7 +221,7 @@ export const SpotModal = ({ open, onClose, station }: SpotModalProps) => {
                 {!settings.myCallsign && <Alert severity="warning">Set your callsign in settings first.</Alert>}
                 {/* Only offered when we weren't opened on a particular station: from a QSO or a spot
                     row the subject is already settled, and a toggle there would just invite mistakes. */}
-                {!station && (
+                {!fixed && (
                     <Stack direction="row" gap="lg">
                         <View>
                             <Button
@@ -237,14 +239,6 @@ export const SpotModal = ({ open, onClose, station }: SpotModalProps) => {
                         </View>
                     </Stack>
                 )}
-                {subject === "me" && options.length === 1 && (
-                    <Alert severity="info">
-                        <Typography style={{ flexShrink: 1 }}>
-                            No reference to spot: start a POTA, WWFF or SOTA session, or log a QSO with your reference
-                            on it. Without one, ParksnPeaks still takes a QRP spot.
-                        </Typography>
-                    </Alert>
-                )}
                 {typing && (
                     <Stack direction="row" gap="lg">
                         <Typography style={styles.label}>Callsign:</Typography>
@@ -254,53 +248,6 @@ export const SpotModal = ({ open, onClose, station }: SpotModalProps) => {
                                 placeholder="Who you can hear"
                                 onChangeText={(value) => setCallsign(value.toUpperCase())}
                             />
-                        </View>
-                    </Stack>
-                )}
-                {typing ? (
-                    <Stack gap="lg">
-                        <Stack direction="row" gap="lg">
-                            {spottableProgrammes.map((programme) => (
-                                <View key={programme}>
-                                    <Button
-                                        variant={typedProgramme === programme ? "contained" : "chip"}
-                                        text={programme.toUpperCase()}
-                                        onPress={() => setTypedProgramme(programme)}
-                                    />
-                                </View>
-                            ))}
-                        </Stack>
-                        <Stack direction="row" gap="lg">
-                            <Typography style={styles.label}>Reference:</Typography>
-                            <View style={{ flexGrow: 1 }}>
-                                <Input
-                                    value={typedReference}
-                                    placeholder="Park or summit they announced"
-                                    onChangeText={(value) => setTypedReference(value.toUpperCase())}
-                                />
-                            </View>
-                        </Stack>
-                    </Stack>
-                ) : options.length > 1 ? (
-                    <Stack direction="row" gap="lg" style={{ flexWrap: "wrap" }}>
-                        {options.map((option) => (
-                            <View key={option.reference}>
-                                <Button
-                                    variant={option.reference === selected?.reference ? "contained" : "chip"}
-                                    text={referenceLabel(option)}
-                                    onPress={() => setChosen(option.reference)}
-                                />
-                            </View>
-                        ))}
-                    </Stack>
-                ) : options.length === 1 ? (
-                    <Typography variant="em">{referenceLabel(options[0])}</Typography>
-                ) : null}
-                {!typing && selected?.programme === "qrp" && (
-                    <Stack direction="row" gap="lg">
-                        <Typography style={styles.label}>Position:</Typography>
-                        <View style={{ flexGrow: 1 }}>
-                            <Input value={position} placeholder="Where you are, or your grid" onChangeText={setPosition} />
                         </View>
                     </Stack>
                 )}
@@ -342,6 +289,70 @@ export const SpotModal = ({ open, onClose, station }: SpotModalProps) => {
                         <Typography variant="subtitle">Pick at least one network to post to.</Typography>
                     )}
                 </Stack>
+                {/* Only the award networks need a reference; a cluster spot is just a call on a frequency. */}
+                {needsReference && (
+                    <>
+                        {subject === "me" && options.length === 1 && (
+                            <Alert severity="info">
+                                <Typography style={{ flexShrink: 1 }}>
+                                    No reference to spot: start a POTA, WWFF or SOTA session, or log a QSO with your
+                                    reference on it. Without one, ParksnPeaks still takes a QRP spot.
+                                </Typography>
+                            </Alert>
+                        )}
+                        {typing ? (
+                            <Stack gap="lg">
+                                <Stack direction="row" gap="lg">
+                                    {spottableProgrammes.map((programme) => (
+                                        <View key={programme}>
+                                            <Button
+                                                variant={typedProgramme === programme ? "contained" : "chip"}
+                                                text={programme.toUpperCase()}
+                                                onPress={() => setTypedProgramme(programme)}
+                                            />
+                                        </View>
+                                    ))}
+                                </Stack>
+                                <Stack direction="row" gap="lg">
+                                    <Typography style={styles.label}>Reference:</Typography>
+                                    <View style={{ flexGrow: 1 }}>
+                                        <Input
+                                            value={typedReference}
+                                            placeholder="Park or summit they announced"
+                                            onChangeText={(value) => setTypedReference(value.toUpperCase())}
+                                        />
+                                    </View>
+                                </Stack>
+                            </Stack>
+                        ) : options.length > 1 ? (
+                            <Stack direction="row" gap="lg" style={{ flexWrap: "wrap" }}>
+                                {options.map((option) => (
+                                    <View key={option.reference}>
+                                        <Button
+                                            variant={option.reference === selected?.reference ? "contained" : "chip"}
+                                            text={referenceLabel(option)}
+                                            onPress={() => setChosen(option.reference)}
+                                        />
+                                    </View>
+                                ))}
+                            </Stack>
+                        ) : options.length === 1 ? (
+                            <Typography variant="em">{referenceLabel(options[0])}</Typography>
+                        ) : null}
+                        {!typing && selected?.programme === "qrp" && (
+                            <Stack direction="row" gap="lg">
+                                <Typography style={styles.label}>Position:</Typography>
+                                <View style={{ flexGrow: 1 }}>
+                                    <Input
+                                        value={position}
+                                        placeholder="Where you are, or your grid"
+                                        onChangeText={setPosition}
+                                    />
+                                </View>
+                            </Stack>
+                        )}
+                    </>
+                )}
                 {results?.map((result) => (
                     <Alert key={result.target} severity={result.ok ? "success" : "danger"}>
                         <Typography style={{ flexShrink: 1 }}>

@@ -1,3 +1,4 @@
+import { useRouter } from "expo-router";
 import React from "react";
 import { LayoutChangeEvent, NativeScrollEvent, NativeSyntheticEvent, Pressable, ScrollView, View } from "react-native";
 import Svg, { Circle, Line } from "react-native-svg";
@@ -111,9 +112,19 @@ const styles = StyleSheet.create((theme) => ({
 }));
 
 // Wrapped: the button's theme style is `flex: 1`, and in a row of six that stretches every one.
-const IconButton = ({ icon, label, onPress }: { icon: IconName; label: string; onPress: () => void }) => (
+const IconButton = ({
+    icon,
+    label,
+    onPress,
+    colour = "grey",
+}: {
+    icon: IconName;
+    label: string;
+    onPress: () => void;
+    colour?: ColourVariant;
+}) => (
     <View>
-        <Button variant="chip" colour="grey" startIcon={icon} aria-label={label} onPress={onPress} />
+        <Button variant="chip" colour={colour} startIcon={icon} aria-label={label} onPress={onPress} />
     </View>
 );
 
@@ -123,6 +134,8 @@ export type BandMapProps = {
     band?: Band;
     frequency?: number;
     onSpotPress: (spot: MergedSpot) => void;
+    // Spot what's being heard: the station in the QSO form, where the form is tuned.
+    onSpot: () => void;
     onClose: () => void;
 };
 
@@ -130,7 +143,8 @@ export type BandMapProps = {
  * The spots on one band laid out on a frequency scale, the way a contest logger's bandmap does it:
  * where the activity is matters more than when it was spotted. Tapping a call logs it.
  */
-export const BandMap = ({ band, frequency, onSpotPress, onClose }: BandMapProps) => {
+export const BandMap = ({ band, frequency, onSpotPress, onSpot, onClose }: BandMapProps) => {
+    const { navigate } = useRouter();
     const { theme } = useUnistyles();
     const settings = useSettings();
     const qsos = useQsos();
@@ -178,7 +192,7 @@ export const BandMap = ({ band, frequency, onSpotPress, onClose }: BandMapProps)
 
     return (
         <View style={styles.panel}>
-            <Stack direction="row" gap="sm" style={styles.header}>
+            <Stack direction="row" gap="xs" style={styles.header}>
                 <SelectInput
                     value={shown}
                     items={bandMapBands.map((b) => ({ label: b, value: b }))}
@@ -189,6 +203,8 @@ export const BandMap = ({ band, frequency, onSpotPress, onClose }: BandMapProps)
                 <IconButton icon="remove" label="Zoom out" onPress={() => stepZoom(-1)} />
                 <Typography variant="subtitle">{zoom}px/kHz</Typography>
                 <IconButton icon="add" label="Zoom in" onPress={() => stepZoom(1)} />
+                <IconButton icon="megaphone" label="Spot" colour="secondary" onPress={onSpot} />
+                <IconButton icon="list" label="Spots page" onPress={() => navigate("/spots")} />
                 <IconButton icon="help" label="Legend" onPress={() => setLegend(!legend)} />
                 <IconButton icon="close" label="Close bandmap" onPress={onClose} />
             </Stack>
