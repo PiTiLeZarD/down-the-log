@@ -438,15 +438,44 @@ describe("ADIF", () => {
         expect(r.call).toBe("VK4ALE");
     });
 
-    test("decodes escaped characters", () => {
-        const [r] = AdifAPI.parseFile("<COMMENT:19>a &lt;b&gt; &amp; c<EOR>");
-        expect(r.comment).toBe("a <b> & c");
+    test("writes values as they are, with their own length, and reads them back", () => {
+        const line = AdifAPI.fromRecord(record({ comment: `Tnx & 73 <de> "Jo's"` }));
+        expect(line).toContain(`<COMMENT:20>Tnx & 73 <de> "Jo's"`);
+        expect(AdifAPI.parseFile(line)[0].comment).toBe(`Tnx & 73 <de> "Jo's"`);
     });
 
-    test("writes a length counting the escaped value, so it reads back", () => {
-        const line = AdifAPI.fromRecord(record({ comment: "a<b" }));
-        expect(line).toContain("<COMMENT:6>a&lt;b");
-        expect(AdifAPI.parseFile(line)[0].comment).toBe("a<b");
+    test("takes a value by its length, tag-like text and literal \\r included", () => {
+        const [r] = AdifAPI.parseFile("<COMMENT:20>see <eor> <x:3> C:\\r <CALL:6>VK4ALE<EOR>");
+        expect(r.comment).toBe("see <eor> <x:3> C:\\r");
+        expect(r.call).toBe("VK4ALE");
+    });
+
+    test("cuts a byte-counted length back at the next tag", () => {
+        // "Müller" is 6 characters and 7 UTF-8 bytes.
+        const [r] = AdifAPI.parseFile("<NAME:7>Müller<CALL:6>VK4ALE<EOR>");
+        expect(r.name).toBe("Müller");
+        expect(r.call).toBe("VK4ALE");
+    });
+
+    test("reads a record on the same line as <EOH>", () => {
+        expect(AdifAPI.parseFile("<PROGRAMID:4>test<EOH><CALL:6>VK4ALE<EOR>").map((r) => r.call)).toEqual(["VK4ALE"]);
+    });
+
+    test("leaves entities in another logger's file as typed", () => {
+        const [r] = AdifAPI.parseFile("<PROGRAMID:4>N1MM<EOH><COMMENT:19>a &lt;b&gt; &amp; c<EOR>");
+        expect(r.comment).toBe("a &lt;b&gt; &amp; c");
+    });
+
+    test("decodes entities in this app's own older exports, header included", () => {
+        const file = '<PROGRAMID:12>down-the-log <APP_DTL_NOTE:14>&quot;hi&quot;<EOH><COMMENT:19>a &lt;b&gt; &amp; c<EOR>';
+        expect(AdifAPI.parseFile(file)[0].comment).toBe("a <b> & c");
+        expect(AdifAPI.parseHeader!(file).app_dtl_note).toBe('"hi"');
+    });
+
+    test("this app's new exports read back unchanged", () => {
+        const file = AdifAPI.generateFile([], header());
+        const line = AdifAPI.fromRecord(record({ call: "VK4ALE", comment: "R&R <73>" }));
+        expect(AdifAPI.parseFile(`${file}${line}`)[0].comment).toBe("R&R <73>");
     });
 
     test("generates a header and one record per QSO", () => {

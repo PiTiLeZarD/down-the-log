@@ -328,7 +328,8 @@ export const header = (sessions?: string): Header => ({
 });
 
 export type FileFormatAPI = {
-    toRecord: (from: unknown) => QSORecord;
+    // `decode`: ADIF only, for this app's own exports from when it escaped values. See adif.ts.
+    toRecord: (from: unknown, decode?: boolean) => QSORecord;
     fromRecord: (record: QSORecord) => string;
     parseFile: (fileContent: string) => QSORecord[];
     // Header fields, keys lowercased. Only the formats that have a header worth reading back.

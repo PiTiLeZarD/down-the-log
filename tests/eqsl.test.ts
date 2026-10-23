@@ -116,6 +116,11 @@ describe("eqslUploadAdif", () => {
         expect(head).toMatch(/<eqsl_pswd:7>hunter2/i);
         expect(head).toMatch(/<app_eqsl_qth_nickname:4>Home/i);
     });
+
+    test("sends a password with ADIF-unfriendly characters exactly as typed", () => {
+        const adif = eqslUploadAdif([qso(0)], { ...credentials, password: `p&ss<w>'"` });
+        expect(adif).toMatch(/<eqsl_pswd:9>p&ss<w>'"/i);
+    });
 });
 
 describe("parseUploadResult", () => {
