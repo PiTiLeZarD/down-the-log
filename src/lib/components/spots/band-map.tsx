@@ -1,6 +1,6 @@
 import { useRouter } from "expo-router";
 import React from "react";
-import { LayoutChangeEvent, NativeScrollEvent, NativeSyntheticEvent, Pressable, ScrollView, View } from "react-native";
+import { LayoutChangeEvent, NativeScrollEvent, NativeSyntheticEvent, Pressable, ScrollView, ScrollViewInstance, View } from "react-native";
 import Svg, { Circle, Line } from "react-native-svg";
 import { StyleSheet, useUnistyles } from "react-native-unistyles";
 import { Band, bands } from "../../data/bands";
@@ -154,7 +154,7 @@ export const BandMap = ({ band, frequency, onSpotPress, onSpot, onClose }: BandM
     const [zoom, setZoom] = React.useState<number>(DEFAULT_ZOOM);
     const [legend, setLegend] = React.useState<boolean>(false);
     const [viewport, setViewport] = React.useState<number>(0);
-    const scroller = React.useRef<ScrollView>(null);
+    const scroller = React.useRef<ScrollViewInstance>(null);
     // The frequency at the middle of the view, so zooming keeps it there instead of jumping.
     const centre = React.useRef<number | undefined>(undefined);
 

@@ -1,6 +1,6 @@
 import { DateTime } from "luxon";
 import React from "react";
-import { Pressable, ScrollView, View } from "react-native";
+import { Pressable, ScrollView, ScrollViewInstance, View } from "react-native";
 import { StyleSheet } from "react-native-unistyles";
 import { useWidthMatches } from "../ui/breakpoints";
 import { Button } from "../ui/button";
@@ -109,7 +109,7 @@ export const QsoHeatmap = () => {
     const settings = useSettings();
     const [selected, setSelected] = React.useState<string | undefined>(undefined);
     const smallScreen = useWidthMatches(undefined, "md");
-    const scroll = React.useRef<ScrollView>(null);
+    const scroll = React.useRef<ScrollViewInstance>(null);
 
     const size = smallScreen ? 9 : 11;
 

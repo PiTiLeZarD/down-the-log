@@ -4,26 +4,3 @@ allowBuilds:
   unrs-resolver: true
   # Cloudflare's runtime binary, fetched on install; wrangler needs it for the relay deploy.
   workerd: true
-minimumReleaseAgeExclude:
-  - '@expo/cli@57.0.14'
-  - '@expo/fingerprint@0.20.7'
-  - '@expo/inline-modules@0.1.5'
-  - '@expo/local-build-cache-provider@57.0.6'
-  - '@expo/metro-config@57.0.8'
-  - '@expo/prebuild-config@57.0.11'
-  - expo-asset@57.0.10
-  - expo-constants@57.0.10
-  - expo-server@57.0.2
-  - expo@57.0.12
-  - '@expo/metro-runtime@57.0.9'
-  - '@expo/ui@57.0.10'
-  - expo-dev-client@57.0.11
-  - expo-dev-launcher@57.0.11
-  - expo-dev-menu@57.0.11
-  - expo-location@57.0.9
-  - expo-router@57.0.12
-  - expo-splash-screen@57.0.6
-# expo-constants 57.0.17 depends on @expo/env@~2.4.3, which was never published — any package that
-# pulls expo-constants by range (expo-notifications does) fails to resolve without this pin.
-overrides:
-  expo-constants: 57.0.10

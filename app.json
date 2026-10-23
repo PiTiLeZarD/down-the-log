@@ -59,7 +59,11 @@
       ],
       "expo-router",
       "expo-splash-screen",
-      "expo-notifications"
+      "expo-notifications",
+      "expo-asset",
+      "expo-image",
+      "expo-secure-store",
+      "expo-status-bar"
     ]
   }
 }

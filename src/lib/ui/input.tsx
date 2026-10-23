@@ -1,9 +1,9 @@
 import React from "react";
 import {
-    NativeSyntheticEvent,
     Pressable,
     TextInput,
-    TextInputChangeEventData,
+    TextInputChangeEvent,
+    TextInputInstance,
     TextInputProps,
     TextStyle,
     View,
@@ -49,7 +49,7 @@ const styles = StyleSheet.create((theme) => ({
 export type InputProps = TextInputProps & {
     // Spread onto the TextInput with the rest of the props — declared only because TextInputProps
     // doesn't carry a ref, and React 19 types the JSX `ref` attribute off the props type.
-    ref?: React.Ref<TextInput>;
+    ref?: React.Ref<TextInputInstance>;
     numeric?: boolean;
     password?: boolean;
     textStyle?: TextStyle;
@@ -91,13 +91,13 @@ export const Input = ({
             </Pressable>
         );
 
-    const launch = (ev: NativeSyntheticEvent<TextInputChangeEventData>, value: string) => {
+    const launch = (ev: TextInputChangeEvent, value: string) => {
         (otherProps.onChangeText || ((v: string) => {}))(value);
         (otherProps.onChange || ((ev: any) => {}))(ev);
     };
     const throttled = useThrottle(launch, 50);
 
-    const handleChange = (ev: NativeSyntheticEvent<TextInputChangeEventData>) => {
+    const handleChange = (ev: TextInputChangeEvent) => {
         const elt = ev.target as any as HTMLInputElement;
         const caret = elt.selectionStart;
         // Typing at the end stays at the end. A transform that inserts characters — the SOTA mask

@@ -1,6 +1,6 @@
 import React, { useEffect, useEffectEvent } from "react";
 import { useFormContext } from "react-hook-form";
-import { TextInput, View } from "react-native";
+import { TextInputInstance, View } from "react-native";
 import { StyleSheet } from "react-native-unistyles";
 import { baseCallsign } from "../../utils/callsign";
 import { HamQTHCallsignData, useHamqth } from "../../utils/hamqth";
@@ -120,7 +120,7 @@ export const CallsignInput = ({ handleAdd }: CallsignInputProps) => {
 
     // Coming back from a QSO page, this screen is still being brought forward when the request
     // lands, and focusing a card that isn't visible yet does nothing — hence the frame of slack.
-    const inputRef = React.useRef<TextInput>(null);
+    const inputRef = React.useRef<TextInputInstance>(null);
     const focusRequest = useCallsignFocus((state) => state.requested);
     useEffect(() => {
         if (!focusRequest) return;
