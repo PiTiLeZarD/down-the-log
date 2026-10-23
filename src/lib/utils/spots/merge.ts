@@ -36,8 +36,9 @@ const sameReference = (a: Spot, b: Spot): boolean =>
 
 const sameFrequency = (a?: number, b?: number): boolean => !a || !b || Math.abs(a - b) <= MERGE_MHZ;
 
-const sameCallsign = (a: string, b: string): boolean =>
-    (baseCallsign(a) || a.toUpperCase()) === (baseCallsign(b) || b.toUpperCase());
+const callsignKey = (callsign: string): string => baseCallsign(callsign) || callsign.toUpperCase();
+
+const sameCallsign = (a: string, b: string): boolean => callsignKey(a) === callsignKey(b);
 
 // The time window is for guesses. Two spots naming the same park are the same activation however far
 // apart they were posted: ParksnPeaks and pota.app are often spotted by different people, half an
@@ -75,14 +76,23 @@ const fold = (head: Spot, rest: Spot[]): Spot =>
 
 export const mergeSpots = (spots: Spot[]): MergedSpot[] => {
     const clusters: Spot[][] = [];
+    // Only spots of one callsign can be one activation, so each spot is compared with its own
+    // callsign's rows rather than every row: a two-hour cluster feed made the full scan quadratic.
+    const byCallsign = new Map<string, Spot[][]>();
     // Newest first, so the spot that leads each row is the current one and the older duplicates fall
     // in behind it.
     [...spots]
         .sort((a, b) => b.date.toMillis() - a.date.toMillis())
         .forEach((spot) => {
-            const cluster = clusters.find((c) => c.some((member) => sameActivation(member, spot)));
+            const key = callsignKey(spot.callsign);
+            const rows = byCallsign.get(key) || [];
+            const cluster = rows.find((c) => c.some((member) => sameActivation(member, spot)));
             if (cluster) cluster.push(spot);
-            else clusters.push([spot]);
+            else {
+                clusters.push([spot]);
+                rows.push(clusters[clusters.length - 1]);
+                byCallsign.set(key, rows);
+            }
         });
     return clusters.map(([head, ...rest]) => ({ ...fold(head, rest), sources: [head, ...rest] }));
 };

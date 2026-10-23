@@ -119,6 +119,15 @@ describe("parsing", () => {
 });
 
 describe("merging", () => {
+    test("rows stay newest first across callsigns, with each callsign's spots in its own row", () => {
+        const rows = mergeSpots([
+            spot({ id: "a1", callsign: "VK2AAA", frequency: 14.2, date: at("2024-01-01T10:00:00Z") }),
+            spot({ id: "b1", callsign: "VK3BBB", frequency: 7.1, date: at("2024-01-01T10:05:00Z") }),
+            spot({ id: "a2", callsign: "VK2AAA/P", frequency: 14.2, date: at("2024-01-01T10:10:00Z") }),
+        ]);
+        expect(rows.map((row) => row.sources.map((s) => s.id))).toEqual([["a2", "a1"], ["b1"]]);
+    });
+
     test("the same activation spotted on two networks is one row carrying both badges", () => {
         const rows = mergeSpots([
             spot({ id: "pnp-1", source: "pnp", programme: "wwff", reference: "VKFF-0981", frequency: 14.244 }),

@@ -71,15 +71,27 @@ export const setClusterListener = (listener: () => void) => {
 export const clusterSpots = (): Spot[] => spots;
 export const clustersOpen = (): boolean => open.size > 0;
 
-const addSpot = (spot: Spot) => {
-    if (spots.some((s) => s.id === spot.id)) return;
+// The ids in `spots` and `incoming`, so a duplicate is one lookup rather than a scan of two hours.
+const ids = new Set<string>();
+let incoming: Spot[] = [];
+
+// Batched: a busy cluster sends several spots a second, and each push re-merges the whole feed.
+// Pruning happens here too, once a flush rather than once a line.
+const flush = () => {
+    flushTimer = undefined;
     const cutoff = DateTime.utc().minus({ minutes: KEEP_MINUTES });
-    spots = [spot, ...spots.filter((s) => s.date >= cutoff)];
-    // Batched: a busy cluster sends several spots a second, and each push re-merges the whole feed.
-    flushTimer ??= setTimeout(() => {
-        flushTimer = undefined;
-        onSpots?.();
-    }, 1000);
+    const kept = spots.filter((s) => s.date >= cutoff);
+    spots.forEach((s) => s.date < cutoff && ids.delete(s.id));
+    spots = [...incoming.reverse(), ...kept];
+    incoming = [];
+    onSpots?.();
+};
+
+const addSpot = (spot: Spot) => {
+    if (ids.has(spot.id)) return;
+    ids.add(spot.id);
+    incoming.push(spot);
+    flushTimer ??= setTimeout(flush, 1000);
 };
 
 const core = () => import("@tauri-apps/api/core");
