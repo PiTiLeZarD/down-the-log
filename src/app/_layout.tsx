@@ -7,8 +7,11 @@ import { Platform, View } from "react-native";
 import { SafeAreaProvider, SafeAreaView } from "react-native-safe-area-context";
 import { StyleSheet, useUnistyles } from "react-native-unistyles";
 import { LocationHeader } from "../lib/components/location-header";
+import { Alert } from "../lib/ui/alert";
 import { DialogHost } from "../lib/ui/dialog";
+import { Typography } from "../lib/ui/typography";
 import { latlong2Maidenhead } from "../lib/utils/locator";
+import { loadStore, usePersistence } from "../lib/utils/persistence";
 import { useStore } from "../lib/utils/store";
 import "../lib/ui";
 import { useClusterConfig, useSpotConfig } from "../lib/utils/spots";
@@ -42,7 +45,9 @@ if (Platform.OS === "web") {
     document.head.appendChild(style);
 }
 
-const RootLayout = () => {
+// Everything below needs the log and the settings in the store, so none of it mounts until they've
+// been read: a hook that wrote to the store before then would only have been overwritten.
+const App = () => {
     // Mounted here rather than only behind the spots bar: spot alerts have to keep polling from
     // whatever screen the operator is on, and this is the one component that is always up.
     useSpotConfig();
@@ -50,10 +55,6 @@ const RootLayout = () => {
     useClusterConfig();
     // Routes a tapped spot alert to the Spots page on iOS and Android; a no-op everywhere else.
     useNotificationTaps();
-
-    const [fontsLoaded, fontError] = useFonts({
-        Quicksand: QUICKSAND,
-    });
 
     // Every screen is painted on a react-navigation card, and its palette is independent of ours:
     // left alone it defaults to the light theme and washes out the whole app. Mirror our theme onto it.
@@ -88,35 +89,70 @@ const RootLayout = () => {
         if (location) setCurrentLocation(latlong2Maidenhead(location.coords));
     }, [location, setCurrentLocation]);
 
-    const onLayoutRootView = useCallback(async () => {
-        if (fontsLoaded || fontError) {
-            await SplashScreen.hideAsync();
-        }
-    }, [fontsLoaded, fontError]);
+    const writeError = usePersistence((state) => state.writeError);
 
-    if (!fontsLoaded && !fontError) {
+    return (
+        <View style={styles.main}>
+            {writeError && (
+                <Alert severity="danger">
+                    <Typography style={{ flexGrow: 1 }}>
+                        Your latest changes haven't been saved: {writeError}. They're tried again with your next change
+                        — if this keeps up, export your log from the ADIF page before closing the app.
+                    </Typography>
+                </Alert>
+            )}
+            <ThemeProvider value={navigationTheme}>
+                <Stack screenOptions={{ header: () => <LocationHeader /> }}>
+                    <Stack.Screen name="index" />
+                    <Stack.Screen name="menu" />
+                    <Stack.Screen name="about" />
+                    <Stack.Screen name="settings" />
+                    <Stack.Screen name="events/index" />
+                    <Stack.Screen name="events/[section]" />
+                    <Stack.Screen name="qsl" />
+                    <Stack.Screen name="analytics" />
+                    <Stack.Screen name="stats" />
+                </Stack>
+            </ThemeProvider>
+            <DialogHost />
+        </View>
+    );
+};
+
+const RootLayout = () => {
+    const [fontsLoaded, fontError] = useFonts({
+        Quicksand: QUICKSAND,
+    });
+    const { status, error } = usePersistence();
+
+    React.useEffect(() => {
+        void loadStore();
+    }, []);
+
+    const onLayoutRootView = useCallback(async () => {
+        await SplashScreen.hideAsync();
+    }, []);
+
+    // The splash stays up until both are in.
+    if ((!fontsLoaded && !fontError) || status === "loading") {
         return <></>;
     }
 
     return (
         <SafeAreaProvider>
             <SafeAreaView style={{ flex: 1 }} onLayout={onLayoutRootView}>
-                <View style={styles.main}>
-                    <ThemeProvider value={navigationTheme}>
-                        <Stack screenOptions={{ header: () => <LocationHeader /> }}>
-                            <Stack.Screen name="index" />
-                            <Stack.Screen name="menu" />
-                            <Stack.Screen name="about" />
-                            <Stack.Screen name="settings" />
-                            <Stack.Screen name="events/index" />
-                            <Stack.Screen name="events/[section]" />
-                            <Stack.Screen name="qsl" />
-                            <Stack.Screen name="analytics" />
-                            <Stack.Screen name="stats" />
-                        </Stack>
-                    </ThemeProvider>
-                    <DialogHost />
-                </View>
+                {status === "failed" ? (
+                    <View style={styles.main}>
+                        <Alert severity="danger">
+                            <Typography style={{ flexGrow: 1 }}>
+                                Your log couldn't be loaded: {error}. Nothing on this device has been changed, and
+                                nothing will be saved until it loads. Close the app and open it again to retry.
+                            </Typography>
+                        </Alert>
+                    </View>
+                ) : (
+                    <App />
+                )}
             </SafeAreaView>
         </SafeAreaProvider>
     );

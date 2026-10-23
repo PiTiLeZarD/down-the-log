@@ -44,6 +44,9 @@ const db = () => (database ??= open());
 
 export const idbAvailable = () => typeof indexedDB !== "undefined";
 
+// Whether a connection could actually be opened: a profile can expose `indexedDB` and still refuse it.
+export const idbOpen = async (): Promise<boolean> => !!(await db());
+
 /**
  * Ask for the origin's storage to be persistent. Without it the browser treats the data as best
  * effort and may evict it under disk pressure, and Safari drops an origin that goes unvisited for a

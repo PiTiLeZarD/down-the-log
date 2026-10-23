@@ -1,11 +1,12 @@
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import React from "react";
 import { Platform } from "react-native";
+import { storageSize } from "./persistence";
 
 // The web fallback budget, and only that: it is what localStorage gives an origin — ~5 MB, billed in
 // UTF-16 code units, so every character costs two bytes whatever it is. Storage moved to IndexedDB,
 // whose quota is a share of free disk rather than a fixed number, so this is used only where the
-// Storage API can't be asked. Native AsyncStorage is SQLite-backed and has no comparable ceiling.
+// Storage API can't be asked. Native keeps the log in its own SQLite file, which has no ceiling.
 export const WEB_QUOTA = 5 * 1024 * 1024;
 
 export type StorageEntry = { key: string; size: number };
@@ -44,12 +45,15 @@ const measureWeb = async (): Promise<StorageUsage> => {
     return { used: estimate.usage ?? total(entries), quota: estimate.quota, entries };
 };
 
+// The log's SQLite file, then whatever is left in AsyncStorage: the reference-data cache.
 const measureNative = async (): Promise<StorageUsage> => {
     const keys = await AsyncStorage.getAllKeys();
     const entries = (await AsyncStorage.multiGet(keys)).map(([key, value]) => ({
         key,
         size: (key.length + (value?.length || 0)) * 2,
     }));
+    const log = await storageSize();
+    if (log !== undefined) entries.push({ key: "log", size: log });
     return { used: total(entries), entries: bySize(entries) };
 };
 

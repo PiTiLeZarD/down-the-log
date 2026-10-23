@@ -24,7 +24,7 @@ import { useCallsignFocus } from "../lib/components/form/callsign-focus";
 import { QsoHeatmap } from "../lib/components/qso-heatmap";
 import { QsoList } from "../lib/components/qso/qso-list";
 import { SessionBar } from "../lib/components/session/session-bar";
-import { useHydrated, useStore } from "../lib/utils/store";
+import { useStore } from "../lib/utils/store";
 import { Alert } from "../lib/ui/alert";
 import { Button } from "../lib/ui/button";
 import { Typography } from "../lib/ui/typography";
@@ -90,9 +90,8 @@ const Index = () => {
 
     // A missing callsign is the one setting the app can't work around, so it opens the setup itself
     // on a fresh install rather than leaving a warning for the operator to act on.
-    const hydrated = useHydrated();
     const [setupDismissed, setSetupDismissed] = React.useState<boolean>(false);
-    const needsSetup = hydrated && !settings.myCallsign;
+    const needsSetup = !settings.myCallsign;
 
     const lastQso = qsos.length ? qsos[0] : undefined;
 
