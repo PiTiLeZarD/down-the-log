@@ -83,13 +83,12 @@ describe("parsing", () => {
 
     test("ParksnPeaks classes we don't model keep their own name", () => {
         const parsed = parsePnpSpot({
-            actID: "2796652",
+            actId: 2796652,
             actTime: "2026-09-07 06:59:24",
             actCallsign: "VK5DG",
             actMode: "SSB",
             actFreq: "7.144",
             actClass: "SHIRES",
-            altClass: "",
             actSiteID: "AS3",
             actLocation: "Onkaparinga",
             altLocation: "",

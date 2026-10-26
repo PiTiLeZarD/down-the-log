@@ -28,18 +28,29 @@ describe("postSpot", () => {
     });
 
     test("a POTA reference POTA accepts goes on to ParksnPeaks", async () => {
-        axios.post.mockResolvedValue({ status: 200, data: "ok" });
+        axios.post.mockResolvedValue({ status: 200, data: { success: true } });
         const results = await postSpot(["pota", "pnp"], request("pota"), settings);
         expect(urls()).toHaveLength(2);
         expect(results.every((r) => r.ok)).toBe(true);
     });
 
-    test("a QRP spot goes to ParksnPeaks as class QRP, and POTA says no without being asked", async () => {
-        axios.post.mockResolvedValue({ status: 200, data: "ok" });
+    test("a QRP spot goes to ParksnPeaks with its position as the reference, and POTA says no without being asked", async () => {
+        axios.post.mockResolvedValue({ status: 200, data: { success: true } });
         const results = await postSpot(["pota", "pnp"], request("qrp", "QF56"), settings);
         expect(axios.post).toHaveBeenCalledOnce();
-        expect(axios.post.mock.calls[0][1]).toMatchObject({ actClass: "QRP", actSite: "QF56" });
+        expect(Object.fromEntries(new URLSearchParams(axios.post.mock.calls[0][1]))).toMatchObject({
+            reference: "QF56",
+            frequency: "14244",
+            userID: "op",
+            APIKey: "key",
+        });
         expect(results.find((r) => r.target === "pnp")?.ok).toBe(true);
         expect(results.find((r) => r.target === "pota")?.ok).toBe(false);
+    });
+
+    test("a ParksnPeaks 200 with success false is a failure", async () => {
+        axios.post.mockResolvedValue({ status: 200, data: { success: false, message: "Authentication failed!" } });
+        const [result] = await postSpot(["pnp"], request("wwff", "VKFF-0001"), settings);
+        expect(result).toMatchObject({ ok: false, error: "Authentication failed!" });
     });
 });

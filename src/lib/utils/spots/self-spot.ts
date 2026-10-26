@@ -2,7 +2,7 @@ import axios from "axios";
 import { Settings } from "../store";
 import { sendToCluster } from "./cluster";
 import { TIMEOUT_MS } from "./fetch";
-import { PnpCredentials, pnpSpotClasses, postPnpSpot } from "./parksnpeaks";
+import { PnpCredentials, postPnpSpot } from "./parksnpeaks";
 import { SelfSpotTarget, SpotProgramme } from "./types";
 
 export const POTA_SPOT_POST_API = "https://api.pota.app/spot";
@@ -15,7 +15,7 @@ export type SpotRequest = {
     callsign: string;
     spotter: string;
     programme: SpotProgramme;
-    // For a QRP spot, the free-text position ParksnPeaks asks for instead.
+    // For a QRP spot, the free-text position ParksnPeaks takes in its place.
     reference: string;
     // MHz, as everywhere else in the app.
     frequency: number;
@@ -55,23 +55,18 @@ const pnpCredentials = (settings: Settings): PnpCredentials => {
     return { userID: settings.pnpUserId, apiKey: settings.pnpApiKey };
 };
 
-// ParksnPeaks has no spotter field: the account the key belongs to is the spotter, and actCallsign
-// is whoever is being spotted.
-const postToPnp = async (request: SpotRequest, settings: Settings): Promise<void> => {
-    const actClass = pnpSpotClasses[request.programme];
-    if (!actClass) throw new Error(`ParksnPeaks doesn't take ${request.programme.toUpperCase()} spots from the API.`);
-    await postPnpSpot(
+const postToPnp = async (request: SpotRequest, settings: Settings): Promise<void> =>
+    postPnpSpot(
         {
-            actClass,
-            actCallsign: request.callsign,
-            actSite: request.reference,
+            activator: request.callsign,
+            spotter: request.spotter,
+            reference: request.reference,
+            frequency: String(mhz2khz(request.frequency)),
             mode: request.mode,
-            freq: String(request.frequency),
             comments: request.comments,
         },
         pnpCredentials(settings),
     );
-};
 
 // "DX 14025.0 VK2ABC POTA VK-0123 CW": the cluster knows who's spotting from the login, and has no
 // field for a reference, so it goes at the head of the comment where hunters look for it.

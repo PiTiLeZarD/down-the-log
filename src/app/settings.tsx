@@ -340,9 +340,9 @@ const Settings = () => {
                     </Stack>
                     <Typography underline>ParksnPeaks:</Typography>
                     <Typography variant="subtitle">
-                        Only needed to spot yourself. Your user name and the API key from the User Options page on
-                        parksnpeaks.org. The key is kept in the device keychain on iOS and Android. Spotting yourself
-                        to POTA needs no account.
+                        Only needed to spot yourself. Your callsign and either your old ParksnPeaks API key or the PIN
+                        from your user profile on parksnpeaks.org. The key is kept in the device keychain on iOS and
+                        Android. Spotting yourself to POTA needs no account.
                     </Typography>
                     <Stack direction="row">
                         <Typography>User:</Typography>
