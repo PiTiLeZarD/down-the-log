@@ -151,6 +151,8 @@ export const BandMap = ({ band, frequency, onSpotPress, onSpot, onClose }: BandM
     const { spots, fetchedAt, loading } = useSpots();
     // Remembered against the form's band at the time, so a band change in the form takes over again.
     const [picked, setPicked] = React.useState<{ band: Band; over?: Band } | undefined>(undefined);
+    // Dropped as soon as the form leaves that band: kept, it came back the moment the form returned to it.
+    if (picked && picked.over !== band) setPicked(undefined);
     const [zoom, setZoom] = React.useState<number>(DEFAULT_ZOOM);
     const [legend, setLegend] = React.useState<boolean>(false);
     const [viewport, setViewport] = React.useState<number>(0);

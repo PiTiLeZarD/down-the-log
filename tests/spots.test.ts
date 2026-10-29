@@ -175,6 +175,17 @@ describe("merging", () => {
         expect(rows).toHaveLength(2);
     });
 
+    test("a park activator's QSY is one row at the newest frequency, not one per frequency", () => {
+        const pnp = { source: "pnp" as const, programme: "sota" as const, callsign: "SP9WZS", reference: "I/SI-253" };
+        const rows = mergeSpots([
+            spot({ id: "pnp-1", ...pnp, frequency: 14.035, date: at("2024-01-01T11:08:00Z") }),
+            spot({ id: "pnp-2", ...pnp, frequency: 14.277, date: at("2024-01-01T11:15:00Z") }),
+            spot({ id: "pnp-3", ...pnp, frequency: 21.065, date: at("2024-01-01T11:26:00Z") }),
+        ]);
+        expect(rows).toHaveLength(1);
+        expect(rows[0].frequency).toBe(21.065);
+    });
+
     test("the newest spot leads the row and the older ones fill its blanks", () => {
         const rows = mergeSpots([
             spot({ id: "old", date: at("2024-01-01T09:55:00Z"), frequency: 14.244, locator: "OF88ab", mode: "SSB" }),

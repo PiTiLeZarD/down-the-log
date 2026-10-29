@@ -44,13 +44,17 @@ const sameCallsign = (a: string, b: string): boolean => callsignKey(a) === calls
 // apart they were posted: ParksnPeaks and pota.app are often spotted by different people, half an
 // hour apart. Two naming no park at all are a station holding a frequency, which a cluster re-spots
 // all evening; the window only exists to keep one operator's next park apart from the last.
+//
+// The same park is also the same activation on any frequency: one operator in one park has moved,
+// and the newest spot says where to. ParksnPeaks keeps every spot since its Oct 2026 rebuild, so
+// without this each QSY left a row behind at the old frequency.
 export const sameActivation = (a: Spot, b: Spot): boolean =>
     sameCallsign(a.callsign, b.callsign) &&
-    sameFrequency(a.frequency, b.frequency) &&
     sameReference(a, b) &&
     (samePark(a, b) ||
-        (!a.reference && !b.reference) ||
-        Math.abs(a.date.diff(b.date, "minutes").minutes) <= MERGE_WINDOW_MINUTES);
+        (sameFrequency(a.frequency, b.frequency) &&
+            ((!a.reference && !b.reference) ||
+                Math.abs(a.date.diff(b.date, "minutes").minutes) <= MERGE_WINDOW_MINUTES)));
 
 // The newest spot leads the row, and the others fill in whatever it doesn't carry: ParksnPeaks knows
 // nothing about gridsquares, POTA knows nothing about shires, and between them the row usually has
