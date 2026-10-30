@@ -11,7 +11,7 @@ import { SpotFilters } from "./spot-filters";
 // The bandmap, the filter and alerts are set here rather than on the Settings screen: the operator
 // is looking at the feed when they decide the bar is in the way or that an alert should have fired.
 // There is one filter, for the list and the alerts alike, so it sits beside the alert switch. The
-// ParksnPeaks account is a credential like HamQTH and LoTW, so it lives with them under Settings > APIs.
+// ParksnPeaks account is a credential like HamQTH, so it lives with it under Settings > APIs.
 export const SpotSettings = () => {
     const { navigate } = useRouter();
     const settings = useSettings();

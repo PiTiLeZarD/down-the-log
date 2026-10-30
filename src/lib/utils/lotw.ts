@@ -112,7 +112,7 @@ export const fetchLotwConfirmations = async ({
         throw new LotwError(
             status,
             status === "auth"
-                ? "LoTW refused those credentials. Check your user name and password in Settings > API's."
+                ? "LoTW refused those credentials. Check your user name and password under Account on the QSLs page."
                 : "LoTW answered with something that isn't a report. Try again in a moment.",
         );
     }

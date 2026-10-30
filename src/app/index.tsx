@@ -24,6 +24,7 @@ import { useCallsignFocus } from "../lib/components/form/callsign-focus";
 import { QsoHeatmap } from "../lib/components/qso-heatmap";
 import { QsoList } from "../lib/components/qso/qso-list";
 import { SessionBar } from "../lib/components/session/session-bar";
+import { Stack } from "../lib/components/stack";
 import { useStore } from "../lib/utils/store";
 import { Alert } from "../lib/ui/alert";
 import { Button } from "../lib/ui/button";
@@ -50,7 +51,9 @@ const styles = StyleSheet.create((theme) => ({
         flexGrow: 1,
         height: 0,
     },
+    // Holds the floating buttons too, so they sit over the log and never over a bandmap beside it.
     list: {
+        flexGrow: 1,
         width: 0,
     },
     bandMap: {
@@ -64,7 +67,7 @@ const styles = StyleSheet.create((theme) => ({
         bottom: 0,
         width: "100%",
     },
-    bandMapButton: {
+    floatingButtons: {
         position: "absolute",
         right: theme.margins.xxl,
         bottom: theme.margins.xxl,
@@ -165,12 +168,23 @@ const Index = () => {
                 {settings.showHeatmap && <QsoHeatmap />}
                 {settings.showFilters && <Filters showTag />}
                 <View style={styles.listRow}>
-                    <QsoList
-                        style={styles.list}
-                        qsos={listQsos}
-                        filters={listFilters}
-                        onQsoPress={(qso) => navigate(`/qso?qsoId=${qso.id}`)}
-                    />
+                    <View style={styles.list}>
+                        <QsoList
+                            qsos={listQsos}
+                            filters={listFilters}
+                            onQsoPress={(qso) => navigate(`/qso?qsoId=${qso.id}`)}
+                        />
+                        <Stack gap="lg" style={styles.floatingButtons}>
+                            <Button startIcon="albums" aria-label="QSLs" onPress={() => navigate("/qsl")} />
+                            {settings.showSpots && !showBandMap && (
+                                <Button
+                                    startIcon="radio"
+                                    aria-label="Open bandmap"
+                                    onPress={() => setBandMapOpen(true)}
+                                />
+                            )}
+                        </Stack>
+                    </View>
                     {settings.showSpots && showBandMap && (
                         <View style={phone ? styles.bandMapOverlay : styles.bandMap}>
                             <BandMap
@@ -184,11 +198,6 @@ const Index = () => {
                                 onSpot={() => setSpotting(methods.getValues())}
                                 onClose={() => setBandMapOpen(false)}
                             />
-                        </View>
-                    )}
-                    {settings.showSpots && !showBandMap && (
-                        <View style={styles.bandMapButton}>
-                            <Button startIcon="radio" aria-label="Open bandmap" onPress={() => setBandMapOpen(true)} />
                         </View>
                     )}
                 </View>

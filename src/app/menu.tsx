@@ -50,25 +50,19 @@ const Menu = () => {
             </Grid>
             <Grid container>
                 <Grid item xs={6}>
-                    <MenuButton icon="albums" navigateTo="/qsl" text="QSLs" />
-                </Grid>
-                <Grid item xs={6}>
                     <MenuButton icon="stats-chart" navigateTo="/analytics" text="Analytics" />
                 </Grid>
-            </Grid>
-            <Grid container>
                 <Grid item xs={6}>
                     <MenuButton icon="archive" navigateTo="/adif" text="Import/Export" />
                 </Grid>
-                <Grid item xs={6}>
-                    <MenuButton icon="settings" navigateTo="/settings" text="Settings" />
-                </Grid>
             </Grid>
             <Grid container>
                 <Grid item xs={6}>
+                    <MenuButton icon="settings" navigateTo="/settings" text="Settings" />
+                </Grid>
+                <Grid item xs={6}>
                     <MenuButton icon="information-circle" navigateTo="/about" text="About" />
                 </Grid>
-                <Grid item xs={6} />
             </Grid>
         </PageLayout>
     );

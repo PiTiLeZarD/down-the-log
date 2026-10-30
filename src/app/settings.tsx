@@ -15,7 +15,6 @@ import { Button } from "../lib/ui/button";
 import { Input } from "../lib/ui/input";
 import { showDialog } from "../lib/ui/dialog";
 import { Typography } from "../lib/ui/typography";
-import { CLUBLOG_API_KEY } from "../lib/utils/clublog";
 import { HamQTHSettingsType } from "../lib/utils/hamqth";
 import { normalise } from "../lib/utils/locator";
 import { isTauri } from "../lib/utils/notify";
@@ -170,11 +169,9 @@ const Settings = () => {
                         data to
                         services.swpc.noaa.gov, and map tiles to tile.openstreetmap.org — which sees the areas you
                         look at. Spotting yourself sends your callsign, reference, frequency, mode and comment to
-                        whichever of those two networks you pick, and your ParksnPeaks key with it. Loading confirmations sends
-                        your LoTW user name and password to lotw.arrl.org, and your eQSL ones to eqsl.cc, through
-                        cors.jadami.com on web and desktop. Uploading to eQSL or Club Log sends it the QSOs not yet
-                        marked as sent, with your login for that site. That relay only passes requests through and keeps nothing — its code is in
-                        scripts/cors-worker.js.
+                        whichever of those two networks you pick, and your ParksnPeaks key with it. The QSL services' logins
+                        are set on the QSLs page, which says where each one goes. That relay only passes requests
+                        through and keeps nothing — its code is in scripts/cors-worker.js.
                     </Typography>
                     <Typography underline>HamQTH:</Typography>
                     {!!settings.hamqth?.sessionId && (
@@ -216,116 +213,6 @@ const Settings = () => {
                             }
                         />
                     </Stack>
-                    <Typography underline>LoTW:</Typography>
-                    <Typography variant="subtitle">
-                        Your lotw.arrl.org website login, used only to pull confirmations into the log from the QSLs
-                        page. Nothing is ever uploaded and your callsign certificate is never asked for — signing
-                        stays in tqsl. The password is kept in the device keychain on iOS and Android.
-                    </Typography>
-                    <Stack direction="row">
-                        <Typography>User:</Typography>
-                        <Input
-                            value={settings.lotw?.user || ""}
-                            onChangeText={(v) =>
-                                updateSetting("lotw", { ...(settings.lotw || { user: "", password: "" }), user: v })
-                            }
-                        />
-                        <Typography>Password:</Typography>
-                        <Input
-                            password
-                            value={settings.lotw?.password || ""}
-                            onChangeText={(v) =>
-                                updateSetting("lotw", {
-                                    ...(settings.lotw || { user: "", password: "" }),
-                                    password: v,
-                                })
-                            }
-                        />
-                    </Stack>
-                    <Typography underline>eQSL:</Typography>
-                    <Typography variant="subtitle">
-                        Your eqsl.cc login, used to upload QSOs and pull confirmations from the QSLs page. The QTH
-                        nickname is only needed if your account holds more than one QTH for this callsign. The
-                        password is kept in the device keychain on iOS and Android.
-                    </Typography>
-                    <Stack direction="row">
-                        <Typography>User:</Typography>
-                        <Input
-                            value={settings.eqsl?.user || ""}
-                            onChangeText={(v) =>
-                                updateSetting("eqsl", { ...(settings.eqsl || { user: "", password: "" }), user: v })
-                            }
-                        />
-                        <Typography>Password:</Typography>
-                        <Input
-                            password
-                            value={settings.eqsl?.password || ""}
-                            onChangeText={(v) =>
-                                updateSetting("eqsl", {
-                                    ...(settings.eqsl || { user: "", password: "" }),
-                                    password: v,
-                                })
-                            }
-                        />
-                    </Stack>
-                    <Stack direction="row">
-                        <Typography>QTH nickname:</Typography>
-                        <Input
-                            value={settings.eqsl?.qthNickname || ""}
-                            onChangeText={(v) =>
-                                updateSetting("eqsl", {
-                                    ...(settings.eqsl || { user: "", password: "" }),
-                                    qthNickname: v === "" ? undefined : v,
-                                })
-                            }
-                        />
-                    </Stack>
-                    {!!CLUBLOG_API_KEY && (
-                        <>
-                            <Typography underline>Club Log:</Typography>
-                            <Typography variant="subtitle">
-                                Your clublog.org login, used to upload QSOs from the QSLs page. If your account has
-                                an application password, use that one. Leave the callsign empty to send each QSO to the
-                                log of the callsign it was made under. The password is kept in the device keychain on
-                                iOS and Android.
-                            </Typography>
-                            <Stack direction="row">
-                                <Typography>Email:</Typography>
-                                <Input
-                                    value={settings.clublog?.email || ""}
-                                    onChangeText={(v) =>
-                                        updateSetting("clublog", {
-                                            ...(settings.clublog || { email: "", password: "" }),
-                                            email: v,
-                                        })
-                                    }
-                                />
-                                <Typography>Password:</Typography>
-                                <Input
-                                    password
-                                    value={settings.clublog?.password || ""}
-                                    onChangeText={(v) =>
-                                        updateSetting("clublog", {
-                                            ...(settings.clublog || { email: "", password: "" }),
-                                            password: v,
-                                        })
-                                    }
-                                />
-                            </Stack>
-                            <Stack direction="row">
-                                <Typography>Callsign:</Typography>
-                                <Input
-                                    value={settings.clublog?.callsign || ""}
-                                    onChangeText={(v) =>
-                                        updateSetting("clublog", {
-                                            ...(settings.clublog || { email: "", password: "" }),
-                                            callsign: v === "" ? undefined : v.toUpperCase(),
-                                        })
-                                    }
-                                />
-                            </Stack>
-                        </>
-                    )}
                     <Typography underline>Geocode Maps:</Typography>
                     <Typography variant="subtitle">
                         Get an api key on https://geocode.maps.co/ to add a button on the form that will allow you to

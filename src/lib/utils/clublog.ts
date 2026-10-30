@@ -41,7 +41,7 @@ export class ClublogError extends Error {
 }
 
 const authMessage =
-    "Club Log refused those credentials. Check your email and password in Settings > API's — accounts with an application password need that one here.";
+    "Club Log refused those credentials. Check your email and password under Account on the QSLs page — accounts with an application password need that one here.";
 
 /**
  * Hand-built rather than FormData: React Native's FormData only takes files from a URI, and a string

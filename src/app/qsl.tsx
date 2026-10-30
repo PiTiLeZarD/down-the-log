@@ -4,6 +4,7 @@ import { View } from "react-native";
 import { showImportError } from "../lib/components/adif/import";
 import { PageLayout } from "../lib/components/page-layout";
 import { QSL_IGNORED, UnmatchedQsl, confirmQso, qslRecordKey } from "../lib/components/qsl";
+import { ClublogAccount, EqslAccount, LotwAccount } from "../lib/components/qsl/qsl-accounts";
 import { UnmatchedQsls } from "../lib/components/qsl/unmatched-qsls";
 import { QSO, findMatchingQso, useQsos } from "../lib/components/qso";
 import { Stack } from "../lib/components/stack";
@@ -20,6 +21,22 @@ import { EqslError, EqslStatus, fetchEqslConfirmations, nextRcvdSince, uploadToE
 import { TqslLocation, fetchTqslLocations, locationFor, tqslAvailable, uploadWithTqsl } from "../lib/utils/tqsl";
 import { CLUBLOG_API_KEY, ClublogError, ClublogStatus, uploadToClublog } from "../lib/utils/clublog";
 
+type Service = "lotw" | "eqsl" | "clublog";
+
+// Folded even before it's filled in: the page is for syncing, and a login is set once.
+const AccountToggle = ({ open, onPress }: { open: boolean; onPress: () => void }) => (
+    <View>
+        <Button
+            variant="chip"
+            colour="grey"
+            text="Account"
+            startIcon="key-outline"
+            endIcon={open ? "chevron-up" : "chevron-down"}
+            onPress={onPress}
+        />
+    </View>
+);
+
 const Qsl = () => {
     const qsos = useQsos();
     const [unmatched, setUnmatched] = useState<UnmatchedQsl[]>([]);
@@ -30,6 +47,8 @@ const Qsl = () => {
     // Desktop only. Undefined until TQSL's station_data has been read; a string is why it couldn't be.
     const [tqslLocations, setTqslLocations] = useState<TqslLocation[] | string>();
     const [tqslUploading, setTqslUploading] = useState(false);
+    const [account, setAccount] = useState<Service>();
+    const toggleAccount = (service: Service) => setAccount(account === service ? undefined : service);
     const log = useStore((state) => state.log);
     const updateSetting = useStore((state) => state.updateSetting);
     const today = DateTime.local().toFormat("yyyyMMdd");
@@ -413,7 +432,9 @@ const Qsl = () => {
                                 url="https://www.arrl.org/tqsl-download"
                             />
                         </View>
+                        <AccountToggle open={account === "lotw"} onPress={() => toggleAccount("lotw")} />
                     </Stack>
+                    {account === "lotw" && <LotwAccount />}
                     <Stack direction="row">
                         <Button
                             startIcon="cloud-download-outline"
@@ -471,7 +492,7 @@ const Qsl = () => {
                     <Typography variant="subtitle">
                         {lotwConfigured
                             ? `Download pulls confirmations matched since ${qslSince}. `
-                            : "Add your LoTW user name and password in Settings > API's to download confirmations. "}
+                            : "Add your LoTW user name and password under Account to download confirmations. "}
                         {tqsl
                             ? "Upload signs and sends through TQSL on this computer. Each QSO's own grid and state override the Station Location's."
                             : "Uploading is an ADIF file for now: sign and send it with TQSL."}
@@ -479,7 +500,13 @@ const Qsl = () => {
                 </Stack>
 
                 <Stack>
-                    <Typography variant="h3">eQSL</Typography>
+                    <Stack direction="row">
+                        <Typography variant="h3" style={{ flexGrow: 1 }}>
+                            eQSL
+                        </Typography>
+                        <AccountToggle open={account === "eqsl"} onPress={() => toggleAccount("eqsl")} />
+                    </Stack>
+                    {account === "eqsl" && <EqslAccount />}
                     <Stack direction="row">
                         <Button
                             startIcon="cloud-download-outline"
@@ -503,13 +530,19 @@ const Qsl = () => {
                     <Typography variant="subtitle">
                         {eqslConfigured
                             ? `Download pulls cards received since ${rcvdSince}. Upload sends every QSO not yet marked as sent and marks the ones eQSL accepts.`
-                            : "Add your eQSL user name and password in Settings > API's to download and upload."}
+                            : "Add your eQSL user name and password under Account to download and upload."}
                     </Typography>
                 </Stack>
 
                 {!!CLUBLOG_API_KEY && (
                     <Stack>
-                        <Typography variant="h3">Club Log</Typography>
+                        <Stack direction="row">
+                            <Typography variant="h3" style={{ flexGrow: 1 }}>
+                                Club Log
+                            </Typography>
+                            <AccountToggle open={account === "clublog"} onPress={() => toggleAccount("clublog")} />
+                        </Stack>
+                        {account === "clublog" && <ClublogAccount />}
                         <Stack direction="row">
                             <Button
                                 startIcon="cloud-download-outline"
@@ -536,7 +569,7 @@ const Qsl = () => {
                                           ? `, into the ${settings.clublog.callsign} log`
                                           : ", each into the log of the callsign it was made under"
                                   }, and marks the ones it takes.`
-                                : "Add your Club Log email and password in Settings > API's to upload."}
+                                : "Add your Club Log email and password under Account to upload."}
                         </Typography>
                     </Stack>
                 )}

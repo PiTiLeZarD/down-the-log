@@ -46,7 +46,7 @@ const classify = (body: string): EqslStatus =>
         ? "auth"
         : "error";
 
-const authMessage = "eQSL refused those credentials. Check your user name and password in Settings > API's.";
+const authMessage = "eQSL refused those credentials. Check your user name and password under Account on the QSLs page.";
 
 // Only the lines eQSL flags, tags stripped: its pages are a full site template around a few lines of
 // actual answer, and that's all the operator needs to see.
