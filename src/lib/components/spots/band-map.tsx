@@ -3,6 +3,7 @@ import React from "react";
 import { LayoutChangeEvent, NativeScrollEvent, NativeSyntheticEvent, Pressable, ScrollView, ScrollViewInstance, View } from "react-native";
 import Svg, { Circle, Line } from "react-native-svg";
 import { StyleSheet, useUnistyles } from "react-native-unistyles";
+import { allocationFor, disallowedSegments } from "../../data/allocations";
 import { Band, bands } from "../../data/bands";
 import { Button } from "../../ui/button";
 import { IconName } from "../../ui/icon";
@@ -65,6 +66,14 @@ const styles = StyleSheet.create((theme) => ({
         bottom: 0,
         width: theme.margins.xs,
         backgroundColor: theme.colours.grey.main,
+    },
+    // Where the operator's licence doesn't reach.
+    blocked: {
+        position: "absolute",
+        left: 0,
+        right: 0,
+        backgroundColor: theme.colours.grey.light,
+        opacity: 0.5,
     },
     // Where the QSO form says the radio is.
     rig: {
@@ -163,8 +172,11 @@ export const BandMap = ({ band, frequency, onSpotPress, onSpot, onClose }: BandM
     const centre = React.useRef<number | undefined>(undefined);
 
     // Only the favourites when any are drawable: the filter hides spots on the rest anyway.
-    const favourites = bandMapBands.filter((b) => settings.favouriteBands.includes(b));
-    const options = favourites.length ? favourites : bandMapBands;
+    // Bands the licence has no part of aren't offered: nothing on them can be worked.
+    const allocation = allocationFor(settings.myCallsign);
+    const licensed = bandMapBands.filter((b) => !allocation || allocation[b]);
+    const favourites = licensed.filter((b) => settings.favouriteBands.includes(b));
+    const options = favourites.length ? favourites : licensed;
     const shown: Band =
         picked && picked.over === band
             ? picked.band
@@ -194,6 +206,7 @@ export const BandMap = ({ band, frequency, onSpotPress, onSpot, onClose }: BandM
         [spots, settings.spotFilter, settings.favouriteBands, settings.spotSources, qsos, shown, zoom],
     );
     const y = (mhz: number) => (high - mhz) * 1000 * zoom;
+    const blocked = disallowedSegments(allocation, shown, [low, high]);
 
     const scrollTo = (mhz?: number) => {
         if (!viewport) return;
@@ -242,6 +255,9 @@ export const BandMap = ({ band, frequency, onSpotPress, onSpot, onClose }: BandM
                 scrollEventThrottle={100}
             >
                 <View style={{ height: layout.height }}>
+                    {blocked.map(([from, to]) => (
+                        <View key={from} style={[styles.blocked, { top: y(to), height: (to - from) * 1000 * zoom }]} />
+                    ))}
                     <View style={styles.axis} />
                     {layout.ticks.map((tick) => (
                         <View key={tick.khz} style={[styles.tick, { top: tick.y }]}>
@@ -313,6 +329,9 @@ export const BandMap = ({ band, frequency, onSpotPress, onSpot, onClose }: BandM
                         Left stripe: programme (blue SOTA, green WWFF, orange POTA, grey other/DX)
                     </Typography>
                     <Typography variant="subtitle">Orange line: the frequency in the QSO form.</Typography>
+                    {!!allocation && (
+                        <Typography variant="subtitle">Shaded: outside your licence's allocation.</Typography>
+                    )}
                 </Stack>
             )}
         </View>

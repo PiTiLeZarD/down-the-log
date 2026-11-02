@@ -1,6 +1,7 @@
 import React from "react";
 import { useFormContext } from "react-hook-form";
 import { useUnistyles } from "react-native-unistyles";
+import { allocationFor, isAllowed } from "../../data/allocations";
 import { freq2band } from "../../data/bands";
 import { Input } from "../../ui/input";
 import { Typography } from "../../ui/typography";
@@ -35,6 +36,8 @@ export const BandFreqInput = ({ noLabel = false }: BandFreqInputProps) => {
     const frequency = watch("frequency");
     const [userInput, setUserInput] = React.useState<string>(khz(frequency));
     const band = freq2band(mhz(userInput));
+    // Same warning colour for "no band" and "not a band your licence has": either way, check the dial.
+    const allowed = isAllowed(allocationFor(watch("myCallsign")), mhz(userInput));
 
     // The box mirrors the form's frequency, so it resyncs during render rather than from an effect —
     // an effect would show the previous frequency for a frame on every QSO change. Only when the two
@@ -71,7 +74,7 @@ export const BandFreqInput = ({ noLabel = false }: BandFreqInputProps) => {
                 inputMode="decimal"
                 // Not `numeric`: that renders a number input on the web, and a number input has no
                 // selection to set, so the box can't offer the kHz digits up on focus.
-                style={[!band ? { backgroundColor: theme.colours.secondary.main } : {}]}
+                style={[!band || !allowed ? { backgroundColor: theme.colours.secondary.main } : {}]}
                 prefix={band || "?"}
                 suffix="kHz"
                 value={userInput}

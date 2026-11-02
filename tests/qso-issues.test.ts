@@ -120,6 +120,19 @@ describe("bands", () => {
         expect(fields(qso({ band: "11m" as QSO["band"], frequency: 27.5 }))).toContain("band"));
 
     test("frequency with no band is not checked", () => expect(hasIssues(qso({ frequency: 7.074 }))).toBe(false));
+
+    test("US 80m phone is on 80m", () => expect(hasIssues(qso({ band: "80m", frequency: 3.9 }))).toBe(false));
+
+    test("VK has no 60m", () =>
+        expect(fields(qso({ band: "60m", frequency: 5.357, myCallsign: "VK4ALE" }))).toContain("frequency"));
+
+    test("VK 80m gap between 3.7 and 3.776", () => {
+        expect(fields(qso({ band: "80m", frequency: 3.75, myCallsign: "VK4ALE" }))).toContain("frequency");
+        expect(hasIssues(qso({ band: "80m", frequency: 3.78, myCallsign: "VK4ALE" }))).toBe(false);
+    });
+
+    test("no allocation data means no check", () =>
+        expect(hasIssues(qso({ band: "60m", frequency: 5.357, myCallsign: "G4XYZ" }))).toBe(false));
 });
 
 describe("ignoring issues", () => {

@@ -1,4 +1,5 @@
 import { QSO } from "../components/qso";
+import { allocationFor, isAllowed } from "../data/allocations";
 import { Band, bands } from "../data/bands";
 import { countries, resolveCountry } from "../data/countries";
 import { DxccEntity, dxccEntities, entities as dxccEntityByNumber } from "../data/cty";
@@ -22,6 +23,7 @@ export const issueCodes = [
     "event-mismatch",
     "band-unknown",
     "frequency-band",
+    "frequency-allocation",
 ] as const;
 export type QsoIssueCode = (typeof issueCodes)[number];
 
@@ -192,6 +194,14 @@ const bandIssues = (qso: QSO, issues: RawIssue[]) => {
             field: "frequency",
             code: "frequency-band",
             description: `${frequency}MHz is outside ${qso.band} (${low}-${high}MHz)`,
+        });
+    // Against the licence of the callsign the QSO was made as, so a portable call abroad is held to
+    // the host country's rules, and a log with no station callsign isn't checked at all.
+    else if (!isAllowed(allocationFor(qso.myCallsign), frequency))
+        issues.push({
+            field: "frequency",
+            code: "frequency-allocation",
+            description: `${frequency}MHz is outside the amateur allocation for ${qso.myCallsign}`,
         });
 };
 

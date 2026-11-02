@@ -1,12 +1,15 @@
 import { roundTo } from "../utils/math";
 import { Mode } from "./modes";
 
+// At least the ADIF band edges, so a frequency anywhere in the world lands on its band. Narrower
+// edges silently dropped US 80m phone and 160m above 1.875. Whether *you* may transmit there is
+// `allocations`, not this.
 export const bands = {
     "2.2km": [0.135, 0.138],
     "630m": [0.472, 0.479],
-    "160m": [1.8, 1.875],
-    "80m": [3.5, 3.8],
-    "60m": [5.325, 5.425],
+    "160m": [1.8, 2.0],
+    "80m": [3.5, 4.0],
+    "60m": [5.06, 5.45],
     "40m": [7.0, 7.3],
     "30m": [10.1, 10.15],
     "20m": [14.0, 14.35],
@@ -15,18 +18,18 @@ export const bands = {
     "12m": [24.89, 24.99],
     "10m": [28.0, 29.7],
     "6m": [50.0, 54.0],
-    "4m": [70.0, 70.5],
+    "4m": [70.0, 71.0],
     "2m": [144.0, 148.0],
     "1.25m": [220.0, 225.0],
     "70cm": [420.0, 450.0],
     "23cm": [1240.0, 1300.0],
     "13cm": [2300.0, 2450.0],
     "9cm": [3300.0, 3600.0],
-    "6cm": [5650.0, 5850.0],
+    "6cm": [5650.0, 5925.0],
     "3cm": [10000.0, 10500.0],
     "12mm": [24000.0, 24250.0],
     "6mm": [47000.0, 47200.0],
-    "4mm": [76000.0, 81000.0],
+    "4mm": [75500.0, 81000.0],
 };
 
 // The usual watering holes per mode (WSJT-X / JS8Call defaults, the common PSK31 frequencies), so
@@ -97,12 +100,12 @@ export const modeBandMap: Partial<Record<Mode, Partial<Record<Band, number>>>> =
         "10m": 28.078,
         "6m": 50.312,
     },
-    // 60m WSPR (5.2872) sits below the 60m range above, so it's left out rather than mis-banded.
     WSPR: {
         "2.2km": 0.136,
         "630m": 0.4742,
         "160m": 1.8366,
         "80m": 3.5686,
+        "60m": 5.2872,
         "40m": 7.0386,
         "30m": 10.1387,
         "20m": 14.0956,
