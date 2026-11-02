@@ -56,6 +56,10 @@ const styles = StyleSheet.create((theme) => ({
         flexGrow: 1,
         width: 0,
     },
+    // Without a zero basis the list grows to its full content height and never scrolls.
+    log: {
+        height: 0,
+    },
     bandMap: {
         width: 400,
     },
@@ -170,6 +174,7 @@ const Index = () => {
                 <View style={styles.listRow}>
                     <View style={styles.list}>
                         <QsoList
+                            style={styles.log}
                             qsos={listQsos}
                             filters={listFilters}
                             onQsoPress={(qso) => navigate(`/qso?qsoId=${qso.id}`)}
