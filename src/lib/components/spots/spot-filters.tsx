@@ -129,7 +129,7 @@ export const SpotFilters = () => {
             />
             <FilterRow<Band>
                 label="Band"
-                options={allBands}
+                options={settings.favouriteBands.length ? [...settings.favouriteBands].sort(sortBands) : allBands}
                 selected={filter.bands}
                 onToggle={(band) => patch({ bands: toggle(filter.bands, band) })}
             />

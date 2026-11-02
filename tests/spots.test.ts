@@ -7,7 +7,7 @@ import {
     rememberSpots,
     spotAlertNotification,
 } from "../src/lib/utils/spots/alerts";
-import { applySpotFilter } from "../src/lib/utils/spots/filter";
+import { applySpotFilter, withFavouriteBands } from "../src/lib/utils/spots/filter";
 import { LABEL_HEIGHT, layoutBandMap } from "../src/lib/utils/spots/band-map";
 import { parseClusterLine } from "../src/lib/utils/spots/cluster";
 import { parseDxSpot } from "../src/lib/utils/spots/dx";
@@ -546,5 +546,18 @@ describe("telnet cluster", () => {
         expect(clusterSpotCommand({ ...request, programme: "qrp", reference: "near Bathurst", comments: "" })).toBe(
             "DX 14244.0 VK2ABC SSB",
         );
+    });
+});
+
+describe("withFavouriteBands", () => {
+    test("no favourites leaves the filter alone", () => {
+        expect(withFavouriteBands(defaultSpotFilter, [])).toBe(defaultSpotFilter);
+    });
+    test("favourites are the filter when no band is picked", () => {
+        expect(withFavouriteBands(defaultSpotFilter, ["40m", "20m"]).bands).toEqual(["40m", "20m"]);
+    });
+    test("picked bands narrow within the favourites", () => {
+        expect(withFavouriteBands({ ...defaultSpotFilter, bands: ["20m", "80m"] }, ["40m", "20m"]).bands).toEqual(["20m"]);
+        expect(withFavouriteBands({ ...defaultSpotFilter, bands: ["80m"] }, ["40m"]).bands).toEqual(["40m"]);
     });
 });

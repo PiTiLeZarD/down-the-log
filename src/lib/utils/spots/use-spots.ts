@@ -1,5 +1,5 @@
 import { DateTime } from "luxon";
-import { useEffect, useSyncExternalStore } from "react";
+import { useEffect, useMemo, useSyncExternalStore } from "react";
 import { notify } from "../notify";
 import { useStore } from "../store";
 import { useSettings } from "../use-settings";
@@ -10,6 +10,7 @@ import { fetchPotaSpots } from "./pota";
 import { fetchSotaSpots } from "./sota";
 import { clusterSpots, clustersOpen, setClusterListener } from "./cluster";
 import { fetchDxSpots } from "./dx";
+import { withFavouriteBands } from "./filter";
 import { MergedSpot, Spot, SpotFilter, SpotSource, defaultSpotFilter } from "./types";
 
 const REFRESH_MS = 60 * 1000;
@@ -175,7 +176,10 @@ export const useSpotConfig = () => {
     const settings = useSettings();
     const sources = settings.spotSources;
     const alerts = settings.spotAlertsEnabled;
-    const filter = settings.spotFilter;
+    const filter = useMemo(
+        () => withFavouriteBands(settings.spotFilter, settings.favouriteBands),
+        [settings.spotFilter, settings.favouriteBands],
+    );
     useEffect(() => configureSpots(sources, alerts, filter), [sources, alerts, filter]);
 };
 

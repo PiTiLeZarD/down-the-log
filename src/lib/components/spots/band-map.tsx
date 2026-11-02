@@ -21,7 +21,9 @@ import {
     spotProgrammeLabel,
     spotStatus,
     useSpots,
+    withFavouriteBands,
 } from "../../utils/spots";
+import { useStore } from "../../utils/store";
 import { useSettings } from "../../utils/use-settings";
 import { useQsos } from "../qso";
 import { Stack } from "../stack";
@@ -147,27 +149,49 @@ export const BandMap = ({ band, frequency, onSpotPress, onSpot, onClose }: BandM
     const { navigate } = useRouter();
     const { theme } = useUnistyles();
     const settings = useSettings();
+    const updateSetting = useStore((state) => state.updateSetting);
     const qsos = useQsos();
     const { spots, fetchedAt, loading } = useSpots();
     // Remembered against the form's band at the time, so a band change in the form takes over again.
     const [picked, setPicked] = React.useState<{ band: Band; over?: Band } | undefined>(undefined);
     // Dropped as soon as the form leaves that band: kept, it came back the moment the form returned to it.
     if (picked && picked.over !== band) setPicked(undefined);
-    const [zoom, setZoom] = React.useState<number>(DEFAULT_ZOOM);
     const [legend, setLegend] = React.useState<boolean>(false);
     const [viewport, setViewport] = React.useState<number>(0);
     const scroller = React.useRef<ScrollViewInstance>(null);
     // The frequency at the middle of the view, so zooming keeps it there instead of jumping.
     const centre = React.useRef<number | undefined>(undefined);
 
+    // Only the favourites when any are drawable: the filter hides spots on the rest anyway.
+    const favourites = bandMapBands.filter((b) => settings.favouriteBands.includes(b));
+    const options = favourites.length ? favourites : bandMapBands;
     const shown: Band =
-        picked && picked.over === band ? picked.band : band && bandMapBands.includes(band) ? band : "20m";
+        picked && picked.over === band
+            ? picked.band
+            : band && options.includes(band)
+              ? band
+              : options.includes("20m")
+                ? "20m"
+                : options[0];
     const [low, high] = bands[shown];
+    // Checked against the steps: one stored before the steps changed would leave the buttons stuck.
+    const stored = settings.bandMapZoom?.[shown];
+    const zoom = stored && bandMapZooms.includes(stored) ? stored : DEFAULT_ZOOM;
     const rig = frequency && frequency >= low && frequency <= high ? frequency : undefined;
 
     const layout = React.useMemo(
-        () => layoutBandMap(applySpotFilter(spots, settings.spotFilter, settings.spotSources, qsos), shown, zoom),
-        [spots, settings.spotFilter, settings.spotSources, qsos, shown, zoom],
+        () =>
+            layoutBandMap(
+                applySpotFilter(
+                    spots,
+                    withFavouriteBands(settings.spotFilter, settings.favouriteBands),
+                    settings.spotSources,
+                    qsos,
+                ),
+                shown,
+                zoom,
+            ),
+        [spots, settings.spotFilter, settings.favouriteBands, settings.spotSources, qsos, shown, zoom],
     );
     const y = (mhz: number) => (high - mhz) * 1000 * zoom;
 
@@ -179,15 +203,16 @@ export const BandMap = ({ band, frequency, onSpotPress, onSpot, onClose }: BandM
     // Effect events: following the radio's frequency as it's typed would yank the view away mid-scan.
     const openOnRig = React.useEffectEvent(() => scrollTo(rig));
     const keepCentre = React.useEffectEvent(() => scrollTo(centre.current));
-    React.useEffect(() => openOnRig(), [shown, viewport]);
+    // In this order: a band change can change the zoom too, and then the new band's opening has to win.
     React.useEffect(() => keepCentre(), [zoom]);
+    React.useEffect(() => openOnRig(), [shown, viewport]);
 
     const onScroll = (event: NativeSyntheticEvent<NativeScrollEvent>) => {
         centre.current = high - (event.nativeEvent.contentOffset.y + viewport / 2) / zoom / 1000;
     };
     const stepZoom = (by: number) => {
         const next = bandMapZooms[bandMapZooms.indexOf(zoom) + by];
-        if (next) setZoom(next);
+        if (next) updateSetting("bandMapZoom", { ...settings.bandMapZoom, [shown]: next });
     };
 
     const status = !fetchedAt ? (loading ? "Fetching spots..." : "Spots unavailable") : `No spots on ${shown}`;
@@ -197,7 +222,7 @@ export const BandMap = ({ band, frequency, onSpotPress, onSpot, onClose }: BandM
             <Stack direction="row" gap="xs" style={styles.header}>
                 <SelectInput
                     value={shown}
-                    items={bandMapBands.map((b) => ({ label: b, value: b }))}
+                    items={options.map((b) => ({ label: b, value: b }))}
                     onValueChange={(value) => setPicked({ band: value as Band, over: band })}
                     aria-label="Band"
                 />

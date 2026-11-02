@@ -11,6 +11,7 @@ import {
     MergedSpot,
     activeFilterCount,
     applySpotFilter,
+    withFavouriteBands,
     refreshSpots,
     spotSourceLabels,
     spotStation,
@@ -35,8 +36,14 @@ const Spots = () => {
     const compact = useWidthMatches(undefined, "md");
 
     const visible = React.useMemo(
-        () => applySpotFilter(spots, settings.spotFilter, settings.spotSources, qsos),
-        [spots, settings.spotFilter, settings.spotSources, qsos],
+        () =>
+            applySpotFilter(
+                spots,
+                withFavouriteBands(settings.spotFilter, settings.favouriteBands),
+                settings.spotSources,
+                qsos,
+            ),
+        [spots, settings.spotFilter, settings.favouriteBands, settings.spotSources, qsos],
     );
     const filterCount = activeFilterCount(settings.spotFilter);
 

@@ -80,6 +80,8 @@ export type Settings = {
     // it lives in the Keychain rather than the settings blob, like the HamQTH password.
     pnpUserId?: string;
     pnpApiKey?: string;
+    // Bandmap px/kHz per band, so a busy 40m can stay zoomed in while a quiet 6m stays wide.
+    bandMapZoom?: Partial<Record<Band, number>>;
     favouriteModes: Mode[];
     favouriteBands: Band[];
     inputBarConfig: (keyof QSO)[];

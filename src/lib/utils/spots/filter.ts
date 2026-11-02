@@ -1,5 +1,6 @@
 import { DateTime } from "luxon";
 import type { QSO } from "../../components/qso";
+import type { Band } from "../../data/bands";
 import { Mode, isDigital } from "../../data/modes";
 import { baseCallsign, getCallsignData } from "../callsign";
 import type { EventType } from "../event-rules";
@@ -20,6 +21,14 @@ export const activeFilterCount = (filter: SpotFilter): number =>
     (filter.newOnly ? 1 : 0) +
     (filter.hideQrt ? 1 : 0) +
     (filter.hideAutomatic ? 1 : 0);
+
+// Favourite bands are the outer limit: band chips narrow within them, and with none picked the
+// favourites are the filter. A chip left on from before its band stopped being a favourite is ignored.
+export const withFavouriteBands = (filter: SpotFilter, favourites: Band[]): SpotFilter => {
+    if (!favourites.length) return filter;
+    const bands = filter.bands.filter((band) => favourites.includes(band));
+    return { ...filter, bands: bands.length ? bands : favourites };
+};
 
 // "VK*" or "ZL?ABC": * is any run of characters, ? exactly one. Everything else is literal, so the
 // / in a portable call can't turn into regexp syntax.
