@@ -170,6 +170,25 @@ describe("merging", () => {
         expect(rows).toHaveLength(2);
     });
 
+    test("a park the operator has left drops off once they're spotted at the next one", () => {
+        const pnp = { source: "pnp" as const, programme: "pota" as const, callsign: "DL7GW", frequency: 7.026 };
+        const rows = mergeSpots([
+            spot({ id: "p1", ...pnp, reference: "DE-0233", date: at("2026-11-18T11:18:01Z") }),
+            spot({ id: "p2", ...pnp, reference: "DE-0233", date: at("2026-11-18T11:40:28Z") }),
+            spot({ id: "p3", ...pnp, reference: "DE-0745", date: at("2026-11-18T12:02:26Z") }),
+        ]);
+        expect(rows.map((row) => row.reference)).toEqual(["DE-0745"]);
+    });
+
+    test("a twofer spotted in turn keeps both rows", () => {
+        const rows = mergeSpots([
+            spot({ id: "a1", reference: "US-0001", date: at("2024-01-01T10:00:00Z") }),
+            spot({ id: "b1", reference: "US-0002", date: at("2024-01-01T10:05:00Z") }),
+            spot({ id: "a2", reference: "US-0001", date: at("2024-01-01T10:30:00Z") }),
+        ]);
+        expect(rows).toHaveLength(2);
+    });
+
     test("the same callsign two bands apart stays two rows", () => {
         const rows = mergeSpots([spot({ frequency: 14.244 }), spot({ id: "s2", frequency: 7.144 })]);
         expect(rows).toHaveLength(2);

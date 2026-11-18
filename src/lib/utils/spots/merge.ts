@@ -11,6 +11,11 @@ const MERGE_WINDOW_MINUTES = 20;
 // its own row.
 const MERGE_MHZ = 0.005;
 
+// A park whose last spot came this long before the first spot of the operator's next park (same
+// programme) is one they have left, not a twofer. RBN keeps spotting a CQing activator, so the gap is
+// the pack-up and the drive.
+const PARK_MOVE_MINUTES = 10;
+
 const links = potawwfflinks as Record<string, string>;
 let reverseLinks: Record<string, string> | undefined;
 // Built on first use rather than at import: 31k entries inverted for a screen nobody may open.
@@ -98,7 +103,20 @@ export const mergeSpots = (spots: Spot[]): MergedSpot[] => {
                 byCallsign.set(key, rows);
             }
         });
-    return clusters.map(([head, ...rest]) => ({ ...fold(head, rest), sources: [head, ...rest] }));
+    // Rows are newest first and each row's spots newest first, so [0] is a row's last spot and the
+    // final entry its first. A twofer's two parks are spotted in turn; a rover's old park stops.
+    const leftBehind = (row: Spot[]): boolean =>
+        byCallsign
+            .get(callsignKey(row[0].callsign))!
+            .some(
+                (newer) =>
+                    newer !== row &&
+                    !sameReference(newer[0], row[0]) &&
+                    newer[newer.length - 1].date.diff(row[0].date, "minutes").minutes > PARK_MOVE_MINUTES,
+            );
+    return clusters
+        .filter((row) => !leftBehind(row))
+        .map(([head, ...rest]) => ({ ...fold(head, rest), sources: [head, ...rest] }));
 };
 
 // What the row badges: one entry per distinct programme, in the order the networks reported them.
