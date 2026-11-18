@@ -181,25 +181,46 @@ const Qsl = () => {
             // their own flag — whichever landed last in log() won, and the other
             // confirmation was lost.
             const confirmed = new Map<string, QSO>();
-            let newlyConfirmed = 0;
+            const fresh: QSO[] = [];
+            const already: QSO[] = [];
             let statesFilled = 0;
             for (const { record, matching } of matches) {
                 if (!matching) continue;
                 const previous = confirmed.get(matching.id) || matching;
                 const next = confirmQso(previous, record);
-                if (!next) continue;
+                if (!next) {
+                    already.push(previous);
+                    continue;
+                }
                 confirmed.set(matching.id, next);
                 // A record can change a QSO without confirming anything new: a LoTW record for a
                 // QSO already confirmed may only have filled in its state.
                 if (next.lotw_received !== previous.lotw_received || next.eqsl_received !== previous.eqsl_received)
-                    newlyConfirmed++;
-                else statesFilled++;
+                    fresh.push(next);
+                else {
+                    statesFilled++;
+                    already.push(next);
+                }
             }
+            const newlyConfirmed = fresh.length;
 
             const toImport = [...confirmed.values()];
             const stillUnmatched = matches.filter(({ matching, ignored }) => !matching && !ignored);
             const ignored = matches.filter(({ ignored: i }) => i).length;
-            const known = matches.length - stillUnmatched.length - ignored - newlyConfirmed;
+            const known = already.length;
+            // Which QSOs the counts are about, so the operator can find them in the log.
+            const listQsos = (heading: string, list: QSO[]) =>
+                list.length
+                    ? [
+                          `\n${heading}:`,
+                          ...list
+                              .slice(0, 10)
+                              .map((q) =>
+                                  `${q.callsign} ${q.date.toFormat("yyyy-MM-dd HH:mm")} ${q.band ?? ""} ${q.mode ?? ""}`.trim(),
+                              ),
+                          ...(list.length > 10 ? [`…and ${list.length - 10} more`] : []),
+                      ]
+                    : [];
 
             // Nothing new in the file means nothing written at all: re-importing the same
             // download is a no-op rather than a full rewrite of every QSO it mentions.
@@ -207,7 +228,7 @@ const Qsl = () => {
 
             showDialog({
                 title: "Done!",
-                text:
+                text: [
                     [
                         `${newlyConfirmed} new confirmation${newlyConfirmed === 1 ? "" : "s"}`,
                         ...(known ? [`${known} already confirmed`] : []),
@@ -215,6 +236,9 @@ const Qsl = () => {
                         ...(stillUnmatched.length ? [`${stillUnmatched.length} unmatched`] : []),
                         ...(ignored ? [`${ignored} ignored`] : []),
                     ].join(", ") + ` out of ${records.length} records.`,
+                    ...listQsos("New", fresh),
+                    ...listQsos("Already confirmed", already),
+                ].join("\n"),
                 icon: "success",
                 confirmButtonText: "Ok",
             });
